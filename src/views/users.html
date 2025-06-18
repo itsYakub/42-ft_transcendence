@@ -1,0 +1,23 @@
+<h1>Registered users</h1>
+<% if (users.length > 0) { %>
+<ul class="posts">
+  <% users.forEach(user => { %>
+  <li>
+    <a href="/user/<%= user.id %>" class="posts-title"><%= user.nick %></a>
+	<%= user.email %>
+    <div class="post-actions">
+      <a href="/user/<%= user.id %>/edit" class="btn">Edit</a>
+      <form
+        action="/user/<%= user.id %>/delete"
+        method="post"
+        class="posts-form"
+      >
+        <button type="submit" class="btn">Delete</button>
+      </form>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+<% } else { %>
+<p>There are no users yet.</p>
+<% } %>
