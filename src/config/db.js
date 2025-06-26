@@ -1,15 +1,18 @@
-import fp from "fastify-plugin";
 import Database from "better-sqlite3";
 
-async function dbConnector(fastify, options) {
-  const dbFile = "./transcendence.db";
-  const db = new Database(dbFile, { verbose: console.log });
+export class DB {
+	constructor() {
+		const dbFile = "./transcendence.db";
+		this.conn = new Database(dbFile, { verbose: console.log });
+		this.#init();
+	}
 
-	// db.exec(`
-	// 	DROP TABLE users;
-	// 	`);
+	#init() {
+		this.conn.exec(`
+		DROP TABLE users;
+		`);
 
-  db.exec(`
+		this.conn.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nick TEXT UNIQUE NOT NULL,
@@ -17,7 +20,7 @@ async function dbConnector(fastify, options) {
     );
   `);
 
-  db.exec(`
+		this.conn.exec(`
     CREATE TABLE IF NOT EXISTS matches (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       p1_id INTEGER NOT NULL,
@@ -27,16 +30,9 @@ async function dbConnector(fastify, options) {
       played_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+	}
 
-  // Allows db to be accessed from other files
-  fastify.decorate("db", db);
-
-  fastify.addHook("onClose", (fastify, done) => {
-    db.close();
-    done();
-  });
-
-  console.log("Database and posts table created successfully");
+	close() {
+		if (this.conn) this.conn.close();
+	}
 }
-
-export default fp(dbConnector);

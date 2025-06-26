@@ -4,9 +4,7 @@ import routes from "./routes/routes.js";
 import path from "node:path";
 import fastifyView from "@fastify/view";
 import ejs from "ejs";
-import logger from "./config/logger.js";
 import fastifyStatic from "@fastify/static";
-import dbConnector from "./config/db.js";
 import fastifyFormbody from "@fastify/formbody";
 import fastifyCors from "@fastify/cors";
 import fastifyHelmet from "@fastify/helmet";
@@ -16,19 +14,7 @@ import fastifyGracefulShutdown from "fastify-graceful-shutdown";
 const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
-	//loggerInstance: logger,
-});
-
-// Adds logging
-fastify.addHook("onRequest", async (request, reply) => {
-  request.log.info(`Incoming request: ${request.method} ${request.url}`);
-});
-
-// More logging
-fastify.addHook("onResponse", async (request, reply) => {
-  request.log.info(
-    `Request completed: ${request.method} ${request.url} - Status ${reply.statusCode}`
-  );
+	ignoreTrailingSlash: true
 });
 
 // The views (pages) of the site
@@ -46,16 +32,17 @@ fastify.register(fastifyStatic, {
 	prefix: "/static/",
 });
 
+// Other recommended plugins
 // await fastify.register(fastifyCors);
 // await fastify.register(fastifyHelmet);
 // await fastify.register(fastifyCompress);
 // await fastify.register(fastifyGracefulShutdown);
 // await fastify.register(fastifyFormbody);
 
-//fastify.register(dbConnector);
-
+// Add the routes
 await fastify.register(routes);
 
+// Start listening
 fastify.listen({ port: env.port }, (err, address) => {
 	if (err) {
 		fastify.log.error(err);

@@ -5,7 +5,7 @@ const goToRoute = (url) => {
 };
 
 const router = async () => {
-
+	console.log("Router");
 	const routes = [
 		{ path: "/", view: "/api/home" },
 		{ path: "/users", view: "/api/users" },
@@ -36,32 +36,44 @@ const router = async () => {
 	}
 }
 
-async function navButtonClicked(url, id) {
-	goToRoute(url);
-	const collection = document.getElementsByClassName("selected");
+async function navButtonClicked(url, id, params = {}) {
+	if (params.id)
+		url = url + "/" + params.id;
+	history.pushState(null, null, url);
+	const response = await fetch(url + "?id=" + params.id, {
+		method: "GET",
+		headers: {
+			"internal": true
+		},
+	});
+	if (response.ok) {
+		const text = await response.text();
+		document.querySelector("#content").innerHTML = text;
+	}
+
+	//goToRoute(url);
+	const collection = document.getElementsByClassName("text-green-700");
 	for (let i = 0; i < collection.length; i++) {
-		collection[i].classList.toggle("selected");
+		collection[i].classList.replace("text-green-700", "text-gray-500");
 	}
 	var element = document.getElementById(id);
-	element.classList.toggle("selected");
+	element.classList.replace("text-gray-500", "text-green-700");
 };
 
 // Changes view on back/forward buttons
-window.addEventListener("popstate", router);
-
+//window.addEventListener("popstate", router);
+window.addEventListener('popstate', function (event) {
+	console.log("changing");
+});
 document.addEventListener("DOMContentLoaded", () => {
-
-	// Blocks the link from going to a new page when clicked
-	// document.body.addEventListener("click", (e) => {
-	// 	console.log(e.target);
-	// 	if (e.target.matches("[data-link]")) {
-	// 		e.preventDefault();
-	// 		goToRoute(e.target.parent.href);
-	// 	}
-	// });
-
-	router();
+	//router();
+	console.log("finished");
 });
 
+function showProfile() {
+
+}
+
 // Makes the function visible from the html file
+window.showProfile = showProfile;
 window.navButtonClicked = navButtonClicked;

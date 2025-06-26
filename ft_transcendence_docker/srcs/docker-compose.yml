@@ -1,0 +1,29 @@
+services:
+#   sqlite:
+#     container_name: sqlite
+#     build: ./containers/sqlite
+#     networks:
+#     - transcendence
+#     ports:
+#     - 8191:8191
+#     volumes:
+#     - db_vol:/data
+#     command: ["tail", "-f", "/dev/null"]
+  
+  backend:
+    container_name: backend
+    build: ./containers/backend
+    networks:
+    - transcendence
+    ports:
+    - 8191:8191
+    volumes:
+    - db_vol:/data
+    command: ["tail", "-f", "/dev/null"]
+
+volumes:
+  db_vol:
+
+networks:
+  transcendence:
+    driver: bridge

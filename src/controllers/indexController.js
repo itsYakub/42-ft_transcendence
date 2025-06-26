@@ -1,4 +1,5 @@
 export function getIndex(request, reply) {
+	console.log("Called index");
 	return reply.view("index", { title: "Homepage" });
 }
 

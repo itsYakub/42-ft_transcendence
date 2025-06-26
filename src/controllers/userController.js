@@ -2,12 +2,6 @@ import Ajv from "ajv";
 
 const ajv = new Ajv();
 
-// Return all registered users from the db
-export function getUsers(request, reply) {
-  const { db } = request.server;
-  const users = db.prepare("SELECT * FROM users").all();
-  return reply.view("users", { title: "All users", users });
-}
 
 // Shows the user details page
 export function getUser(request, reply) {
