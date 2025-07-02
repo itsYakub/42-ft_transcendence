@@ -136,3 +136,6 @@ dist
 
 # database file
 *.db
+
+# map file
+*.js.map

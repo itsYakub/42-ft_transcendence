@@ -33,12 +33,12 @@ var Game = /** @class */ (function () {
             Game.keysPressed[e.key] = false;
         });
         // Adjust these dependent on available space
-        var paddleWidth = 8;
-        var paddleHeight = 64;
-        var ballSize = 8;
-        var wallOffset = 20;
-        this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#f00");
-        this.m_player2 = new Paddle(this.m_gameCanvas.width - (wallOffset + paddleWidth), this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#0f0");
+        var paddleWidth = 16;
+        var paddleHeight = 80;
+        var ballSize = 16;
+        var wallOffset = 24;
+        this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#fa2222");
+        this.m_player2 = new Paddle(this.m_gameCanvas.width - (wallOffset + paddleWidth), this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#22fa22");
         this.m_ball = new Ball(this.m_gameCanvas.width / 2 - ballSize / 2, this.m_gameCanvas.height / 2 - ballSize / 2, ballSize, ballSize);
         this.draw();
     }
@@ -96,7 +96,7 @@ var Paddle = /** @class */ (function (_super) {
     __extends(Paddle, _super);
     function Paddle(x, y, w, h, upKey, downKey, colour) {
         var _this = _super.call(this, x, y, w, h) || this;
-        _this.speed = 10;
+        _this.speed = 10.0;
         _this.upKey = upKey;
         _this.downKey = downKey;
         _this.colour = colour;
@@ -108,19 +108,19 @@ var Paddle = /** @class */ (function (_super) {
     };
     Paddle.prototype.update = function (canvas) {
         if (Game.keysPressed[this.upKey]) {
-            this.yVel = -1;
-            if (this.y <= 20) {
-                this.yVel = 0;
+            this.yVel = -1.0;
+            if (this.y <= 20.0) {
+                this.yVel = 0.0;
             }
         }
         else if (Game.keysPressed[this.downKey]) {
-            this.yVel = 1;
-            if (this.y + this.height >= canvas.height - 20) {
-                this.yVel = 0;
+            this.yVel = 1.0;
+            if (this.y + this.height >= canvas.height - 20.0) {
+                this.yVel = 0.0;
             }
         }
         else {
-            this.yVel = 0;
+            this.yVel = 0.0;
         }
         this.y += this.yVel * this.speed;
     };
@@ -130,78 +130,96 @@ var Ball = /** @class */ (function (_super) {
     __extends(Ball, _super);
     function Ball(x, y, w, h) {
         var _this = _super.call(this, x, y, w, h) || this;
-        _this.speed = 0.5;
-        var randomDirection = Math.floor(Math.random() * 2) + 1;
-        if (randomDirection % 2) {
-            _this.xVel = 1;
-        }
-        else {
-            _this.xVel = -1;
-        }
-        _this.yVel = 1;
+        _this.speed = 2.0;
+        _this.randomDirection();
         return _this;
     }
+    Ball.prototype.restart = function (canvas) {
+        this.speed = 2.0;
+        this.x = canvas.width / 2.0 - this.width / 2.0;
+        this.y = canvas.height / 2.0 - this.height / 2.0;
+        this.randomDirection();
+    };
     Ball.prototype.draw = function (context) {
         context.fillStyle = "#fff";
         context.fillRect(this.x, this.y, this.width, this.height);
     };
     Ball.prototype.update = function (player1, player2, canvas) {
-        // If the ball hits the top wall, bounce it off
-        if (this.y <= 10) {
-            this.yVel = 1;
-        }
-        // If the ball hits the bottom wall, bounce it off
-        if (this.y + this.height >= canvas.height - 10) {
-            this.yVel = -1;
-        }
+        this.collisionDetection(player1, player2, canvas);
         // If the ball goes past the left player
-        if (this.x <= 0) {
-            this.x = canvas.width / 2 - this.width / 2;
-            Game.player2Score += 1;
+        if (this.x <= 0.0) {
+            Game.player2Score += 1.0;
+            this.restart(canvas);
         }
         // If the ball goes past the right player
         if (this.x + this.width >= canvas.width) {
-            this.x = canvas.width / 2 - this.width / 2;
-            Game.player1Score += 1;
+            Game.player1Score += 1.0;
+            this.restart(canvas);
         }
-        // If the ball is hit by the left player
-        if (this.x <= player1.x + player1.width) {
-            if (this.y >= player1.y && this.y + this.height <= player1.y + player1.height) {
-                this.xVel = 1;
-            }
-        }
-        // If the ball is hit by the right player
-        if (this.x + this.width >= player2.x) {
-            if (this.y >= player2.y && this.y + this.height <= player2.y + player2.height) {
-                this.xVel = -1;
-            }
-        }
+        /* clamping the ball's speed to the maximum value (in this case: 16.0) (let the hell go loose) */
+        this.speed = this.speed > 16.0 ? 16.0 : this.speed;
         this.x += this.xVel * this.speed;
         this.y += this.yVel * this.speed;
+    };
+    Ball.prototype.randomDirection = function () {
+        var randomDirection;
+        randomDirection = Math.floor(Math.random() * 2) + 1;
+        if (randomDirection % 2) {
+            this.xVel = 1.0;
+        }
+        else {
+            this.xVel = -1.0;
+        }
+        randomDirection = Math.floor(Math.random() * 2) + 1;
+        if (randomDirection % 2) {
+            this.yVel = 1.0;
+        }
+        else {
+            this.yVel = -1.0;
+        }
+    };
+    Ball.prototype.collisionDetection = function (player1, player2, canvas) {
+        // Basic ball - to - top/bottom collistion detection
+        if ((this.y <= 10.0) ||
+            (this.y + this.height >= canvas.height - 10.0)) {
+            this.yVel *= -1.0;
+            this.speed += 0.2;
+        }
+        // Basic ball - to - player collision detection
+        // Horizontal collision
+        if (aabb(this, player1) || aabb(this, player2)) {
+            /* NOTE(joleksia):
+             *  In this if - block, I think that we should handle both horizontal and vertical bouncess of the paddle
+             * */
+            if ((this.y >= player1.y && this.y + this.height <= player1.y + player1.height) ||
+                (this.y >= player2.y && this.y + this.height <= player2.y + player2.height)) {
+                this.xVel *= -1.0;
+            }
+            this.speed += 0.4;
+        }
     };
     return Ball;
 }(Shape));
 var game;
 var stateMachine;
+function aabb(a, b) {
+    return ((a.x < (b.x + b.width) && (a.x + a.width) > b.x) &&
+        (a.y < (b.y + b.height) && (a.y + a.height) > b.y));
+}
 // Calculates the starting conditions and draws everything
+// NOTE(joleksia): If you spam this function, the velocity goes insane because now we're launching many revursive functions of update for the Game
 function setupGame() {
     game = new Game();
     stateMachine = GameStateMachine.STATE_GAME_SETUP;
     requestAnimationFrame(game.gameLoop);
 }
-// Starts the ball moving and allows the players to move
-function startGame() {
+function playGame() {
     stateMachine = GameStateMachine.STATE_GAME_START;
 }
 function pauseGame() {
-    if (stateMachine != GameStateMachine.STATE_GAME_PAUSE) {
-        stateMachine = GameStateMachine.STATE_GAME_PAUSE;
-    }
-    else {
-        stateMachine = GameStateMachine.STATE_GAME_START;
-    }
+    stateMachine = GameStateMachine.STATE_GAME_PAUSE;
 }
 window.setupGame = setupGame;
-window.startGame = startGame;
+window.playGame = playGame;
 window.pauseGame = pauseGame;
 //# sourceMappingURL=game.js.map

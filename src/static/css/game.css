@@ -12,9 +12,14 @@
     align-items: center;
 }
 
+#pongCanvas {
+	height: 100%;
+	width: 100%;
+}
+
 .board {
-    height: 85vh;
-    width: 80vw;
+    height: 100%;
+    width: 100%;
     background-image: linear-gradient(
             to right, #5c6e91, #839b97);
     border-radius: 14px;
