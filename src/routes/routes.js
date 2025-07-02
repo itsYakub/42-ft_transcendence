@@ -2,6 +2,7 @@ import { DB } from '../config/db.js';
 import { User } from '../config/User.js';
 
 export default async function routes(fastify) {
+	/*
 	const db = new DB();
 	const user = new User(db.conn);
 	const contact = user.create({
@@ -9,6 +10,7 @@ export default async function routes(fastify) {
 		email: 'jane.doe@example.com',
 	});
 	console.log(contact);
+	*/
 
 	// Return all registered users from the db
 	fastify.get('/users', async (request, reply) => {

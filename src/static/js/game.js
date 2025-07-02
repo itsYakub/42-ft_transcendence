@@ -13,12 +13,18 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var GameStateMachine;
+(function (GameStateMachine) {
+    GameStateMachine[GameStateMachine["STATE_GAME_SETUP"] = 0] = "STATE_GAME_SETUP";
+    GameStateMachine[GameStateMachine["STATE_GAME_START"] = 1] = "STATE_GAME_START";
+    GameStateMachine[GameStateMachine["STATE_GAME_PAUSE"] = 2] = "STATE_GAME_PAUSE";
+})(GameStateMachine || (GameStateMachine = {}));
 var Game = /** @class */ (function () {
     function Game() {
-        this.gameCanvas = document.getElementById("pongCanvas");
-        this.gameCanvas.width = this.gameCanvas.parentElement.clientWidth;
-        this.gameCanvas.height = this.gameCanvas.parentElement.clientHeight;
-        this.gameContext = this.gameCanvas.getContext("2d");
+        this.m_gameCanvas = document.getElementById("pongCanvas");
+        this.m_gameCanvas.width = this.m_gameCanvas.parentElement.clientWidth;
+        this.m_gameCanvas.height = this.m_gameCanvas.parentElement.clientHeight;
+        this.m_gameContext = this.m_gameCanvas.getContext("2d");
         //this.gameContext.font = "30px Orbitron";
         window.addEventListener("keydown", function (e) {
             Game.keysPressed[e.key] = true;
@@ -26,40 +32,43 @@ var Game = /** @class */ (function () {
         window.addEventListener("keyup", function (e) {
             Game.keysPressed[e.key] = false;
         });
+        // Adjust these dependent on available space
         var paddleWidth = 8;
         var paddleHeight = 64;
         var ballSize = 8;
         var wallOffset = 20;
-        this.player1 = new Paddle(wallOffset, this.gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#f00");
-        this.player2 = new Paddle(this.gameCanvas.width - (wallOffset + paddleWidth), this.gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#0f0");
-        this.ball = new Ball(this.gameCanvas.width / 2 - ballSize / 2, this.gameCanvas.height / 2 - ballSize / 2, ballSize, ballSize);
+        this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#f00");
+        this.m_player2 = new Paddle(this.m_gameCanvas.width - (wallOffset + paddleWidth), this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#0f0");
+        this.m_ball = new Ball(this.m_gameCanvas.width / 2 - ballSize / 2, this.m_gameCanvas.height / 2 - ballSize / 2, ballSize, ballSize);
         this.draw();
     }
     Game.prototype.drawCourt = function () {
         // Draws the court floor
-        this.gameContext.fillStyle = "#008566";
-        this.gameContext.fillRect(0, 0, this.gameCanvas.width, this.gameCanvas.height);
+        this.m_gameContext.fillStyle = "#008566";
+        this.m_gameContext.fillRect(0, 0, this.m_gameCanvas.width, this.m_gameCanvas.height);
         // Draws outline
-        this.gameContext.strokeStyle = "#fff";
-        this.gameContext.lineWidth = 4;
-        this.gameContext.strokeRect(8, 8, this.gameCanvas.width - 16, this.gameCanvas.height - 16);
+        this.m_gameContext.strokeStyle = "#fff";
+        this.m_gameContext.lineWidth = 4;
+        this.m_gameContext.strokeRect(8, 8, this.m_gameCanvas.width - 16, this.m_gameCanvas.height - 16);
         // Draws half-way line
-        this.gameContext.fillStyle = "#fff";
-        this.gameContext.fillRect(this.gameCanvas.width / 2 - 2, 8, 4, this.gameCanvas.height - 16);
+        this.m_gameContext.fillStyle = "#fff";
+        this.m_gameContext.fillRect(this.m_gameCanvas.width / 2 - 2, 8, 4, this.m_gameCanvas.height - 16);
         // Draws score numbers
-        this.gameContext.fillText(Game.player1Score.toString(), this.gameCanvas.width / 3, 100);
-        this.gameContext.fillText(Game.player2Score.toString(), this.gameCanvas.width / 3 * 2, 100);
+        this.m_gameContext.fillText(Game.player1Score.toString(), this.m_gameCanvas.width / 3, 100);
+        this.m_gameContext.fillText(Game.player2Score.toString(), this.m_gameCanvas.width / 3 * 2, 100);
     };
     Game.prototype.update = function () {
-        this.player1.update(this.gameCanvas);
-        this.player2.update(this.gameCanvas);
-        this.ball.update(this.player1, this.player2, this.gameCanvas);
+        this.m_player1.update(this.m_gameCanvas);
+        this.m_player2.update(this.m_gameCanvas);
+        if (stateMachine == GameStateMachine.STATE_GAME_START) {
+            this.m_ball.update(this.m_player1, this.m_player2, this.m_gameCanvas);
+        }
     };
     Game.prototype.draw = function () {
         this.drawCourt();
-        this.player1.draw(this.gameContext);
-        this.player2.draw(this.gameContext);
-        this.ball.draw(this.gameContext);
+        this.m_player1.draw(this.m_gameContext);
+        this.m_player2.draw(this.m_gameContext);
+        this.m_ball.draw(this.m_gameContext);
     };
     Game.prototype.gameLoop = function () {
         game.update();
@@ -145,23 +154,23 @@ var Ball = /** @class */ (function (_super) {
         if (this.y + this.height >= canvas.height - 10) {
             this.yVel = -1;
         }
-        //check left canvas bounds
+        // If the ball goes past the left player
         if (this.x <= 0) {
             this.x = canvas.width / 2 - this.width / 2;
             Game.player2Score += 1;
         }
-        //check right canvas bounds
+        // If the ball goes past the right player
         if (this.x + this.width >= canvas.width) {
             this.x = canvas.width / 2 - this.width / 2;
             Game.player1Score += 1;
         }
-        //check player collision
+        // If the ball is hit by the left player
         if (this.x <= player1.x + player1.width) {
             if (this.y >= player1.y && this.y + this.height <= player1.y + player1.height) {
                 this.xVel = 1;
             }
         }
-        //check computer collision
+        // If the ball is hit by the right player
         if (this.x + this.width >= player2.x) {
             if (this.y >= player2.y && this.y + this.height <= player2.y + player2.height) {
                 this.xVel = -1;
@@ -173,11 +182,26 @@ var Ball = /** @class */ (function (_super) {
     return Ball;
 }(Shape));
 var game;
+var stateMachine;
+// Calculates the starting conditions and draws everything
 function setupGame() {
     game = new Game();
-}
-function startGame() {
+    stateMachine = GameStateMachine.STATE_GAME_SETUP;
     requestAnimationFrame(game.gameLoop);
+}
+// Starts the ball moving and allows the players to move
+function startGame() {
+    stateMachine = GameStateMachine.STATE_GAME_START;
+}
+function pauseGame() {
+    if (stateMachine != GameStateMachine.STATE_GAME_PAUSE) {
+        stateMachine = GameStateMachine.STATE_GAME_PAUSE;
+    }
+    else {
+        stateMachine = GameStateMachine.STATE_GAME_START;
+    }
 }
 window.setupGame = setupGame;
 window.startGame = startGame;
+window.pauseGame = pauseGame;
+//# sourceMappingURL=game.js.map
