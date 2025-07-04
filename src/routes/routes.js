@@ -1,46 +1,36 @@
-import { DB } from '../config/db.js';
-import { User } from '../config/User.js';
-
-export default async function routes(fastify) {
-	const db = new DB();
-	const user = new User(db.conn);
-	const contact = user.create({
-		nick: 'Jane',
-		email: 'jane.doe@example.com',
-	});
-	console.log(contact);
-
-	// Return all registered users from the db
-	fastify.get('/users', async (request, reply) => {
-		let internal = request.headers["internal"];
-		const users = db.conn.prepare("SELECT * FROM users").all();
-		var ttt = await reply.viewAsync("users", { title: "All users", users });
-		if (internal === "true") {
-			console.log("internal");
-			return ttt;
-		}
-		else {
-			console.log("external");
-			return reply.viewAsync("index", { title: "Homepage", ttt: false, content: ttt });
-		}
-	});
-
-	// Return one user
-	fastify.get('/users/:id', async (request, reply) => {
-		const { id } = request.params;
-		const user = db.conn.prepare("SELECT * FROM users WHERE id = ?").get(id);
-		if (!user) {
-			return reply.status(404).send({ error: "User not found" });
-		}
-
-		return reply.viewAsync("user", { title: user.nick, user });
-	});
-
-	fastify.get('/game', async (request, reply) => {
-		return reply.view("game", { title: "Pong" });
-	});
-
-	fastify.get('/', async (request, reply) => {
-		return reply.view("index", { title: "Homepage", ttt: false, content: "abc" });
-	});
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+function addWrapper(reply, input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let index = yield reply.viewAsync("frame");
+        let content = yield reply.viewAsync(input);
+        return index.replace("%%CONTENT%%", content);
+    });
+}
+export function defineRoutes(fastify) {
+    fastify.get('/game', (request, reply) => __awaiter(this, void 0, void 0, function* () {
+        if (!request.headers["referer"])
+            return addWrapper(reply, "game");
+        else
+            return reply.view("game");
+    }));
+    fastify.get('/tournament', (request, reply) => __awaiter(this, void 0, void 0, function* () {
+        if (!request.headers["referer"])
+            return addWrapper(reply, "tournament");
+        else
+            return reply.view("tournament");
+    }));
+    fastify.get('/', (request, reply) => __awaiter(this, void 0, void 0, function* () {
+        if (!request.headers["referer"])
+            return addWrapper(reply, "home");
+        else
+            return reply.view("home");
+    }));
 }

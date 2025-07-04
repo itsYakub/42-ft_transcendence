@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<script type="module" src="/static/js/index.js"></script>
+	<!-- <script type="module" src="/static/js/game.js"></script> -->
+	<!-- <link rel="stylesheet" type="text/css" href="/static/css/index.css" /> -->
+	<!-- <link rel="stylesheet" type="text/css" href="/static/css/game.css" /> -->
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+	<title>Transcendence</title>
+</head>
+
+<body class="h-screen">
+	<aside id="sidebar-multi-level-sidebar"
+		class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+		aria-label="Sidebar">
+		<div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+			<img class="w-full p-6 rounded-full" src="/static/images/profilePic.jpg" onclick="showProfile()" />
+			<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+			<ul class="space-y-2 font-medium">
+				<button onclick="navButtonClicked('/')" id="homeButton"
+					class="nav-button w-full text-left text-green-700 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group">Home
+				</button>
+				<li>
+					<button onclick="navButtonClicked('/game')" id="gameButton"
+						class="nav-button w-full text-left text-gray-500 flex items-center p-2  rounded-lg  hover:bg-gray-100 dark:hover:bg-gray-700 group">
+						Quick game
+					</button>
+				</li>
+				</li>
+				<li>
+					<button onclick="navButtonClicked('/tournament')" id="tournamentButton"
+						class="nav-button w-full text-left text-gray-500 flex items-center p-2  rounded-lg  hover:bg-gray-100 dark:hover:bg-gray-700 group">
+						Tournament
+					</button>
+				</li>
+			</ul>
+		</div>
+	</aside>
+
+	<div id="content" class="h-full p-0 sm:ml-64">%%CONTENT%%</div>
+
+</body>
+
+</html>

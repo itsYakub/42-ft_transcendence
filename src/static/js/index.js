@@ -1,79 +1,36 @@
-// Updates the history and grabs the view data
-const goToRoute = (url) => {
-	history.pushState(null, null, url);
-	router();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-
-const router = async () => {
-	console.log("Router");
-	const routes = [
-		{ path: "/", view: "/api/home" },
-		{ path: "/users", view: "/api/users" },
-		{ path: "/game", view: "/api/game" },
-	];
-
-	const matchedRoute = routes.map(route => {
-		return {
-			route: route,
-			isMatch: location.pathname === route.path
-		};
-	});
-
-	let selectedRoute = matchedRoute.find(match => match.isMatch);
-
-	if (!selectedRoute)
-		selectedRoute = {
-			route: routes[0],
-			isMatch: true
-		};
-
-	// Updates the HTML without re-loading the page
-	const url = selectedRoute.route.view;
-	const response = await fetch(url);
-	if (response.ok) {
-		const text = await response.text();
-		document.querySelector("#content").innerHTML = text;
-	}
+let buttonNames = new Map();
+buttonNames["/"] = "homeButton";
+buttonNames["/game"] = "gameButton";
+buttonNames["/tournament"] = "tournamentButton";
+function navButtonClicked(url) {
+    return __awaiter(this, void 0, void 0, function* () {
+        history.pushState(null, null, url);
+        const response = yield fetch(url, {
+            method: "GET"
+        });
+        if (response.ok) {
+            const text = yield response.text();
+            document.querySelector("#content").innerHTML = text;
+        }
+        const collection = document.getElementsByClassName("nav-button");
+        for (let i = 0; i < collection.length; i++) {
+            collection[i].classList.replace("text-green-700", "text-gray-500");
+        }
+        var element = document.getElementById(buttonNames[url]);
+        element.classList.replace("text-gray-500", "text-green-700");
+    });
 }
-
-async function navButtonClicked(url, id, params = {}) {
-	if (params.id)
-		url = url + "/" + params.id;
-	history.pushState(null, null, url);
-	const response = await fetch(url + "?id=" + params.id, {
-		method: "GET",
-		headers: {
-			"internal": true
-		},
-	});
-	if (response.ok) {
-		const text = await response.text();
-		document.querySelector("#content").innerHTML = text;
-	}
-
-	//goToRoute(url);
-	const collection = document.getElementsByClassName("text-green-700");
-	for (let i = 0; i < collection.length; i++) {
-		collection[i].classList.replace("text-green-700", "text-gray-500");
-	}
-	var element = document.getElementById(id);
-	element.classList.replace("text-gray-500", "text-green-700");
-};
-
-// Changes view on back/forward buttons
-//window.addEventListener("popstate", router);
+;
 window.addEventListener('popstate', function (event) {
-	console.log("changing");
+    navButtonClicked(window.location.pathname);
 });
-document.addEventListener("DOMContentLoaded", () => {
-	//router();
-	console.log("finished");
-});
-
-function showProfile() {
-
-}
-
-// Makes the function visible from the html file
-window.showProfile = showProfile;
 window.navButtonClicked = navButtonClicked;

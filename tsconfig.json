@@ -1,7 +1,13 @@
 {
-  "compilerOptions": {
-    "target": "ES5",
-    "module": "CommonJS",
-    "sourceMap": true
-  }
+	"compilerOptions": {
+		"target": "ES6",
+		"module": "ESNext",
+		"removeComments": true,
+		"moduleResolution": "node"
+	},
+	"files": [
+		"src/app.ts",
+		"src/static/js/index.ts",
+		"src/routes/routes.ts"
+	],
 }
