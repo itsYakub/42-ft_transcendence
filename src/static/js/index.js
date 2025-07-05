@@ -11,6 +11,7 @@ let buttonNames = new Map();
 buttonNames["/"] = "homeButton";
 buttonNames["/game"] = "gameButton";
 buttonNames["/tournament"] = "tournamentButton";
+buttonNames["/register"] = "registernpm startButton";
 function navButtonClicked(url) {
     return __awaiter(this, void 0, void 0, function* () {
         history.pushState(null, null, url);
@@ -26,11 +27,16 @@ function navButtonClicked(url) {
             collection[i].classList.replace("text-green-700", "text-gray-500");
         }
         var element = document.getElementById(buttonNames[url]);
-        element.classList.replace("text-gray-500", "text-green-700");
+        if (element)
+            element.classList.replace("text-gray-500", "text-green-700");
     });
 }
 ;
+function profileClicked() {
+    navButtonClicked("register");
+}
 window.addEventListener('popstate', function (event) {
     navButtonClicked(window.location.pathname);
 });
+window.profileClicked = profileClicked;
 window.navButtonClicked = navButtonClicked;

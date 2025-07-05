@@ -4,10 +4,5 @@
 		"module": "ESNext",
 		"removeComments": true,
 		"moduleResolution": "node"
-	},
-	"files": [
-		"src/app.ts",
-		"src/static/js/index.ts",
-		"src/routes/routes.ts"
-	],
+	}
 }

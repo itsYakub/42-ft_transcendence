@@ -3,6 +3,7 @@ let buttonNames = new Map<string, string>();
 buttonNames["/"] = "homeButton";
 buttonNames["/game"] = "gameButton";
 buttonNames["/tournament"] = "tournamentButton";
+buttonNames["/register"] = "registerButton";
 
 async function navButtonClicked(url: string): Promise<void> {
 	history.pushState(null, null, url);
@@ -26,12 +27,19 @@ async function navButtonClicked(url: string): Promise<void> {
 
 	// Makes this nav-button's text colour green
 	var element = document.getElementById(buttonNames[url]);
-	element.classList.replace("text-gray-500", "text-green-700");
+	if (element)
+		element.classList.replace("text-gray-500", "text-green-700");
 };
+
+function profileClicked() {
+	// if logged in... else
+	navButtonClicked("register");
+}
 
 // Changes view on back/forward buttons
 window.addEventListener('popstate', function (event) {
 	navButtonClicked(window.location.pathname);
 });
 
+window.profileClicked = profileClicked;
 window.navButtonClicked = navButtonClicked;

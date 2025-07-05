@@ -1,8 +1,11 @@
 import Fastify from "fastify";
 import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
-import { defineRoutes } from "./routes/routes.js";
 import ejs from "ejs";
+import { DatabaseSync } from 'node:sqlite';
+import { GameRouter } from "./routers/GameRouter.js";
+import { NavRouter } from "./routers/NavRouter.js";
+import { UserRouter } from "./routers/UserRouter.js";
 
 const __dirname = import.meta.dirname;
 
@@ -25,8 +28,13 @@ fastify.register(fastifyStatic, {
 	prefix: "/static/",
 });
 
+// Creates the database. Probably have to put this in the .env file later
+const db = new DatabaseSync("./transcendence.db");
+
 // Adds all the possible routes
-defineRoutes(fastify);
+new GameRouter(fastify, db).registerRoutes();
+new NavRouter(fastify).registerRoutes();
+new UserRouter(fastify, db).registerRoutes();
 
 // Start listening
 fastify.listen({ port: 3000 }, (err, address) => {
@@ -36,3 +44,16 @@ fastify.listen({ port: 3000 }, (err, address) => {
 		process.exit(1);
 	}
 });
+
+// import fastifyFormbody from "@fastify/formbody";
+// import fastifyCors from "@fastify/cors";
+// import fastifyHelmet from "@fastify/helmet";
+// import fastifyCompress from "@fastify/compress";
+// import fastifyGracefulShutdown from "fastify-graceful-shutdown";
+
+// Other recommended plugins
+// await fastify.register(fastifyCors);
+// await fastify.register(fastifyHelmet);
+// await fastify.register(fastifyCompress);
+// await fastify.register(fastifyGracefulShutdown);
+// await fastify.register(fastifyFormbody);
