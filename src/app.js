@@ -3,10 +3,11 @@ import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
 import ejs from "ejs";
 import { DatabaseSync } from 'node:sqlite';
-import { GameRouter } from "./routers/GameRouter.js";
-import { NavRouter } from "./routers/NavRouter.js";
-import { UserRouter } from "./routers/UserRouter.js";
+import { GameRouter } from "./backend/game/GameRouter.js";
+import { NavRouter } from "./backend/navigation/NavRouter.js";
+import { UserRouter } from "./backend/auth/UserRouter.js";
 const __dirname = import.meta.dirname;
+console.log();
 const fastify = Fastify({
     ignoreTrailingSlash: true
 });
@@ -14,18 +15,17 @@ fastify.register(fastifyView, {
     engine: {
         ejs,
     },
-    root: __dirname + "/views",
+    root: __dirname + "/frontend/views",
     viewExt: "html",
 });
 fastify.register(fastifyStatic, {
-    root: __dirname + "/static",
-    prefix: "/static/",
+    root: __dirname + "/frontend/public"
 });
-const db = new DatabaseSync("./transcendence.db");
+const db = new DatabaseSync(process.env.DB);
 new GameRouter(fastify, db).registerRoutes();
 new NavRouter(fastify).registerRoutes();
 new UserRouter(fastify, db).registerRoutes();
-fastify.listen({ port: 3000 }, (err, address) => {
+fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
     if (err) {
         console.log(err);
         fastify.log.error(err);

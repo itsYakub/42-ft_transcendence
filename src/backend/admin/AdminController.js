@@ -1,4 +1,4 @@
-export class UserController {
+export class AdminController {
     constructor(db) {
         this.db = db;
         this.setup();

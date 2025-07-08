@@ -1,7 +1,7 @@
-import { Router } from './Router.js'
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { Router } from '../navigation/Router.js'
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { DatabaseSync } from 'node:sqlite';
-import { GameController } from "../controllers/GameController.js";
+import { GameController } from "./GameController.js";
 
 export class GameRouter extends Router {
 	private controller: GameController;

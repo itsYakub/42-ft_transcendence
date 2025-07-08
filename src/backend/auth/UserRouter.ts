@@ -1,7 +1,7 @@
-import { Router } from './Router.js'
+import { Router } from '../navigation/Router.js'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from 'node:sqlite';
-import { UserController } from "../controllers/UserController.js";
+import { UserController } from "./UserController.js";
 
 export class UserRouter extends Router {
 	private controller: UserController;
@@ -17,6 +17,16 @@ export class UserRouter extends Router {
 				return this.addFrame(reply, "register");
 			else
 				return reply.view("register");
+		});
+		this.fastify.get('/login', async (request: FastifyRequest, reply: FastifyReply) => {
+			if (!request.headers["referer"])
+				return this.addFrame(reply, "login");
+			else
+				return reply.view("login");
+		});
+
+		this.fastify.post("/register", async (request: FastifyRequest, reply: FastifyReply) => {
+			this.controller.addUser(JSON.parse(request.body as string))
 		});
 		console.log("Registered profile routes");
 	}

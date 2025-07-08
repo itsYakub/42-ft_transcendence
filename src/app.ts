@@ -3,11 +3,13 @@ import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
 import ejs from "ejs";
 import { DatabaseSync } from 'node:sqlite';
-import { GameRouter } from "./routers/GameRouter.js";
-import { NavRouter } from "./routers/NavRouter.js";
-import { UserRouter } from "./routers/UserRouter.js";
+import { GameRouter } from "./backend/game/GameRouter.js";
+import { NavRouter } from "./backend/navigation/NavRouter.js";
+import { UserRouter } from "./backend/auth/UserRouter.js";
 
 const __dirname = import.meta.dirname;
+
+console.log();
 
 const fastify = Fastify({
 	ignoreTrailingSlash: true
@@ -18,18 +20,18 @@ fastify.register(fastifyView, {
 	engine: {
 		ejs,
 	},
-	root: __dirname + "/views",
+	root: __dirname + "/frontend/views",
 	viewExt: "html",
 });
 
 // Has all the static files (css, js, etc.)
 fastify.register(fastifyStatic, {
-	root: __dirname + "/static",
-	prefix: "/static/",
+	root: __dirname + "/frontend/public"
 });
 
+
 // Creates the database. Probably have to put this in the .env file later
-const db = new DatabaseSync("./transcendence.db");
+const db = new DatabaseSync(process.env.DB);
 
 // Adds all the possible routes
 new GameRouter(fastify, db).registerRoutes();
@@ -37,7 +39,7 @@ new NavRouter(fastify).registerRoutes();
 new UserRouter(fastify, db).registerRoutes();
 
 // Start listening
-fastify.listen({ port: 3000 }, (err, address) => {
+fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
 	if (err) {
 		console.log(err);
 		fastify.log.error(err);
@@ -45,7 +47,6 @@ fastify.listen({ port: 3000 }, (err, address) => {
 	}
 });
 
-// import fastifyFormbody from "@fastify/formbody";
 // import fastifyCors from "@fastify/cors";
 // import fastifyHelmet from "@fastify/helmet";
 // import fastifyCompress from "@fastify/compress";
@@ -56,4 +57,3 @@ fastify.listen({ port: 3000 }, (err, address) => {
 // await fastify.register(fastifyHelmet);
 // await fastify.register(fastifyCompress);
 // await fastify.register(fastifyGracefulShutdown);
-// await fastify.register(fastifyFormbody);
