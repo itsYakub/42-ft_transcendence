@@ -1,4 +1,4 @@
-import { Router } from '../navigation/Router.js';
+import { Router } from '../common/Router.js';
 import { UserController } from "./UserController.js";
 export class UserRouter extends Router {
     constructor(fastify, db) {
@@ -19,7 +19,12 @@ export class UserRouter extends Router {
                 return reply.view("login");
         });
         this.fastify.post("/register", async (request, reply) => {
-            this.controller.addUser(JSON.parse(request.body));
+            const jwt = this.controller.addUser(JSON.parse(request.body));
+            return reply.send(jwt);
+        });
+        this.fastify.get("/user", async (request, reply) => {
+            const user = this.controller.getUser(request.cookies.jwt);
+            return reply.send(user);
         });
         console.log("Registered profile routes");
     }

@@ -9,10 +9,6 @@ export class User {
 
 	constructor(params: Partial<User> = {}) {
 		Object.assign(this, params);
-		// 		let { nick, email, password } = params;
-		// this.nick = nick;
-		// this.email = email;
-		// this.password = password;
 	}
 
 	getID(): number {

@@ -1,4 +1,4 @@
-import { Router } from './Router.js'
+import { Router } from '../common/Router.js'
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 export class NavRouter extends Router {

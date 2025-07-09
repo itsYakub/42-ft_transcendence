@@ -1,3 +1,5 @@
+import { navigate } from "./index.js";
+
 export function setupRegisterForm() {
 	const form = <HTMLFormElement>document.getElementById("registerForm");
 	form.addEventListener("submit", async (e) => {
@@ -13,12 +15,15 @@ export function setupRegisterForm() {
 			})
 		});
 
-		// const response = await fetch("/register", {
-		// 	method: "POST",
-		// 	body: JSON.stringify({
-		// 		nick, email, password
-		// 	})
-		// });
-		// check response for error messages and update ui!
+		const payload = await response.json();
+		if (payload.error) {
+			alert(payload.message);
+			return;
+		}
+		var date = new Date();
+		date.setDate(date.getDate() + 3);
+		document.cookie = `jwt=${payload.jwt}; expires=${date}`;		
+		document.dispatchEvent(new Event("login"));
+		navigate("/");
 	});
 }

@@ -1,8 +1,5 @@
-export class GameController {
-    constructor(db) {
-        this.db = db;
-        this.setup();
-    }
+import { Controller } from '../common/Controller.js';
+export class GameController extends Controller {
     setup() {
         this.db.exec(`DROP TABLE IF EXISTS Matches;`);
         this.db.exec(`

@@ -1,20 +1,17 @@
-import { DatabaseSync } from 'node:sqlite';
-import { User } from "./UserModel.js";
-import { createJWT } from "./jwt.js"
+import { Controller } from '../common/Controller.js'
+import { User } from "./User.js";
+import { createJWT } from "../common/jwt.js"
 
-export class UserController {
-	constructor(private db: DatabaseSync) {
-		this.setup();
-	}
-
+export class UserController extends Controller {
 	setup(): void {
-		this.db.exec(`DROP TABLE IF EXISTS Users;`);
+		//this.db.exec(`DROP TABLE IF EXISTS Users;`);
 
 		this.db.exec(`
     CREATE TABLE IF NOT EXISTS Users (
       UserID INTEGER PRIMARY KEY AUTOINCREMENT,
       Nick TEXT UNIQUE NOT NULL,
       Email TEXT UNIQUE NOT NULL,
+	  ProfilePic TEXT,
       Password TEXT NOT NULL,
 	  Role TEXT NOT NULL
     );
@@ -22,23 +19,31 @@ export class UserController {
 		console.log("Set up user db");
 	}
 
-	addUser(json): boolean {
+	addUser(json) {
 		let user = new User(json);
 		user.hashPassword();
 
 		try {
 			const insert = this.db.prepare('INSERT INTO Users (Nick, Email, Password, Role) VALUES (?, ?, ?, ?)');
-			const ttt = insert.run(user.getNick(), user.getEmail(), user.getPassword(), user.getRole());	
-			user.setID(ttt.lastInsertRowid as number);	
+			const statementSync = insert.run(user.getNick(), user.getEmail(), user.getPassword(), user.getRole());
+			user.setID(statementSync.lastInsertRowid as number);
 			const jwt = createJWT(user);
-			console.log(jwt);
-			return true;
+			return {
+				"error": false,
+				"jwt": jwt
+			};
 		}
 		catch (e) {
 			if ("constraint failed" == e.errstr) {
-
+				return {
+					"error": true,
+					"message": "Either the nickname or the email is already taken!"
+				}
 			}
-			return false;
+			return {
+				"error": true,
+				"message": "SQL error!"
+			};
 		}
 	}
 }

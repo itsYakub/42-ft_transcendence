@@ -1,4 +1,4 @@
-import { Router } from './Router.js';
+import { Router } from '../common/Router.js';
 export class NavRouter extends Router {
     registerRoutes() {
         this.fastify.get('/', async (request, reply) => {

@@ -1,4 +1,4 @@
-import { Router } from '../navigation/Router.js'
+import { Router } from '../common/Router.js'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from 'node:sqlite';
 import { UserController } from "./UserController.js";
@@ -26,34 +26,14 @@ export class UserRouter extends Router {
 		});
 
 		this.fastify.post("/register", async (request: FastifyRequest, reply: FastifyReply) => {
-			this.controller.addUser(JSON.parse(request.body as string))
+			const jwt = this.controller.addUser(JSON.parse(request.body as string));
+			return reply.send(jwt);
+		});
+
+		this.fastify.get("/user", async (request: FastifyRequest, reply: FastifyReply) => {
+			const user = this.controller.getUser(request.cookies.jwt);
+			return reply.send(user);
 		});
 		console.log("Registered profile routes");
 	}
 }
-
-// 	// Return all registered users from the db
-// 	// fastify.get('/users', async (request, reply) => {
-// 	// 	let internal = request.headers["internal"];
-// 	// 	const users = db.conn.prepare("SELECT * FROM users").all();
-// 	// 	var ttt = await reply.viewAsync("users", { title: "All users", users });
-// 	// 	if (internal === "true") {
-// 	// 		console.log("internal");
-// 	// 		return ttt;
-// 	// 	}
-// 	// 	else {
-// 	// 		console.log("external");
-// 	// 		return reply.viewAsync("index", { title: "Homepage", ttt: false, content: ttt });
-// 	// 	}
-// 	// });
-
-// 	// // Return one user
-// 	// fastify.get('/users/:id', async (request, reply) => {
-// 	// 	const { id } = request.params;
-// 	// 	const user = db.conn.prepare("SELECT * FROM users WHERE id = ?").get(id);
-// 	// 	if (!user) {
-// 	// 		return reply.status(404).send({ error: "User not found" });
-// 	// 	}
-
-// 	// 	return reply.viewAsync("user", { title: user.nick, user });
-// 	// });

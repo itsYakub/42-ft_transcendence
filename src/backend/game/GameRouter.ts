@@ -1,4 +1,4 @@
-import { Router } from '../navigation/Router.js'
+import { Router } from '../common/Router.js'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { DatabaseSync } from 'node:sqlite';
 import { GameController } from "./GameController.js";

@@ -1,4 +1,4 @@
-import { Router } from '../navigation/Router.js';
+import { Router } from '../common/Router.js';
 import { GameController } from "./GameController.js";
 export class GameRouter extends Router {
     constructor(fastify, db) {
