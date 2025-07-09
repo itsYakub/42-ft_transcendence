@@ -62,10 +62,12 @@ Game.player1Score = 0;
 Game.player2Score = 0;
 var game;
 var stateMachine;
+var running = false;
 function setupGame() {
     game = new Game();
     stateMachine = GameStateMachine.STATE_GAME_SETUP;
     requestAnimationFrame(game.gameLoop);
+    running = true;
 }
 function playGame() {
     stateMachine = GameStateMachine.STATE_GAME_START;

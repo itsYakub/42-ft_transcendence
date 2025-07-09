@@ -4,7 +4,7 @@ import { Paddle } from "./paddle.js";
 
 export class Ball extends Shape {
 
-	private speed: number = 2.0;
+	private speed : number = 2.0;
 
 	constructor(x: number, y: number, w: number, h: number) {
 		super(x, y, w, h);
@@ -40,6 +40,8 @@ export class Ball extends Shape {
 
 		/* clamping the ball's speed to the maximum value (in this case: 16.0) (let the hell go loose) */
 		this.speed = this.speed > 16.0 ? 16.0 : this.speed;
+		this.xprev = this.x;
+		this.yprev = this.y;
 		this.x += this.xVel * this.speed;
 		this.y += this.yVel * this.speed;
 	}
@@ -83,6 +85,19 @@ export class Ball extends Shape {
 				(this.y >= player1.y && this.y + this.height <= player1.y + player1.height) ||
 				(this.y >= player2.y && this.y + this.height <= player2.y + player2.height)
 			) {
+				/* TODO(joleksia):
+				 *  Every time the ball bounces with the paddle, check if it's position is inside the paddle or not.
+				 *  If so, we need to, with the help of the loop, move it outside the paddle, and then we can proceed.
+				 *  Pseudocode:
+				 *  if ball position is in paddle {
+				 *		for current ball position is above the previous position of the ball {
+				 *			move the ball closer to the previous position
+				 *			if the ball is outside the paddle {
+				 *				break from the loop
+				 *			}
+				 *		}
+				 *	}
+				 * */
 				this.xVel *= -1.0;
 			}
 			this.speed += 0.4;

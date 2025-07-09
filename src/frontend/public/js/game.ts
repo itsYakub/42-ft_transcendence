@@ -9,15 +9,15 @@ enum GameStateMachine {
 }
 
 export class Game {
-	private	m_gameCanvas: HTMLCanvasElement;
-	private	m_gameContext: CanvasRenderingContext2D;
-	private	m_player1: Paddle;
-	private	m_player2: Paddle;
-	private	m_ball: Ball;
+	private	m_gameCanvas : HTMLCanvasElement;
+	private	m_gameContext : CanvasRenderingContext2D;
+	private	m_player1 : Paddle;
+	private	m_player2 : Paddle;
+	private	m_ball : Ball;
 	
-	public static	keysPressed: boolean[] = [];
-	public static	player1Score: number = 0;
-	public static	player2Score: number = 0;
+	public static	keysPressed : boolean[] = [];
+	public static	player1Score : number = 0;
+	public static	player2Score : number = 0;
 
 	constructor() {
 		this.m_gameCanvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
@@ -89,11 +89,13 @@ export class Game {
 
 var game: Game;
 var stateMachine : GameStateMachine;
+var	running : boolean = false;
 
 function setupGame() {
 	game = new Game();
 	stateMachine = GameStateMachine.STATE_GAME_SETUP;
 	requestAnimationFrame(game.gameLoop);
+	running = true;
 }
 
 function playGame() {

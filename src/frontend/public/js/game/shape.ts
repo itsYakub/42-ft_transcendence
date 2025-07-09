@@ -1,16 +1,18 @@
 // The parent class for paddles (players) and the ball
 export abstract class Shape {
-	width: number;
-	height: number;
-	x: number;
-	y: number;
-	xVel: number = 0;
-	yVel: number = 0;
+	width : number;
+	height : number;
+	x : number;
+	xprev : number;
+	y : number;
+	yprev : number;
+	xVel : number = 0;
+	yVel : number = 0;
 	constructor(x: number, y: number, w: number, h: number) {
 		this.width = w;
 		this.height = h;
-		this.x = x;
-		this.y = y;
+		this.x = this.xprev = x;
+		this.y = this.yprev = y;
 	}
 	abstract draw(context: CanvasRenderingContext2D) : void;
 

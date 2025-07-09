@@ -2,10 +2,10 @@ import { Game } from "./../game.js"
 import { Shape } from "./shape.js";
 
 export class Paddle extends Shape {
-	private speed: number = 10.0;
-	private upKey: string;
-	private downKey: string;
-	private colour: string;
+	private speed : number = 10.0;
+	private upKey : string;
+	private downKey : string;
+	private colour : string;
 
 	constructor(x: number, y: number, w: number, h: number, upKey: string, downKey: string, colour: string) {
 		super(x, y, w, h);
