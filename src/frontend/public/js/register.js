@@ -17,10 +17,7 @@ export function setupRegisterForm() {
             alert(payload.message);
             return;
         }
-        var date = new Date();
-        date.setDate(date.getDate() + 3);
-        document.cookie = `jwt=${payload.jwt}; expires=${date}`;
         document.dispatchEvent(new Event("login"));
-        navigate("/");
+        navigate("/", { "nick": payload.nick, "avatar": payload.avatar });
     });
 }

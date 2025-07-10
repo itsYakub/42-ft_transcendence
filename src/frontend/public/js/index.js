@@ -1,17 +1,24 @@
+import { setupLoginForm } from "./login.js";
 import { setupRegisterForm } from "./register.js";
 let buttonNames = new Map();
 buttonNames["/"] = "homeButton";
 buttonNames["/game"] = "gameButton";
 buttonNames["/tournament"] = "tournamentButton";
 buttonNames["/login"] = "loginButton";
-export async function navigate(url) {
+export async function navigate(url, user = {}) {
     history.pushState(null, null, url);
     const response = await fetch(url, {
         method: "GET"
     });
     if (response.ok) {
         const text = await response.text();
+        console.log(response);
         document.querySelector("#content").innerHTML = text;
+        if ("/" == url && 0 != Object.keys(user).length) {
+            document.getElementById("profileNick").innerText = user.nick;
+            const img = document.getElementById("profileAvatar");
+            img.src = `images/${user.avatar}`;
+        }
     }
 }
 function changeButtonColours(url = "") {
@@ -23,33 +30,48 @@ function changeButtonColours(url = "") {
     if (element)
         element.classList.replace("bg-transparent", "bg-gray-900");
 }
-function navButtonClicked(url) {
-    navigate(url);
-    changeButtonColours(url);
+function resetRegisterButton() {
     var element = document.getElementById("registerButton");
     if (element)
         element.classList.replace("bg-gray-900", "bg-yellow-600");
+}
+function navButtonClicked(url) {
+    navigate(url);
+    changeButtonColours(url);
+    resetRegisterButton();
 }
 ;
 document.getElementById("homeButton").addEventListener("click", () => {
     navButtonClicked("/");
 });
-document.getElementById("gameButton").addEventListener("click", () => {
-    getUser();
+document.getElementById("gameButton").addEventListener("click", async () => {
+    navButtonClicked("/game");
 });
 document.getElementById("tournamentButton").addEventListener("click", () => {
     navButtonClicked("/tournament");
 });
-document.getElementById("registerButton").addEventListener("click", async () => {
+document.getElementById("profileAvatar").addEventListener("click", async () => {
+    await navigate("/profile");
+    changeButtonColours();
+});
+document.getElementById("registerButton").addEventListener("click", async function (e) {
     await navigate("/register");
     changeButtonColours();
-    var element = document.getElementById("registerButton");
-    if (element)
-        element.classList.replace("bg-yellow-600", "bg-gray-900");
+    this.classList.replace("bg-yellow-600", "bg-gray-900");
     setupRegisterForm();
+});
+document.getElementById("loginButton").addEventListener("click", async function (e) {
+    await navigate("/login");
+    changeButtonColours();
+    resetRegisterButton();
+    this.classList.replace("bg-transparent", "bg-gray-900");
+    setupLoginForm();
 });
 document.getElementById("logoutButton").addEventListener("click", async () => {
     document.dispatchEvent(new Event("logout"));
+    var t = new Date();
+    t.setSeconds(t.getSeconds() + 10);
+    document.cookie = `jwt=blank; expires=${t}`;
 });
 async function getUser() {
     let jwt;
@@ -63,8 +85,8 @@ async function getUser() {
         console.log(json);
         document.dispatchEvent(new Event("login"));
         document.getElementById("profileNick").innerText = json.nick;
-        const img = document.getElementById("profilePic");
-        img.src = `images/${json.profilePic}`;
+        const img = document.getElementById("profileAvatar");
+        img.src = `images/${json.avatar}`;
     }
     else {
         document.dispatchEvent(new Event("logout"));
@@ -84,7 +106,8 @@ document.addEventListener("logout", (e) => {
     loginSection.classList.replace("collapse", "visible");
     const logoutSection = document.getElementById("logout");
     logoutSection.classList.replace("visible", "collapse");
-    document.getElementById("profileNick").innerText = "";
-    const img = document.getElementById("profilePic");
-    img.src = "images/profilePic.jpg";
+    document.getElementById("profileNick").innerText = "Guest";
+    const img = document.getElementById("profileAvatar");
+    img.src = "images/avatar.jpg";
+    navigate("/");
 });

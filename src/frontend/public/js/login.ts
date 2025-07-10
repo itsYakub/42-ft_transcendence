@@ -1,17 +1,16 @@
 import { navigate } from "./index.js";
 
-export function setupRegisterForm() {
-	const form = <HTMLFormElement>document.getElementById("registerForm");
+export function setupLoginForm() {
+	const form = <HTMLFormElement>document.getElementById("loginForm");
 	form.addEventListener("submit", async (e) => {
 		e.preventDefault();
-		const nick = form.nick.value;
 		const email = form.email.value;
 		const password = form.password.value;
 
-		const response = await fetch("/register", {
+		const response = await fetch("/login", {
 			method: "POST",
 			body: JSON.stringify({
-				nick, email, password
+				email, password
 			})
 		});
 

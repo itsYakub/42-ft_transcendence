@@ -1,5 +1,5 @@
 import { createHmac } from 'crypto';
-import { User } from '../auth/User';
+import { User } from '../user/User';
 
 function createHMAC(message: string, secret: string) {
 	return createHmac('sha256', secret)
@@ -20,7 +20,7 @@ function replaceChars(input: string) {
 	});
 };
 
-export function createJWT(user: User): string {
+export function createJWT(id: number): string {
 	let header = JSON.stringify(
 		{
 			"typ": "JWT",
@@ -30,9 +30,7 @@ export function createJWT(user: User): string {
 	date.setDate(date.getDate() + 3);
 	let payload = JSON.stringify(
 		{
-			"sub": user.getID(),
-			"name": user.getNick(),
-			"role": user.getRole(),
+			"sub": id,
 			"exp": date
 		});
 	header = replaceChars(header);

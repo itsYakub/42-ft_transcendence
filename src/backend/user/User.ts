@@ -5,6 +5,7 @@ export class User {
 	private email: string;
 	private password: string;
 	private nick: string;
+	private avatar: string = "engineer.jpg";
 	private role: string = "USER";
 
 	constructor(params: Partial<User> = {}) {
@@ -17,6 +18,10 @@ export class User {
 
 	getEmail(): string {
 		return this.email;
+	}
+
+	getAvatar(): string {
+		return this.avatar;
 	}
 
 	getPassword(): string {

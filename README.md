@@ -5,3 +5,4 @@ TODO:
 - handle params in history?
 - remove templating plugin?
 - sanitise git repo
+- manipulate avatar uploads

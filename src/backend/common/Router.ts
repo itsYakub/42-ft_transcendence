@@ -4,8 +4,12 @@ export abstract class Router {
 	constructor(protected fastify: FastifyInstance) { }
 
 	// Adds the frame around the "page"
-	protected async addFrame(reply: FastifyReply, input: string) {
-		let index = await reply.viewAsync("frame");
+	protected async addFrame(reply: FastifyReply, input: string, user: any) {
+		if (user.error) {
+			user.nick = "Guest";
+			user.avatar = "avatar.jpg"
+		};
+		let index = await reply.viewAsync("frame", { user });
 		let content = await reply.viewAsync(input);
 		return index.replace("%%CONTENT%%", content);
 	}
