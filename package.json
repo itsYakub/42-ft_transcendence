@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "tsc && node --watch --env-file=.env src/app.js"
+    "start": "tsc && node --env-file=.env src/app.js"
   },
   "keywords": [],
   "author": "lwillis",
@@ -17,6 +17,7 @@
     "bcrypt-ts": "^7.1.0",
     "ejs": "^3.1.10",
     "fastify": "^5.4.0",
+    "fastify-cookie": "^5.6.1",
     "fastify-plugin": "^5.0.1",
     "sqlite3": "^5.1.7",
     "tailwindcss": "^4.1.10"

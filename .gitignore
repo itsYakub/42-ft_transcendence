@@ -129,17 +129,13 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-<<<<<<< HEAD
 # editor files
 .vscode/
 *.swp
 *.swo
 
-# database file
-*.db
-
-# map file
+# javascript
 *.js.map
-=======
+*.js
+
 db.AppImage
->>>>>>> origin/luke

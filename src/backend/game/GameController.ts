@@ -1,9 +1,6 @@
-import { DatabaseSync } from 'node:sqlite';
+import { Controller } from '../common/Controller.js';
 
-export class GameController {
-	constructor(private db: DatabaseSync) {
-		this.setup();
-	}
+export class GameController extends Controller {
 
 	setup(): void {
 		this.db.exec(`DROP TABLE IF EXISTS Matches;`);
