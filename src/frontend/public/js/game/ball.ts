@@ -1,4 +1,6 @@
 import { Game } from "./../game.js";
+import { GameStateMachine } from "./../game.js"
+import { stateMachine } from "./../game.js"
 import { Shape } from "./shape.js";
 import { Paddle } from "./paddle.js";
 
@@ -24,27 +26,29 @@ export class Ball extends Shape {
 	}
 
 	update(player1: Paddle, player2: Paddle, canvas: HTMLCanvasElement) {
-		this.collisionDetection(player1, player2, canvas);
+		if (stateMachine == GameStateMachine.STATE_GAME_START) {
+			this.collisionDetection(player1, player2, canvas);
 
-		// If the ball goes past the left player
-		if (this.x <= 0.0) {
-			Game.player2Score += 1.0;
-			this.restart(canvas);
+			// If the ball goes past the left player
+			if (this.x <= 0.0) {
+				Game.player2Score += 1.0;
+				this.restart(canvas);
+			}
+
+			// If the ball goes past the right player
+			if (this.x + this.width >= canvas.width) {
+				Game.player1Score += 1.0;
+				this.restart(canvas);
+			}
+
+			/* clamping the ball's speed to the maximum value (in this case: 16.0) (let the hell go loose)
+			* */
+			this.speed = this.speed > 16.0 ? 16.0 : this.speed;
+			this.xPrev = this.x;
+			this.yPrev = this.y;
+			this.x += this.xVel * this.speed;
+			this.y += this.yVel * this.speed;
 		}
-
-		// If the ball goes past the right player
-		if (this.x + this.width >= canvas.width) {
-			Game.player1Score += 1.0;
-			this.restart(canvas);
-		}
-
-		/* clamping the ball's speed to the maximum value (in this case: 16.0) (let the hell go loose)
-		* */
-		this.speed = this.speed > 16.0 ? 16.0 : this.speed;
-		this.xprev = this.x;
-		this.yprev = this.y;
-		this.x += this.xVel * this.speed;
-		this.y += this.yVel * this.speed;
 	}
 
 	private	randomDirection() {

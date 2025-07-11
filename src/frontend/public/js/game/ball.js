@@ -1,4 +1,6 @@
 import { Game } from "./../game.js";
+import { GameStateMachine } from "./../game.js";
+import { stateMachine } from "./../game.js";
 import { Shape } from "./shape.js";
 export class Ball extends Shape {
     constructor(x, y, w, h) {
@@ -17,20 +19,22 @@ export class Ball extends Shape {
         context.fillRect(this.x, this.y, this.width, this.height);
     }
     update(player1, player2, canvas) {
-        this.collisionDetection(player1, player2, canvas);
-        if (this.x <= 0.0) {
-            Game.player2Score += 1.0;
-            this.restart(canvas);
+        if (stateMachine == GameStateMachine.STATE_GAME_START) {
+            this.collisionDetection(player1, player2, canvas);
+            if (this.x <= 0.0) {
+                Game.player2Score += 1.0;
+                this.restart(canvas);
+            }
+            if (this.x + this.width >= canvas.width) {
+                Game.player1Score += 1.0;
+                this.restart(canvas);
+            }
+            this.speed = this.speed > 16.0 ? 16.0 : this.speed;
+            this.xPrev = this.x;
+            this.yPrev = this.y;
+            this.x += this.xVel * this.speed;
+            this.y += this.yVel * this.speed;
         }
-        if (this.x + this.width >= canvas.width) {
-            Game.player1Score += 1.0;
-            this.restart(canvas);
-        }
-        this.speed = this.speed > 16.0 ? 16.0 : this.speed;
-        this.xprev = this.x;
-        this.yprev = this.y;
-        this.x += this.xVel * this.speed;
-        this.y += this.yVel * this.speed;
     }
     randomDirection() {
         var randomDirection;

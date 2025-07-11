@@ -1,7 +1,7 @@
 import { Paddle } from "./game/paddle.js";
 import { PaddleType } from "./game/paddle.js";
 import { Ball } from "./game/ball.js";
-var GameStateMachine;
+export var GameStateMachine;
 (function (GameStateMachine) {
     GameStateMachine[GameStateMachine["STATE_GAME_SETUP"] = 0] = "STATE_GAME_SETUP";
     GameStateMachine[GameStateMachine["STATE_GAME_START"] = 1] = "STATE_GAME_START";
@@ -23,7 +23,7 @@ export class Game {
         var paddleHeight = 128;
         var ballSize = 20;
         var wallOffset = 24;
-        this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#fa2222", PaddleType.PADDLE_PLAYER);
+        this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#fa2222", PaddleType.PADDLE_AI);
         this.m_player2 = new Paddle(this.m_gameCanvas.width - (wallOffset + paddleWidth), this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#22fa22", PaddleType.PADDLE_AI);
         this.m_ball = new Ball(this.m_gameCanvas.width / 2 - ballSize / 2, this.m_gameCanvas.height / 2 - ballSize / 2, ballSize, ballSize);
         this.draw();
@@ -62,7 +62,7 @@ Game.keysPressed = [];
 Game.player1Score = 0;
 Game.player2Score = 0;
 var game;
-var stateMachine;
+export var stateMachine;
 function setupGame() {
     game = new Game();
     stateMachine = GameStateMachine.STATE_GAME_SETUP;

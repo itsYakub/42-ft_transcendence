@@ -3,16 +3,18 @@ export abstract class Shape {
 	width : number;
 	height : number;
 	x : number;
-	xprev : number;
+	xPrev : number;
 	y : number;
-	yprev : number;
+	yPrev : number;
 	xVel : number = 0;
 	yVel : number = 0;
 	constructor(x: number, y: number, w: number, h: number) {
 		this.width = w;
 		this.height = h;
-		this.x = this.xprev = x;
-		this.y = this.yprev = y;
+		this.x = this.xPrev = x;
+		this.y = this.yPrev = y;
+
+		console.log("[ SHAPE ] Created successfully | x." + this.x + ", y." + this.y + " | w." + this.width + ", h." + this.height);
 	}
 	abstract draw(context: CanvasRenderingContext2D) : void;
 

@@ -3,7 +3,7 @@ import { Paddle } from "./game/paddle.js";
 import { PaddleType } from "./game/paddle.js";
 import { Ball } from "./game/ball.js";
 
-enum GameStateMachine {
+export enum GameStateMachine {
 	STATE_GAME_SETUP,
 	STATE_GAME_START,
 	STATE_GAME_PAUSE
@@ -45,7 +45,7 @@ export class Game {
 			wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2,
 			paddleWidth, paddleHeight,
 			"w", "s", "#fa2222",
-			PaddleType.PADDLE_PLAYER
+			PaddleType.PADDLE_AI
 		);
 		
 		this.m_player2 = new Paddle(
@@ -102,7 +102,7 @@ export class Game {
 }
 
 var game: Game;
-var stateMachine : GameStateMachine;
+export var stateMachine : GameStateMachine;
 
 function setupGame() {
 	game = new Game();
