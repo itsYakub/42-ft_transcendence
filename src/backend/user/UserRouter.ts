@@ -38,17 +38,25 @@ export class UserRouter extends Router {
 
 		this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
 			let user = this.controller.getFullUser(request.cookies.jwt);
-			let dest = user.error ? "home" : "profile";
+			let dest = user.error ? "login" : "profile";
 			if (!request.headers["referer"]) {
 				if (user.error)
 					return reply.redirect("/");
 				return this.addFrame(reply, dest, user);
 			}
 			else
-				return reply.view("profile", { user });
+				return reply.view(dest, { user });
 		});
 
-
+		// TODO Delete this!
+		this.fastify.get("/delete", async (request: FastifyRequest, reply: FastifyReply) => {
+			this.controller.deleteDB();
+			this.controller.setup();
+			let t = new Date();
+			t.setSeconds(t.getSeconds() + 10);
+			return reply.header(
+				"Set-Cookie", `jwt=blank; expires=${t}; Secure; HttpOnly;`).send("Deleted!");
+		});
 
 		this.fastify.post("/register", async (request: FastifyRequest, reply: FastifyReply) => {
 			const payload = this.controller.addUser(JSON.parse(request.body as string));

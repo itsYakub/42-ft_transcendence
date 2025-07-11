@@ -5,8 +5,6 @@ import { compareSync } from "bcrypt-ts";
 
 export class UserController extends Controller {
 	setup(): void {
-		this.db.exec(`DROP TABLE IF EXISTS Users;`);
-
 		this.db.exec(`
     CREATE TABLE IF NOT EXISTS Users (
       UserID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,6 +16,10 @@ export class UserController extends Controller {
     );
   `);
 		console.log("Set up user db");
+	}
+
+	deleteDB(): void {
+		this.db.exec(`DROP TABLE IF EXISTS Users;`);
 	}
 
 	addUser(json: any) {

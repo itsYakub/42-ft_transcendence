@@ -1,6 +1,6 @@
 import { navigate } from "./index.js";
 
-export function setupRegisterForm() {
+export function setupRegisterView() {
 	const form = <HTMLFormElement>document.getElementById("registerForm");
 	form.addEventListener("submit", async (e) => {
 		e.preventDefault();

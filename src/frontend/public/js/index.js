@@ -1,5 +1,5 @@
 import { setupLoginForm } from "./login.js";
-import { setupRegisterForm } from "./register.js";
+import { setupProfileView } from "./profile.js";
 let buttonNames = new Map();
 buttonNames["/"] = "homeButton";
 buttonNames["/game"] = "gameButton";
@@ -12,7 +12,6 @@ export async function navigate(url, user = {}) {
     });
     if (response.ok) {
         const text = await response.text();
-        console.log(response);
         document.querySelector("#content").innerHTML = text;
         if ("/" == url && 0 != Object.keys(user).length) {
             document.getElementById("profileNick").innerText = user.nick;
@@ -50,15 +49,46 @@ document.getElementById("gameButton").addEventListener("click", async () => {
 document.getElementById("tournamentButton").addEventListener("click", () => {
     navButtonClicked("/tournament");
 });
+document.getElementById("deleteButton").addEventListener("click", () => {
+    fetch("/delete");
+    document.dispatchEvent(new Event("logout"));
+});
 document.getElementById("profileAvatar").addEventListener("click", async () => {
     await navigate("/profile");
     changeButtonColours();
+    resetRegisterButton();
+    setupProfileView();
 });
 document.getElementById("registerButton").addEventListener("click", async function (e) {
-    await navigate("/register");
-    changeButtonColours();
-    this.classList.replace("bg-yellow-600", "bg-gray-900");
-    setupRegisterForm();
+    let dialog = document.getElementById("dialog");
+    dialog.showModal();
+    const form = document.getElementById("registerForm");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if ("jsbutton" == e.submitter.id)
+            return;
+        const nick = form.nick.value;
+        const email = form.email.value;
+        const password = form.password.value;
+        const response = await fetch("/register", {
+            method: "POST",
+            body: JSON.stringify({
+                nick, email, password
+            })
+        });
+        const payload = await response.json();
+        if (payload.error) {
+            alert(payload.message);
+            return;
+        }
+        dialog.close();
+        document.dispatchEvent(new Event("login"));
+        navigate("/", { "nick": payload.nick, "avatar": payload.avatar });
+    });
+    document.getElementById("jsbutton").addEventListener("click", async function (e) {
+        let dialog = document.getElementById("dialog");
+        dialog.close();
+    });
 });
 document.getElementById("loginButton").addEventListener("click", async function (e) {
     await navigate("/login");
