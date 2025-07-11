@@ -1,5 +1,6 @@
 import { Shape } from "./game/shape.js";
 import { Paddle } from "./game/paddle.js";
+import { PaddleType } from "./game/paddle.js";
 import { Ball } from "./game/ball.js";
 
 enum GameStateMachine {
@@ -40,8 +41,21 @@ export class Game {
 		var ballSize: number = 20;
 		var wallOffset: number = 24;
 
-		this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#fa2222");
-		this.m_player2 = new Paddle(this.m_gameCanvas.width - (wallOffset + paddleWidth), this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#22fa22");
+		this.m_player1 = new Paddle(
+			wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2,
+			paddleWidth, paddleHeight,
+			"w", "s", "#fa2222",
+			PaddleType.PADDLE_PLAYER
+		);
+		
+		this.m_player2 = new Paddle(
+			this.m_gameCanvas.width - (wallOffset + paddleWidth),
+			this.m_gameCanvas.height / 2 - paddleHeight / 2,
+			paddleWidth, paddleHeight,
+			"ArrowUp", "ArrowDown", "#22fa22",
+			PaddleType.PADDLE_AI
+		);
+		
 		this.m_ball = new Ball(this.m_gameCanvas.width / 2 - ballSize / 2, this.m_gameCanvas.height / 2 - ballSize / 2, ballSize, ballSize);
 		this.draw();
 	}
@@ -66,8 +80,8 @@ export class Game {
 	}
 
 	update() {
-		this.m_player1.update(this.m_gameCanvas);
-		this.m_player2.update(this.m_gameCanvas);
+		this.m_player1.update(this.m_gameCanvas, this.m_ball);
+		this.m_player2.update(this.m_gameCanvas, this.m_ball);
 		if (stateMachine == GameStateMachine.STATE_GAME_START) {
 			this.m_ball.update(this.m_player1,this.m_player2,this.m_gameCanvas);
 		}
