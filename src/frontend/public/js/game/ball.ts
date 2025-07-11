@@ -38,7 +38,8 @@ export class Ball extends Shape {
 			this.restart(canvas);
 		}
 
-		/* clamping the ball's speed to the maximum value (in this case: 16.0) (let the hell go loose) */
+		/* clamping the ball's speed to the maximum value (in this case: 16.0) (let the hell go loose)
+		* */
 		this.speed = this.speed > 16.0 ? 16.0 : this.speed;
 		this.xprev = this.x;
 		this.yprev = this.y;
@@ -64,43 +65,50 @@ export class Ball extends Shape {
 	}
 
 	private	collisionDetection(player1: Paddle, player2: Paddle, canvas: HTMLCanvasElement) {
-		// Basic ball - to - top/bottom collistion detection
+		let	_tolerance_point : number;
+
+		/* Ball - to - top/bottom collistion detection
+		 * */
 		if (
 			(this.y <= 10.0) ||
 			(this.y + this.height >= canvas.height - 10.0)
 		) {
 			this.yVel *= -1.0;
-			this.speed += 0.2;
+			this.speed += 0.25;
 		}
 
-		// Basic ball - to - player collision detection
-		// Horizontal collision
+		/* Ball - to - player collision detection
+		 * SOURCE:
+		 *  - https://github.com/clear-code-projects/Pong_in_Pygame/blob/master/Pong9_collision.py
+		 * */
+		_tolerance_point = 10.0;
 		if (
-			this.aabb(player1) || this.aabb(player2)
+			this.aabb(player1) && this.xVel < 0.0
 		) {
-			/* NOTE(joleksia):
-			 *  In this if - block, I think that we should handle both horizontal and vertical bouncess of the paddle
-			 * */
-			if (
-				(this.y >= player1.y && this.y + this.height <= player1.y + player1.height) ||
-				(this.y >= player2.y && this.y + this.height <= player2.y + player2.height)
-			) {
-				/* TODO(joleksia):
-				 *  Every time the ball bounces with the paddle, check if it's position is inside the paddle or not.
-				 *  If so, we need to, with the help of the loop, move it outside the paddle, and then we can proceed.
-				 *  Pseudocode:
-				 *  if ball position is in paddle {
-				 *		for current ball position is above the previous position of the ball {
-				 *			move the ball closer to the previous position
-				 *			if the ball is outside the paddle {
-				 *				break from the loop
-				 *			}
-				 *		}
-				 *	}
-				 * */
+			if (Math.abs((this.x) - (player1.x + player1.width)) < _tolerance_point) {
 				this.xVel *= -1.0;
 			}
-			this.speed += 0.4;
+			else if (
+				Math.abs((this.y + this.height) - (player1.y)) < _tolerance_point && this.yVel > 0 ||
+				Math.abs((this.y) - (player1.y + player1.height)) < _tolerance_point && this.yVel < 0
+			) {
+				this.yVel *= -1.0;
+			}
+			this.speed += 0.5;
+		}
+		if (
+			this.aabb(player2) && this.xVel > 0.0
+		) {
+			if (Math.abs((this.x + this.width) - (player2.x)) < _tolerance_point) {
+				this.xVel *= -1.0;
+			}
+			else if (
+				Math.abs((this.y + this.height) - (player2.y)) < _tolerance_point && this.yVel > 0 ||
+				Math.abs((this.y) - (player2.y + player2.height)) < _tolerance_point && this.yVel < 0
+			) {
+				this.yVel *= -1.0;
+			}
+			this.speed += 0.5;
 		}
 	}
 }

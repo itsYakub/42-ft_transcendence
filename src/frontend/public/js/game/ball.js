@@ -50,21 +50,32 @@ export class Ball extends Shape {
         }
     }
     collisionDetection(player1, player2, canvas) {
+        let _tolerance_point;
         if ((this.y <= 10.0) ||
             (this.y + this.height >= canvas.height - 10.0)) {
             this.yVel *= -1.0;
-            this.speed += 0.2;
+            this.speed += 0.25;
         }
-        if (this.aabb(player1) || this.aabb(player2)) {
-            if ((this.y >= player1.y && this.y + this.height <= player1.y + player1.height) ||
-                (this.y >= player2.y && this.y + this.height <= player2.y + player2.height)) {
+        _tolerance_point = 10.0;
+        if (this.aabb(player1) && this.xVel < 0.0) {
+            if (Math.abs((this.x) - (player1.x + player1.width)) < _tolerance_point) {
                 this.xVel *= -1.0;
             }
-            else if ((this.x >= player1.x && this.x + this.width <= player1.x + player1.width) ||
-                (this.x >= player2.x && this.x + this.width <= player2.x + player2.width)) {
+            else if (Math.abs((this.y + this.height) - (player1.y)) < _tolerance_point && this.yVel > 0 ||
+                Math.abs((this.y) - (player1.y + player1.height)) < _tolerance_point && this.yVel < 0) {
                 this.yVel *= -1.0;
             }
-            this.speed += 0.4;
+            this.speed += 0.5;
+        }
+        if (this.aabb(player2) && this.xVel > 0.0) {
+            if (Math.abs((this.x + this.width) - (player2.x)) < _tolerance_point) {
+                this.xVel *= -1.0;
+            }
+            else if (Math.abs((this.y + this.height) - (player2.y)) < _tolerance_point && this.yVel > 0 ||
+                Math.abs((this.y) - (player2.y + player2.height)) < _tolerance_point && this.yVel < 0) {
+                this.yVel *= -1.0;
+            }
+            this.speed += 0.5;
         }
     }
 }

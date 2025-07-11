@@ -36,8 +36,8 @@ export class Game {
 
 		// Adjust these dependent on available space
 		var paddleWidth: number = 16;
-		var paddleHeight: number = 80;
-		var ballSize: number = 16;
+		var paddleHeight: number = 128;
+		var ballSize: number = 20;
 		var wallOffset: number = 24;
 
 		this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#fa2222");
@@ -61,8 +61,8 @@ export class Game {
 		this.m_gameContext.fillRect(this.m_gameCanvas.width / 2 - 2, 8, 4, this.m_gameCanvas.height - 16);
 
 		// Draws score numbers
-		this.m_gameContext.fillText(Game.player1Score.toString(), this.m_gameCanvas.width / 3, 100);
-		this.m_gameContext.fillText(Game.player2Score.toString(), this.m_gameCanvas.width / 3 * 2, 100);
+		this.m_gameContext.fillText(Game.player1Score.toString(), this.m_gameCanvas.width / 3, 128);
+		this.m_gameContext.fillText(Game.player2Score.toString(), this.m_gameCanvas.width / 3 * 2, 128);
 	}
 
 	update() {
@@ -89,13 +89,12 @@ export class Game {
 
 var game: Game;
 var stateMachine : GameStateMachine;
-var	running : boolean = false;
 
 function setupGame() {
 	game = new Game();
 	stateMachine = GameStateMachine.STATE_GAME_SETUP;
 	requestAnimationFrame(game.gameLoop);
-	running = true;
+	(<HTMLButtonElement>document.getElementById("gameSetup")).disabled = true;
 }
 
 function playGame() {

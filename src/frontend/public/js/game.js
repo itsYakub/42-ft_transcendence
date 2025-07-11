@@ -19,8 +19,8 @@ export class Game {
             Game.keysPressed[e.key] = false;
         });
         var paddleWidth = 16;
-        var paddleHeight = 80;
-        var ballSize = 16;
+        var paddleHeight = 128;
+        var ballSize = 20;
         var wallOffset = 24;
         this.m_player1 = new Paddle(wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "w", "s", "#fa2222");
         this.m_player2 = new Paddle(this.m_gameCanvas.width - (wallOffset + paddleWidth), this.m_gameCanvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "ArrowUp", "ArrowDown", "#22fa22");
@@ -35,8 +35,8 @@ export class Game {
         this.m_gameContext.strokeRect(8, 8, this.m_gameCanvas.width - 16, this.m_gameCanvas.height - 16);
         this.m_gameContext.fillStyle = "#fff";
         this.m_gameContext.fillRect(this.m_gameCanvas.width / 2 - 2, 8, 4, this.m_gameCanvas.height - 16);
-        this.m_gameContext.fillText(Game.player1Score.toString(), this.m_gameCanvas.width / 3, 100);
-        this.m_gameContext.fillText(Game.player2Score.toString(), this.m_gameCanvas.width / 3 * 2, 100);
+        this.m_gameContext.fillText(Game.player1Score.toString(), this.m_gameCanvas.width / 3, 128);
+        this.m_gameContext.fillText(Game.player2Score.toString(), this.m_gameCanvas.width / 3 * 2, 128);
     }
     update() {
         this.m_player1.update(this.m_gameCanvas);
@@ -62,12 +62,11 @@ Game.player1Score = 0;
 Game.player2Score = 0;
 var game;
 var stateMachine;
-var running = false;
 function setupGame() {
     game = new Game();
     stateMachine = GameStateMachine.STATE_GAME_SETUP;
     requestAnimationFrame(game.gameLoop);
-    running = true;
+    document.getElementById("gameSetup").disabled = true;
 }
 function playGame() {
     stateMachine = GameStateMachine.STATE_GAME_START;
