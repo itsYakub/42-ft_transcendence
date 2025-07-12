@@ -1,41 +1,13 @@
-import { Router } from '../common/Router.js'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from 'node:sqlite';
-import { UserController } from "./UserController.js";
+import { DB } from '../db/db.js';
+import { addUserToDB, loginUser } from '../db/userHandler.js';
+import { navbarAndContent } from '../common/viewInjector.js';
 
-export class UserRouter extends Router {
-	private controller: UserController;
+export class UserRouter {
 
-	constructor(fastify: FastifyInstance, db: DatabaseSync) {
-		super(fastify);
-		this.controller = new UserController(db);
-	}
+	constructor(private fastify: FastifyInstance, private db: DB) {}
 
 	registerRoutes(): void {
-		// this.fastify.get('/register', async (request: FastifyRequest, reply: FastifyReply) => {
-		// 	if (!request.headers["referer"]) {
-		// 		let user = this.controller.getUser(request.cookies.jwt);
-		// 		let dest = user.error ? "register" : "home";
-		// 		if (!user.error)
-		// 			return reply.redirect("/");
-		// 		return this.addFrame(reply, dest, user);
-		// 	}
-		// 	else
-		// 		return reply.view("register");
-		// });
-
-		// this.fastify.get('/login', async (request: FastifyRequest, reply: FastifyReply) => {
-		// 	if (!request.headers["referer"]) {
-		// 		let user = this.controller.getUser(request.cookies.jwt);
-		// 		let dest = user.error ? "login" : "home";
-		// 		if (!user.error)
-		// 			return reply.redirect("/");
-		// 		return this.addFrame(reply, dest, user);
-		// 	}
-		// 	else
-		// 		return reply.view("login");
-		// });
-
 		// this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
 		// 	let user = this.controller.getFullUser(request.cookies.jwt);
 		// 	let dest = user.error ? "login" : "profile";
@@ -49,17 +21,25 @@ export class UserRouter extends Router {
 		// });
 
 		// TODO Delete this!
-		this.fastify.get("/delete", async (request: FastifyRequest, reply: FastifyReply) => {
-			this.controller.deleteDB();
-			this.controller.setup();
-			let t = new Date();
-			t.setSeconds(t.getSeconds() + 10);
+		// this.fastify.get("/delete", async (request: FastifyRequest, reply: FastifyReply) => {
+		// 	this.controller.deleteDB();
+		// 	this.controller.setup();
+		// 	let t = new Date();
+		// 	t.setSeconds(t.getSeconds() + 10);
+		// 	return reply.header(
+		// 		"Set-Cookie", `jwt=blank; expires=${t}; Secure; HttpOnly;`).send("Deleted!");
+		// });
+
+		this.fastify.get("/logout", async (request: FastifyRequest, reply: FastifyReply) => {
+			const output = navbarAndContent(this.db, "home", "");		
+			let date = new Date();
+			date.setDate(date.getDate() - 3);
 			return reply.header(
-				"Set-Cookie", `jwt=blank; expires=${t}; Secure; HttpOnly;`).send("Deleted!");
+				"Set-Cookie", `jwt=blank; expires=${date}; Secure; HttpOnly;`).send(output);
 		});
 
 		this.fastify.post("/register", async (request: FastifyRequest, reply: FastifyReply) => {
-			const payload = this.controller.addUser(JSON.parse(request.body as string));
+			const payload = addUserToDB(this.db, JSON.parse(request.body as string));
 			let date = new Date();
 			date.setDate(date.getDate() + 3);
 			return reply.header(
@@ -67,7 +47,7 @@ export class UserRouter extends Router {
 		});
 
 		this.fastify.post("/login", async (request: FastifyRequest, reply: FastifyReply) => {
-			const payload = this.controller.loginUser(JSON.parse(request.body as string));
+			const payload = loginUser(this.db, JSON.parse(request.body as string));
 			let date = new Date();
 			date.setDate(date.getDate() + 3);
 			return reply.header(

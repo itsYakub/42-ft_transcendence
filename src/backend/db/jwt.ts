@@ -1,5 +1,5 @@
 import { createHmac } from 'crypto';
-import { User } from '../user/User';
+import { User } from '../user/User.js';
 
 function createHMAC(message: string, secret: string) {
 	return createHmac('sha256', secret)

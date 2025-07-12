@@ -1,0 +1,105 @@
+<aside class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+	aria-label="Sidebar">
+	<div class="h-full px-3 py-4  bg-gray-50 dark:bg-gray-800">
+		<img id="profileAvatar" class="w-full p-6 rounded-full cursor-pointer h-36" src="/images/%%AVATAR%%" />
+		<div id="profileNick" class="text-white text-center mb-4">%%NICK%%</div>
+		<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+		<ul class="space-y-2 font-medium">
+			<li>
+				<button id="homeButton"
+					class="w-full text-left bg-%%HOME_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Home
+				</button>
+			</li>
+			<li>
+				<button id="gameButton"
+					class="w-full text-left bg-%%GAME_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Quick game
+				</button>
+			</li>
+			</li>
+			<li>
+				<button id="tournamentButton"
+					class="w-full text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Tournament
+				</button>
+			</li>
+			<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+			<li>
+				<button id="deleteButton"
+					class="w-full text-left bg-%%COLOUR%% text-red-600 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Delete all
+				</button>
+			</li>
+		</ul>
+		<section>
+			<button id="loginButton"
+				class="absolute bottom-8 left-8 rounded-lg p-2 bg-%%COLOUR%% hover:bg-gray-700 group text-gray-300">Log
+				in</button>
+			<button id="registerButton"
+				class="absolute bottom-8 right-8 rounded-lg p-2 bg-yellow-600 hover:bg-gray-700 group text-gray-300">Register</button>
+		</section>
+	</div>
+</aside>
+
+<dialog id="loginDialog" class="m-auto inset-2 content-center rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-100">
+	<div
+		class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+		<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+			<h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+				Login to your account
+			</h1>
+			<form id="loginForm">
+				<div>
+					<label for="email"
+						class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+					<input type="email" name="email" value="abc@example.com"
+						class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						required="true">
+				</div>
+				<div>
+					<label for="password"
+						class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+					<input type="password" name="password" minlength="8" value="12345678"
+						class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						required="true">
+				</div>
+				<button id="loginButton"
+					class="float-right my-4 text-white hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Login</button>
+			</form>
+		</div>
+	</div>
+</dialog>
+
+<dialog id="registerDialog"
+	class="m-auto inset-2 content-center rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-gray-800 border-gray-100">
+	<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+		<h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+			Register a new account
+		</h1>
+		<form id="registerForm">
+			<div>
+				<label for="nick" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nickname</label>
+				<input type="text" name="nick" value="coldandtired"
+					class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+					required="true">
+			</div>
+			<div>
+				<label for="email" class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+				<input type="email" name="email" value="abc@example.com"
+					class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+					required="true">
+			</div>
+			<div>
+				<label for="password"
+					class="block my-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+				<input type="password" name="password" minlength="8" value="12345678"
+					class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+					required="true">
+			</div>
+			<button id="jsbutton" type="submit" formmethod="dialog" class="bg-red-600" formnovalidate>Cancel</button>
+			<button id="signupButton" type="submit" formmethod="post"
+				class="float-right my-4 text-white hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Register</button>
+		</form>
+	</div>
+</dialog>

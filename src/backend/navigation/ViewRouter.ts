@@ -1,13 +1,10 @@
-import { Router } from '../common/Router.js'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DB } from '../db/db.js';
-import { completeFrame, sidebarAndContent } from './viewInjector.js';
+import { completeFrame, navbarAndContent } from '../common/viewInjector.js';
 
-export class NavRouter extends Router {
+export class NavRouter {
 
-	constructor(fastify: FastifyInstance, private db: DB) {
-		super(fastify);
-	}
+	constructor(private fastify: FastifyInstance, private db: DB) {}
 
 	registerRoutes(): void {
 		this.fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -16,7 +13,7 @@ export class NavRouter extends Router {
 				return reply.type("text/html").send(output);
 			}
 			else {
-				const output = sidebarAndContent(this.db, "home", request.cookies.jwt);
+				const output = navbarAndContent(this.db, "home", request.cookies.jwt);
 				return reply.send(output);
 			}
 		});

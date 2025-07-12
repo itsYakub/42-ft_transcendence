@@ -1,6 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { readFile } from "node:fs";
 import { validJWT } from "./jwt.js";
+import { User } from "../user/User.js";
 
 export class DB {
 	private db: DatabaseSync;
@@ -65,7 +66,7 @@ export class DB {
 	fillViews(): void {
 		const __dirname = import.meta.dirname;
 
-		const views = ["frame", "home", "sidebar"];
+		const views = ["frame", "game", "home", "navbar_logged_in", "navbar_logged_out", "tournament"];
 
 		views.forEach((value) => {
 			readFile(__dirname + `/views/${value}`, 'utf8', (err, data) => {
@@ -86,8 +87,8 @@ export class DB {
 		return this.getView("frame");
 	}
 
-	getSidebar(): string {
-		return this.getView("sidebar");
+	getNavbar(loggedIn: boolean): string {
+		return loggedIn ? this.getView("navbar_logged_in") : this.getView("navbar_logged_out");
 	}
 
 	getView(viewName: string): string {
@@ -175,6 +176,21 @@ export class DB {
 				"error": true,
 				"message": "Invalid JWT!"
 			};
+		}
+	}
+
+	addUser(json: any): User {
+		let user = new User(json);
+		user.hashPassword();
+
+		try {
+			const insert = this.db.prepare('INSERT INTO Users (Nick, Email, Password, Role, Avatar) VALUES (?, ?, ?, ?, ?)');
+			const statementSync = insert.run(user.getNick(), user.getEmail(), user.getPassword(), user.getRole(), user.getAvatar());
+			user.setID(statementSync.lastInsertRowid as number);
+			return user;
+		}
+		catch (e) {
+			throw (e);
 		}
 	}
 }

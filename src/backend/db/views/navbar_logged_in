@@ -1,0 +1,41 @@
+<aside class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+	aria-label="Sidebar">
+	<div class="h-full px-3 py-4  bg-gray-50 dark:bg-gray-800">
+		<img id="profileAvatar" class="w-full p-6 rounded-full cursor-pointer h-36" src="/images/%%AVATAR%%" />
+		<div id="profileNick" class="text-white text-center mb-4">%%NICK%%</div>
+		<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+		<ul class="space-y-2 font-medium">
+			<li>
+				<button id="homeButton"
+					class="w-full text-left bg-%%HOME_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Home
+				</button>
+			</li>
+			<li>
+				<button id="gameButton"
+					class="w-full text-left bg-%%GAME_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Quick game
+				</button>
+			</li>
+			</li>
+			<li>
+				<button id="tournamentButton"
+					class="w-full text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Tournament
+				</button>
+			</li>
+			<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+			<li>
+				<button id="deleteButton"
+					class="w-full text-left bg-%%COLOUR%% text-red-600 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Delete all
+				</button>
+			</li>
+		</ul>
+		<sectionclass="flex flex-col items-center justify-center">
+			<button id="logoutButton"
+				class="absolute bottom-8 rounded-lg p-2 bg-red-600 hover:bg-gray-700 group text-gray-300">Log
+				out</button>
+		</section>
+	</div>
+</aside>
