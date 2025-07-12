@@ -19,13 +19,13 @@ export async function navigate(url: string, user: any = {}): Promise<void> {
 
 	// Sets the frame's content
 	if (response.ok) {
-		const text = await response.text();
-		document.querySelector("#content").innerHTML = text;
-		if ("/" == url && 0 != Object.keys(user).length) {
-			document.getElementById("profileNick").innerText = user.nick;
-			const img = <HTMLImageElement>document.getElementById("profileAvatar");
-			img.src = `images/${user.avatar}`;
-		}
+		const text = await response.json();
+		document.querySelector("#sidebar").innerHTML = text.sidebar;
+		document.querySelector("#content").innerHTML = text.content;
+// 		document.getElementById("homeButton").addEventListener("click", () => {
+// 	console.log("Going home");
+// 	navButtonClicked("/");
+// });
 	}
 }
 
@@ -54,9 +54,16 @@ function navButtonClicked(url: string): void {
 	resetRegisterButton()
 };
 
-document.getElementById("homeButton").addEventListener("click", () => {
-	navButtonClicked("/");
-});
+function test() {
+	console.log("hello");
+}
+
+window.test = test;
+
+// document.getElementById("homeButton").addEventListener("click", () => {
+// 	console.log("Going home");
+// 	navButtonClicked("/");
+// });
 
 document.getElementById("gameButton").addEventListener("click", async () => {
 	navButtonClicked("/game");

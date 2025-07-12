@@ -1,8 +1,14 @@
 {
 	"compilerOptions": {
-		"target": "ES2021",
-		"module": "ESNext",
-		"removeComments": true,
-		"moduleResolution": "node10"
-	}
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "es2022",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+    	"module": "NodeNext"
+	},
+	"exclude": ["/ft_transcendence_docker"]
 }

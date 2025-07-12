@@ -1,21 +1,21 @@
 import { Controller } from '../common/Controller.js'
 import { User } from "./User.js";
-import { createJWT } from "../common/jwt.js";
+import { createJWT } from "../db/jwt.js";
 import { compareSync } from "bcrypt-ts";
 
 export class UserController extends Controller {
 	setup(): void {
-		this.db.exec(`
-    CREATE TABLE IF NOT EXISTS Users (
-      UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-      Nick TEXT UNIQUE NOT NULL,
-      Email TEXT UNIQUE NOT NULL,
-	  Avatar TEXT NOT NULL,
-      Password TEXT NOT NULL,
-	  Role TEXT NOT NULL
-    );
-  `);
-		console.log("Set up user db");
+		// 		this.db.exec(`
+		//     CREATE TABLE IF NOT EXISTS Users (
+		//       UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+		//       Nick TEXT UNIQUE NOT NULL,
+		//       Email TEXT UNIQUE NOT NULL,
+		// 	  Avatar TEXT NOT NULL,
+		//       Password TEXT NOT NULL,
+		// 	  Role TEXT NOT NULL
+		//     );
+		//   `);
+		// 		console.log("Set up user db");
 	}
 
 	deleteDB(): void {

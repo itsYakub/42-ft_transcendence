@@ -1,24 +1,24 @@
 import { Router } from '../common/Router.js'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { ViewController } from './ViewController.js';
-import { DatabaseSync } from 'node:sqlite';
+import { DB } from '../db/db.js';
+import { completeFrame, sidebarAndContent } from './viewInjector.js';
 
 export class NavRouter extends Router {
-	private controller: ViewController;
 
-	constructor(fastify: FastifyInstance, db: DatabaseSync) {
+	constructor(fastify: FastifyInstance, private db: DB) {
 		super(fastify);
-		this.controller = new ViewController(db);
 	}
 
 	registerRoutes(): void {
 		this.fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 			if (!request.headers["referer"]) {
-				let user = this.controller.getUser(request.cookies.jwt);
-				return this.addFrame(reply, "home", user);
+				const output = completeFrame(this.db, "home", request.cookies.jwt);
+				return reply.type("text/html").send(output);
 			}
-			else
-				return reply.view("home");
+			else {
+				const output = sidebarAndContent(this.db, "home", request.cookies.jwt);
+				return reply.send(output);
+			}
 		});
 
 		console.log("Registered view routes");

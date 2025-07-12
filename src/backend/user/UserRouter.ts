@@ -12,41 +12,41 @@ export class UserRouter extends Router {
 	}
 
 	registerRoutes(): void {
-		this.fastify.get('/register', async (request: FastifyRequest, reply: FastifyReply) => {
-			if (!request.headers["referer"]) {
-				let user = this.controller.getUser(request.cookies.jwt);
-				let dest = user.error ? "register" : "home";
-				if (!user.error)
-					return reply.redirect("/");
-				return this.addFrame(reply, dest, user);
-			}
-			else
-				return reply.view("register");
-		});
+		// this.fastify.get('/register', async (request: FastifyRequest, reply: FastifyReply) => {
+		// 	if (!request.headers["referer"]) {
+		// 		let user = this.controller.getUser(request.cookies.jwt);
+		// 		let dest = user.error ? "register" : "home";
+		// 		if (!user.error)
+		// 			return reply.redirect("/");
+		// 		return this.addFrame(reply, dest, user);
+		// 	}
+		// 	else
+		// 		return reply.view("register");
+		// });
 
-		this.fastify.get('/login', async (request: FastifyRequest, reply: FastifyReply) => {
-			if (!request.headers["referer"]) {
-				let user = this.controller.getUser(request.cookies.jwt);
-				let dest = user.error ? "login" : "home";
-				if (!user.error)
-					return reply.redirect("/");
-				return this.addFrame(reply, dest, user);
-			}
-			else
-				return reply.view("login");
-		});
+		// this.fastify.get('/login', async (request: FastifyRequest, reply: FastifyReply) => {
+		// 	if (!request.headers["referer"]) {
+		// 		let user = this.controller.getUser(request.cookies.jwt);
+		// 		let dest = user.error ? "login" : "home";
+		// 		if (!user.error)
+		// 			return reply.redirect("/");
+		// 		return this.addFrame(reply, dest, user);
+		// 	}
+		// 	else
+		// 		return reply.view("login");
+		// });
 
-		this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
-			let user = this.controller.getFullUser(request.cookies.jwt);
-			let dest = user.error ? "login" : "profile";
-			if (!request.headers["referer"]) {
-				if (user.error)
-					return reply.redirect("/");
-				return this.addFrame(reply, dest, user);
-			}
-			else
-				return reply.view(dest, { user });
-		});
+		// this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
+		// 	let user = this.controller.getFullUser(request.cookies.jwt);
+		// 	let dest = user.error ? "login" : "profile";
+		// 	if (!request.headers["referer"]) {
+		// 		if (user.error)
+		// 			return reply.redirect("/");
+		// 		return this.addFrame(reply, dest, user);
+		// 	}
+		// 	else
+		// 		return reply.view(dest, { user });
+		// });
 
 		// TODO Delete this!
 		this.fastify.get("/delete", async (request: FastifyRequest, reply: FastifyReply) => {

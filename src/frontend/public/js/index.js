@@ -1,5 +1,7 @@
 import { setupLoginForm } from "./login.js";
+import { setupRegisterView } from "./register.js";
 import { setupProfileView } from "./profile.js";
+// Maps the routes to the nav-button names, to update the colour
 let buttonNames = new Map();
 buttonNames["/"] = "homeButton";
 buttonNames["/game"] = "gameButton";
@@ -7,24 +9,28 @@ buttonNames["/tournament"] = "tournamentButton";
 buttonNames["/login"] = "loginButton";
 export async function navigate(url, user = {}) {
     history.pushState(null, null, url);
+    // Fetches the data from the backend
     const response = await fetch(url, {
         method: "GET"
     });
+    // Sets the frame's content
     if (response.ok) {
-        const text = await response.text();
-        document.querySelector("#content").innerHTML = text;
-        if ("/" == url && 0 != Object.keys(user).length) {
-            document.getElementById("profileNick").innerText = user.nick;
-            const img = document.getElementById("profileAvatar");
-            img.src = `images/${user.avatar}`;
-        }
+        const text = await response.json();
+        document.querySelector("#sidebar").innerHTML = text.sidebar;
+        document.querySelector("#content").innerHTML = text.content;
+        // 		document.getElementById("homeButton").addEventListener("click", () => {
+        // 	console.log("Going home");
+        // 	navButtonClicked("/");
+        // });
     }
 }
 function changeButtonColours(url = "") {
+    // Resets the text colour of all nav-buttons
     const collection = document.getElementsByClassName("nav-button");
     for (let i = 0; i < collection.length; i++) {
         collection[i].classList.replace("bg-gray-900", "bg-transparent");
     }
+    // If it's a nav-button change it to selected
     var element = document.getElementById(buttonNames[url]);
     if (element)
         element.classList.replace("bg-transparent", "bg-gray-900");
@@ -40,9 +46,14 @@ function navButtonClicked(url) {
     resetRegisterButton();
 }
 ;
-document.getElementById("homeButton").addEventListener("click", () => {
-    navButtonClicked("/");
-});
+function test() {
+    console.log("hello");
+}
+window.test = test;
+// document.getElementById("homeButton").addEventListener("click", () => {
+// 	console.log("Going home");
+// 	navButtonClicked("/");
+// });
 document.getElementById("gameButton").addEventListener("click", async () => {
     navButtonClicked("/game");
 });
@@ -50,6 +61,7 @@ document.getElementById("tournamentButton").addEventListener("click", () => {
     navButtonClicked("/tournament");
 });
 document.getElementById("deleteButton").addEventListener("click", () => {
+    //drop and recreate tables, log out, delete cookie
     fetch("/delete");
     document.dispatchEvent(new Event("logout"));
 });
@@ -89,6 +101,10 @@ document.getElementById("registerButton").addEventListener("click", async functi
         let dialog = document.getElementById("dialog");
         dialog.close();
     });
+    // await navigate("/register");
+    // changeButtonColours();
+    // this.classList.replace("bg-yellow-600", "bg-gray-900");
+    // setupRegisterView();
 });
 document.getElementById("loginButton").addEventListener("click", async function (e) {
     await navigate("/login");
@@ -102,6 +118,7 @@ document.getElementById("logoutButton").addEventListener("click", async () => {
     var t = new Date();
     t.setSeconds(t.getSeconds() + 10);
     document.cookie = `jwt=blank; expires=${t}`;
+    // remove on server
 });
 async function getUser() {
     let jwt;
@@ -122,6 +139,7 @@ async function getUser() {
         document.dispatchEvent(new Event("logout"));
     }
 }
+// Changes view on back/forward buttons
 window.addEventListener('popstate', function (event) {
     navButtonClicked(window.location.pathname);
 });

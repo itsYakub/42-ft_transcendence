@@ -1,6 +1,9 @@
 import { Router } from '../common/Router.js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { DatabaseSync } from 'node:sqlite';
 import { GameController } from "./GameController.js";
 export class GameRouter extends Router {
+    controller;
     constructor(fastify, db) {
         super(fastify);
         this.controller = new GameController(db);
