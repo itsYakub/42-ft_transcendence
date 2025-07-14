@@ -9,11 +9,26 @@ export class NavRouter {
 	registerRoutes(): void {
 		this.fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 			if (!request.headers["referer"]) {
-				const output = completeFrame(this.db, "home", request.cookies.jwt);
+				const output = completeFrame(this.db, "home", request.cookies.jwt, {});
 				return reply.type("text/html").send(output);
 			}
 			else {
-				const output = navbarAndContent(this.db, "home", request.cookies.jwt);
+				const output = navbarAndContent(this.db, "home", request.cookies.jwt, {});
+				return reply.send(output);
+			}
+		});
+
+		this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
+			let user = this.db.getUser(request.cookies.jwt);
+			if (user.error) {
+				return reply.redirect("/");
+			}
+			if (!request.headers["referer"]) {
+				const output = completeFrame(this.db, "profile", request.cookies.jwt, user);
+				return reply.type("text/html").send(output);
+			}
+			else {
+				const output = navbarAndContent(this.db, "profile", request.cookies.jwt, user);
 				return reply.send(output);
 			}
 		});

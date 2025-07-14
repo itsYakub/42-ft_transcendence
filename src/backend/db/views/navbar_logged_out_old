@@ -1,32 +1,48 @@
-<div class="h-full flex flex-row bg-gray-800 justify-center content-center items-center">
-	<div>
-		<button id="homeButton"
-			class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-			Home
-		</button>
-
-		<button id="gameButton"
-			class="mx-2 cursor-pointer text-left bg-%%GAME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-			Quick game
-		</button>
-
-		<button id="tournamentButton"
-			class="cursor-pointer text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-			Tournament
-		</button>
+<aside class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+	aria-label="Sidebar">
+	<div class="h-full px-3 py-4  bg-gray-50 dark:bg-gray-800">
+		<img id="profileAvatar" class="w-full p-6 rounded-full cursor-pointer h-36" src="/images/%%AVATAR%%" />
+		<div id="profileNick" class="text-white text-center mb-4">%%NICK%%</div>
+		<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+		<ul class="space-y-2 font-medium">
+			<li>
+				<button id="homeButton"
+					class="cursor-pointer w-full text-left bg-%%HOME_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Home
+				</button>
+			</li>
+			<li>
+				<button id="gameButton"
+					class="cursor-pointer w-full text-left bg-%%GAME_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Quick game
+				</button>
+			</li>
+			</li>
+			<li>
+				<button id="tournamentButton"
+					class="cursor-pointer w-full text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Tournament
+				</button>
+			</li>
+			<hr class="text-yellow-400 w-10/12 mx-5 mb-3" />
+			<li>
+				<button id="deleteButton"
+					class="cursor-pointer w-full text-left bg-%%COLOUR%% text-red-600 flex items-center p-2 rounded-lg hover:bg-gray-700 group">
+					Delete all
+				</button>
+			</li>
+		</ul>
+		<section>
+			<button id="loginButton"
+				class="cursor-pointer absolute bottom-8 left-8 rounded-lg p-2 bg-%%COLOUR%% hover:bg-gray-700 group text-gray-300">Log
+				in</button>
+			<button id="registerButton"
+				class="cursor-pointer absolute bottom-8 right-8 rounded-lg p-2 bg-yellow-600 hover:bg-gray-700 group text-gray-300">Register</button>
+		</section>
 	</div>
+</aside>
 
-	<div class="ml-32">
-		<button id="loginButton"
-			class="cursor-pointer rounded-lg p-2 bg-%%COLOUR%% hover:bg-gray-700 group text-gray-300">Log
-			in</button>
-		<span class="mx-2 text-white">or</span>
-		<button id="registerButton"
-			class="cursor-pointer rounded-lg p-2 bg-yellow-600 hover:bg-gray-700 group text-gray-300">Register</button>
-	</div>
-</div>
-
-<dialog id="loginDialog" class="m-auto content-center rounded-lg shadow border bg-gray-800 border-gray-100">
+<dialog id="loginDialog" class="content-center rounded-lg shadow border bg-gray-800 border-gray-100">
 	<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
 		<h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
 			Login to your account

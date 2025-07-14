@@ -5,7 +5,7 @@ import { navbarAndContent } from '../common/viewInjector.js';
 
 export class UserRouter {
 
-	constructor(private fastify: FastifyInstance, private db: DB) {}
+	constructor(private fastify: FastifyInstance, private db: DB) { }
 
 	registerRoutes(): void {
 		// this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -31,7 +31,7 @@ export class UserRouter {
 		// });
 
 		this.fastify.get("/logout", async (request: FastifyRequest, reply: FastifyReply) => {
-			const output = navbarAndContent(this.db, "home", "");		
+			const output = navbarAndContent(this.db, "home", "", {});
 			let date = new Date();
 			date.setDate(date.getDate() - 3);
 			return reply.header(
@@ -48,6 +48,12 @@ export class UserRouter {
 
 		this.fastify.post("/login", async (request: FastifyRequest, reply: FastifyReply) => {
 			const payload = loginUser(this.db, JSON.parse(request.body as string));
+			if (payload.error) {
+				let date = new Date();
+				date.setDate(date.getDate() - 3);
+				return reply.header(
+					"Set-Cookie", `jwt=blank; expires=${date}; Secure; HttpOnly;`).send(payload);
+			}
 			let date = new Date();
 			date.setDate(date.getDate() + 3);
 			return reply.header(

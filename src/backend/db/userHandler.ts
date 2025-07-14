@@ -2,7 +2,7 @@ import { createJWT } from "./jwt.js";
 import { DB } from "./db.js";
 import { compareSync } from "bcrypt-ts";
 
-export function addUserToDB(db: DB, json: any) {
+export function addUserToDB(db: DB, json: any): any {
 	try {
 		let user = db.addUser(json);
 		const jwt = createJWT(user.getID());
@@ -27,20 +27,30 @@ export function addUserToDB(db: DB, json: any) {
 	}
 }
 
-export function loginUser(db: DB, json: any) {
-	const select = this.db.prepare("SELECT * FROM Users WHERE Email = ?");
-	const user = select.get(json.email);
-	if (user && compareSync(json.password, user.Password as string)) {
-		const jwt = createJWT(user.UserID as number);
-		return {
-			"error": false,
-			"jwt": jwt,
-			"nick": user.Nick as string,
-			"avatar": user.Avatar as string
+export function loginUser(db: DB, json: any): any {
+	try {
+		let user = db.findUser(json);
+		if (user.error) {
+			return user;
 		}
+		if (compareSync(json.password, user.password)) {
+			const jwt = createJWT(user.id);
+			return {
+				"error": false,
+				"jwt": jwt,
+				"nick": user.nick,
+				"avatar": user.avatar
+			}
+		}
+		return {
+			"error": true,
+			"message": "Unknown login!"
+		};
 	}
-	return {
-		"error": true,
-		"message": "Unknown login!"
-	};
+	catch (e) {
+		return {
+			"error": true,
+			"message": "Internal error!"
+		};
+	}
 }

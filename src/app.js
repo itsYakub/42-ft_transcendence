@@ -13,7 +13,12 @@ fastify.register(fastifyStatic, {
     root: __dirname + "/frontend/public"
 });
 fastify.register(fastifyCookie);
-const db = new DB(true);
+const dropTables = {
+    dropUsers: false,
+    dropMatches: false,
+    dropViews: true
+};
+const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropViews);
 new GameRouter(fastify, db).registerRoutes();
 new NavRouter(fastify, db).registerRoutes();
 new UserRouter(fastify, db).registerRoutes();

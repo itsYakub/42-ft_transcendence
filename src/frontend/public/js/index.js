@@ -1,5 +1,5 @@
 import { setupProfileView } from "./profile.js";
-export async function navigate(url, user = {}) {
+export async function navigate(url) {
     history.pushState(null, null, url);
     const response = await fetch(url, {
         method: "GET"
@@ -17,48 +17,57 @@ window.addEventListener('popstate', function (event) {
 function registerListeners() {
     document.getElementById("homeButton").addEventListener("click", () => {
         navigate("/");
-    });
+    }, { once: true });
     document.getElementById("gameButton").addEventListener("click", async () => {
         navigate("/game");
-    });
+    }, { once: true });
     document.getElementById("tournamentButton").addEventListener("click", () => {
         navigate("/tournament");
-    });
-    document.getElementById("deleteButton").addEventListener("click", () => {
-        fetch("/delete");
-    });
-    document.getElementById("profileAvatar").addEventListener("click", async () => {
-        await navigate("/profile");
-        setupProfileView();
-    });
+    }, { once: true });
+    let deleteButton = document.getElementById("deleteButton");
+    if (deleteButton) {
+        deleteButton.addEventListener("click", () => {
+            fetch("/delete");
+        }, { once: true });
+    }
+    let profileAvatar = document.getElementById("profileAvatar");
+    if (profileAvatar) {
+        profileAvatar.addEventListener("click", async () => {
+            await navigate("/profile");
+            setupProfileView();
+        }, { once: true });
+    }
     const registerButton = document.getElementById("registerButton");
     if (registerButton) {
         registerButton.addEventListener("click", async function (e) {
             let dialog = document.getElementById("registerDialog");
             dialog.showModal();
-            const form = document.getElementById("registerForm");
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                if ("jsbutton" == e.submitter.id)
-                    return;
-                const nick = form.nick.value;
-                const email = form.email.value;
-                const password = form.password.value;
-                const response = await fetch("/register", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        nick, email, password
-                    })
-                });
-                const payload = await response.json();
-                if (payload.error) {
-                    alert(payload.message);
-                    return;
-                }
-                dialog.close();
-                document.dispatchEvent(new Event("login"));
-                navigate("/", { "nick": payload.nick, "avatar": payload.avatar });
+        });
+    }
+    const registerForm = document.getElementById("registerForm");
+    if (registerForm) {
+        registerForm.addEventListener("submit", async (e) => {
+            if ("cancelRegisterButton" == e.submitter.id) {
+                return;
+            }
+            e.preventDefault();
+            const nick = registerForm.nick.value;
+            const email = registerForm.email.value;
+            const password = registerForm.password.value;
+            const response = await fetch("/register", {
+                method: "POST",
+                body: JSON.stringify({
+                    nick, email, password
+                })
             });
+            const payload = await response.json();
+            if (payload.error) {
+                alert(payload.message);
+                return;
+            }
+            let dialog = document.getElementById("registerDialog");
+            dialog.close();
+            navigate("/");
         });
     }
     const loginButton = document.getElementById("loginButton");
@@ -66,29 +75,30 @@ function registerListeners() {
         loginButton.addEventListener("click", async function (e) {
             let dialog = document.getElementById("loginDialog");
             dialog.showModal();
-            const form = document.getElementById("loginForm");
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                if ("jsbutton" == e.submitter.id)
-                    return;
-                const nick = form.nick.value;
-                const email = form.email.value;
-                const password = form.password.value;
-                const response = await fetch("/register", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        nick, email, password
-                    })
-                });
-                const payload = await response.json();
-                if (payload.error) {
-                    alert(payload.message);
-                    return;
-                }
-                dialog.close();
-                document.dispatchEvent(new Event("login"));
-                navigate("/", { "nick": payload.nick, "avatar": payload.avatar });
+        });
+    }
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            if ("cancelLoginButton" == e.submitter.id)
+                return;
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            const response = await fetch("/login", {
+                method: "POST",
+                body: JSON.stringify({
+                    email, password
+                })
             });
+            const payload = await response.json();
+            if (payload.error) {
+                alert(payload.message);
+                return;
+            }
+            let dialog = document.getElementById("loginDialog");
+            dialog.close();
+            navigate("/");
         });
     }
     const logoutButton = document.getElementById("logoutButton");
@@ -97,9 +107,18 @@ function registerListeners() {
             const response = await fetch("/logout", {
                 method: "GET"
             });
-        });
+            if (response.ok) {
+                const text = await response.json();
+                document.querySelector("#navbar").innerHTML = text.navbar;
+                document.querySelector("#content").innerHTML = text.content;
+                registerListeners();
+            }
+        }, { once: true });
     }
 }
 window.addEventListener("DOMContentLoaded", () => {
     registerListeners();
+});
+window.addEventListener("beforeunload", (event) => {
+    console.log("bye");
 });

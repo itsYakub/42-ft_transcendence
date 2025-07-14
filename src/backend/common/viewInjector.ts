@@ -1,8 +1,8 @@
 import { DB } from '../db/db.js';
 
-export function completeFrame(db: DB, view: string, jwt: string): string {
+export function completeFrame(db: DB, view: string, jwt: string, user): string {
 	let frame = db.getFrame();
-	const elements = navbarAndContent(db, view, jwt);
+	const elements = navbarAndContent(db, view, jwt, user);
 
 	frame = frame.replace("%%NAVBAR%%", elements.navbar);
 	frame = frame.replace("%%CONTENT%%", elements.content);
@@ -10,11 +10,13 @@ export function completeFrame(db: DB, view: string, jwt: string): string {
 	return frame;
 }
 
-export function navbarAndContent(db: DB, view: string, jwt: string): any {
+export function navbarAndContent(db: DB, view: string, jwt: string, user): any {
 	const views = ["HOME", "GAME", "TOURNAMENT"];
 
-	const user = db.getUser(jwt);
+	if (0 == Object.keys(user).length)
+		user = db.getUser(jwt);
 	let navbar = db.getNavbar(!user.error);
+	let viewContent = db.getView(view);
 
 	navbar = injectUserIntoNavbar(navbar, user);
 	views.forEach((value) => {
@@ -23,7 +25,7 @@ export function navbarAndContent(db: DB, view: string, jwt: string): any {
 		else
 			navbar = navbar.replace(`%%${value}_COLOUR%%`, "transparent");
 	});
-	const content = injectUserIntoContent(view, user);
+	const content = injectUserIntoContent(viewContent, user);
 
 	return {
 		navbar,
@@ -52,6 +54,6 @@ function injectUserIntoNavbar(navbar: string, user: any): string {
 	return navbar;
 }
 
-function injectUserIntoContent(content: string, user: any): string {
+function injectUserIntoContent(content: string, user: any): string {	
 	return content;
 }

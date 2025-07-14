@@ -20,7 +20,12 @@ fastify.register(fastifyStatic, {
 fastify.register(fastifyCookie);
 
 // Creates or opens the database
-const db = new DB(true);
+const dropTables = {
+	dropUsers: false,
+	dropMatches: false,
+	dropViews: true
+};
+const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropViews);
 
 // Adds all the possible routes
 new GameRouter(fastify, db).registerRoutes();

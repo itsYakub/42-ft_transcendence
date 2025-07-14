@@ -6,16 +6,16 @@ import { User } from "../user/User.js";
 export class DB {
 	private db: DatabaseSync;
 
-	constructor(dropTables: boolean) {
+	constructor(dropUsers: boolean, dropMatches: boolean, dropViews: boolean) {
 		this.db = new DatabaseSync(process.env.DB);
-		this.initDB(dropTables);
+		this.initDB(dropUsers, dropMatches, dropViews);
 	}
 
-	initDB(dropTables: boolean): void {
-		this.initUsers(dropTables);
-		this.initMatches(dropTables);
-		this.initViews(dropTables);
-		if (dropTables)
+	initDB(dropUsers: boolean, dropMatches: boolean, dropViews: boolean): void {
+		this.initUsers(dropUsers);
+		this.initMatches(dropMatches);
+		this.initViews(dropViews);
+		if (dropViews)
 			this.fillViews();
 	}
 
@@ -66,7 +66,7 @@ export class DB {
 	fillViews(): void {
 		const __dirname = import.meta.dirname;
 
-		const views = ["frame", "game", "home", "navbar_logged_in", "navbar_logged_out", "tournament"];
+		const views = ["frame", "game", "home", "navbar_logged_in", "navbar_logged_out", "profile", "tournament"];
 
 		views.forEach((value) => {
 			readFile(__dirname + `/views/${value}`, 'utf8', (err, data) => {
@@ -179,6 +179,7 @@ export class DB {
 		}
 	}
 
+	// Registers a new user in the DB
 	addUser(json: any): User {
 		let user = new User(json);
 		user.hashPassword();
@@ -192,5 +193,25 @@ export class DB {
 		catch (e) {
 			throw (e);
 		}
+	}
+
+	// Finds the user in the DB by email
+	findUser(json: any): any {
+		const select = this.db.prepare("SELECT * FROM Users WHERE Email = ?");
+		const user = select.get(json.email);
+		if (user) {
+			return {
+				error: false,
+				id: user.UserID,
+				nick: user.Nick,
+				avatar: user.Avatar,
+				password: user.Password,
+				role: user.role
+			}
+		}
+		return {
+			error: true,
+			message: "User not found"
+		};
 	}
 }

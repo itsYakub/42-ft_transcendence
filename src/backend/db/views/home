@@ -1,5 +1,9 @@
-<section class="bg-gray-900">
-	<!-- <img src="images/team.jpg" class="w-full h-235 opacity-5"/> -->
-	<div class="flex flex-col items-center justify-center px-6 text-white py-8 mx-auto md:h-screen lg:py-0">Welcome to
+<!-- <img src="images/team.jpg" class="w-full h-235 opacity-5"/> -->
+<div class="h-full bg-gray-900 content-center text-center">
+	<div class="text-white">Welcome to
 		Transcendence!</div>
-</section>
+	<button id="deleteButton"
+		class="mt-4 cursor-pointer text-left bg-%%COLOUR%% text-red-600 p-2 rounded-lg hover:bg-gray-700">
+		Wipe and recreate db
+	</button>
+</div>

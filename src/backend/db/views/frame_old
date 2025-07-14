@@ -10,11 +10,9 @@
 	<title>Transcendence</title>
 </head>
 
-<body>
-	<div class="h-screen flex flex-col">
-		<div id="navbar" class="h-32 ">%%NAVBAR%%</div>
-		<div id="content" class="grow">%%CONTENT%%</div>
-	</div>
+<body class="h-screen">
+	<div id="navbar">%%NAVBAR%%</div>
+	<div id="content" class="h-full p-0 sm:ml-64">%%CONTENT%%</div>
 </body>
 
 </html>

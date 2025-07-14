@@ -1,6 +1,6 @@
 import { setupProfileView } from "./profile.js";
 
-export async function navigate(url: string, user: any = {}): Promise<void> {
+export async function navigate(url: string): Promise<void> {
 	history.pushState(null, null, url);
 
 	// Fetches the data from the backend
@@ -22,59 +22,71 @@ window.addEventListener('popstate', function (event) {
 	navigate(window.location.pathname);
 });
 
+// Sets up all the listeners after a "page" refresh
 function registerListeners() {
 	document.getElementById("homeButton").addEventListener("click", () => {
 		navigate("/");
-	});
+	}, { once: true });
 
 	document.getElementById("gameButton").addEventListener("click", async () => {
 		navigate("/game");
-	});
+	}, { once: true });
 
 	document.getElementById("tournamentButton").addEventListener("click", () => {
 		navigate("/tournament");
-	});
+	}, { once: true });
 
-	document.getElementById("deleteButton").addEventListener("click", () => {
-		//drop and recreate tables, log out, delete cookie
-		fetch("/delete");
-	});
+	let deleteButton = document.getElementById("deleteButton")
+	if (deleteButton) {
+		deleteButton.addEventListener("click", () => {
+			//drop and recreate tables, log out, delete cookie
+			fetch("/delete");
+		}, { once: true });
+	}
 
-	document.getElementById("profileAvatar").addEventListener("click", async () => {
-		await navigate("/profile");
-		setupProfileView();
-	});
+	let profileAvatar = document.getElementById("profileAvatar");
+	if (profileAvatar) {
+		profileAvatar.addEventListener("click", async () => {
+			await navigate("/profile");
+			setupProfileView();
+		}, { once: true });
+	}
 
 	const registerButton = document.getElementById("registerButton");
 	if (registerButton) {
 		registerButton.addEventListener("click", async function (e) {
 			let dialog = <HTMLDialogElement>document.getElementById("registerDialog");
 			dialog.showModal();
-			const form = <HTMLFormElement>document.getElementById("registerForm");
-			form.addEventListener("submit", async (e) => {
-				e.preventDefault();
-				if ("jsbutton" == e.submitter.id)
-					return;
-				const nick = form.nick.value;
-				const email = form.email.value;
-				const password = form.password.value;
+		});
+	}
 
-				const response = await fetch("/register", {
-					method: "POST",
-					body: JSON.stringify({
-						nick, email, password
-					})
-				});
+	const registerForm = <HTMLFormElement>document.getElementById("registerForm");
+	if (registerForm) {
+		registerForm.addEventListener("submit", async (e) => {
+			if ("cancelRegisterButton" == e.submitter.id) {
+				//form.removeEventListener("submit");
+				return;
+			}
+			e.preventDefault();
+			const nick = registerForm.nick.value;
+			const email = registerForm.email.value;
+			const password = registerForm.password.value;
 
-				const payload = await response.json();
-				if (payload.error) {
-					alert(payload.message);
-					return;
-				}
-				dialog.close();
-				document.dispatchEvent(new Event("login"));
-				navigate("/", { "nick": payload.nick, "avatar": payload.avatar });
+			const response = await fetch("/register", {
+				method: "POST",
+				body: JSON.stringify({
+					nick, email, password
+				})
 			});
+
+			const payload = await response.json();
+			if (payload.error) {
+				alert(payload.message);
+				return;
+			}
+			let dialog = <HTMLDialogElement>document.getElementById("registerDialog");
+			dialog.close();
+			navigate("/");
 		});
 	}
 
@@ -83,31 +95,33 @@ function registerListeners() {
 		loginButton.addEventListener("click", async function (e) {
 			let dialog = <HTMLDialogElement>document.getElementById("loginDialog");
 			dialog.showModal();
-			const form = <HTMLFormElement>document.getElementById("loginForm");
-			form.addEventListener("submit", async (e) => {
-				e.preventDefault();
-				if ("jsbutton" == e.submitter.id)
-					return;
-				const nick = form.nick.value;
-				const email = form.email.value;
-				const password = form.password.value;
+		});
+	}
 
-				const response = await fetch("/register", {
-					method: "POST",
-					body: JSON.stringify({
-						nick, email, password
-					})
-				});
+	const loginForm = <HTMLFormElement>document.getElementById("loginForm");
+	if (loginForm) {
+		loginForm.addEventListener("submit", async (e) => {
+			if ("cancelLoginButton" == e.submitter.id)
+				return;
+			e.preventDefault();
+			const email = loginForm.email.value;
+			const password = loginForm.password.value;
 
-				const payload = await response.json();
-				if (payload.error) {
-					alert(payload.message);
-					return;
-				}
-				dialog.close();
-				document.dispatchEvent(new Event("login"));
-				navigate("/", { "nick": payload.nick, "avatar": payload.avatar });
+			const response = await fetch("/login", {
+				method: "POST",
+				body: JSON.stringify({
+					email, password
+				})
 			});
+
+			const payload = await response.json();
+			if (payload.error) {
+				alert(payload.message);
+				return;
+			}
+			let dialog = <HTMLDialogElement>document.getElementById("loginDialog");
+			dialog.close();
+			navigate("/");
 		});
 	}
 
@@ -125,10 +139,20 @@ function registerListeners() {
 				document.querySelector("#content").innerHTML = text.content;
 				registerListeners();
 			}
-		});
+		}, { once: true });
 	}
 }
 
+// document.getElementById("dropdownID").addEventListener("click", () => {
+// 	let dd = document.getElementById("dropdown");
+// 	dd.classList.remove("hidden");
+// });
+
 window.addEventListener("DOMContentLoaded", () => {
 	registerListeners();
+});
+
+window.addEventListener("beforeunload", (event) => {
+	// update db
+	console.log("bye");
 });
