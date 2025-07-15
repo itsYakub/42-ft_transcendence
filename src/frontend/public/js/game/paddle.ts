@@ -1,5 +1,6 @@
 import { Game } from "./../game.js"
 import { GameStateMachine } from "./../game.js"
+import { randomNumber } from "./../game.js"
 import { stateMachine } from "./../game.js"
 import { Shape } from "./shape.js";
 
@@ -10,12 +11,17 @@ export enum PaddleType {
 
 export class Paddle extends Shape {
 	private m_type : PaddleType;
-	private m_aiUpdateCalled : boolean;
 
 	private m_speed : number;
 	private m_upKey : string;
 	private m_downKey : string;
 	private m_colour : string;
+	
+	/* SECTION: AI
+	 * */
+	private m_aiUpdateCalled : boolean;
+	private	m_aiDestX : number;
+	private	m_aiDestY : number;
 	
 	constructor(x : number, y : number, w : number, h : number, upKey : string, downKey : string, colour : string, type : PaddleType) {
 		super(x, y, w, h);
@@ -40,18 +46,7 @@ export class Paddle extends Shape {
 				this.updateAI(canvas, ball);
 			}
 			
-			/* Floor and ceiling collision detection
-			 * */
-			if (this.y < 20.0) {
-				this.yVel = 0.0;
-				this.y = 20.0;
-			}
-			if (this.y + this.height > canvas.height - 20.0) {
-				this.yVel = 0.0;
-				this.y = canvas.height - 20.0 - this.height;
-			}
-
-			this.y += this.yVel * this.m_speed;
+			this.updatePosition(canvas);
 		}
 	}
 
@@ -81,26 +76,66 @@ export class Paddle extends Shape {
 			 * */
 			this.m_aiUpdateCalled = true;
 			setInterval(() => {
-
-				console.log("[ AI ] Ball at position: x." + ball.x + ", y." + ball.y);
-			
-				/* AI should work only if the ball is approaching it
-				 * */
-				if (this.isApproaching(canvas, ball)) {
-			
-					if (ball.y < this.y) {
-						this.yVel = -1.0;
-					} else if (ball.y > this.y + this.height) {
-						this.yVel = 1.0;
-					} else if (ball.y > this.y && ball.y < this.y + this.height) {
-						this.yVel = 0.0;
-					}
+		
+				if (stateMachine == GameStateMachine.STATE_GAME_START) {	
+					
+					/* AI should work only if the ball is approaching it
+					 * */
+					if (this.isApproaching(canvas, ball)) {
 				
+						let	_pos_to_ball : number;
+						let	_vel_x : number;
+						let _vel_y : number;
+
+						_pos_to_ball = Math.sqrt((ball.x - this.x)*(ball.x - this.x));
+						_vel_x = ball.xVel;
+						_vel_y = ball.yVel;
+						this.m_aiDestX = ball.x * randomNumber(0.9, 1.0);
+						this.m_aiDestY = ball.y * randomNumber(0.9, 1.0);
+						for (let i : number = 0.0; i < _pos_to_ball / _vel_x; i++) {
+							if (
+								this.m_aiDestY + _vel_y <= 10.0 ||
+								this.m_aiDestY + ball.height + _vel_y >= canvas.height - 10.0
+							) {
+								_vel_y *= -1.0;
+							}
+							this.m_aiDestX += _vel_x;
+							this.m_aiDestY += _vel_y;
+						}
+						console.log("[ AI ] Ball destination: " + this.m_aiDestX + ", " + this.m_aiDestY);
+
+					}
+
 				}
 
 			}, 1000);
 
 		}
+
+		if (this.y + this.height < this.m_aiDestY) {
+			this.yVel = 1.0;
+		}
+		else if (this.y > this.m_aiDestY) {
+			this.yVel = -1.0;
+		}
+		else {
+			this.yVel = 0.0;
+		}
+	}
+
+	updatePosition(canvas : HTMLCanvasElement) {
+		/* Floor and ceiling collision detection
+		 * */
+		if (this.y < 20.0) {
+			this.yVel = 0.0;
+			this.y = 20.0;
+		}
+		if (this.y + this.height > canvas.height - 20.0) {
+			this.yVel = 0.0;
+			this.y = canvas.height - 20.0 - this.height;
+		}
+
+		this.y += this.yVel * this.m_speed;
 	}
 
 	isApproaching(canvas : HTMLCanvasElement, ball : Shape) : boolean {

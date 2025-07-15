@@ -13,7 +13,6 @@ export async function navigate(url, user = {}) {
     });
     if (response.ok) {
         const text = await response.text();
-        console.log(response);
         document.querySelector("#content").innerHTML = text;
         if ("/" == url && 0 != Object.keys(user).length) {
             document.getElementById("profileNick").innerText = user.nick;
@@ -46,12 +45,8 @@ document.getElementById("homeButton").addEventListener("click", () => {
     navButtonClicked("/");
 });
 document.getElementById("gameButton").addEventListener("click", async () => {
-<<<<<<< HEAD
     await navigate("/game");
     setupGameFrame();
-=======
-    navButtonClicked("/game");
->>>>>>> origin/luke
 });
 document.getElementById("tournamentButton").addEventListener("click", () => {
     navButtonClicked("/tournament");

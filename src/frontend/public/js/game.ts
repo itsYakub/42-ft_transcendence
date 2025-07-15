@@ -9,6 +9,10 @@ export enum GameStateMachine {
 	STATE_GAME_PAUSE
 }
 
+export function randomNumber(min : number, max : number) : number {
+	return (min + (Math.random() / 2147483647) * (min - max));
+}
+
 export class Game {
 	private	m_gameCanvas : HTMLCanvasElement;
 	private	m_gameContext : CanvasRenderingContext2D;
@@ -45,7 +49,7 @@ export class Game {
 			wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2,
 			paddleWidth, paddleHeight,
 			"w", "s", "#fa2222",
-			PaddleType.PADDLE_AI
+			PaddleType.PADDLE_PLAYER
 		);
 		
 		this.m_player2 = new Paddle(
@@ -56,8 +60,11 @@ export class Game {
 			PaddleType.PADDLE_AI
 		);
 		
-		this.m_ball = new Ball(this.m_gameCanvas.width / 2 - ballSize / 2, this.m_gameCanvas.height / 2 - ballSize / 2, ballSize, ballSize);
-		this.draw();
+		this.m_ball = new Ball(
+			this.m_gameCanvas.width / 2 - ballSize / 2,
+			this.m_gameCanvas.height / 2 - ballSize / 2,
+			ballSize, ballSize
+		);
 	}
 
 	drawCourt() {
