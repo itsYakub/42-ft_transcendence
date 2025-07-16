@@ -1,31 +1,33 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { DB } from '../db/db.js';
-import { completeFrame, navbarAndContent } from '../common/viewInjector.js';
+import { frameAndContentHtml, frameHtml } from '../db/views/frame.js';
 
 export class GameRouter {
 	constructor(private fastify: FastifyInstance, private db: DB) { }
 
 	registerRoutes(): void {
-		this.fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
+		this.fastify.get('/play', async (request: FastifyRequest, reply: FastifyReply) => {
+			let user = this.db.getUser(request.cookies.jwt);
+
 			if (!request.headers["referer"]) {
-				const output = completeFrame(this.db, "game", request.cookies.jwt, {});
-				return reply.type("text/html").send(output);
+				let frame = frameHtml(this.db, "play", user);
+				return reply.type("text/html").send(frame);
 			}
-			else {
-				const output = navbarAndContent(this.db, "game", request.cookies.jwt, {});
-				return reply.send(output);
-			}
+
+			let frame = frameAndContentHtml(this.db, "play", user);
+			return reply.send(frame);
 		});
 
 		this.fastify.get('/tournament', async (request: FastifyRequest, reply: FastifyReply) => {
+			let user = this.db.getUser(request.cookies.jwt);
+
 			if (!request.headers["referer"]) {
-				const output = completeFrame(this.db, "tournament", request.cookies.jwt, {});
-				return reply.type("text/html").send(output);
+				let frame = frameHtml(this.db, "tournament", user);
+				return reply.type("text/html").send(frame);
 			}
-			else {
-				const output = navbarAndContent(this.db, "tournament", request.cookies.jwt, {});
-				return reply.send(output);
-			}
+
+			let frame = frameAndContentHtml(this.db, "tournament", user);
+			return reply.send(frame);
 		});
 
 		console.log("Registered game routes");

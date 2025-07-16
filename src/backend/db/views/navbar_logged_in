@@ -5,9 +5,9 @@
 			Home
 		</button>
 
-		<button id="gameButton"
-			class="mx-2 cursor-pointer text-left bg-%%GAME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-			Quick game
+		<button id="playButton"
+			class="mx-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+			Play
 		</button>
 
 		<button id="tournamentButton"

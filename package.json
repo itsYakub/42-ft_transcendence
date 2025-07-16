@@ -11,6 +11,7 @@
   "author": "lwillis",
   "license": "MIT",
   "dependencies": {
+    "@fastify/cors": "^11.0.1",
     "@fastify/static": "^8.2.0",
     "@tailwindcss/cli": "^4.1.10",
     "bcrypt-ts": "^7.1.0",

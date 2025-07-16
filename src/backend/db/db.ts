@@ -9,6 +9,7 @@ export class DB {
 	constructor(dropUsers: boolean, dropMatches: boolean, dropViews: boolean) {
 		this.db = new DatabaseSync(process.env.DB);
 		this.initDB(dropUsers, dropMatches, dropViews);
+		console.log("Set up db");
 	}
 
 	initDB(dropUsers: boolean, dropMatches: boolean, dropViews: boolean): void {
@@ -32,7 +33,6 @@ export class DB {
       Password TEXT NOT NULL,
 	  Role TEXT NOT NULL
     );`);
-		console.log("Set up user db");
 	}
 
 	initMatches(dropTables: boolean): void {
@@ -48,7 +48,6 @@ export class DB {
 	  P2Score INTEGER NOT NULL,
       PlayedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );`);
-		console.log("Set up matches db");
 	}
 
 	initViews(dropTables: boolean): void {
@@ -60,13 +59,12 @@ export class DB {
       ViewName TEXT PRIMARY KEY,
 	  Content BLOB
     );`);
-		console.log("Set up views db");
 	}
 
 	fillViews(): void {
 		const __dirname = import.meta.dirname;
 
-		const views = ["frame", "game", "home", "navbar_logged_in", "navbar_logged_out", "profile", "tournament"];
+		const views = ["frame", "home", "navbar_logged_in", "navbar_logged_out", "play", "profile", "tournament"];
 
 		views.forEach((value) => {
 			readFile(__dirname + `/views/${value}`, 'utf8', (err, data) => {
@@ -214,4 +212,5 @@ export class DB {
 			message: "User not found"
 		};
 	}
+
 }

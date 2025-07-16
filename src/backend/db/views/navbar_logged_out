@@ -5,9 +5,9 @@
 			Home
 		</button>
 
-		<button id="gameButton"
-			class="mx-2 cursor-pointer text-left bg-%%GAME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-			Quick game
+		<button id="playButton"
+			class="mx-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+			Play
 		</button>
 
 		<button id="tournamentButton"
@@ -51,12 +51,17 @@
 			<button id="loginButton" type="submit" formmethod="post"
 				class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center">Login</button>
 		</form>
+
+		<div class="pt-2">
+			<hr class="text-gray-100 w-8/10 mb-4 mx-auto"/>
+			<img src="images/google-signin.png" id="googleSigninButton" class="cursor-pointer mx-auto" />
+		</div>
 	</div>
 </dialog>
 
 <dialog id="registerDialog" class="m-auto content-center rounded-lg shadow border bg-gray-800 border-gray-100">
 	<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-		<h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+		<h1 class="text-xl font-bold text-white">
 			Register a new account
 		</h1>
 		<form id="registerForm">
@@ -79,11 +84,17 @@
 					class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 					required="true">
 			</div>
-			<button id="cancelRegisterButton"
-				class="cursor-pointer float-left text-red-600 my-4 hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center"
-				type="submit" formmethod="dialog" formnovalidate>Cancel</button>
-			<button id="signupButton" type="submit" formmethod="post"
-				class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center">Register</button>
+			<div>
+				<button id="cancelRegisterButton"
+					class="cursor-pointer float-left text-red-600 my-4 hover:bg-gray-700 font-medium rounded-lg p-2 text-center"
+					type="submit" formmethod="dialog" formnovalidate>Cancel</button>
+				<button id="signupButton" type="submit" formmethod="post"
+					class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg p-2 text-center">Register</button>
+			</div>
 		</form>
+		<div class="pt-2">
+			<hr class="text-gray-100 w-8/10 mb-4 mx-auto"/>
+			<img src="images/google-signup.png" id="googleSignupButton" class="cursor-pointer mx-auto" />
+		</div>
 	</div>
 </dialog>

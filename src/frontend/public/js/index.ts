@@ -28,8 +28,8 @@ function registerListeners() {
 		navigate("/");
 	}, { once: true });
 
-	document.getElementById("gameButton").addEventListener("click", async () => {
-		navigate("/game");
+	document.getElementById("playButton").addEventListener("click", async () => {
+		navigate("/play");
 	}, { once: true });
 
 	document.getElementById("tournamentButton").addEventListener("click", () => {
@@ -38,9 +38,19 @@ function registerListeners() {
 
 	let deleteButton = document.getElementById("deleteButton")
 	if (deleteButton) {
-		deleteButton.addEventListener("click", () => {
+		deleteButton.addEventListener("click", async () => {
 			//drop and recreate tables, log out, delete cookie
-			fetch("/delete");
+			const response = await fetch("/delete", {
+				method: "GET"
+			});
+
+			// Sets the frame's navbar and content
+			if (response.ok) {
+				const text = await response.json();
+				document.querySelector("#navbar").innerHTML = text.navbar;
+				document.querySelector("#content").innerHTML = text.content;
+				registerListeners();
+			}
 		}, { once: true });
 	}
 
@@ -141,12 +151,25 @@ function registerListeners() {
 			}
 		}, { once: true });
 	}
-}
 
-// document.getElementById("dropdownID").addEventListener("click", () => {
-// 	let dd = document.getElementById("dropdown");
-// 	dd.classList.remove("hidden");
-// });
+	const googleSignupButton = document.getElementById("googleSignupButton");
+	if (googleSignupButton) {
+		googleSignupButton.addEventListener("click", () => {
+			const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+			url.search = new URLSearchParams(query).toString();
+			window.location.href = url.toString();
+		});
+	}
+
+	const googleSigninButton = document.getElementById("googleSigninButton");
+	if (googleSigninButton) {
+		googleSigninButton.addEventListener("click", () => {
+			const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+			url.search = new URLSearchParams(query).toString();
+			window.location.href = url.toString();
+		});
+	}
+}
 
 window.addEventListener("DOMContentLoaded", () => {
 	registerListeners();
@@ -156,3 +179,10 @@ window.addEventListener("beforeunload", (event) => {
 	// update db
 	console.log("bye");
 });
+
+const query = {
+	client_id: "406443471410-godkm6dcav2851sq2114j4due48hu9iu.apps.googleusercontent.com",
+	redirect_uri: "http://localhost:3000/auth/google",
+	response_type: "code",
+	scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+};

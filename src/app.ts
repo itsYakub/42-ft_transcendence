@@ -5,19 +5,31 @@ import { DB } from "./backend/db/db.js";
 import { GameRouter } from "./backend/game/GameRouter.js";
 import { NavRouter } from "./backend/navigation/ViewRouter.js";
 import { UserRouter } from "./backend/user/UserRouter.js";
+import { readFileSync } from "fs";
+import { join } from "path";
+import fastifyCors from "@fastify/cors";
 
 const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
-	ignoreTrailingSlash: true
+	ignoreTrailingSlash: true,
+	// https: {
+    //   key: readFileSync(join(__dirname, 'transcendence.key')),
+    //   cert: readFileSync(join(__dirname, 'transcendence.crt'))
+    // }
 });
+
+fastify.register(fastifyCors), {
+    origin: "*"
+};
+
+
+fastify.register(fastifyCookie);
 
 // Has all the static files (css, js, etc.)
 fastify.register(fastifyStatic, {
 	root: __dirname + "/frontend/public"
 });
-
-fastify.register(fastifyCookie);
 
 // Creates or opens the database
 const dropTables = {

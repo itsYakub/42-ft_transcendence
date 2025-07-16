@@ -5,14 +5,18 @@ import { DB } from "./backend/db/db.js";
 import { GameRouter } from "./backend/game/GameRouter.js";
 import { NavRouter } from "./backend/navigation/ViewRouter.js";
 import { UserRouter } from "./backend/user/UserRouter.js";
+import fastifyCors from "@fastify/cors";
 const __dirname = import.meta.dirname;
 const fastify = Fastify({
-    ignoreTrailingSlash: true
+    ignoreTrailingSlash: true,
 });
+fastify.register(fastifyCors), {
+    origin: "*"
+};
+fastify.register(fastifyCookie);
 fastify.register(fastifyStatic, {
     root: __dirname + "/frontend/public"
 });
-fastify.register(fastifyCookie);
 const dropTables = {
     dropUsers: false,
     dropMatches: false,
