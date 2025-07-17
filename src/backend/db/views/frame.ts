@@ -1,5 +1,7 @@
 import { DB } from "../db.js";
+import { friendsHtml } from "./friends.js";
 import { homeHtml } from "./home.js";
+import { matchesHtml } from "./matches.js";
 import { navbarHtml } from "./navbar.js";
 import { playHtml } from "./play.js";
 import { profileHtml } from "./profile.js";
@@ -38,7 +40,7 @@ function highlightPage(navbar: string, view: string) {
 
 	views.forEach((value) => {
 		if (value == view.toUpperCase())
-			navbar = navbar.replace(`%%${value}_COLOUR%%`, "gray-900");
+			navbar = navbar.replace(`%%${value}_COLOUR%%`, "gray-700");
 		else
 			navbar = navbar.replace(`%%${value}_COLOUR%%`, "transparent");
 	});
@@ -49,8 +51,12 @@ function highlightPage(navbar: string, view: string) {
 /* Gets the correct HTMl from the db */
 function contentHtml(db: DB, view: string, user: any): string {
 	switch (view) {
+		case "friends":
+			return friendsHtml(db, user);
 		case "home":
 			return homeHtml(db, user);
+		case "matches":
+			return matchesHtml(db, user);
 		case "play":
 			return playHtml(db, user);
 		case "profile":

@@ -1,7 +1,7 @@
 import { DB } from "../db.js";
 
-export function profileHtml(db: DB, user: any): string {
-	let html = db.getView("profile");
+export function matchesHtml(db: DB, user: any): string {
+	let html = db.getView("matches");
 
 	return injectUser(html, user);
 }

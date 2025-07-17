@@ -23,6 +23,5 @@ export class GameRouter {
             let frame = frameAndContentHtml(this.db, "tournament", user);
             return reply.send(frame);
         });
-        console.log("Registered game routes");
     }
 }

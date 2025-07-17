@@ -8,6 +8,8 @@ import { UserRouter } from "./backend/user/UserRouter.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 import fastifyCors from "@fastify/cors";
+import { GoogleRouter } from "./backend/user/GoogleRouter.js";
+import { ProfileRouter } from "./backend/profile/ProfileRouter.js";
 
 const __dirname = import.meta.dirname;
 
@@ -41,8 +43,12 @@ const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropV
 
 // Adds all the possible routes
 new GameRouter(fastify, db).registerRoutes();
+new GoogleRouter(fastify, db).registerRoutes();
 new NavRouter(fastify, db).registerRoutes();
+new ProfileRouter(fastify, db).registerRoutes();
 new UserRouter(fastify, db).registerRoutes();
+
+console.log("Registered routes");
 
 // Start listening
 fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {

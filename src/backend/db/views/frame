@@ -15,7 +15,6 @@
 	<div class="h-screen flex flex-col">
 		<div id="navbar" class="h-32 ">%%NAVBAR%%</div>
 		<div id="content" class="grow">%%CONTENT%%</div>
-
 	</div>
 </body>
 

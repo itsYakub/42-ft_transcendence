@@ -1,3 +1,56 @@
-<div class="h-full bg-gray-900 text-center">
-	<div class="text-white">Profile</div>
+<div class="w-full h-full bg-gray-900">
+	<div class="h-full w-200 m-auto text-center flex flex-row">
+		<div class="w-60">
+			<div class="flex flex-col items-end content-end mt-8">
+				<button id="profileButton"
+					class="text-right w-8/10 mr-4 bg-gray-700 text-gray-300 p-2 rounded-lg">Profile</button>
+				<button id="matchesButton"
+					class="my-4 cursor-pointer text-right w-8/10 mr-4 text-gray-300 p-2 rounded-lg hover:bg-gray-700">Matches</button>
+				<button id="friendsButton"
+					class="cursor-pointer text-right w-8/10 mr-4 text-gray-300 p-2 rounded-lg hover:bg-gray-700">Friends</button>
+			</div>
+		</div>
+		<div class="grow bg-gray-700">
+			<div class="p-8 m-auto text-left">
+				<div class="text-white text-left text-xl">User Profile</div>
+				<div class="my-4 p-4 border border-gray-600 rounded-lg ">
+					<span class="text-white font-medium mb-4">Update password</span>
+					<form id="changePasswordForm">
+						<div>
+							<input type="password" id="currentPassword" placeholder="Current password"
+								class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-500 text-white">
+						</div>
+						<div>
+							<input type="password" id="newPassword" placeholder="New password"
+								class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-600 text-white">
+						</div>
+						<div>
+							<input type="password" id="repeatPassword" placeholder="Repeat password"
+								class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white">
+						</div>
+						<div>
+							<button type="submit" formmethod="post"
+								class="ml-auto cursor-pointer block text-right mt-4 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Update</button>
+						</div>
+					</form>
+					<!--img src="%%AVATAR%%" /> -->
+				</div>
+				<div class="my-4 p-4 border border-gray-600 rounded-lg ">
+					<span class="text-white font-medium">Update Nickname</span>
+					<form id="changeNickForm">
+						<div>
+							<label for="newNick" class="block my-2 text-sm font-medium text-white">New nickname</label>
+							<input type="text" id="newNick" name="newNick"
+								class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white">
+						</div>
+						<div>
+							<button type="submit" formmethod="post"
+								class="ml-auto cursor-pointer block text-right mt-4 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Update</button>
+						</div>
+					</form>
+					<!--img src="%%AVATAR%%" /> -->
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

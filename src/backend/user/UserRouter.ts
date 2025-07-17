@@ -3,11 +3,9 @@ import { DB } from '../db/db.js';
 import { addUserToDB, loginUser } from '../db/userHandler.js';
 
 export class UserRouter {
-
 	constructor(private fastify: FastifyInstance, private db: DB) { }
 
-	registerRoutes(): void {
-
+	registerRoutes(): void {		
 		// TODO Delete this!
 		this.fastify.get("/delete", async (request: FastifyRequest, reply: FastifyReply) => {
 			this.db.initDB(true, true, true);
@@ -37,47 +35,17 @@ export class UserRouter {
 		});
 
 		this.fastify.get("/logout", async (request: FastifyRequest, reply: FastifyReply) => {
+			this.db.logoutUser(request.cookies.jwt);
 			let date = new Date();
 			date.setDate(date.getDate() - 3);
 			return reply.header(
 				"Set-Cookie", `jwt=blank; expires=${date}; Secure; HttpOnly;`).redirect("/");
 		});
 
-		/* Google sign-in redirects to here */
-		this.fastify.get("/auth/google", async (request: FastifyRequest, reply: FastifyReply) => {
-			let code: string = request.query["code"];
 
-			// add checks
 
-			const dd = {
-				"client_id": process.env.GOOGLE_CLIENT,
-				"client_secret": process.env.GOOGLE_SECRET,
-				"code": code,
-				"grant_type": "authorization_code",
-				"redirect_uri": "http://localhost:3000/auth/google"
-			}
-
-			const response = await fetch("https://oauth2.googleapis.com/token", {
-				method: "POST",
-				body: JSON.stringify(dd)
-			});
-
-			console.log(response);
-			const json = await response.json();
-			console.log(json);
-			const idToken: string = json.id_token;
-			const payload = idToken.split(".")[1];
-			const decoded: string = atob(payload);
-			const user = JSON.parse(decoded);
-			console.log(user.name);
-			console.log(user.picture);
-			console.log(user.email);
-
-			// add to db
-
-			return reply.redirect("/");
+		this.fastify.get("/logout2", async (request: FastifyRequest, reply: FastifyReply) => {
+			//this.db.logoutUser(request.cookies.jwt);
 		});
-
-		console.log("Registered profile routes");
 	}
 }

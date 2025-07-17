@@ -1,4 +1,4 @@
-import { setupProfileView } from "./profile.js";
+import { registerProfileListeners } from "./profile.js";
 export async function navigate(url) {
     history.pushState(null, null, url);
     const response = await fetch(url, {
@@ -42,7 +42,6 @@ function registerListeners() {
     if (profileAvatar) {
         profileAvatar.addEventListener("click", async () => {
             await navigate("/profile");
-            setupProfileView();
         }, { once: true });
     }
     const registerButton = document.getElementById("registerButton");
@@ -62,20 +61,49 @@ function registerListeners() {
             const nick = registerForm.nick.value;
             const email = registerForm.email.value;
             const password = registerForm.password.value;
-            const response = await fetch("/register", {
-                method: "POST",
-                body: JSON.stringify({
-                    nick, email, password
-                })
-            });
-            const payload = await response.json();
-            if (payload.error) {
-                alert(payload.message);
-                return;
+            const files = registerForm.avatarFilename.files;
+            if (1 == files.length) {
+                if (files[0].size > 500 * 1024) {
+                    alert("The selected avatar is too big - 500KiB max!");
+                    return;
+                }
+                const reader = new FileReader();
+                reader.readAsDataURL(files[0]);
+                reader.onloadend = async () => {
+                    const avatar = reader.result;
+                    const response = await fetch("/register", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            nick, email, password, avatar
+                        })
+                    });
+                    const payload = await response.json();
+                    if (payload.error) {
+                        alert(payload.message);
+                        return;
+                    }
+                    let dialog = document.getElementById("registerDialog");
+                    dialog.close();
+                    navigate("/");
+                };
             }
-            let dialog = document.getElementById("registerDialog");
-            dialog.close();
-            navigate("/");
+            else {
+                const avatar = "";
+                const response = await fetch("/register", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        nick, email, password, avatar
+                    })
+                });
+                const payload = await response.json();
+                if (payload.error) {
+                    alert(payload.message);
+                    return;
+                }
+                let dialog = document.getElementById("registerDialog");
+                dialog.close();
+                navigate("/");
+            }
         });
     }
     const loginButton = document.getElementById("loginButton");
@@ -139,12 +167,14 @@ function registerListeners() {
             window.location.href = url.toString();
         });
     }
+    registerProfileListeners();
 }
 window.addEventListener("DOMContentLoaded", () => {
     registerListeners();
 });
 window.addEventListener("beforeunload", (event) => {
     console.log("bye");
+    fetch("/logout2");
 });
 const query = {
     client_id: "406443471410-godkm6dcav2851sq2114j4due48hu9iu.apps.googleusercontent.com",

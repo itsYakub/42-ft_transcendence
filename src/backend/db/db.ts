@@ -30,8 +30,9 @@ export class DB {
       Nick TEXT UNIQUE NOT NULL,
       Email TEXT UNIQUE NOT NULL,
 	  Avatar TEXT NOT NULL,
-      Password TEXT NOT NULL,
-	  Role TEXT NOT NULL
+      Password TEXT,
+	  Role TEXT NOT NULL,
+	  Online INTEGER NOT NULL
     );`);
 	}
 
@@ -64,7 +65,7 @@ export class DB {
 	fillViews(): void {
 		const __dirname = import.meta.dirname;
 
-		const views = ["frame", "home", "navbar_logged_in", "navbar_logged_out", "play", "profile", "tournament"];
+		const views = ["frame", "friends", "home", "matches", "navbar_logged_in", "navbar_logged_out", "play", "profile", "tournament"];
 
 		views.forEach((value) => {
 			readFile(__dirname + `/views/${value}`, 'utf8', (err, data) => {
@@ -183,10 +184,26 @@ export class DB {
 		user.hashPassword();
 
 		try {
-			const insert = this.db.prepare('INSERT INTO Users (Nick, Email, Password, Role, Avatar) VALUES (?, ?, ?, ?, ?)');
-			const statementSync = insert.run(user.getNick(), user.getEmail(), user.getPassword(), user.getRole(), user.getAvatar());
+			const insert = this.db.prepare('INSERT INTO Users (Nick, Email, Password, Role, Avatar, Online) VALUES (?, ?, ?, ?, ?, ?)');
+			const statementSync = insert.run(json.nick, json.email, user.getPassword(), "USER", json.avatar, 1);
 			user.setID(statementSync.lastInsertRowid as number);
 			return user;
+		}
+		catch (e) {
+			throw (e);
+		}
+	}
+
+	// Registers a Google sign-up user in the DB
+	addGoogleUser(json: any): any {
+		try {
+			const insert = this.db.prepare('INSERT INTO Users (Nick, Email, Role, Avatar, Online) VALUES (?, ?, ?, ?, ?)');
+			const statementSync = insert.run(json.nick, json.email, "USER", json.avatar, 1);
+			const id: number = statementSync.lastInsertRowid as number;
+			return {
+				id,
+				
+			};
 		}
 		catch (e) {
 			throw (e);
@@ -211,6 +228,12 @@ export class DB {
 			error: true,
 			message: "User not found"
 		};
+	}
+
+	logoutUser(jwt: string) {
+		let user = this.getUser(jwt);
+		// change online to 0 in the DB
+		console.log("Logging out", user.nick);
 	}
 
 }

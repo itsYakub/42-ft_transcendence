@@ -17,23 +17,5 @@ export class NavRouter {
 			let frame = frameAndContentHtml(this.db, "home", user);
 			return reply.send(frame);
 		});
-
-		this.fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
-			let user = this.db.getUser(request.cookies.jwt);
-			if (user.error) {
-				return reply.redirect("/");
-			}
-
-			if (!request.headers["referer"]) {
-				let frame = frameHtml(this.db, "profile", user);
-				return reply.type("text/html").send(frame);
-			}
-			else {
-				let frame = frameAndContentHtml(this.db, "profile", user);
-				return reply.send(frame);
-			}
-		});
-
-		console.log("Registered view routes");
 	}
 }

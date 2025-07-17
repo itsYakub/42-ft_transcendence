@@ -1,5 +1,4 @@
 import { createHmac } from 'crypto';
-import { User } from '../user/User.js';
 
 function createHMAC(message: string, secret: string) {
 	return createHmac('sha256', secret)
@@ -7,7 +6,7 @@ function createHMAC(message: string, secret: string) {
 		.digest("base64");
 }
 
-function replaceChars(input: string) {
+function replaceInvalidBase64Chars(input: string) {
 	return input.replace(/[=+/]/g, charToBeReplaced => {
 		switch (charToBeReplaced) {
 			case '=':
@@ -33,12 +32,12 @@ export function createJWT(id: number): string {
 			"sub": id,
 			"exp": date
 		});
-	header = replaceChars(header);
-	payload = replaceChars(payload);
+	header = replaceInvalidBase64Chars(header);
+	payload = replaceInvalidBase64Chars(payload);
 	header = btoa(header);
 	payload = btoa(payload);
 	let hash = createHMAC(header + "." + payload, process.env.JWT_SECRET);
-	hash = replaceChars(hash);
+	hash = replaceInvalidBase64Chars(hash);
 	return header + "." + payload + "." + hash;
 }
 
@@ -52,6 +51,6 @@ export function validJWT(jwt: string): boolean {
 	const payload = splitJWT[1];
 	const signature = splitJWT[2];
 	let hash = createHMAC(header + "." + payload, process.env.JWT_SECRET);
-	hash = replaceChars(hash);
+	hash = replaceInvalidBase64Chars(hash);
 	return hash == signature;
 }
