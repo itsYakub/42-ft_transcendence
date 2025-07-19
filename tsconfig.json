@@ -4,5 +4,8 @@
 		"module": "ESNext",
 		"removeComments": true,
 		"moduleResolution": "node10"
-	}
+	},
+	"types": [
+        "babylonjs"
+    ]
 }

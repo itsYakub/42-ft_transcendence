@@ -1,3 +1,5 @@
+/*
+
 import {
 	Game,
 	randomNumber,
@@ -19,7 +21,7 @@ export class Ball extends Shape {
 		this.collisionDetection(player1, player2, canvas);
 
 		/* clamping the ball's m_speed to the maximum value (in this case: 12.0) (let the hell go loose)
-		* */
+		* * /
 		this.m_speed = this.m_speed > 12.0 ? 12.0 : this.m_speed;
 		this.x += this.xVel * this.m_speed;
 		this.y += this.yVel * this.m_speed;
@@ -67,7 +69,7 @@ export class Ball extends Shape {
 		let	_tolerance_point : number;
 
 		/* Ball - to - top/bottom collistion detection
-		 * */
+		 * * /
 		if (
 			(this.y <= 0.0) ||
 			(this.y + this.height >= canvas.height)
@@ -79,7 +81,7 @@ export class Ball extends Shape {
 		/* Ball - to - player collision detection
 		 * SOURCE:
 		 *  - https://github.com/clear-code-projects/Pong_in_Pygame/blob/master/Pong9_collision.py
-		 * */
+		 * * /
 		_tolerance_point = player1.width;
 		if (
 			this.aabb(player1) && this.xVel < 0.0
@@ -116,3 +118,4 @@ export class Ball extends Shape {
 	}
 }
 
+*/

@@ -1,3 +1,5 @@
+/*
+
 import {
 	Game,
 	randomNumber,
@@ -22,7 +24,7 @@ export class Paddle extends Shape {
 	private m_colour : string;
 	
 	/* SECTION: AI
-	 * */
+	 * * /
 	private	m_aiInterval : ReturnType<typeof setTimeout>;
 	private m_aiUpdateCalled : boolean;
 	private	m_aiDestX : number;
@@ -84,11 +86,11 @@ export class Paddle extends Shape {
 	private	updateAI(canvas : HTMLCanvasElement, ball : Shape) {
 		/* NOTE(joleksia)
 		 *  AI Code goes here...
-		 * */
+		 * * /
 		if (!this.m_aiUpdateCalled) {
 
 			/* setInterval must be called only once per match
-			 * */
+			 * * /
 			this.m_aiUpdateCalled = true;
 			this.m_aiInterval = setInterval(() => {
 		
@@ -111,7 +113,7 @@ export class Paddle extends Shape {
 
 	private	updatePosition(canvas : HTMLCanvasElement) {
 		/* Floor and ceiling collision detection
-		 * */
+		 * * /
 		if (this.y < 0.0) {
 			this.yVel = 0.0;
 			this.y = 0.0;
@@ -159,3 +161,5 @@ export class Paddle extends Shape {
 		console.log("[ AI ] Ball destination: " + this.m_aiDestX + ", " + this.m_aiDestY);
 	}
 }
+
+*/

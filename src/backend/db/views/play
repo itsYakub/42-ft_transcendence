@@ -1,4 +1,4 @@
 <button id="gamePlay">Play</button>
 <div class="text-center m-4" style="margin:16px;">
-	<canvas width='1682' height='768' id='pongCanvas'></canvas>
+	<canvas width='1682' height='768' id='renderCanvas'></canvas>
 </div>
