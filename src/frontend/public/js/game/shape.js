@@ -1,11 +1,15 @@
 export class Shape {
     constructor(x, y, w, h) {
-        this.xVel = 0;
-        this.yVel = 0;
+        this.width = 0.0;
+        this.height = 0.0;
+        this.xVel = 0.0;
+        this.yVel = 0.0;
+        this.x = 0.0;
+        this.y = 0.0;
         this.width = w;
         this.height = h;
-        this.x = this.xPrev = x;
-        this.y = this.yPrev = y;
+        this.x = x;
+        this.y = y;
         console.log("[ SHAPE ] Created successfully | x." + this.x + ", y." + this.y + " | w." + this.width + ", h." + this.height);
     }
     aabb(other) {

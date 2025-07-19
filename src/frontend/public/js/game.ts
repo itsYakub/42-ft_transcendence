@@ -3,12 +3,6 @@ import { Paddle } from "./game/paddle.js";
 import { PaddleType } from "./game/paddle.js";
 import { Ball } from "./game/ball.js";
 
-export enum GameStateMachine {
-	STATE_GAME_SETUP,
-	STATE_GAME_START,
-	STATE_GAME_PAUSE
-}
-
 export function randomNumber(min : number, max : number) : number {
 	return (min + (Math.random() / 2147483647) * (min - max));
 }
@@ -49,7 +43,7 @@ export class Game {
 			wallOffset, this.m_gameCanvas.height / 2 - paddleHeight / 2,
 			paddleWidth, paddleHeight,
 			"w", "s", "#fa2222",
-			PaddleType.PADDLE_PLAYER
+			PaddleType.PADDLE_AI
 		);
 		
 		this.m_player2 = new Paddle(
@@ -67,15 +61,35 @@ export class Game {
 		);
 	}
 
-	drawCourt() {
+	update() {
+		this.m_player1.update(this.m_gameCanvas, this.m_ball);
+		this.m_player2.update(this.m_gameCanvas, this.m_ball);
+		this.m_ball.update(this.m_player1,this.m_player2,this.m_gameCanvas);
+
+		if (this.m_ball.outOfBound(this.m_gameCanvas)) {
+			this.m_ball.restart(this.m_gameCanvas);
+			this.m_player1.restart();
+			this.m_player2.restart();
+		}
+	}
+
+	render() {
+		this.renderCourt();
+		this.m_player1.render(this.m_gameContext);
+		this.m_player2.render(this.m_gameContext);
+		this.m_ball.render(this.m_gameContext);
+	}
+
+	run() {
+		game.update();
+		game.render();
+		requestAnimationFrame(game.run);
+	}
+
+	renderCourt() {
 		// Draws the court floor
 		this.m_gameContext.fillStyle = "#008566";
 		this.m_gameContext.fillRect(0, 0, this.m_gameCanvas.width, this.m_gameCanvas.height);
-
-		// Draws outline
-		this.m_gameContext.strokeStyle = "#fff";
-		this.m_gameContext.lineWidth = 4;
-		this.m_gameContext.strokeRect(8, 8, this.m_gameCanvas.width - 16, this.m_gameCanvas.height - 16);
 
 		// Draws half-way line
 		this.m_gameContext.fillStyle = "#fff";
@@ -85,49 +99,16 @@ export class Game {
 		this.m_gameContext.fillText(Game.player1Score.toString(), this.m_gameCanvas.width / 3, 128);
 		this.m_gameContext.fillText(Game.player2Score.toString(), this.m_gameCanvas.width / 3 * 2, 128);
 	}
-
-	update() {
-		this.m_player1.update(this.m_gameCanvas, this.m_ball);
-		this.m_player2.update(this.m_gameCanvas, this.m_ball);
-		if (stateMachine == GameStateMachine.STATE_GAME_START) {
-			this.m_ball.update(this.m_player1,this.m_player2,this.m_gameCanvas);
-		}
-	}
-
-	draw() {
-		this.drawCourt();
-		this.m_player1.draw(this.m_gameContext);
-		this.m_player2.draw(this.m_gameContext);
-		this.m_ball.draw(this.m_gameContext);
-	}
-
-	gameLoop() {
-		game.update();
-		game.draw();
-		requestAnimationFrame(game.gameLoop);
-	}
 }
 
 var game: Game;
-export var stateMachine : GameStateMachine;
 
-function setupGame() {
+function	gamePlay() {
 	game = new Game();
-	stateMachine = GameStateMachine.STATE_GAME_SETUP;
-	requestAnimationFrame(game.gameLoop);
-	(<HTMLButtonElement>document.getElementById("gameSetup")).disabled = true;
+	requestAnimationFrame(game.run);
+	(<HTMLButtonElement>document.getElementById("gamePlay")).disabled = true;
 }
 
-function playGame() {
-	stateMachine = GameStateMachine.STATE_GAME_START;
-}
-
-function pauseGame() {
-	stateMachine = GameStateMachine.STATE_GAME_PAUSE;
-}
-
-export function setupGameFrame() {
-	document.getElementById("gameSetup").addEventListener("click", async( ) => { setupGame(); });
-	document.getElementById("gamePlay").addEventListener("click", async( ) => { playGame(); });
-	document.getElementById("gamePause").addEventListener("click", async( ) => { pauseGame(); });
+export function	setupGameFrame() {
+	document.getElementById("gamePlay").addEventListener("click", async( ) => { gamePlay(); });
 }
