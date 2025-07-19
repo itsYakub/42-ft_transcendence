@@ -1,5 +1,5 @@
-import { createJWT } from "./jwt.js";
-import { DB } from "./db.js";
+import { createJWT } from "../jwt.js";
+import { DB } from "../db.js";
 import { compareSync } from "bcrypt-ts";
 
 export function addUserToDB(db: DB, json: any): any {
@@ -82,4 +82,26 @@ export function loginUser(db: DB, json: any): any {
 			"message": "Internal error!"
 		};
 	}
+}
+
+export function updateNick(db: DB, json: any) {
+	try {
+		db.updateNick(json);
+	}
+	catch (e) {
+		if ("constraint failed" == e.errstr) {
+			return {
+				"error": true,
+				"message": "Either the nickname or the email is already taken!"
+			}
+		}
+		return {
+			"error": true,
+			"message": "SQL error!"
+		};
+	}
+}
+
+export function updateAvatar(db: DB, json: any) {
+	db.updateAvatar(json);
 }

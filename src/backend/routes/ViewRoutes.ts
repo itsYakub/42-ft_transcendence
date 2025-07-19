@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DB } from '../db/db.js';
-import { frameAndContentHtml, frameHtml } from '../db/views/frame.js';
+import { frameAndContentHtml, frameHtml } from '../db/handlers/frame.js';
 
 export class NavRouter {
 	constructor(private fastify: FastifyInstance, private db: DB) { }

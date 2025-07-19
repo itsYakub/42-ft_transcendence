@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DB } from '../db/db.js';
-import { frameAndContentHtml, frameHtml } from '../db/views/frame.js';
+import { frameAndContentHtml, frameHtml } from '../db/handlers/frame.js';
+import { updateAvatar, updateNick } from '../db/handlers/userHandler.js';
 
 export class ProfileRouter {
 	constructor(private fastify: FastifyInstance, private db: DB) { }
@@ -52,6 +53,16 @@ export class ProfileRouter {
 				let frame = frameAndContentHtml(this.db, "friends", user);
 				return reply.send(frame);
 			}
+		});
+
+		this.fastify.post('/nick', async (request: FastifyRequest, reply: FastifyReply) => {
+			updateNick(this.db, JSON.parse(request.body as string));
+			reply.code(200);
+		});
+
+		this.fastify.post('/avatar', async (request: FastifyRequest, reply: FastifyReply) => {
+			updateAvatar(this.db, JSON.parse(request.body as string));
+			reply.code(200);
 		});
 	}
 }

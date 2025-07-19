@@ -46,7 +46,7 @@
 					required="true">
 			</div>
 			<button id="cancelLoginButton"
-				class="cursor-pointer float-left text-red-600 my-4 hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center"
+				class="cursor-pointer float-left text-red-500 my-4 hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center"
 				type="submit" formmethod="dialog" formnovalidate>Cancel</button>
 			<button id="loginButton" type="submit" formmethod="post"
 				class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center">Login</button>
@@ -66,28 +66,23 @@
 		</h1>
 		<form id="registerForm">
 			<div>
-				<label for="nick" class="block mb-2 text-sm font-medium text-white">Nickname</label>
-				<input type="text" name="nick" value="coldandtired"
-					class="border rounded-lg block w-full p-2.5 dark:bg-gray-700 border-gray-600 placeholder-gray-400 text-white"
+				<input type="text" name="nick" placeholder="Nickname"
+					class="border rounded-lg block w-full p-2.5 dark:bg-gray-700 border-gray-600 placeholder-gray-600 text-white"
 					required="true">
 			</div>
 			<div>
-				<label for="email" class="block my-2 text-sm font-medium text-white">Email</label>
-				<input type="email" name="email" value="abc@example.com"
-					class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white"
+				<input type="email" name="email" placeholder="Email"
+					class="my-2 border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-600 text-white"
 					required="true">
 			</div>
 			<div>
-				<label for="password"
-					class="block my-2 text-sm font-medium text-white">Password</label>
-				<input type="password" name="password" minlength="8" value="12345678"
-					class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white"
+				<input type="password" name="password" minlength="8" placeholder="Password"
+					class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-600 text-white"
 					required="true">
-			</div>
-			<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg">
+			</div>			
 			<div>
 				<button id="cancelRegisterButton"
-					class="cursor-pointer float-left text-red-600 my-4 hover:bg-gray-700 font-medium rounded-lg p-2 text-center"
+					class="cursor-pointer float-left text-red-500 my-4 hover:bg-gray-700 font-medium rounded-lg p-2 text-center"
 					type="submit" formmethod="dialog" formnovalidate>Cancel</button>
 				<button id="signupButton" type="submit" formmethod="post"
 					class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg p-2 text-center">Register</button>

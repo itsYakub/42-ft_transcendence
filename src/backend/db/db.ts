@@ -128,6 +128,7 @@ export class DB {
 			}
 			return {
 				"error": false,
+				"id": user.UserID,
 				"nick": user.Nick,
 				"avatar": user.Avatar,
 				"role": user.Role
@@ -202,7 +203,7 @@ export class DB {
 			const id: number = statementSync.lastInsertRowid as number;
 			return {
 				id,
-				
+
 			};
 		}
 		catch (e) {
@@ -234,6 +235,26 @@ export class DB {
 		let user = this.getUser(jwt);
 		// change online to 0 in the DB
 		console.log("Logging out", user.nick);
+	}
+
+	updateNick(json: any) {
+		try {
+			const select = this.db.prepare("UPDATE Users SET Nick = ? WHERE UserID = ?");
+			const user = select.run(json.nick, json.id);
+		}
+		catch (e) {
+			throw (e);
+		}
+	}
+
+	updateAvatar(json: any) {
+		try {
+			const select = this.db.prepare("UPDATE Users SET Avatar = ? WHERE UserID = ?");
+			const user = select.run(json.avatar, json.id);
+		}
+		catch (e) {
+			throw (e);
+		}
 	}
 
 }

@@ -2,14 +2,14 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import { DB } from "./backend/db/db.js";
-import { GameRouter } from "./backend/game/GameRouter.js";
-import { NavRouter } from "./backend/navigation/ViewRouter.js";
-import { UserRouter } from "./backend/user/UserRouter.js";
+import { GameRouter } from "./backend/routes/GameRoutes.js";
+import { NavRouter } from "./backend/routes/ViewRoutes.js";
+import { UserRouter } from "./backend/routes/UserRoutes.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 import fastifyCors from "@fastify/cors";
-import { GoogleRouter } from "./backend/user/GoogleRouter.js";
-import { ProfileRouter } from "./backend/profile/ProfileRouter.js";
+import { GoogleRouter } from "./backend/routes/GoogleRoutes.js";
+import { ProfileRouter } from "./backend/routes/ProfileRoutes.js";
 
 const __dirname = import.meta.dirname;
 

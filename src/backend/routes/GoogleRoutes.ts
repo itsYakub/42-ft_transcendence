@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DB } from '../db/db.js';
-import { addGoogleUserToDB } from '../db/userHandler.js';
+import { addGoogleUserToDB } from '../db/handlers/userHandler.js';
 
 export class GoogleRouter {
 	constructor(private fastify: FastifyInstance, private db: DB) { }

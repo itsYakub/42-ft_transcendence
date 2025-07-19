@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DB } from '../db/db.js';
-import { addUserToDB, loginUser } from '../db/userHandler.js';
+import { addUserToDB, loginUser } from '../db/handlers/userHandler.js';
 
 export class UserRouter {
 	constructor(private fastify: FastifyInstance, private db: DB) { }
@@ -41,8 +41,6 @@ export class UserRouter {
 			return reply.header(
 				"Set-Cookie", `jwt=blank; expires=${date}; Secure; HttpOnly;`).redirect("/");
 		});
-
-
 
 		this.fastify.get("/logout2", async (request: FastifyRequest, reply: FastifyReply) => {
 			//this.db.logoutUser(request.cookies.jwt);

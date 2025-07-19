@@ -9,6 +9,7 @@ export function profileHtml(db: DB, user: any): string {
 function injectUser(html: string, user: any): string {
 	html = html.replaceAll("%%NICK%%", user.nick);
 	html = html.replaceAll("%%AVATAR%%", user.avatar);
+	html = html.replaceAll("%%ID%%", user.id);
 
 	return html;
 }
