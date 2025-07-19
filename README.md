@@ -3,6 +3,10 @@
 TODO:
 - history not working properly
 - handle params in history?
-- remove templating plugin?
 - sanitise git repo
-- manipulate avatar uploads
+- generate key and cert with docker
+- SSL
+- move key/cert
+- add emails to cloud
+- clean up tailwind
+- colour scheme

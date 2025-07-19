@@ -1,114 +1,133 @@
-import { setupLoginForm } from "./login.js";
-import { setupRegisterForm } from "./register.js";
 import { setupGameFrame } from "./game.js";
-let buttonNames = new Map();
-buttonNames["/"] = "homeButton";
-buttonNames["/game"] = "gameButton";
-buttonNames["/tournament"] = "tournamentButton";
-buttonNames["/login"] = "loginButton";
-export async function navigate(url, user = {}) {
+import { registerProfileListeners } from "./profile.js";
+import { registerRegisterListeners } from "./register.js";
+export async function navigate(url) {
     history.pushState(null, null, url);
     const response = await fetch(url, {
         method: "GET"
     });
     if (response.ok) {
-        const text = await response.text();
-        document.querySelector("#content").innerHTML = text;
-        if ("/" == url && 0 != Object.keys(user).length) {
-            document.getElementById("profileNick").innerText = user.nick;
-            const img = document.getElementById("profileAvatar");
-            img.src = `images/${user.avatar}`;
-        }
-    }
-}
-function changeButtonColours(url = "") {
-    const collection = document.getElementsByClassName("nav-button");
-    for (let i = 0; i < collection.length; i++) {
-        collection[i].classList.replace("bg-gray-900", "bg-transparent");
-    }
-    var element = document.getElementById(buttonNames[url]);
-    if (element)
-        element.classList.replace("bg-transparent", "bg-gray-900");
-}
-function resetRegisterButton() {
-    var element = document.getElementById("registerButton");
-    if (element)
-        element.classList.replace("bg-gray-900", "bg-yellow-600");
-}
-function navButtonClicked(url) {
-    navigate(url);
-    changeButtonColours(url);
-    resetRegisterButton();
-}
-;
-document.getElementById("homeButton").addEventListener("click", () => {
-    navButtonClicked("/");
-});
-document.getElementById("gameButton").addEventListener("click", async () => {
-    await navigate("/game");
-    setupGameFrame();
-});
-document.getElementById("tournamentButton").addEventListener("click", () => {
-    navButtonClicked("/tournament");
-});
-document.getElementById("profileAvatar").addEventListener("click", async () => {
-    await navigate("/profile");
-    changeButtonColours();
-});
-document.getElementById("registerButton").addEventListener("click", async function (e) {
-    await navigate("/register");
-    changeButtonColours();
-    this.classList.replace("bg-yellow-600", "bg-gray-900");
-    setupRegisterForm();
-});
-document.getElementById("loginButton").addEventListener("click", async function (e) {
-    await navigate("/login");
-    changeButtonColours();
-    resetRegisterButton();
-    this.classList.replace("bg-transparent", "bg-gray-900");
-    setupLoginForm();
-});
-document.getElementById("logoutButton").addEventListener("click", async () => {
-    document.dispatchEvent(new Event("logout"));
-    var t = new Date();
-    t.setSeconds(t.getSeconds() + 10);
-    document.cookie = `jwt=blank; expires=${t}`;
-});
-async function getUser() {
-    let jwt;
-    document.cookie.split(";").forEach((c) => {
-        if (c.substring(0, 4) == "jwt=")
-            jwt = c.substring(4);
-    });
-    const response = await fetch("/user", { method: "GET" });
-    const json = await response.json();
-    if (0 != Object.keys(json).length) {
-        console.log(json);
-        document.dispatchEvent(new Event("login"));
-        document.getElementById("profileNick").innerText = json.nick;
-        const img = document.getElementById("profileAvatar");
-        img.src = `images/${json.avatar}`;
-    }
-    else {
-        document.dispatchEvent(new Event("logout"));
+        const text = await response.json();
+        document.querySelector("#navbar").innerHTML = text.navbar;
+        document.querySelector("#content").innerHTML = text.content;
+        registerListeners();
     }
 }
 window.addEventListener('popstate', function (event) {
-    navButtonClicked(window.location.pathname);
+    navigate(window.location.pathname);
 });
-document.addEventListener("login", (e) => {
-    const loginSection = document.getElementById("login");
-    loginSection.classList.replace("visible", "collapse");
-    const logoutSection = document.getElementById("logout");
-    logoutSection.classList.replace("collapse", "visible");
+function registerListeners() {
+    document.getElementById("homeButton").addEventListener("click", () => {
+        navigate("/");
+    }, { once: true });
+    document.getElementById("playButton").addEventListener("click", async () => {
+        await navigate("/play");
+        setupGameFrame();
+    }, { once: true });
+    document.getElementById("tournamentButton").addEventListener("click", () => {
+        navigate("/tournament");
+    }, { once: true });
+    let deleteButton = document.getElementById("deleteButton");
+    if (deleteButton) {
+        deleteButton.addEventListener("click", async () => {
+            const response = await fetch("/delete", {
+                method: "GET"
+            });
+            if (response.ok) {
+                const text = await response.json();
+                document.querySelector("#navbar").innerHTML = text.navbar;
+                document.querySelector("#content").innerHTML = text.content;
+                registerListeners();
+            }
+        }, { once: true });
+    }
+    let profileAvatar = document.getElementById("profileAvatar");
+    if (profileAvatar) {
+        profileAvatar.addEventListener("click", async () => {
+            await navigate("/profile");
+        }, { once: true });
+    }
+    const registerButton = document.getElementById("registerButton");
+    if (registerButton) {
+        registerButton.addEventListener("click", async function (e) {
+            let dialog = document.getElementById("registerDialog");
+            dialog.showModal();
+        });
+    }
+    const loginButton = document.getElementById("loginButton");
+    if (loginButton) {
+        loginButton.addEventListener("click", async function (e) {
+            let dialog = document.getElementById("loginDialog");
+            dialog.showModal();
+        });
+    }
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            if ("cancelLoginButton" == e.submitter.id)
+                return;
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            const response = await fetch("/login", {
+                method: "POST",
+                body: JSON.stringify({
+                    email, password
+                })
+            });
+            const payload = await response.json();
+            if (payload.error) {
+                alert(payload.message);
+                return;
+            }
+            let dialog = document.getElementById("loginDialog");
+            dialog.close();
+            navigate("/");
+        });
+    }
+    const logoutButton = document.getElementById("logoutButton");
+    if (logoutButton) {
+        logoutButton.addEventListener("click", async () => {
+            const response = await fetch("/logout", {
+                method: "GET"
+            });
+            if (response.ok) {
+                const text = await response.json();
+                document.querySelector("#navbar").innerHTML = text.navbar;
+                document.querySelector("#content").innerHTML = text.content;
+                registerListeners();
+            }
+        }, { once: true });
+    }
+    const googleSignupButton = document.getElementById("googleSignupButton");
+    if (googleSignupButton) {
+        googleSignupButton.addEventListener("click", () => {
+            const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+            url.search = new URLSearchParams(query).toString();
+            window.location.href = url.toString();
+        });
+    }
+    const googleSigninButton = document.getElementById("googleSigninButton");
+    if (googleSigninButton) {
+        googleSigninButton.addEventListener("click", () => {
+            const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+            url.search = new URLSearchParams(query).toString();
+            window.location.href = url.toString();
+        });
+    }
+    registerProfileListeners();
+    registerRegisterListeners();
+}
+window.addEventListener("DOMContentLoaded", () => {
+    registerListeners();
 });
-document.addEventListener("logout", (e) => {
-    const loginSection = document.getElementById("login");
-    loginSection.classList.replace("collapse", "visible");
-    const logoutSection = document.getElementById("logout");
-    logoutSection.classList.replace("visible", "collapse");
-    document.getElementById("profileNick").innerText = "Guest";
-    const img = document.getElementById("profileAvatar");
-    img.src = "images/avatar.jpg";
-    navigate("/");
+window.addEventListener("beforeunload", (event) => {
+    console.log("bye");
+    fetch("/logout2");
 });
+const query = {
+    client_id: "406443471410-godkm6dcav2851sq2114j4due48hu9iu.apps.googleusercontent.com",
+    redirect_uri: "http://localhost:3000/auth/google",
+    response_type: "code",
+    scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+};

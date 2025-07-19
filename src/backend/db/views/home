@@ -1,0 +1,9 @@
+<!-- <img src="images/team.jpg" class="w-full h-235 opacity-5"/> -->
+<div class="h-full bg-gray-900 content-center text-center">
+	<div class="text-white">Welcome to
+		Transcendence!</div>
+	<button id="deleteButton"
+		class="mt-4 cursor-pointer text-left bg-%%COLOUR%% text-red-600 p-2 rounded-lg hover:bg-gray-700">
+		Wipe and recreate db
+	</button>
+</div>

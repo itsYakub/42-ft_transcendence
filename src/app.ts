@@ -1,42 +1,54 @@
 import Fastify from "fastify";
-import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
-import ejs from "ejs";
-import { DatabaseSync } from 'node:sqlite';
-import { GameRouter } from "./backend/game/GameRouter.js";
-import { NavRouter } from "./backend/navigation/ViewRouter.js";
-import { UserRouter } from "./backend/user/UserRouter.js";
+import { DB } from "./backend/db/db.js";
+import { GameRouter } from "./backend/routes/GameRoutes.js";
+import { NavRouter } from "./backend/routes/ViewRoutes.js";
+import { UserRouter } from "./backend/routes/UserRoutes.js";
+import { readFileSync } from "fs";
+import { join } from "path";
+import fastifyCors from "@fastify/cors";
+import { GoogleRouter } from "./backend/routes/GoogleRoutes.js";
+import { ProfileRouter } from "./backend/routes/ProfileRoutes.js";
 
 const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
-	ignoreTrailingSlash: true
+	ignoreTrailingSlash: true,
+	// https: {
+    //   key: readFileSync(join(__dirname, 'transcendence.key')),
+    //   cert: readFileSync(join(__dirname, 'transcendence.crt'))
+    // }
 });
 
-// The views (pages) of the site
-fastify.register(fastifyView, {
-	engine: {
-		ejs,
-	},
-	root: __dirname + "/frontend/views",
-	viewExt: "html",
-});
+fastify.register(fastifyCors), {
+    origin: "*"
+};
+
+
+fastify.register(fastifyCookie);
 
 // Has all the static files (css, js, etc.)
 fastify.register(fastifyStatic, {
 	root: __dirname + "/frontend/public"
 });
 
-fastify.register(fastifyCookie);
-
 // Creates or opens the database
-const db = new DatabaseSync(process.env.DB);
+const dropTables = {
+	dropUsers: false,
+	dropMatches: false,
+	dropViews: true
+};
+const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropViews);
 
 // Adds all the possible routes
 new GameRouter(fastify, db).registerRoutes();
+new GoogleRouter(fastify, db).registerRoutes();
 new NavRouter(fastify, db).registerRoutes();
+new ProfileRouter(fastify, db).registerRoutes();
 new UserRouter(fastify, db).registerRoutes();
+
+console.log("Registered routes");
 
 // Start listening
 fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
@@ -47,13 +59,9 @@ fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
 	}
 });
 
-// import fastifyCors from "@fastify/cors";
 // import fastifyHelmet from "@fastify/helmet";
-// import fastifyCompress from "@fastify/compress";
 // import fastifyGracefulShutdown from "fastify-graceful-shutdown";
 
 // Other recommended plugins
-// await fastify.register(fastifyCors);
 // await fastify.register(fastifyHelmet);
-// await fastify.register(fastifyCompress);
 // await fastify.register(fastifyGracefulShutdown);

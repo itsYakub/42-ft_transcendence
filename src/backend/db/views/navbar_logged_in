@@ -1,0 +1,30 @@
+<div class="h-full flex flex-row bg-gray-800 justify-center content-center items-center">
+	<div>
+		<button id="homeButton"
+			class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+			Home
+		</button>
+
+		<button id="playButton"
+			class="mx-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+			Play
+		</button>
+
+		<button id="tournamentButton"
+			class="cursor-pointer text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+			Tournament
+		</button>
+	</div>
+
+	<div class="ml-32 mr-4">
+		<button id="logoutButton"
+			class="cursor-pointer text-center rounded-lg p-2 bg-red-500 hover:bg-gray-700 group text-gray-300">Log
+			out</button>
+	</div>
+
+	<div>
+		<img id="profileAvatar" class="rounded-full border border-gray-800 cursor-pointer h-24 w-24"
+			src="%%AVATAR%%" />
+		<div id="profileNick" class="text-white text-center">%%NICK%%</div>
+	</div>
+</div>

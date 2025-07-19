@@ -23,6 +23,7 @@ export class Paddle extends Shape {
 	
 	/* SECTION: AI
 	 * */
+	private	m_aiInterval : ReturnType<typeof setTimeout>;
 	private m_aiUpdateCalled : boolean;
 	private	m_aiDestX : number;
 	private	m_aiDestY : number;
@@ -60,6 +61,8 @@ export class Paddle extends Shape {
 		this.x = this.m_initialX;
 		this.y = this.m_initialY;
 		this.xVel = this.yVel = 0.0;
+		this.m_aiUpdateCalled = false;
+		clearInterval(this.m_aiInterval);
 	}
 
 	private	updatePlayer(canvas : HTMLCanvasElement) {
@@ -87,7 +90,7 @@ export class Paddle extends Shape {
 			/* setInterval must be called only once per match
 			 * */
 			this.m_aiUpdateCalled = true;
-			setInterval(() => {
+			this.m_aiInterval = setInterval(() => {
 		
 				this.aiLogic(canvas, ball);
 

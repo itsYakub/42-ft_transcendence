@@ -33,6 +33,8 @@ export class Paddle extends Shape {
         this.x = this.m_initialX;
         this.y = this.m_initialY;
         this.xVel = this.yVel = 0.0;
+        this.m_aiUpdateCalled = false;
+        clearInterval(this.m_aiInterval);
     }
     updatePlayer(canvas) {
         if (Game.keysPressed[this.m_upKey]) {
@@ -54,7 +56,7 @@ export class Paddle extends Shape {
     updateAI(canvas, ball) {
         if (!this.m_aiUpdateCalled) {
             this.m_aiUpdateCalled = true;
-            setInterval(() => {
+            this.m_aiInterval = setInterval(() => {
                 this.aiLogic(canvas, ball);
             }, 1000);
         }
