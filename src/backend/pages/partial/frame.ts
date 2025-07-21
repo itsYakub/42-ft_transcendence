@@ -1,17 +1,28 @@
-import { DB } from "../db.js";
-import { friendsHtml } from "./friends.js";
-import { homeHtml } from "./home.js";
-import { matchesHtml } from "./matches.js";
+import { DB } from "../../db/db.js";
+import { friendsHtml } from "../friends.js";
+import { homeHtml } from "../home.js";
+import { matchesHtml } from "../matches.js";
 import { navbarHtml } from "./navbar.js";
-import { playHtml } from "./play.js";
-import { profileHtml } from "./profile.js";
-import { tournamentHtml } from "./tournament.js";
+import { playHtml } from "../play.js";
+import { profileHtml } from "../profile.js";
+import { tournamentHtml } from "../tournament.js";
 
-/* Returns the whole page, for external links */
+/* Returns the whole page, for external links, or db_error */
 export function frameHtml(db: DB, view: string, user: any): string {
 	let html = db.getView("frame");
+	if ("db_error" == html) {
+		return "db_error";
+	}
+
 	let navbar = navbarHtml(db, user);
-	let content = contentHtml(db, view, user);
+	if ("db_error" == navbar) {
+		return "db_error";
+	}
+
+	const content = contentHtml(db, view, user);
+	if ("db_error" == content) {
+		return "db_error";
+	}
 
 	navbar = highlightPage(navbar, view);
 
@@ -24,7 +35,18 @@ export function frameHtml(db: DB, view: string, user: any): string {
 /* Returns the navbar and content separately, for internal links */
 export function frameAndContentHtml(db: DB, view: string, user: any): any {
 	let navbar = navbarHtml(db, user);
-	let content = contentHtml(db, view, user);
+	if ("db_error" == navbar) {
+		return {
+			navbar: "db_error",
+		};
+	}
+
+	const content = contentHtml(db, view, user);
+	if ("db_error" == content) {
+		return {
+			navbar: "db_error",
+		};
+	}
 
 	navbar = highlightPage(navbar, view);
 

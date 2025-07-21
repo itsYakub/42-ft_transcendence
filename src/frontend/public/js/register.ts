@@ -1,6 +1,14 @@
 import { navigate } from "./index.js";
 
-export function registerRegisterListeners() {
+export function registerFunctions() {
+	const registerButton = document.getElementById("registerButton");
+	if (registerButton) {
+		registerButton.addEventListener("click", async function (e) {
+			const dialog = <HTMLDialogElement>document.getElementById("registerDialog");
+			dialog.showModal();
+		});
+	}
+
 	const registerForm = <HTMLFormElement>document.getElementById("registerForm");
 	if (registerForm) {
 		registerForm.addEventListener("submit", async (e) => {
@@ -20,7 +28,7 @@ export function registerRegisterListeners() {
 			reader.onloadend = async () => {
 				const avatar = reader.result as string;
 
-				const response = await fetch("/register", {
+				const response = await fetch("/user/register", {
 					method: "POST",
 					body: JSON.stringify({
 						nick, email, password, avatar

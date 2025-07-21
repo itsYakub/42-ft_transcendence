@@ -2,29 +2,31 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import { DB } from "./backend/db/db.js";
-import { GameRouter } from "./backend/routes/GameRoutes.js";
-import { NavRouter } from "./backend/routes/ViewRoutes.js";
-import { UserRouter } from "./backend/routes/UserRoutes.js";
+import { userEndpoints } from "./backend/user/userEndpoints.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 import fastifyCors from "@fastify/cors";
-import { GoogleRouter } from "./backend/routes/GoogleRoutes.js";
-import { ProfileRouter } from "./backend/routes/ProfileRoutes.js";
+import { googleAuth } from "./backend/user/googleAuth.js";
+import { homePage } from "./backend/pages/home.js";
+import { profilePage } from "./backend/pages/profile.js";
+import { matchesPage } from "./backend/pages/matches.js";
+import { friendsPage } from "./backend/pages/friends.js";
+import { playPage } from "./backend/pages/play.js";
+import { tournamentPage } from "./backend/pages/tournament.js";
 
 const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
 	ignoreTrailingSlash: true,
 	// https: {
-    //   key: readFileSync(join(__dirname, 'transcendence.key')),
-    //   cert: readFileSync(join(__dirname, 'transcendence.crt'))
-    // }
+	//   key: readFileSync(join(__dirname, 'transcendence.key')),
+	//   cert: readFileSync(join(__dirname, 'transcendence.crt'))
+	// }
 });
 
-fastify.register(fastifyCors), {
-    origin: "*"
-};
-
+// fastify.register(fastifyCors), {
+// 	origin: "*"
+// };
 
 fastify.register(fastifyCookie);
 
@@ -41,14 +43,15 @@ const dropTables = {
 };
 const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropViews);
 
-// Adds all the possible routes
-new GameRouter(fastify, db).registerRoutes();
-new GoogleRouter(fastify, db).registerRoutes();
-new NavRouter(fastify, db).registerRoutes();
-new ProfileRouter(fastify, db).registerRoutes();
-new UserRouter(fastify, db).registerRoutes();
+homePage(fastify, db);
+playPage(fastify, db);
+tournamentPage(fastify, db);
+profilePage(fastify, db);
+matchesPage(fastify, db);
+friendsPage(fastify, db);
 
-console.log("Registered routes");
+googleAuth(fastify, db);
+userEndpoints(fastify, db);
 
 // Start listening
 fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
@@ -58,10 +61,3 @@ fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
 		process.exit(1);
 	}
 });
-
-// import fastifyHelmet from "@fastify/helmet";
-// import fastifyGracefulShutdown from "fastify-graceful-shutdown";
-
-// Other recommended plugins
-// await fastify.register(fastifyHelmet);
-// await fastify.register(fastifyGracefulShutdown);

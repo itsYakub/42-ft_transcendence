@@ -1,44 +1,66 @@
-// minutes played, win/loss ratio, friends, change password/nick
+// minutes played
+// win/loss ratio
+// friends
+// matches
+// change password/nick - done
+
 import { navigate } from "./index.js";
 
-export function registerProfileListeners() {
-	const profileButton = document.getElementById("profileButton");
-	if (profileButton) {
-		profileButton.addEventListener("click", () => {
-			navigate("/profile");
+export function profileFunctions() {
+
+	const invalidateTokenButton = document.getElementById("invalidateTokenButton");
+	if (invalidateTokenButton) {
+		invalidateTokenButton.addEventListener("click", async () => {
+			const response = await fetch("/user/invalidate-token", {
+				method: "POST",
+			});
+			if (response.ok)
+				navigate("/");
 		}, { once: true });
 	}
+	
+	const changePasswordForm = <HTMLFormElement>document.getElementById("changePasswordForm");
+	if (changePasswordForm) {
+		changePasswordForm.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const password = changePasswordForm.newPassword.value;
+			const repeatPassword = changePasswordForm.repeatPassword.value;
+			if (password != repeatPassword) {
+				alert("Please repeat the password!");
+				return;
+			}
+			const response = await fetch("/user/password", {
+				method: "POST",
+				body: JSON.stringify({
+					password
+				})
+			});
 
-	const matchesButton = document.getElementById("matchesButton");
-	if (matchesButton) {
-		matchesButton.addEventListener("click", () => {
-			navigate("/matches");
-		}, { once: true });
-	}
-
-	const friendsButton = document.getElementById("friendsButton");
-	if (friendsButton) {
-		friendsButton.addEventListener("click", () => {
-			navigate("/friends");
-		}, { once: true });
+			const message = await response.json();
+			if (!message.error)
+				navigate("/profile");
+			else
+				alert(message.error);
+		});
 	}
 
 	const changeNickForm = <HTMLFormElement>document.getElementById("changeNickForm");
 	if (changeNickForm) {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const idInput = <HTMLInputElement>document.getElementById("userId");
-			const id = idInput.value;
 			const nick = changeNickForm.newNick.value;
-			const response = await fetch("/nick", {
+			const response = await fetch("/user/nick", {
 				method: "POST",
 				body: JSON.stringify({
-					id,
 					nick
 				})
 			});
 
-			navigate("/profile");
+			const message = await response.json();
+			if (!message.error)
+				navigate("/profile");
+			else
+				alert(message.error);
 		});
 	}
 
@@ -59,21 +81,22 @@ export function registerProfileListeners() {
 					return;
 				}
 
-				const idInput = <HTMLInputElement>document.getElementById("userId");
-				const id = idInput.value;
 				const reader = new FileReader();
 				reader.readAsDataURL(files[0]);
 				reader.onloadend = async () => {
 					const avatar = reader.result as string;
-					const response = await fetch("/avatar", {
+					const response = await fetch("/user/avatar", {
 						method: "POST",
 						body: JSON.stringify({
-							id,
 							avatar
 						})
 					});
 
-					navigate("/profile");
+					const message = await response.json();
+					if (!message.error)
+						navigate("/profile");
+					else
+						alert(message.error);
 				}
 			}
 		});

@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { readFile } from "node:fs";
-import { validJWT } from "./jwt.js";
+import { validJWT } from "../user/jwt.js";
 import { User } from "../user/User.js";
 
 export class DB {
@@ -27,11 +27,12 @@ export class DB {
 		this.db.exec(`
     CREATE TABLE IF NOT EXISTS Users (
       UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-      Nick TEXT UNIQUE NOT NULL,
+      Nick TEXT NOT NULL,
       Email TEXT UNIQUE NOT NULL,
 	  Avatar TEXT NOT NULL,
       Password TEXT,
 	  Role TEXT NOT NULL,
+	  RefreshToken TEXT UNIQUE,
 	  Online INTEGER NOT NULL
     );`);
 	}
@@ -73,7 +74,6 @@ export class DB {
 					console.error(err);
 					return;
 				}
-				//data = data.replaceAll("\n", "");
 				data = data.replaceAll("\t", "");
 				const hashed = btoa(data);
 				const insert = this.db.prepare('INSERT INTO Views (ViewName, Content) VALUES (?, ?)');
@@ -90,10 +90,18 @@ export class DB {
 		return loggedIn ? this.getView("navbar_logged_in") : this.getView("navbar_logged_out");
 	}
 
+	/*
+		Returns db_error or the specified decoded view
+	*/
 	getView(viewName: string): string {
-		const select = this.db.prepare("SELECT * FROM Views WHERE ViewName = ?");
-		const view = select.get(viewName);
-		return atob(view.Content as string);
+		try {
+			const select = this.db.prepare("SELECT * FROM Views WHERE ViewName = ?");
+			const view = select.get(viewName);
+			return atob(view.Content as string);
+		}
+		catch (e) {
+			return "db_error";
+		}
 	}
 
 	getFrameView(viewName: string): any {
@@ -105,41 +113,73 @@ export class DB {
 		};
 	}
 
-	getUser(jwt: string) {
-		const valid = validJWT(jwt);
+	/*
+		Gets a user using the refresh token if it's still valid
+	*/
+	getUserByRefreshToken(refreshToken: string): any {
+		const valid = validJWT(refreshToken);
 		if (valid) {
-			let payload = jwt.split(".")[1];
+			let payload = refreshToken.split(".")[1];
 			payload = atob(payload);
-			const { sub, exp } = JSON.parse(payload);
-			let date = new Date(exp);
+			const { exp } = JSON.parse(payload);
+			const date = new Date(exp);
 			if (date < new Date()) {
 				return {
-					"error": true,
-					"message": "Expired token!"
+					"error": "Expired token!"
 				}
 			}
+			const select = this.db.prepare("SELECT * FROM Users WHERE RefreshToken = ?");
+			const user = select.get(refreshToken);
+			if (!user) {
+				return {
+					"error": "User not found!"
+				}
+			}
+			return {
+				"id": user.UserID,
+				"nick": user.Nick,
+				"avatar": user.Avatar,
+				"role": user.Role,
+				"google": user.Password == null
+			}
+		}
+		return {
+			"error": "User not found!"
+		}
+	}
+
+	/*
+		Returns an error message or user data
+	*/
+	getUser(accessToken: string, refreshToken: string): any {
+		const valid = validJWT(accessToken);
+		if (valid) {
+			let payload = accessToken.split(".")[1];
+			payload = atob(payload);
+			const { sub, exp } = JSON.parse(payload);
+			const date = new Date(exp);
+			if (date < new Date()) {
+				return this.getUserByRefreshToken(refreshToken);
+			}
+
 			const select = this.db.prepare("SELECT * FROM Users WHERE UserID = ?");
 			const user = select.get(sub);
 			if (!user) {
 				return {
-					"error": true,
-					"message": "User not found!"
+					"code": 401,
+					"error": "User not found!"
 				}
 			}
 			return {
-				"error": false,
 				"id": user.UserID,
 				"nick": user.Nick,
 				"avatar": user.Avatar,
-				"role": user.Role
+				"role": user.Role,
+				"google": user.Password == null
 			}
 		}
-		else {
-			return {
-				"error": true,
-				"message": "Invalid JWT!"
-			};
-		}
+		else
+			return this.getUserByRefreshToken(refreshToken);
 	}
 
 	getFullUser(jwt: string) {
@@ -148,23 +188,22 @@ export class DB {
 			let payload = jwt.split(".")[1];
 			payload = atob(payload);
 			const { sub, exp } = JSON.parse(payload);
-			let date = new Date(exp);
+			const date = new Date(exp);
 			if (date < new Date()) {
 				return {
-					"error": true,
-					"message": "Expired token!"
+					"code": 401,
+					"error": "Expired token!"
 				}
 			}
 			const select = this.db.prepare("SELECT * FROM Users WHERE UserID = ?");
 			const user = select.get(sub);
 			if (!user) {
 				return {
-					"error": true,
-					"message": "User not found!"
+					"code": 401,
+					"error": "User not found!"
 				}
 			}
 			return {
-				"error": false,
 				"nick": user.Nick,
 				"email": user.Email,
 				"avatar": user.Avatar,
@@ -173,15 +212,15 @@ export class DB {
 		}
 		else {
 			return {
-				"error": true,
-				"message": "Invalid JWT!"
+				"code": 401,
+				"error": "Invalid JWT!"
 			};
 		}
 	}
 
 	// Registers a new user in the DB
 	addUser(json: any): User {
-		let user = new User(json);
+		const user = new User(json);
 		user.hashPassword();
 
 		try {
@@ -203,7 +242,6 @@ export class DB {
 			const id: number = statementSync.lastInsertRowid as number;
 			return {
 				id,
-
 			};
 		}
 		catch (e) {
@@ -217,7 +255,6 @@ export class DB {
 		const user = select.get(json.email);
 		if (user) {
 			return {
-				error: false,
 				id: user.UserID,
 				nick: user.Nick,
 				avatar: user.Avatar,
@@ -226,31 +263,60 @@ export class DB {
 			}
 		}
 		return {
-			error: true,
-			message: "User not found"
+			error: "User not found"
 		};
 	}
 
-	logoutUser(jwt: string) {
-		let user = this.getUser(jwt);
+	logoutUser(accessToken: string, refreshToken: string) {
+		const user = this.getUser(accessToken, refreshToken);
 		// change online to 0 in the DB
 		console.log("Logging out", user.nick);
 	}
 
-	updateNick(json: any) {
+	updateRefreshtoken(id: number, refreshToken: string) {
 		try {
-			const select = this.db.prepare("UPDATE Users SET Nick = ? WHERE UserID = ?");
-			const user = select.run(json.nick, json.id);
+			const select = this.db.prepare("UPDATE Users SET RefreshToken = ? WHERE UserID = ?");
+			select.run(refreshToken, id);
 		}
 		catch (e) {
 			throw (e);
 		}
 	}
 
-	updateAvatar(json: any) {
+	invalidateToken(json: any) {
+		try {
+			const select = this.db.prepare("UPDATE Users SET RefreshToken = NULL WHERE UserID = ?");
+			select.run(json.id);
+		}
+		catch (e) {
+			throw (e);
+		}
+	}
+
+	updatePassword(id: number, password: string) {
+		try {
+			const select = this.db.prepare("UPDATE Users SET Password = ? WHERE UserID = ?");
+			select.run(password, id);
+		}
+		catch (e) {
+			throw (e);
+		}
+	}
+
+	updateNick(id: number, nick: string) {
+		try {
+			const select = this.db.prepare("UPDATE Users SET Nick = ? WHERE UserID = ?");
+			select.run(nick, id);
+		}
+		catch (e) {
+			throw (e);
+		}
+	}
+
+	updateAvatar(id: number, avatar: string) {
 		try {
 			const select = this.db.prepare("UPDATE Users SET Avatar = ? WHERE UserID = ?");
-			const user = select.run(json.avatar, json.id);
+			select.run(avatar, id);
 		}
 		catch (e) {
 			throw (e);

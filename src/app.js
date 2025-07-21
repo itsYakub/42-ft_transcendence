@@ -2,19 +2,18 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import { DB } from "./backend/db/db.js";
-import { GameRouter } from "./backend/routes/GameRoutes.js";
-import { NavRouter } from "./backend/routes/ViewRoutes.js";
-import { UserRouter } from "./backend/routes/UserRoutes.js";
-import fastifyCors from "@fastify/cors";
-import { GoogleRouter } from "./backend/routes/GoogleRoutes.js";
-import { ProfileRouter } from "./backend/routes/ProfileRoutes.js";
+import { userEndpoints } from "./backend/user/userEndpoints.js";
+import { googleAuth } from "./backend/user/googleAuth.js";
+import { homePage } from "./backend/pages/home.js";
+import { profilePage } from "./backend/pages/profile.js";
+import { matchesPage } from "./backend/pages/matches.js";
+import { friendsPage } from "./backend/pages/friends.js";
+import { playPage } from "./backend/pages/play.js";
+import { tournamentPage } from "./backend/pages/tournament.js";
 const __dirname = import.meta.dirname;
 const fastify = Fastify({
     ignoreTrailingSlash: true,
 });
-fastify.register(fastifyCors), {
-    origin: "*"
-};
 fastify.register(fastifyCookie);
 fastify.register(fastifyStatic, {
     root: __dirname + "/frontend/public"
@@ -25,12 +24,14 @@ const dropTables = {
     dropViews: true
 };
 const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropViews);
-new GameRouter(fastify, db).registerRoutes();
-new GoogleRouter(fastify, db).registerRoutes();
-new NavRouter(fastify, db).registerRoutes();
-new ProfileRouter(fastify, db).registerRoutes();
-new UserRouter(fastify, db).registerRoutes();
-console.log("Registered routes");
+homePage(fastify, db);
+playPage(fastify, db);
+tournamentPage(fastify, db);
+profilePage(fastify, db);
+matchesPage(fastify, db);
+friendsPage(fastify, db);
+googleAuth(fastify, db);
+userEndpoints(fastify, db);
 fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
     if (err) {
         console.log(err);

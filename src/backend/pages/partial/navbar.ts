@@ -1,8 +1,8 @@
-import { DB } from "../db.js";
+import { DB } from "../../db/db";
 
 export function navbarHtml(db: DB, user: any): string {
-	let loggedIn = !user.error;
-	let html = db.getNavbar(loggedIn);
+	const loggedIn = !user.error;
+	const html = db.getNavbar(loggedIn);
 
 	return loggedIn ? injectUser(html, user) : html;
 }

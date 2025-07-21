@@ -19,23 +19,34 @@ function replaceInvalidBase64Chars(input: string) {
 	});
 };
 
-export function createJWT(id: number): string {
+export function accessToken(id: number): string {
+	const date = new Date();
+	date.setSeconds(date.getSeconds() + 5);
+	return createJWT(id, date);
+}
+
+export function refreshToken(id: number): string {
+	const date = new Date();
+	date.setFullYear(date.getFullYear() + 1);
+	return createJWT(id, date);
+}
+
+function createJWT(id: number, date: Date): string {
 	let header = JSON.stringify(
 		{
 			"typ": "JWT",
 			"alg": "HS256"
 		});
-	var date = new Date();
-	date.setDate(date.getDate() + 3);
+
 	let payload = JSON.stringify(
 		{
 			"sub": id,
 			"exp": date
 		});
-	header = replaceInvalidBase64Chars(header);
-	payload = replaceInvalidBase64Chars(payload);
 	header = btoa(header);
 	payload = btoa(payload);
+	header = replaceInvalidBase64Chars(header);
+	payload = replaceInvalidBase64Chars(payload);
 	let hash = createHMAC(header + "." + payload, process.env.JWT_SECRET);
 	hash = replaceInvalidBase64Chars(hash);
 	return header + "." + payload + "." + hash;
