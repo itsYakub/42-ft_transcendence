@@ -64,18 +64,13 @@ export function userEndpoints(fastify: FastifyInstance, db: DB): void {
 	});
 
 	fastify.post('/user/password', async (request: FastifyRequest, reply: FastifyReply) => {
-
-
-		// grab user, check password, return message
-
-
-
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken);
+		const fullUser: boolean = true;
+		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken, fullUser);
 		if (user.error) {
 			return reply.code(user.code).send(user);
 		}
 
-		const response = updatePassword(db, user.id, JSON.parse(request.body as string).password);
+		const response = updatePassword(db, user, JSON.parse(request.body as string));
 		if (response.error) {
 			return reply.code(response.code).send(response);
 		}

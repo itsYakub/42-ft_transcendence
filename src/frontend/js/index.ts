@@ -6,15 +6,16 @@ import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
 import { wipeDB } from "./wipeDB.js";
 
+/*
+	Simulates moving to a new page
+*/
 export async function navigate(url: string): Promise<void> {
 	history.pushState(null, null, url);
 
-	// Fetches the data from the backend
 	const response = await fetch(url, {
 		method: "GET"
 	});
 
-	// Sets the frame's navbar and content
 	if (response.ok) {
 		const text = await response.json();
 		document.querySelector("#navbar").innerHTML = text.navbar;
@@ -23,12 +24,16 @@ export async function navigate(url: string): Promise<void> {
 	}
 }
 
-// Changes view on back/forward buttons
+/* 
+	Changes view on back/forward buttons
+*/
 window.addEventListener('popstate', function (event) {
 	navigate(window.location.pathname);
 });
 
-// Sets up all the listeners after a "page" refresh
+/*
+	Sets up all the listeners after a "page" refresh
+*/
 export function addFunctions() {
 	pageButtons();
 	profileFunctions();

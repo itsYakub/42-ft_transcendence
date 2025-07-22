@@ -21,11 +21,11 @@
 								class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 						</div>
 						<div>
-							<input type="password" id="newPassword" placeholder="New password" required="true"
+							<input type="password" id="newPassword" placeholder="New password" minlength="8" required="true"
 								class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 						</div>
 						<div>
-							<input type="password" id="repeatPassword" placeholder="Repeat password" required="true"
+							<input type="password" id="repeatPassword" placeholder="Repeat password" minlength="8" required="true"
 								class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 						</div>
 						<div>

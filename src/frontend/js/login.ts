@@ -14,6 +14,7 @@ export function loginFunctions() {
 		loginForm.addEventListener("submit", async (e) => {
 			if ("cancelLoginButton" == e.submitter.id)
 				return;
+			
 			e.preventDefault();
 			const email = loginForm.email.value;
 			const password = loginForm.password.value;
@@ -27,11 +28,9 @@ export function loginFunctions() {
 
 			const payload = await response.json();
 			if (payload.error) {
-				alert(payload.message);
+				alert(payload.error);
 				return;
 			}
-			//const dialog = <HTMLDialogElement>document.getElementById("loginDialog");
-			//dialog.close();
 			navigate("/");
 		});
 	}

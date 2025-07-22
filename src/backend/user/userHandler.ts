@@ -8,10 +8,10 @@ import { compareSync } from "bcrypt-ts";
 export function addUserToDB(db: DB, json: any): any {
 	try {
 		const user = db.addUser(json);
-		const token = refreshToken(user.getID());
-		db.updateRefreshtoken(user.getID(), token);
+		const token = refreshToken(user.id);
+		db.updateRefreshtoken(user.id, token);
 		return {
-			"accessToken": accessToken(user.getID()),
+			"accessToken": accessToken(user.id),
 			"refreshToken": token
 		};
 	}
@@ -34,7 +34,7 @@ export function addUserToDB(db: DB, json: any): any {
 */
 export function addGoogleUserToDB(db: DB, json: any): any {
 	try {
-		const existingUser = db.findUser(json);
+		const existingUser = db.getUserByEmail(json.email);
 		if (!existingUser.error) {
 			const token = refreshToken(existingUser.id);
 			db.updateRefreshtoken(existingUser.id, token);
@@ -64,10 +64,11 @@ export function addGoogleUserToDB(db: DB, json: any): any {
 */
 export function loginUser(db: DB, json: any): any {
 	try {
-		const user = db.findUser(json);
+		const user = db.getUserByEmail(json.email);
 		if (user.error) {
 			return user;
 		}
+
 		if (compareSync(json.password, user.password)) {
 			const token = refreshToken(user.id);
 			db.updateRefreshtoken(user.id, token);
@@ -80,7 +81,7 @@ export function loginUser(db: DB, json: any): any {
 		}
 		return {
 			"code": 200,
-			"error": "Unknown login!"
+			"error": "Unknown login or wrong password!"
 		};
 	}
 	catch (e) {
@@ -91,19 +92,26 @@ export function loginUser(db: DB, json: any): any {
 	}
 }
 
-export function updatePassword(db: DB, id: number, password: string): any {
-	try {
-		db.updatePassword(id, password);
-		return {
-			"message": "Updated password"
-		};
+export function updatePassword(db: DB, user: any, passwords: any): any {
+	if (compareSync(passwords.currentPassword, user.password)) {
+		try {
+			db.updatePassword(user.id, passwords.newPassword);
+			return {
+				"message": "Updated password"
+			};
+		}
+		catch (e) {
+			return {
+				"code": 500,
+				"error": "SQL error!"
+			};
+		}
 	}
-	catch (e) {
+	else
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			"code": 200,
+			"error": "Bad password"
 		};
-	}
 }
 
 export function updateNick(db: DB, id: number, nick: string): any {

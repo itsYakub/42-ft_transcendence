@@ -13,7 +13,7 @@ export function pageButtons() {
 		navigate("/tournament");
 	}, { once: true });
 
-	let profileAvatar = document.getElementById("profileAvatar");
+	const profileAvatar = document.getElementById("profileAvatar");
 	if (profileAvatar) {
 		profileAvatar.addEventListener("click", async () => {
 			await navigate("/profile");

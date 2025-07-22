@@ -16,7 +16,7 @@ const fastify = Fastify({
 });
 fastify.register(fastifyCookie);
 fastify.register(fastifyStatic, {
-    root: __dirname + "/frontend/public"
+    root: __dirname + "/frontend"
 });
 const dropTables = {
     dropUsers: false,

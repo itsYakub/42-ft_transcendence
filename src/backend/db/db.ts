@@ -1,7 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { readFile } from "node:fs";
-import { validJWT } from "../user/jwt.js";
-import { User } from "../user/User.js";
+import { hashPassword, validJWT } from "../user/jwt.js";
 
 export class DB {
 	private db: DatabaseSync;
@@ -116,7 +115,7 @@ export class DB {
 	/*
 		Gets a user using the refresh token if it's still valid
 	*/
-	getUserByRefreshToken(refreshToken: string): any {
+	getUserByRefreshToken(refreshToken: string, fulluser: boolean = false): any {
 		const valid = validJWT(refreshToken);
 		if (valid) {
 			let payload = refreshToken.split(".")[1];
@@ -135,13 +134,26 @@ export class DB {
 					"error": "User not found!"
 				}
 			}
-			return {
-				"id": user.UserID,
-				"nick": user.Nick,
-				"avatar": user.Avatar,
-				"role": user.Role,
-				"google": user.Password == null
-			}
+			if (fulluser)
+				return {
+					"id": user.UserID,
+					"nick": user.Nick,
+					"email": user.Email,
+					"avatar": user.Avatar,
+					"password": user.Password,
+					"role": user.Role,
+					"refreshToken": user.RefreshToken,
+					"online": user.Online,
+					"google": user.Password == null
+				};
+			else
+				return {
+					"id": user.UserID,
+					"nick": user.Nick,
+					"avatar": user.Avatar,
+					"role": user.Role,
+					"google": user.Password == null
+				};
 		}
 		return {
 			"error": "User not found!"
@@ -151,7 +163,7 @@ export class DB {
 	/*
 		Returns an error message or user data
 	*/
-	getUser(accessToken: string, refreshToken: string): any {
+	getUser(accessToken: string, refreshToken: string, fulluser: boolean = false): any {
 		const valid = validJWT(accessToken);
 		if (valid) {
 			let payload = accessToken.split(".")[1];
@@ -159,7 +171,7 @@ export class DB {
 			const { sub, exp } = JSON.parse(payload);
 			const date = new Date(exp);
 			if (date < new Date()) {
-				return this.getUserByRefreshToken(refreshToken);
+				return this.getUserByRefreshToken(refreshToken, fulluser);
 			}
 
 			const select = this.db.prepare("SELECT * FROM Users WHERE UserID = ?");
@@ -170,64 +182,40 @@ export class DB {
 					"error": "User not found!"
 				}
 			}
-			return {
-				"id": user.UserID,
-				"nick": user.Nick,
-				"avatar": user.Avatar,
-				"role": user.Role,
-				"google": user.Password == null
-			}
+			if (fulluser)
+				return {
+					"id": user.UserID,
+					"nick": user.Nick,
+					"email": user.Email,
+					"avatar": user.Avatar,
+					"password": user.Password,
+					"role": user.Role,
+					"refreshToken": user.RefreshToken,
+					"online": user.Online,
+					"google": user.Password == null
+				};
+			else
+				return {
+					"id": user.UserID,
+					"nick": user.Nick,
+					"avatar": user.Avatar,
+					"role": user.Role,
+					"google": user.Password == null
+				};
 		}
 		else
-			return this.getUserByRefreshToken(refreshToken);
-	}
-
-	getFullUser(jwt: string) {
-		const valid = validJWT(jwt);
-		if (valid) {
-			let payload = jwt.split(".")[1];
-			payload = atob(payload);
-			const { sub, exp } = JSON.parse(payload);
-			const date = new Date(exp);
-			if (date < new Date()) {
-				return {
-					"code": 401,
-					"error": "Expired token!"
-				}
-			}
-			const select = this.db.prepare("SELECT * FROM Users WHERE UserID = ?");
-			const user = select.get(sub);
-			if (!user) {
-				return {
-					"code": 401,
-					"error": "User not found!"
-				}
-			}
-			return {
-				"nick": user.Nick,
-				"email": user.Email,
-				"avatar": user.Avatar,
-				"role": user.Role
-			}
-		}
-		else {
-			return {
-				"code": 401,
-				"error": "Invalid JWT!"
-			};
-		}
+			return this.getUserByRefreshToken(refreshToken, fulluser);
 	}
 
 	// Registers a new user in the DB
-	addUser(json: any): User {
-		const user = new User(json);
-		user.hashPassword();
-
+	addUser(json: any): any {
+		const password = hashPassword(json.password);
 		try {
 			const insert = this.db.prepare('INSERT INTO Users (Nick, Email, Password, Role, Avatar, Online) VALUES (?, ?, ?, ?, ?, ?)');
-			const statementSync = insert.run(json.nick, json.email, user.getPassword(), "USER", json.avatar, 1);
-			user.setID(statementSync.lastInsertRowid as number);
-			return user;
+			const statementSync = insert.run(json.nick, json.email, password, "USER", json.avatar, 1);
+			return {
+				"id": statementSync.lastInsertRowid as number
+			};
 		}
 		catch (e) {
 			throw (e);
@@ -250,9 +238,9 @@ export class DB {
 	}
 
 	// Finds the user in the DB by email
-	findUser(json: any): any {
+	getUserByEmail(email: string): any {
 		const select = this.db.prepare("SELECT * FROM Users WHERE Email = ?");
-		const user = select.get(json.email);
+		const user = select.get(email);
 		if (user) {
 			return {
 				id: user.UserID,
@@ -294,9 +282,10 @@ export class DB {
 	}
 
 	updatePassword(id: number, password: string) {
+		const hashedPassword = hashPassword(password);
 		try {
 			const select = this.db.prepare("UPDATE Users SET Password = ? WHERE UserID = ?");
-			select.run(password, id);
+			select.run(hashedPassword, id);
 		}
 		catch (e) {
 			throw (e);

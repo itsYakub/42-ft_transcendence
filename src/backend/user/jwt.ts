@@ -1,3 +1,4 @@
+import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { createHmac } from 'crypto';
 
 function createHMAC(message: string, secret: string) {
@@ -64,4 +65,9 @@ export function validJWT(jwt: string): boolean {
 	let hash = createHMAC(header + "." + payload, process.env.JWT_SECRET);
 	hash = replaceInvalidBase64Chars(hash);
 	return hash == signature;
+}
+
+export function hashPassword(password: string): string {
+	const salt = genSaltSync(13);
+	return hashSync(password, salt);
 }

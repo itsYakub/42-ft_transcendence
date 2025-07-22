@@ -23,22 +23,32 @@ export function profileFunctions() {
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const password = changePasswordForm.newPassword.value;
+			const currentPassword = changePasswordForm.currentPassword.value;
+			const newPassword = changePasswordForm.newPassword.value;
 			const repeatPassword = changePasswordForm.repeatPassword.value;
-			if (password != repeatPassword) {
+			if (newPassword != repeatPassword) {
 				alert("Please repeat the password!");
 				return;
 			}
+
+			if (newPassword == currentPassword) {
+				alert("New password can't be the same as old password!");
+				return;
+			}
+			
 			const response = await fetch("/user/password", {
 				method: "POST",
 				body: JSON.stringify({
-					password
+					currentPassword,
+					newPassword
 				})
 			});
 
 			const message = await response.json();
-			if (!message.error)
+			if (!message.error) {
+				alert("Password changed!");
 				navigate("/profile");
+			}
 			else
 				alert(message.error);
 		});

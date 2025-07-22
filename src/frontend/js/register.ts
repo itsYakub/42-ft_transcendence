@@ -12,10 +12,9 @@ export function registerFunctions() {
 	const registerForm = <HTMLFormElement>document.getElementById("registerForm");
 	if (registerForm) {
 		registerForm.addEventListener("submit", async (e) => {
-			if ("cancelRegisterButton" == e.submitter.id) {
-				//form.removeEventListener("submit");
+			if ("cancelRegisterButton" == e.submitter.id)
 				return;
-			}
+			
 			e.preventDefault();
 			const nick = registerForm.nick.value;
 			const email = registerForm.email.value;
@@ -37,11 +36,9 @@ export function registerFunctions() {
 
 				const payload = await response.json();
 				if (payload.error) {
-					alert(payload.message);
+					alert(payload.error);
 					return;
 				}
-				//let dialog = <HTMLDialogElement>document.getElementById("registerDialog");
-				//dialog.close();
 				navigate("/");
 			};
 		});

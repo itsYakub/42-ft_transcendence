@@ -32,7 +32,7 @@ fastify.register(fastifyCookie);
 
 // Has all the static files (css, js, etc.)
 fastify.register(fastifyStatic, {
-	root: __dirname + "/frontend/public"
+	root: __dirname + "/frontend"
 });
 
 // Creates or opens the database
