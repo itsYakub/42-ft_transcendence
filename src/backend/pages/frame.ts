@@ -1,23 +1,16 @@
-import { DB } from "../../db/db.js";
-import { friendsHtml } from "../friends.js";
-import { homeHtml } from "../home.js";
-import { matchesHtml } from "../matches.js";
+import { DatabaseSync } from "node:sqlite";
+import { friendsHtml } from "./friends/friends.js";
+import { homeHtml } from "./home/home.js";
+import { matchesHtml } from "./matches/matches.js";
 import { navbarHtml } from "./navbar.js";
-import { playHtml } from "../play.js";
-import { profileHtml } from "../profile.js";
-import { tournamentHtml } from "../tournament.js";
+import { playHtml } from "./play/play.js";
+import { profileHtml } from "./profile/profile.js";
+import { tournamentHtml } from "./tournament/tournament.js";
 
 /* Returns the whole page, for external links, or db_error */
-export function frameHtml(db: DB, view: string, user: any): string {
-	let html = db.getView("frame");
-	if ("db_error" == html) {
-		return "db_error";
-	}
-
-	let navbar = navbarHtml(db, user);
-	if ("db_error" == navbar) {
-		return "db_error";
-	}
+export function frameHtml(db: DatabaseSync, view: string, user: any): string {
+	let html = frameHtmlString;
+	let navbar = navbarHtml(user);
 
 	const content = contentHtml(db, view, user);
 	if ("db_error" == content) {
@@ -33,13 +26,8 @@ export function frameHtml(db: DB, view: string, user: any): string {
 }
 
 /* Returns the navbar and content separately, for internal links */
-export function frameAndContentHtml(db: DB, view: string, user: any): any {
-	let navbar = navbarHtml(db, user);
-	if ("db_error" == navbar) {
-		return {
-			navbar: "db_error",
-		};
-	}
+export function frameAndContentHtml(db: DatabaseSync, view: string, user: any): any {
+	let navbar = navbarHtml(user);
 
 	const content = contentHtml(db, view, user);
 	if ("db_error" == content) {
@@ -71,7 +59,7 @@ function highlightPage(navbar: string, view: string) {
 }
 
 /* Gets the correct HTMl from the db */
-function contentHtml(db: DB, view: string, user: any): string {
+function contentHtml(db: DatabaseSync, view: string, user: any): string {
 	switch (view) {
 		case "friends":
 			return friendsHtml(db, user);
@@ -89,3 +77,26 @@ function contentHtml(db: DB, view: string, user: any): string {
 			return "";
 	}
 }
+
+const frameHtmlString: string = `
+	<!DOCTYPE html>
+	<html>
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		<script type="module" src="js/index.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+		<title>Transcendence</title>
+	</head>
+
+	<body>
+		<div class="h-screen flex flex-col">
+			<div id="navbar" class="h-32">%%NAVBAR%%</div>
+			<div id="content" class="grow">%%CONTENT%%</div>
+		</div>
+	</body>
+
+	</html>`;

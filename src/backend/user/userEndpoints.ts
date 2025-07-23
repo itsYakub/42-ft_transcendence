@@ -1,16 +1,13 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DB } from '../db/db.js';
-import { addUserToDB, loginUser, updateAvatar, updateNick, updatePassword } from './userHandler.js';
+import { DatabaseSync } from "node:sqlite";
+import { addUser, getUser, invalidateToken, loginUser } from './userDB.js';
 
-export function userEndpoints(fastify: FastifyInstance, db: DB): void {
-	// TODO Delete this!
-	fastify.get("/delete", async (request: FastifyRequest, reply: FastifyReply) => {
-		db.initDB(true, true, true);
-		return reply.redirect("/user/logout");
-	});
-
+export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
-		const payload = addUserToDB(db, JSON.parse(request.body as string));
+		const json = JSON.parse(request.body as string);
+		json["online"] = 1;
+
+		const payload = addUser(db, json);
 		const accessTokenDate = new Date();
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
 		const refreshTokenDate = new Date();
@@ -47,59 +44,15 @@ export function userEndpoints(fastify: FastifyInstance, db: DB): void {
 	});
 
 	fastify.post("/user/invalidate-token", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.send(user);
 		}
-		db.invalidateToken(user);
+		invalidateToken(db, user);
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
 		return reply.header(
 			"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).redirect("/");
-	});
-
-	fastify.get("/user/logout2", async (request: FastifyRequest, reply: FastifyReply) => {
-		//this.db.logoutUser(request.cookies.jwt);
-	});
-
-	fastify.post('/user/password', async (request: FastifyRequest, reply: FastifyReply) => {
-		const fullUser: boolean = true;
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken, fullUser);
-		if (user.error) {
-			return reply.code(user.code).send(user);
-		}
-
-		const response = updatePassword(db, user, JSON.parse(request.body as string));
-		if (response.error) {
-			return reply.code(response.code).send(response);
-		}
-		return reply.send(response);
-	});
-
-	fastify.post('/user/nick', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error) {
-			return reply.code(user.code).send(user);
-		}
-
-		const response = updateNick(db, user.id, JSON.parse(request.body as string).nick);
-		if (response.error) {
-			return reply.code(response.code).send(response);
-		}
-		return reply.send(response);
-	});
-
-	fastify.post('/user/avatar', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error) {
-			return reply.code(user.code).send(user);
-		}
-
-		const response = updateAvatar(db, user.id, JSON.parse(request.body as string).avatar);
-		if (response.error) {
-			return reply.code(response.code).send(response);
-		}
-		return reply.send(response);
 	});
 }

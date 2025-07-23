@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DB } from '../db/db.js';
-import { frameAndContentHtml, frameHtml } from './partial/frame.js';
+import { DatabaseSync } from "node:sqlite";
+import { frameAndContentHtml, frameHtml } from '../frame.js';
+import { getUser } from '../../user/userDB.js';
 
-export function tournamentPage(fastify: FastifyInstance, db: DB): void {
+export function tournamentPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "tournament", user);
@@ -22,8 +23,8 @@ export function tournamentPage(fastify: FastifyInstance, db: DB): void {
 	});
 }
 
-export function tournamentHtml(db: DB, user: any): string {
-	const html = db.getView("tournament");
+export function tournamentHtml(db: DatabaseSync, user: any): string {
+	const html = tournamentHtmlString;
 
 	return injectUser(html, user);
 }
@@ -31,3 +32,6 @@ export function tournamentHtml(db: DB, user: any): string {
 function injectUser(html: string, user: any): string {
 	return html;
 }
+
+const tournamentHtmlString: string = `
+	Tournament`;

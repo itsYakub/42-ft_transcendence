@@ -1,0 +1,264 @@
+import { DatabaseSync } from "node:sqlite";
+import { accessToken, hashPassword, refreshToken, validJWT } from "../user/jwt.js";
+import { compareSync } from "bcrypt-ts";
+
+export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
+	if (dropUsers)
+		db.exec(`DROP TABLE IF EXISTS Users;`);
+
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS Users (
+		UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+		Nick TEXT NOT NULL,
+		Email TEXT UNIQUE NOT NULL,
+		Avatar TEXT NOT NULL,
+		Password TEXT,
+		RefreshToken TEXT UNIQUE,
+		Online INTEGER NOT NULL
+		);`);
+}
+
+/*
+	Gets a user using the refresh token if it's still valid
+*/
+function getUserByRefreshToken(db: DatabaseSync, refreshToken: string, fulluser: boolean = false): any {
+	const valid = validJWT(refreshToken);
+	if (valid) {
+		let payload = refreshToken.split(".")[1];
+		payload = atob(payload);
+		const { exp } = JSON.parse(payload);
+		const date = new Date(exp);
+		if (date < new Date()) {
+			return {
+				"error": "Expired token!"
+			}
+		}
+		const select = db.prepare("SELECT * FROM Users WHERE RefreshToken = ?");
+		const user = select.get(refreshToken);
+		if (!user) {
+			return {
+				"error": "User not found!"
+			}
+		}
+		if (fulluser)
+			return {
+				"id": user.UserID,
+				"nick": user.Nick,
+				"email": user.Email,
+				"avatar": user.Avatar,
+				"password": user.Password,
+				"role": user.Role,
+				"refreshToken": user.RefreshToken,
+				"online": user.Online,
+				"google": user.Password == null
+			};
+		else
+			return {
+				"id": user.UserID,
+				"nick": user.Nick,
+				"avatar": user.Avatar,
+				"role": user.Role,
+				"google": user.Password == null
+			};
+	}
+	return {
+		"error": "User not found!"
+	}
+}
+
+/*
+	Returns an error message or user data
+*/
+export function getUser(db: DatabaseSync, accessToken: string, refreshToken: string, fulluser: boolean = false): any {
+	const valid = validJWT(accessToken);
+	if (valid) {
+		let payload = accessToken.split(".")[1];
+		payload = atob(payload);
+		const { sub, exp } = JSON.parse(payload);
+		const date = new Date(exp);
+		if (date < new Date()) {
+			return getUserByRefreshToken(db, refreshToken, fulluser);
+		}
+
+		const select = db.prepare("SELECT * FROM Users WHERE UserID = ?");
+		const user = select.get(sub);
+		if (!user) {
+			return {
+				"code": 401,
+				"error": "User not found!"
+			}
+		}
+		if (fulluser)
+			return {
+				"id": user.UserID,
+				"nick": user.Nick,
+				"email": user.Email,
+				"avatar": user.Avatar,
+				"password": user.Password,
+				"role": user.Role,
+				"refreshToken": user.RefreshToken,
+				"online": user.Online,
+				"google": user.Password == null
+			};
+		else
+			return {
+				"id": user.UserID,
+				"nick": user.Nick,
+				"avatar": user.Avatar,
+				"role": user.Role,
+				"google": user.Password == null
+			};
+	}
+	else
+		return getUserByRefreshToken(db, refreshToken, fulluser);
+}
+
+/*
+	Adds a user to the DB after a sign up with email/password
+*/
+export function addUser(db: DatabaseSync, json: any): any {
+	try {
+		const password = hashPassword(json.password);
+		const insert = db.prepare('INSERT INTO Users (Nick, Email, Password, Avatar, Online) VALUES (?, ?, ?, ?, ?)');
+		const statementSync = insert.run(json.nick, json.email, password, json.avatar, json.online);
+		const id: number = statementSync.lastInsertRowid as number;
+		const token = refreshToken(id);
+		updateRefreshtoken(db, {
+			id, "refreshToken": token
+		});
+		return {
+			"accessToken": accessToken(id),
+			"refreshToken": token
+		};
+	}
+	catch (e) {
+		if ("constraint failed" == e.errstr) {
+			return {
+				"code": 200,
+				"error": "The email is already taken!"
+			}
+		}
+		return {
+			"code": 500,
+			"error": "SQL error!"
+		};
+	}
+}
+
+/*
+	After a successful Google Sign-in/up, gets the user from the DB or adds it
+*/
+export function addGoogleUser(db: DatabaseSync, json: any): any {
+	try {
+		const existingUser = getUserByEmail(db, json.email);
+		if (!existingUser.error) {
+			const token = refreshToken(existingUser.id);
+			updateRefreshtoken(db, {
+				"id": existingUser.id,
+				"refreshToken": token
+			});
+			return {
+				"accessToken": accessToken(existingUser.id),
+				"refreshToken": token
+			};
+		}
+		const insert = db.prepare('INSERT INTO Users (Nick, Email, Avatar, Online) VALUES (?, ?, ?, ?)');
+		const statementSync = insert.run(json.nick, json.email, json.avatar, json.online);
+		const id: number = statementSync.lastInsertRowid as number;
+		const token = refreshToken(id);
+		updateRefreshtoken(db, {
+			id, "refreshToken": token
+		});
+		return {
+			"accessToken": accessToken(id),
+			"refreshToken": token
+		};
+	}
+	catch (e) {
+		return {
+			"code": 500,
+			"error": "SQL error!"
+		};
+	}
+}
+
+/*
+	Gets a user from the DB after an email/password login
+*/
+export function loginUser(db: DatabaseSync, json: any): any {
+	try {
+		const user = getUserByEmail(db, json.email);
+		if (user.error) {
+			return user;
+		}
+
+		if (compareSync(json.password, user.password)) {
+			const token = refreshToken(user.id);
+			updateRefreshtoken(db, {
+				"id": user.id, "refreshToken": token
+			});
+			return {
+				"nick": user.nick,
+				"avatar": user.avatar,
+				"accessToken": accessToken(user.id),
+				"refreshToken": token
+			}
+		}
+		return {
+			"code": 200,
+			"error": "Unknown login or wrong password!"
+		};
+	}
+	catch (e) {
+		return {
+			"code": 500,
+			"error": "Internal error!"
+		};
+	}
+}
+
+// Finds the user in the DB by email
+export function getUserByEmail(db: DatabaseSync, email: string): any {
+	const select = db.prepare("SELECT * FROM Users WHERE Email = ?");
+	const user = select.get(email);
+	if (user) {
+		return {
+			id: user.UserID,
+			nick: user.Nick,
+			avatar: user.Avatar,
+			password: user.Password,
+			role: user.role
+		}
+	}
+	return {
+		error: "User not found"
+	};
+}
+
+function logoutUser(db: DatabaseSync, accessToken: string, refreshToken: string) {
+	const user = getUser(db, accessToken, refreshToken);
+	// change online to 0 in the DB
+	console.log("Logging out", user.nick);
+}
+
+export function updateRefreshtoken(db: DatabaseSync, json: any) {
+	try {
+		const select = db.prepare("UPDATE Users SET RefreshToken = ? WHERE UserID = ?");
+		select.run(json.refreshToken, json.id);
+	}
+	catch (e) {
+		throw (e);
+	}
+}
+
+export function invalidateToken(db: DatabaseSync, json: any) {
+	try {
+		const select = db.prepare("UPDATE Users SET RefreshToken = NULL WHERE UserID = ?");
+		select.run(json.id);
+	}
+	catch (e) {
+		throw (e);
+	}
+}
+
+

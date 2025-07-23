@@ -36,7 +36,7 @@ export function profileFunctions() {
 				return;
 			}
 			
-			const response = await fetch("/user/password", {
+			const response = await fetch("/profile/password", {
 				method: "POST",
 				body: JSON.stringify({
 					currentPassword,
@@ -59,7 +59,7 @@ export function profileFunctions() {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
 			const nick = changeNickForm.newNick.value;
-			const response = await fetch("/user/nick", {
+			const response = await fetch("/profile/nick", {
 				method: "POST",
 				body: JSON.stringify({
 					nick
@@ -95,7 +95,7 @@ export function profileFunctions() {
 				reader.readAsDataURL(files[0]);
 				reader.onloadend = async () => {
 					const avatar = reader.result as string;
-					const response = await fetch("/user/avatar", {
+					const response = await fetch("/profile/avatar", {
 						method: "POST",
 						body: JSON.stringify({
 							avatar

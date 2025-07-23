@@ -1,10 +1,12 @@
+import { friendsFunctions } from "./friends.js";
 import { googleFunctions } from "./googleAuth.js";
 import { loginFunctions } from "./login.js";
 import { logoutFunctions } from "./logout.js";
+import { matchesFunctions } from "./matches.js";
 import { pageButtons } from "./pages.js";
 import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
-import { wipeDB } from "./wipeDB.js";
+import { devButtons } from "./devButtons.js";
 
 /*
 	Simulates moving to a new page
@@ -37,13 +39,15 @@ window.addEventListener('popstate', function (event) {
 export function addFunctions() {
 	pageButtons();
 	profileFunctions();
+	friendsFunctions();
+	matchesFunctions();
 	loginFunctions();
 	logoutFunctions();
 	registerFunctions();
 	googleFunctions();
 
 	// remove!
-	wipeDB();
+	devButtons();
 }
 
 window.addEventListener("DOMContentLoaded", () => {

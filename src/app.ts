@@ -1,18 +1,22 @@
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
-import { DB } from "./backend/db/db.js";
 import { userEndpoints } from "./backend/user/userEndpoints.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 import fastifyCors from "@fastify/cors";
+import { DatabaseSync } from "node:sqlite";
 import { googleAuth } from "./backend/user/googleAuth.js";
-import { homePage } from "./backend/pages/home.js";
-import { profilePage } from "./backend/pages/profile.js";
-import { matchesPage } from "./backend/pages/matches.js";
-import { friendsPage } from "./backend/pages/friends.js";
-import { playPage } from "./backend/pages/play.js";
-import { tournamentPage } from "./backend/pages/tournament.js";
+import { homePage } from "./backend/pages/home/home.js";
+import { profilePage } from "./backend/pages/profile/profile.js";
+import { matchesPage } from "./backend/pages/matches/matches.js";
+import { friendsPage } from "./backend/pages/friends/friends.js";
+import { playPage } from "./backend/pages/play/play.js";
+import { tournamentPage } from "./backend/pages/tournament/tournament.js";
+import { initUsers } from "./backend/user/userDB.js";
+import { initFriends } from "./backend/pages/friends/friendsDB.js";
+import { initMatches } from "./backend/pages/matches/matchesDB.js";
+import { devEndpoints } from "./backend/devTools.js";
 
 const __dirname = import.meta.dirname;
 
@@ -35,13 +39,18 @@ fastify.register(fastifyStatic, {
 	root: __dirname + "/frontend"
 });
 
-// Creates or opens the database
+// Turn these on to wipe and re-create specific tables on startup
 const dropTables = {
 	dropUsers: false,
-	dropMatches: false,
-	dropViews: true
+	dropFriends: false,
+	dropMatches: false
 };
-const db = new DB(dropTables.dropUsers, dropTables.dropMatches, dropTables.dropViews);
+
+const db = new DatabaseSync(process.env.DB);
+
+initUsers(db, dropTables.dropUsers);
+initFriends(db, dropTables.dropFriends);
+initMatches(db, dropTables.dropMatches);
 
 homePage(fastify, db);
 playPage(fastify, db);
@@ -52,6 +61,9 @@ friendsPage(fastify, db);
 
 googleAuth(fastify, db);
 userEndpoints(fastify, db);
+
+// Remove!
+devEndpoints(fastify, db);
 
 // Start listening
 fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {

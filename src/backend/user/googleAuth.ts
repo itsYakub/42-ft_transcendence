@@ -1,8 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DB } from '../db/db.js';
-import { addGoogleUserToDB } from './userHandler.js';
+import { DatabaseSync } from "node:sqlite";
+import { addGoogleUser } from './userDB.js';
 
-export function googleAuth(fastify: FastifyInstance, db: DB): void {
+export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/auth/google", async (request: FastifyRequest, reply: FastifyReply) => {
 		const code: string = request.query["code"];
 
@@ -34,10 +34,11 @@ export function googleAuth(fastify: FastifyInstance, db: DB): void {
 		const userJSON = {
 			"nick": user.name,
 			"email": user.email,
-			"avatar": avatar
+			"avatar": avatar,
+			"online": 1
 		}
 
-		const payload = addGoogleUserToDB(db, userJSON);
+		const payload = addGoogleUser(db, userJSON);
 		const accessTokenDate = new Date();
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
 		const refreshTokenDate = new Date();

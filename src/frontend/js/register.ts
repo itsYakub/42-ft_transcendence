@@ -20,8 +20,8 @@ export function registerFunctions() {
 			const email = registerForm.email.value;
 			const password = registerForm.password.value;
 
-			const fff = fetch("images/default.jpg");
-			const blob = await (await fff).blob();
+			const defaultAvatar = fetch("images/default.jpg");
+			const blob = await (await defaultAvatar).blob();
 			const reader = new FileReader();
 			reader.readAsDataURL(blob);
 			reader.onloadend = async () => {

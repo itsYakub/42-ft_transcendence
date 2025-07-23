@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DB } from '../db/db.js';
-import { frameAndContentHtml, frameHtml } from './partial/frame.js';
+import { DatabaseSync } from "node:sqlite";
+import { frameAndContentHtml, frameHtml } from '../frame.js';
+import { getUser } from '../../user/userDB.js';
 
-export function playPage(fastify: FastifyInstance, db: DB): void {
+export function playPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/play', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = db.getUser(request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "play", user);
@@ -22,8 +23,8 @@ export function playPage(fastify: FastifyInstance, db: DB): void {
 	});
 }
 
-export function playHtml(db: DB, user: any): string {
-	const html = db.getView("play");
+export function playHtml(db: DatabaseSync, user: any): string {
+	const html = playHtmlString;
 
 	return injectUser(html, user);
 }
@@ -31,3 +32,10 @@ export function playHtml(db: DB, user: any): string {
 function injectUser(html: string, user: any): string {
 	return html;
 }
+
+const playHtmlString: string = `
+	<button onclick="setupGame()">Setup</button>
+	<button onclick="startGame()">Start</button>
+	<div class="text-center m-4" style="margin:16px;">
+		<canvas id='pongCanvas'></canvas>
+	</div>`;
