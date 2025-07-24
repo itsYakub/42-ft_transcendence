@@ -14,7 +14,7 @@ export function loginFunctions() {
 		loginForm.addEventListener("submit", async (e) => {
 			if ("cancelLoginButton" == e.submitter.id)
 				return;
-			
+
 			e.preventDefault();
 			const email = loginForm.email.value;
 			const password = loginForm.password.value;

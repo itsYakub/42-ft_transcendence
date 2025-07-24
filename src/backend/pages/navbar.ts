@@ -30,7 +30,7 @@ const loggedOutHtmlString: string = `
 			</button>
 		</div>
 
-		<div class="ml-32">
+		<div class="ml-82">
 			<button id="loginButton"
 				class="cursor-pointer rounded-lg p-2 bg-%%COLOUR%% hover:bg-gray-700 group text-gray-300">Log
 				in</button>
@@ -59,14 +59,14 @@ const loggedInHtmlString: string = `
 			</button>
 		</div>
 
-		<div class="ml-32 mr-4">
+		<div class="ml-82 mr-4">
 			<button id="logoutButton"
 				class="cursor-pointer text-center rounded-lg p-2 bg-red-500 hover:bg-gray-700 group text-gray-300">Log
 				out</button>
 		</div>
 
 		<div>
-			<img id="profileAvatar" class="rounded-full border border-gray-800 cursor-pointer h-24 w-24"
+			<img id="profileAvatar" class="rounded-full border border-gray-800 cursor-pointer h-20 w-20"
 				src="%%AVATAR%%" />
 			<div id="profileNick" class="text-white text-center">%%NICK%%</div>
 		</div>
@@ -92,6 +92,7 @@ const loginHtmlString: string = `
 						class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						required="true">
 				</div>
+				<input type="submit" class="hidden" />
 				<button id="cancelLoginButton"
 					class="cursor-pointer float-left text-red-500 my-4 hover:bg-gray-700 font-medium rounded-lg px-2 py-2 text-center"
 					type="submit" formmethod="dialog" formnovalidate>Cancel</button>
@@ -127,7 +128,8 @@ const registerHtmlString: string = `
 					<input type="password" name="password" minlength="8" placeholder="Password"
 						class="border rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-600 text-white"
 						required="true">
-				</div>			
+				</div>
+				<input type="submit" class="hidden" />
 				<div>
 					<button id="cancelRegisterButton"
 						class="cursor-pointer float-left text-red-500 my-4 hover:bg-gray-700 font-medium rounded-lg p-2 text-center"

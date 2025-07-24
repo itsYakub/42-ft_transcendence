@@ -80,7 +80,7 @@ function matchHtml(match: any): string {
 const matchesHtmlString: string = `
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full w-200 m-auto text-center flex flex-row">
-			<div class="w-60">
+			<div class="w-50">
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"
 						class="cursor-pointer text-right w-8/10 mr-4  text-gray-300 hover:bg-gray-800 p-2 rounded-lg">Profile</button>

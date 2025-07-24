@@ -12,7 +12,7 @@ Structure
 I've set up the structure like this (It can be changed if it's confusing): the two main parts are the backend and frontend. Although they are both in TypeScript they can't really talk to each other except through API requests and responses.
 
 Backend
--	pages: each "page" has its own folder. Some pages have routes, db access, etc. Look at app.ts to see how they are registered. frame and navbar and used to wrap every "page". The register/login dialogs are inside navbar.
+-	pages: each "page" has its own folder. Some pages have routes, db access, etc. Look at app.ts to see how they are registered. frame and navbar are used to wrap every "page". The register/login dialogs are inside navbar.
 -	user: files here handle user API requests (login, register, etc.)
 
 Frontend

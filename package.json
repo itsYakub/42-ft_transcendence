@@ -18,12 +18,14 @@
 		"fastify": "^5.4.0",
 		"fastify-cookie": "^5.6.1",
 		"fastify-plugin": "^5.0.1",
+		"otpauth": "^9.4.0",
+		"qr": "^0.5.0",
 		"tailwindcss": "^4.1.10"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.10",
-		"typescript": "^5.8.3",
-		"apidoc": "^1.2.0"
+		"apidoc": "^1.2.0",
+		"typescript": "^5.8.3"
 	},
 	"apidoc": {
 		"title": "Custom apiDoc browser title"

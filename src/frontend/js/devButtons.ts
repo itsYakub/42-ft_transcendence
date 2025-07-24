@@ -97,4 +97,18 @@ export function devButtons() {
 				alert("Something went wrong!");
 		}, { once: true });
 	}
+
+	const testButton = document.getElementById("testButton")
+	if (testButton) {
+		testButton.addEventListener("click", async () => {
+			const response = await fetch("/user/2fa", {
+				method: "GET"
+			});
+			if (response.ok) {
+				alert(await response.text());
+			}
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
 }
