@@ -1,9 +1,9 @@
 import { addFunctions } from "./index.js";
 
 export function devButtons() {
-	const deleteButton = document.getElementById("deleteButton")
-	if (deleteButton) {
-		deleteButton.addEventListener("click", async () => {
+	const wipeAllButton = document.getElementById("wipeAllButton")
+	if (wipeAllButton) {
+		wipeAllButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/wipe", {
 				method: "GET"
 			});
@@ -20,10 +20,49 @@ export function devButtons() {
 		}, { once: true });
 	}
 
+	const wipeUsersButton = document.getElementById("wipeUsersButton")
+	if (wipeUsersButton) {
+		wipeUsersButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/users", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Wiped users!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
+	const wipeMatchesButton = document.getElementById("wipeMatchesButton")
+	if (wipeMatchesButton) {
+		wipeMatchesButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/matches", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Wiped matches!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
+	const wipeFriendsButton = document.getElementById("wipeFriendsButton")
+	if (wipeFriendsButton) {
+		wipeFriendsButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/friends", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Wiped friends!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
 	const addMockUsersButton = document.getElementById("addMockUsersButton")
 	if (addMockUsersButton) {
 		addMockUsersButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/users", {
+			const response = await fetch("/dev/add/users", {
 				method: "GET"
 			});
 			if (response.ok)
@@ -36,7 +75,7 @@ export function devButtons() {
 	const addMockMatchesButton = document.getElementById("addMockMatchesButton")
 	if (addMockMatchesButton) {
 		addMockMatchesButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/matches", {
+			const response = await fetch("/dev/add/matches", {
 				method: "GET"
 			});
 			if (response.ok)
@@ -49,7 +88,7 @@ export function devButtons() {
 	const addMockFriendsButton = document.getElementById("addMockFriendsButton")
 	if (addMockFriendsButton) {
 		addMockFriendsButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/friends", {
+			const response = await fetch("/dev/add/friends", {
 				method: "GET"
 			});
 			if (response.ok)

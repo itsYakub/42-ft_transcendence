@@ -1,11 +1,14 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../../user/userDB.js';
 
 export function tournamentPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+
+		if (user.id)
+			markUserOnline(db, user.id);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "tournament", user);

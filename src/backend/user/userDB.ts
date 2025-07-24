@@ -219,26 +219,28 @@ export function loginUser(db: DatabaseSync, json: any): any {
 
 // Finds the user in the DB by email
 export function getUserByEmail(db: DatabaseSync, email: string): any {
-	const select = db.prepare("SELECT * FROM Users WHERE Email = ?");
-	const user = select.get(email);
-	if (user) {
-		return {
-			id: user.UserID,
-			nick: user.Nick,
-			avatar: user.Avatar,
-			password: user.Password,
-			role: user.role
+	try {
+		const select = db.prepare("SELECT * FROM Users WHERE Email = ?");
+		const user = select.get(email);
+		if (user) {
+			return {
+				"id": user.UserID,
+				"nick": user.Nick,
+				"avatar": user.Avatar,
+				"password": user.Password,
+			}
 		}
+		return {
+			"code": 404,
+			"error": "User not found!"
+		};
 	}
-	return {
-		error: "User not found"
-	};
-}
-
-function logoutUser(db: DatabaseSync, accessToken: string, refreshToken: string) {
-	const user = getUser(db, accessToken, refreshToken);
-	// change online to 0 in the DB
-	console.log("Logging out", user.nick);
+	catch (e) {
+		return {
+			"code": 500,
+			"error": "Internal error!"
+		};
+	}
 }
 
 export function updateRefreshtoken(db: DatabaseSync, json: any) {
@@ -247,6 +249,7 @@ export function updateRefreshtoken(db: DatabaseSync, json: any) {
 		select.run(json.refreshToken, json.id);
 	}
 	catch (e) {
+		console.log(e);
 		throw (e);
 	}
 }
@@ -261,4 +264,24 @@ export function invalidateToken(db: DatabaseSync, json: any) {
 	}
 }
 
+export function markUserOnline(db: DatabaseSync, id: number) {
+	try {
+		const select = db.prepare("UPDATE Users SET Online = 1 WHERE UserID = ?");
+		select.run(id);
+	}
+	catch (e) {
+		console.log(e);
+		throw (e);
+	}
+}
 
+export function markUserOffline(db: DatabaseSync, id: number) {
+	try {
+		const select = db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
+		select.run(id);
+	}
+	catch (e) {
+		console.log(e);
+		throw (e);
+	}
+}

@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser, getUser, invalidateToken, loginUser } from './userDB.js';
+import { addUser, getUser, invalidateToken, loginUser, markUserOffline } from './userDB.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -54,5 +54,11 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).redirect("/");
+	});
+
+	fastify.post("/user/leave", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (user.id)
+			markUserOffline(db, user.id);
 	});
 }

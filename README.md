@@ -38,3 +38,4 @@ TODO (Luke):
 - colour scheme
 - change handler returns to translatable references
 - unknown routes
+- check what happens if db down

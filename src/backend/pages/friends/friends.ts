@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser } from '../../user/userDB.js';
+import { getUser, getUserByEmail, markUserOnline } from '../../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendsDB.js';
 
 export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -10,6 +10,8 @@ export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (user.error) {
 			return reply.redirect("/");
 		}
+
+		markUserOnline(db, user.id);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "friends", user);
@@ -58,12 +60,31 @@ export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 		return reply.send(response);
 	});
+
+	fastify.post("/friends/find", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (user.error) {
+			return reply.code(user.code).send(user);
+		}
+
+		const json = JSON.parse(request.body as string);
+		const response = getUserByEmail(db, json.email);
+		if (response.error) {
+			return reply.code(response.code).send(response);
+		}
+
+		addFriend(db, {
+			"id": user.id,
+			"friendID": response.id
+		});
+		return reply.send(response);
+	});
 }
 
 export function friendsHtml(db: DatabaseSync, user: any): string {
 	const friends = getFriends(db, user.id);
 	let html = friendsHtmlString;
-	
+
 	let friendList = "";
 	for (var key in friends) {
 		friendList += friendHtml(friends[key]);
@@ -76,17 +97,18 @@ export function friendsHtml(db: DatabaseSync, user: any): string {
 
 function friendHtml(friend: any): string {
 	const onlineString: string = 1 == friend.Online ? `<div class="text-green-300">Online</div>` : `<div class="text-red-300">Offline</div>`;
-	return `<div class="border p-2.5 rounded-lg border-gray-700 m-3 bg-gray-800 text-white">
-						<div class="grid grid-cols-2 gap-4">
-							<div>
-								<div>${friend.Nick}</div>
-								${onlineString}
-							</div>
-							<div class="text-right my-auto">
-								<button class="removeFriendButton cursor-pointer text-red-300" data-id="${friend.FriendID}"></data>Remove</button>
-							</div>
-						</div>
-					</div>`;
+	return `
+		<div class="border p-2.5 rounded-lg border-gray-700 m-3 bg-gray-800 text-white">
+			<div class="grid grid-cols-2 gap-4">
+				<div>
+					<div>${friend.Nick}</div>
+					${onlineString}
+				</div>
+				<div class="text-right my-auto">
+					<button class="removeFriendButton cursor-pointer text-red-300" data-id="${friend.FriendID}"></data>Remove</button>
+				</div>
+			</div>
+		</div>`;
 }
 
 const friendsHtmlString: string = `
@@ -109,7 +131,7 @@ const friendsHtmlString: string = `
 						%%FRIENDLIST%%
 					</div>
 					<div class="m-auto text-right">
-						<button class="border border-gray-700 p-2 cursor-pointer hover:bg-gray-700 rounded-lg text-white bg-gray-800">Add friend</button>
+						<button id="addFriendButton" class="border border-gray-700 p-2 cursor-pointer hover:bg-gray-700 rounded-lg text-white bg-gray-800">Add friend</button>
 					</div>
 				</div>
 			</div>

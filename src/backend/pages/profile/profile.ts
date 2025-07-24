@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../../user/userDB.js';
 import { updateAvatar, updateNick, updatePassword } from './profileDB.js';
 
 export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -10,6 +10,8 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (user.error) {
 			return reply.redirect("/");
 		}
+		
+		markUserOnline(db, user.id);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "profile", user);

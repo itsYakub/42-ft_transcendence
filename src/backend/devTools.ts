@@ -21,22 +21,28 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		return reply.redirect("/user/logout");
 	});
 
-	fastify.get("/dev/users", async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.get("/dev/wipe/users", async (request: FastifyRequest, reply: FastifyReply) => {
+		initUsers(db, true);
+		return reply.redirect("/user/logout");
+	});
+
+	fastify.get("/dev/wipe/matches", async (request: FastifyRequest, reply: FastifyReply) => {
+		initMatches(db, true);
+	});
+
+	fastify.get("/dev/wipe/friends", async (request: FastifyRequest, reply: FastifyReply) => {
+		initFriends(db, true);
+	});
+
+	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
 			const avatar = readFileSync(join(__dirname, '../frontend/images/default.jpg'), { encoding: 'base64' });
-			addUser(db, {
-				"nick": "test",
-				"password": "12345678",
-				"email": "test@test.com",
-				"avatar": "data:image/jpeg;base64," + avatar,
-				"online": 1
-			});
 			addUser(db, {
 				"nick": "test1",
 				"password": "12345678",
 				"email": "test1@test.com",
 				"avatar": "data:image/jpeg;base64," + avatar,
-				"online": 0
+				"online": 1
 			});
 			addUser(db, {
 				"nick": "test2",
@@ -59,6 +65,13 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 				"avatar": "data:image/jpeg;base64," + avatar,
 				"online": 1
 			});
+			addUser(db, {
+				"nick": "test5",
+				"password": "12345678",
+				"email": "test5@test.com",
+				"avatar": "data:image/jpeg;base64," + avatar,
+				"online": 0
+			});
 		}
 		catch (e) {
 			console.log(e);
@@ -66,25 +79,32 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 	});
 
-	fastify.get("/dev/matches", async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.get("/dev/add/matches", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
 			addMatch(db, {
-				"p1ID": 1,
-				"p2Name": "Ed",
-				"p1Score": 3,
-				"p2Score": 10
+				"id": 1,
+				"message": "Lost 10-3 to Ed",
+				"rating": 0
 			});
 			addMatch(db, {
-				"p1ID": 1,
-				"p2Name": "John",
-				"p1Score": 10,
-				"p2Score": 7
+				"id": 1,
+				"message": "Beat John 10-0",
+				"rating": 2
 			});
 			addMatch(db, {
-				"p1ID": 2,
-				"p2Name": "John",
-				"p1Score": 10,
-				"p2Score": 2
+				"id": 1,
+				"message": "Won a tournament!",
+				"rating": 3
+			});
+			addMatch(db, {
+				"id": 1,
+				"message": "Came last in a tournament!",
+				"rating": 0
+			});
+			addMatch(db, {
+				"id": 2,
+				"message": "Won a tournament!",
+				"rating": 3
 			});
 		}
 		catch (e) {
@@ -93,7 +113,7 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 	});
 
-	fastify.get("/dev/friends", async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.get("/dev/add/friends", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
 			addFriend(db, {
 				"id": 1,

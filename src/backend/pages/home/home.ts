@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../../user/userDB.js';
 
 /**
  * @api {get} /user/:id Request User information
@@ -16,6 +16,9 @@ import { getUser } from '../../user/userDB.js';
 export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		
+		if (user.id)
+			markUserOnline(db, user.id);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "home", user);
@@ -48,9 +51,21 @@ const homeHtmlString: string = `
 	<div class="h-full bg-gray-900 content-center text-center">
 		<div class="text-white">Welcome to
 			Transcendence!</div>
-		<button id="deleteButton"
+		<button id="wipeAllButton"
 			class="mt-4 mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 			Wipe and recreate db
+		</button>
+		<button id="wipeUsersButton"
+			class="mt-4 mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+			Wipe users
+		</button>
+		<button id="wipeMatchesButton"
+			class="mt-4 mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+			Wipe matches
+		</button>
+		<button id="wipeFriendsButton"
+			class="mt-4 mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+			Wipe friends
 		</button>
 		<button id="addMockUsersButton"
 			class="mt-4 block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">

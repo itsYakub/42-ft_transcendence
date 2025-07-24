@@ -19,8 +19,6 @@ export function logoutFunctions() {
 	}
 
 	window.addEventListener("beforeunload", (event) => {
-		// update db
-		//console.log("bye");
-		//fetch("/logout2");
+		fetch("/user/leave", { method: "POST" });
 	}, { once: true });
 }

@@ -1,7 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../../user/userDB.js';
+import { getMatches } from './matchesDB.js';
 
 export function matchesPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/matches', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -10,6 +11,8 @@ export function matchesPage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (user.error) {
 			return reply.redirect("/");
 		}
+
+		markUserOnline(db, user.id);
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, "matches", user);
@@ -27,46 +30,23 @@ export function matchesPage(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 	});
 
-	fastify.post("/matches/add", async (request: FastifyRequest, reply: FastifyReply) => {
-		// const response = addMatch(db, user.id, JSON.parse(request.body as string));
-		// if (response.error) {
-		// 	return reply.code(user.code).send(user);
-		// }
-		// return reply.send(response);
-	});
+	// fastify.post("/matches/add", async (request: FastifyRequest, reply: FastifyReply) => {
+	// 	const response = addMatch(db, user.id, JSON.parse(request.body as string));
+	// 	if (response.error) {
+	// 		return reply.code(user.code).send(user);
+	// 	}
+	// 	return reply.send(response);
+	// });
 }
 
 export function matchesHtml(db: DatabaseSync, user: any): string {
-	const html = matchesHtmlString;
+	const matches = getMatches(db, user.id);
+	let html = matchesHtmlString;
 
-	return injectUser(html, user);
-}
-
-function injectUser(html: string, user: any): string {
-
-	const matches = [
-		{
-			"date": new Date().toLocaleDateString("pl-PL"),
-			"opponent": "Ed",
-			"opponentId": 3,
-			"score": 1,
-			"opponentScore": 10,
-			"friend": false
-		},
-		{
-			"date": new Date().toLocaleDateString("pl-PL"),
-			"opponent": "John",
-			"opponentId": 5,
-			"score": 10,
-			"opponentScore": 5,
-			"friend": false
-		},
-	];
-	// sort by date
 	let matchList = "";
-	matches.forEach((value) => {
-		matchList += matchHtml(value);
-	});
+	for (var key in matches) {
+		matchList += matchHtml(matches[key]);
+	}
 
 	html = html.replaceAll("%%MATCHLIST%%", matchList);
 
@@ -74,27 +54,27 @@ function injectUser(html: string, user: any): string {
 }
 
 function matchHtml(match: any): string {
-	// change colour if online?
-	// without remote players we can't add friends from here
-
-	const scoreColour = match.score > match.opponentScore ? "green" : "red";
-	const opponentScoreColour = match.score < match.opponentScore ? "green" : "red";
-
-	let friendButton = `<button class="addToFriendsButton text-green-300 cursor-pointer" data-id="${match.opponentId}" data-nick="${match.opponent}"></data>Add friend</button>`;
-
-	if (match.friend) {
-		friendButton = `<button class="removeFriendButton text-red-300 cursor-pointer" data-id="${match.opponentId}"></data>Remove friend</button>`;
+	let ratingColour: string;
+	switch (match.Rating) {
+		case 0: ratingColour = "text-red-300";
+			break;
+		case 1: ratingColour = "text-white-300";
+			break;
+		case 2: ratingColour = "text-green-300";
+			break;
+		default: ratingColour = "text-yellow-300";
+			break;		
 	}
 
-	return `<div class="border p-2.5 rounded-lg border-gray-700 m-3 bg-gray-800 text-white">
-						<div class="grid grid-cols-2 gap-4">
-							<div>
-								<div>${match.date}</div>
-								<div>You <span class="text-${scoreColour}-300">${match.score}</span> - <span class="text-${opponentScoreColour}-300">${match.opponentScore}</span> ${match.opponent}</div>
-							</div>
-							<div class="text-right my-auto">${friendButton}</div>
-						</div>
-					</div>`;
+	return `
+		<div class="border p-2.5 rounded-lg border-gray-700 m-3 bg-gray-800 text-white">
+			<div class="grid grid-cols-2 gap-4">
+				<div>
+					<div>${match.PlayedAt}</div>
+					<div class="${ratingColour}">${match.Message}</div>
+				</div>
+			</div>
+		</div>`;
 }
 
 const matchesHtmlString: string = `
