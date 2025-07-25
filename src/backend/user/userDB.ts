@@ -12,9 +12,12 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		Nick TEXT NOT NULL,
 		Email TEXT UNIQUE NOT NULL,
 		Avatar TEXT NOT NULL,
+		Online INTEGER NOT NULL,
 		Password TEXT,
 		RefreshToken TEXT UNIQUE,
-		Online INTEGER NOT NULL
+		TOTPSecret TEXT,
+		TOTPVerified INTEGER NOT NULL DEFAULT 0,
+		TOTPEmail INTEGER NOT NULL DEFAULT 1
 		);`);
 }
 
@@ -47,9 +50,11 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string, fulluser:
 				"email": user.Email,
 				"avatar": user.Avatar,
 				"password": user.Password,
-				"role": user.Role,
 				"refreshToken": user.RefreshToken,
 				"online": user.Online,
+				"totpSecret": user.TOTPSecret,
+				"totpVerified": user.TOTPVerified,
+				"totpEmail": user.TOTPEmail,
 				"google": user.Password == null
 			};
 		else
@@ -57,7 +62,6 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string, fulluser:
 				"id": user.UserID,
 				"nick": user.Nick,
 				"avatar": user.Avatar,
-				"role": user.Role,
 				"google": user.Password == null
 			};
 	}
@@ -95,9 +99,11 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 				"email": user.Email,
 				"avatar": user.Avatar,
 				"password": user.Password,
-				"role": user.Role,
 				"refreshToken": user.RefreshToken,
 				"online": user.Online,
+				"totpSecret": user.TOTPSecret,
+				"totpVerified": user.TOTPVerified,
+				"totpEmail": user.TOTPEmail,
 				"google": user.Password == null
 			};
 		else
@@ -105,12 +111,15 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 				"id": user.UserID,
 				"nick": user.Nick,
 				"avatar": user.Avatar,
-				"role": user.Role,
 				"google": user.Password == null
 			};
 	}
 	else
 		return getUserByRefreshToken(db, refreshToken, fulluser);
+}
+
+export function getFullUser(db: DatabaseSync, accessToken: string, refreshToken: string): any {
+	return getUser(db, accessToken, refreshToken, true);
 }
 
 /*

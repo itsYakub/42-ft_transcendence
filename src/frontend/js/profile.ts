@@ -1,9 +1,3 @@
-// minutes played
-// win/loss ratio
-// friends
-// matches
-// change password/nick - done
-
 import { navigate } from "./index.js";
 
 export function profileFunctions() {
@@ -109,6 +103,75 @@ export function profileFunctions() {
 						alert(message.error);
 				}
 			}
+		});
+	}
+
+	/*
+		The switch to toggle whether 2FA is enabled
+	*/
+	const toggle2faButton = <HTMLInputElement>document.getElementById("toggle2faButton");
+	if (toggle2faButton) {
+		toggle2faButton.addEventListener("change", async () => {
+			toggle2faEmailButton.disabled = !toggle2faButton.checked;
+			if (toggle2faButton.checked) {
+				const response = await fetch("/profile/totp/enable", {
+					method: "POST"
+				})
+
+				if (response.ok) {
+					const json = await response.json();
+
+				const qrCode = document.getElementById("totpQRCode");
+				qrCode.innerHTML = json.qrcode;
+
+				const totpSecret = document.getElementById("totpSecret");
+				totpSecret.innerHTML = json.secret;
+
+				const totpDialog = <HTMLDialogElement>document.getElementById("totpDialog");
+				totpDialog.showModal();
+				}
+			}
+			else {
+				const response = await fetch("/profile/totp/disable", {
+					method: "POST"
+				})
+			}
+		})
+	}
+
+	/*
+		The switch to toggle whether 2FA emails are sent on login
+	*/
+	const toggle2faEmailButton = <HTMLInputElement>document.getElementById("toggle2faEmailButton");
+	if (toggle2faEmailButton) {
+		toggle2faEmailButton.addEventListener("change", () => {
+			console.log(toggle2faEmailButton.checked);
+		})
+	}
+
+	const totpForm = <HTMLFormElement>document.getElementById("totpForm");
+	if (totpForm) {
+		totpForm.addEventListener("submit", async (e) => {
+			if ("cancelTOTPButton" == e.submitter.id)
+				return;
+
+			e.preventDefault();
+			const code = totpForm.code.value;
+
+			const response = await fetch("/profile/totp/verify", {
+				method: "POST",
+				body: JSON.stringify({
+					code
+				})
+			});
+			console.log(await response.text());
+
+			// const payload = await response.json();
+			// if (payload.error) {
+			// 	alert(payload.error);
+			// 	return;
+			// }
+			// navigate("/");
 		});
 	}
 }

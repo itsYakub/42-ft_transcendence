@@ -1,16 +1,18 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser, markUserOnline } from '../../user/userDB.js';
-import { updateAvatar, updateNick, updatePassword } from './profileDB.js';
+import { getFullUser, getUser, markUserOnline } from '../../user/userDB.js';
+import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
+import * as OTPAuth from "otpauth";
+import encodeQR from 'qr';
 
 export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.redirect("/");
 		}
-		
+
 		markUserOnline(db, user.id);
 
 		if (!request.headers["referer"]) {
@@ -30,13 +32,16 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.post('/profile/password', async (request: FastifyRequest, reply: FastifyReply) => {
-		const fullUser: boolean = true;
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken, fullUser);
+		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.code(user.code).send(user);
 		}
 
-		const response = updatePassword(db, user, JSON.parse(request.body as string));
+		const params = JSON.parse(request.body as string);
+		params["id"] = user.id;
+		params["password"] = user.password;
+
+		const response = updatePassword(db, params);
 		if (response.error) {
 			return reply.code(response.code).send(response);
 		}
@@ -49,7 +54,10 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 			return reply.code(user.code).send(user);
 		}
 
-		const response = updateNick(db, user.id, JSON.parse(request.body as string).nick);
+		const params = JSON.parse(request.body as string);
+		params["id"] = user.id;
+
+		const response = updateNick(db, params);
 		if (response.error) {
 			return reply.code(response.code).send(response);
 		}
@@ -62,29 +70,121 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 			return reply.code(user.code).send(user);
 		}
 
-		const response = updateAvatar(db, user.id, JSON.parse(request.body as string).avatar);
+		const params = JSON.parse(request.body as string);
+		params["id"] = user.id;
+
+		const response = updateAvatar(db, params);
 		if (response.error) {
 			return reply.code(response.code).send(response);
 		}
 		return reply.send(response);
 	});
+
+	fastify.post("/profile/totp/enable", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (user.error) {
+			return reply.send(user);
+		}
+
+		const secret = new OTPAuth.Secret({ size: 20 });
+		addTOTPSecret(db, {
+			"id": user.id,
+			"secret": secret.base32
+		});
+
+		let totp = new OTPAuth.TOTP({
+			issuer: "Transcendence",
+			label: user.email,
+			algorithm: "SHA1",
+			digits: 6,
+			period: 30,
+			secret: secret,
+		});
+
+		const response = {
+			"secret": secret.base32,
+			"qrcode": encodeQR(totp.toString(), 'svg'),
+		}
+
+		// let transporter = nodemailer.createTransport({
+		// 	service: 'gmail',
+		// 	auth: {
+		// 		user: 'transcen42dence@gmail.com',
+		// 		pass: 'khsh gyex hcrc rxle'
+		// 	}
+		// });
+
+		// let mailOptions = {
+		// 	host: "smtp.gmail.com",
+		// 	port: 587,
+		// 	tls: {
+		// 		rejectUnauthorized: true,
+		// 		minVersion: "TLSv1.2"
+		// 	},
+		// 	from: 'transcen42dence@gmail.com',
+		// 	to: 'coldandtired@gmail.com',
+		// 	subject: 'Sending Email using Node.js',
+		// 	text: 'That was easy!'
+		// };
+
+		// transporter.sendMail(mailOptions, function (error, info) {
+		// 	if (error) {
+		// 		console.log(error);
+		// 	} else {
+		// 		console.log('Email sent: ' + info.response);
+		// 	}
+		// });
+
+		reply.send(response);
+	});
+
+	fastify.post("/profile/totp/verify", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (user.error) {
+			return reply.send(user);
+		}
+
+		let totp = new OTPAuth.TOTP({
+			issuer: "Transcendence",
+			label: user.email,
+			algorithm: "SHA1",
+			digits: 6,
+			period: 30,
+			secret: user.totpSecret,
+		});
+
+		const params = JSON.parse(request.body as string);
+		if (null != totp.validate({ token: params.code, window: 1 })) {
+			confirmTOTP(db, user.id);
+		}
+
+		return reply.send("OK!");
+	});
+
+	fastify.post("/profile/totp/disable", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (user.error) {
+			return reply.send(user);
+		}
+
+		const response = removeTOTPSecret(db, user.id);
+
+		reply.send(response);
+	});
 }
 
 export function profileHtml(db: DatabaseSync, user: any): string {
-	const html = profileHtmlString;
+	let html = profileHtmlString;
 
-	return injectUser(html, user);
-}
-
-function injectUser(html: string, user: any): string {
 	html = html.replaceAll("%%NICK%%", user.nick);
 	html = html.replaceAll("%%AVATAR%%", user.avatar);
 	if (user.google)
 		html = html.replaceAll("%%CHANGEPASSWORDVISIBILITY%%", "hidden");
 	else
 		html = html.replaceAll("%%CHANGEPASSWORDVISIBILITY%%", "visible");
+	html = html.replace("%%2FAENABLEDCHECKED%%", 1 == user.totpVerified ? "checked" : "");
 
-	return html;
+	return html + totpHtmlString;
 }
 
 const profileHtmlString: string = `
@@ -124,34 +224,77 @@ const profileHtmlString: string = `
 							</div>
 						</form>
 					</div>
-					<div class="my-4 p-3 border border-gray-700 rounded-lg ">
-						<span class="text-white font-medium">Change nickname</span>
-						<form id="changeNickForm">
+					<div class="flex flex-row my-4">
+						<div class="p-3 border border-gray-700 rounded-lg">
+							<div class="text-white font-medium">Change Avatar</div>
 							<div>
-								<input type="text" id="newNick" placeholder="New nickname" required="true"
-									class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+								<img class="mt-2 w-20 h-20 mx-auto cursor-pointer" src="%%AVATAR%%" id="avatarImage" />
+								<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
 							</div>
-							<div>
-								<button type="submit" formmethod="post"
-									class="ml-auto cursor-pointer block text-right mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Update</button>
-							</div>
-						</form>
-					</div>
-					<div class="my-4 p-3 border border-gray-700 rounded-lg ">
-						<span class="text-white font-medium">Change Avatar</span>
-						<div>
-							<img class="my-1 w-20 h-20 cursor-pointer" src="%%AVATAR%%" id="avatarImage" />
-							<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
+							<input type="hidden" id="userId" value="%%ID%%" />
 						</div>
-						<input type="hidden" id="userId" value="%%ID%%" />
+						<div class="grow ml-2 p-3 border border-gray-700 rounded-lg ">
+							<span class="text-white font-medium">Change nickname</span>
+							<form id="changeNickForm">
+								<div>
+									<input type="text" id="newNick" placeholder="New nickname" required="true"
+										class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+								</div>
+								<div>
+									<button type="submit" formmethod="post"
+										class="ml-auto cursor-pointer block text-right mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Update</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="my-3 p-3 border border-gray-700 rounded-lg">
+						<div class="text-white font-medium mb-2">2FA</div>
+						<div class="flex flex-row">
+							<label class="inline-flex items-center cursor-pointer">
+								<input type="checkbox" id="toggle2faButton" class="sr-only peer" %%2FAENABLEDCHECKED%%>
+								<div class="relative w-11 h-6 peer-focus:outline-none rounded-full peer bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all  peer-checked:bg-blue-700"></div>
+								<span class="ms-2 text-medium font-large text-gray-300">Enabled</span>
+							</label>
+							<label class="inline-flex items-center cursor-pointer ml-20">
+								<input type="checkbox" id="toggle2faEmailButton" class="sr-only peer" %%2FAEMAILCHECKED%%>
+								<div class="relative w-11 h-6 peer-focus:outline-none rounded-full peer bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all  peer-checked:bg-blue-700"></div>
+								<span class="ms-2 text-medium font-large text-gray-300">Send email</span>
+							</label>
+						</div>
 					</div>
 					<div class="my-4 p-3 border border-gray-700 rounded-lg ">
 						<div>
 							<button id="invalidateTokenButton"
-								class="mx-auto cursor-pointer block bg-red-500 text-right mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Invalidate token</button>
+								class="mx-auto cursor-pointer block bg-red-500 mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Invalidate token</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>`;
+
+const totpHtmlString: string = `
+	<dialog id="totpDialog" class="m-auto w-92 content-center rounded-lg shadow border bg-gray-800 border-gray-100">
+		<div class="p-3">
+			<h1 class="text-xl font-bold text-white mb-2">
+				2FA
+			</h1>
+			<div id="totpQRCode" class="bg-white h-86 w-86"></div>
+			<div class="text-white text-wrap text-center my-2">Scan the QR code or enter this key into your authenticator app</div>
+			<div id="totpSecret" class="text-white text-center"></div>
+			<div class="text-white text-wrap text-center my-2">And input the code below</div>
+			<form id="totpForm">
+				<input type="submit" class="hidden" />
+				<input type="text" name="code" placeholder="Code" minlength="6" maxlength="6"
+					class="border rounded-lg block w-full p-2.5 dark:bg-gray-700 border-gray-600 placeholder-gray-600 text-white"
+					required="true">
+				<div>
+					<button id="cancelTOTPButton"
+						class="cursor-pointer float-left text-red-500 my-4 hover:bg-gray-700 font-medium rounded-lg p-2 text-center"
+						type="submit" formmethod="dialog" formnovalidate>Cancel</button>
+					<button id="verifyTOTPButton" type="submit" formmethod="post"
+						class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg p-2 text-center">Verify</button>
+				</div>
+			</form>
+		</div>
+	</dialog>`;

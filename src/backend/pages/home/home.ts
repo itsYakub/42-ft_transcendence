@@ -79,8 +79,4 @@ const homeHtmlString: string = `
 			class="mt-4 block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
 			Add mock friends
 		</button>
-		<button id="testButton"
-			class="mt-4 block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
-			2fa test
-		</button>
 	</div>`;

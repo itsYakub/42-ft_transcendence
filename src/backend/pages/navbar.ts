@@ -66,7 +66,7 @@ const loggedInHtmlString: string = `
 		</div>
 
 		<div>
-			<img id="profileAvatar" class="rounded-full border border-gray-800 cursor-pointer h-20 w-20"
+			<img id="profileAvatar" class="rounded-full mx-auto border border-gray-800 cursor-pointer h-20 w-20"
 				src="%%AVATAR%%" />
 			<div id="profileNick" class="text-white text-center">%%NICK%%</div>
 		</div>

@@ -1,5 +1,5 @@
 const query = {
-	client_id: "406443471410-godkm6dcav2851sq2114j4due48hu9iu.apps.googleusercontent.com",
+	client_id: "700864958995-a6qbsqc8t8pqub1cg06kai263h2b2dbj.apps.googleusercontent.com",
 	redirect_uri: "http://localhost:3000/auth/google",
 	response_type: "code",
 	scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",

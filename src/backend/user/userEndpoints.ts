@@ -1,8 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { addUser, getUser, invalidateToken, loginUser, markUserOffline } from './userDB.js';
-import * as OTPAuth from "otpauth";
-import encodeQR from 'qr';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -62,36 +60,5 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.id)
 			markUserOffline(db, user.id);
-	});
-
-	fastify.get("/user/2fa", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error) {
-			return reply.send(user);
-		}
-
-		let totp = new OTPAuth.TOTP({
-			issuer: "Transcendence",
-			label: user.email,
-			algorithm: "SHA256",
-			digits: 6,
-			period: 30,
-			secret: new OTPAuth.Secret({ size: 20 }),
-		});
-
-		// Generate a token (returns the current token as a string).
-		let token = totp.generate();
-
-		// Validate a token (returns the token delta or null if it is not found in the
-		// search window, in which case it should be considered invalid).
-		//
-		// A search window is useful to account for clock drift between the client and
-		// server; however, it should be kept as small as possible to prevent brute
-		// force attacks. In most cases, a value of 1 is sufficient. Furthermore, it is
-		// essential to implement a throttling mechanism on the server.
-
-		let delta = totp.validate({ token, window: 1 });
-		const svgElement = encodeQR(totp.toString(), 'svg');
-		reply.send(svgElement);
-	});
+	});	
 }
