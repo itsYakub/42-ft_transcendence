@@ -9,20 +9,20 @@ export function updatePassword(db: DatabaseSync, json: any): any {
 			const select = db.prepare("UPDATE Users SET Password = ? WHERE UserID = ?");
 			select.run(hashedPassword, json.id);
 			return {
-				"message": "Updated password"
+				message: "SUCCESS"
 			};
 		}
 		catch (e) {
-			return {
-				"code": 500,
-				"error": "SQL error!"
-			};
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
 		}
 	}
 	else
 		return {
-			"code": 200,
-			"error": "Bad password"
+			code: 403,
+			error: "ERR_BAD_PASSWORD"
 		};
 }
 
@@ -31,13 +31,13 @@ export function updateNick(db: DatabaseSync, user: any): any {
 		const select = db.prepare("UPDATE Users SET Nick = ? WHERE UserID = ?");
 		select.run(user.nick, user.id);
 		return {
-			"message": "Updated nickname"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }
@@ -47,13 +47,13 @@ export function updateAvatar(db: DatabaseSync, json: any): any {
 		const select = db.prepare("UPDATE Users SET Avatar = ? WHERE UserID = ?");
 		select.run(json.avatar, json.id);
 		return {
-			"message": "Updated avatar!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }
@@ -63,13 +63,13 @@ export function addTOTPSecret(db: DatabaseSync, json: any) {
 		const select = db.prepare("UPDATE Users SET TOTPSecret = ? WHERE UserID = ?");
 		select.run(json.secret, json.id);
 		return {
-			"message": "Added TOTP!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }
@@ -79,13 +79,13 @@ export function confirmTOTP(db: DatabaseSync, id: number) {
 		const select = db.prepare("UPDATE Users SET TOTPVerified = 1 WHERE UserID = ?");
 		select.run(id);
 		return {
-			"message": "Verified TOTP!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }
@@ -95,13 +95,13 @@ export function removeTOTPSecret(db: DatabaseSync, id: number) {
 		const select = db.prepare("UPDATE Users SET TOTPSecret = NULL, TOTPVerified = 0 WHERE UserID = ?");
 		select.run(id);
 		return {
-			"message": "Removed TOTP!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }

@@ -8,16 +8,19 @@ import { profileHtml } from "./profile/profile.js";
 import { tournamentHtml } from "./tournament/tournament.js";
 
 /* Returns the whole page, for external links, or db_error */
-export function frameHtml(db: DatabaseSync, view: string, user: any): string {
+export function frameHtml(db: DatabaseSync, json: any): any {
 	let html = frameHtmlString;
-	let navbar = navbarHtml(user);
+	let navbar = navbarHtml(json);
 
-	const content = contentHtml(db, view, user);
-	if ("db_error" == content) {
-		return "db_error";
+	const content = contentHtml(db, json.page, json);
+	if ("ERR_DB" == content) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
 	}
 
-	navbar = highlightPage(navbar, view);
+	navbar = highlightPage(navbar, json.page);
 
 	html = html.replace("%%NAVBAR%%", navbar);
 	html = html.replace("%%CONTENT%%", content);
@@ -26,17 +29,17 @@ export function frameHtml(db: DatabaseSync, view: string, user: any): string {
 }
 
 /* Returns the navbar and content separately, for internal links */
-export function frameAndContentHtml(db: DatabaseSync, view: string, user: any): any {
-	let navbar = navbarHtml(user);
+export function frameAndContentHtml(db: DatabaseSync, json: any): any {
+	let navbar = navbarHtml(json);
 
-	const content = contentHtml(db, view, user);
-	if ("db_error" == content) {
+	const content = contentHtml(db, json.page, json);
+	if ("ERR_DB" == content) {
 		return {
-			navbar: "db_error",
+			navbar: "ERR_DB",
 		};
 	}
 
-	navbar = highlightPage(navbar, view);
+	navbar = highlightPage(navbar, json.page);
 
 	return {
 		navbar,
@@ -74,7 +77,7 @@ function contentHtml(db: DatabaseSync, view: string, user: any): string {
 		case "tournament":
 			return tournamentHtml(db, user);
 		default:
-			return "";
+			return "ERR_DB";
 	}
 }
 

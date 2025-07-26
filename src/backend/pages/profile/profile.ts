@@ -1,30 +1,32 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getFullUser, getUser, markUserOnline } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../../user/userDB.js';
 import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
 import * as OTPAuth from "otpauth";
 import encodeQR from 'qr';
 
 export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.redirect("/");
 		}
 
 		markUserOnline(db, user.id);
 
+		const params = { ...user, page: "profile", language: request.cookies.language };
+
 		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, "profile", user);
-			if ("db_error" == frame) {
+			const frame = frameHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
 			return reply.type("text/html").send(frame);
 		}
 		else {
-			const frame = frameAndContentHtml(db, "profile", user);
-			if ("db_error" == frame.navbar) {
+			const frame = frameAndContentHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
 			return reply.send(frame);
@@ -32,7 +34,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.post('/profile/password', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.code(user.code).send(user);
 		}
@@ -81,7 +83,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.post("/profile/totp/enable", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.send(user);
 		}
@@ -95,7 +97,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		let totp = new OTPAuth.TOTP({
 			issuer: "Transcendence",
 			label: user.email,
-			algorithm: "SHA1",
+			algorithm: "SHA256",
 			digits: 6,
 			period: 30,
 			secret: secret,
@@ -139,7 +141,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.post("/profile/totp/verify", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.send(user);
 		}
@@ -147,7 +149,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		let totp = new OTPAuth.TOTP({
 			issuer: "Transcendence",
 			label: user.email,
-			algorithm: "SHA1",
+			algorithm: "SHA256",
 			digits: 6,
 			period: 30,
 			secret: user.totpSecret,
@@ -162,7 +164,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.post("/profile/totp/disable", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getFullUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error) {
 			return reply.send(user);
 		}
@@ -178,11 +180,8 @@ export function profileHtml(db: DatabaseSync, user: any): string {
 
 	html = html.replaceAll("%%NICK%%", user.nick);
 	html = html.replaceAll("%%AVATAR%%", user.avatar);
-	if (user.google)
-		html = html.replaceAll("%%CHANGEPASSWORDVISIBILITY%%", "hidden");
-	else
-		html = html.replaceAll("%%CHANGEPASSWORDVISIBILITY%%", "visible");
-	html = html.replace("%%2FAENABLEDCHECKED%%", 1 == user.totpVerified ? "checked" : "");
+	html = html.replace("%%CHANGEPASSWORD%%", user.google ? "" : changePasswordHtmlString);
+	html = html.replace("%%TOTPBUTTON%%", 1 == user.totpVerified ? disableTOTPHtmlString : enableTOTPHtmlString);
 
 	return html + totpHtmlString;
 }
@@ -202,28 +201,7 @@ const profileHtmlString: string = `
 			</div>
 			<div class="grow bg-gray-900">
 				<div class="p-8 m-auto text-left">
-					<div class="text-white text-left text-xl">User Profile</div>
-					<div class="my-3 p-3 border border-gray-700 rounded-lg %%CHANGEPASSWORDVISIBILITY%%">
-						<span class="text-white font-medium mb-4">Change password</span>
-						<form id="changePasswordForm">
-							<div>
-								<input type="password" id="currentPassword" placeholder="Current password" required="true"
-									class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
-							</div>
-							<div>
-								<input type="password" id="newPassword" placeholder="New password" minlength="8" required="true"
-									class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
-							</div>
-							<div>
-								<input type="password" id="repeatPassword" placeholder="Repeat password" minlength="8" required="true"
-									class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
-							</div>
-							<div>
-								<button type="submit" formmethod="post"
-									class="ml-auto cursor-pointer block text-right mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Update</button>
-							</div>
-						</form>
-					</div>
+					<div class="text-white text-left text-xl">User Profile</div>					
 					<div class="flex flex-row my-4">
 						<div class="p-3 border border-gray-700 rounded-lg">
 							<div class="text-white font-medium">Change Avatar</div>
@@ -247,25 +225,17 @@ const profileHtmlString: string = `
 							</form>
 						</div>
 					</div>
+					%%CHANGEPASSWORD%%
 					<div class="my-3 p-3 border border-gray-700 rounded-lg">
-						<div class="text-white font-medium mb-2">2FA</div>
-						<div class="flex flex-row">
-							<label class="inline-flex items-center cursor-pointer">
-								<input type="checkbox" id="toggle2faButton" class="sr-only peer" %%2FAENABLEDCHECKED%%>
-								<div class="relative w-11 h-6 peer-focus:outline-none rounded-full peer bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all  peer-checked:bg-blue-700"></div>
-								<span class="ms-2 text-medium font-large text-gray-300">Enabled</span>
-							</label>
-							<label class="inline-flex items-center cursor-pointer ml-20">
-								<input type="checkbox" id="toggle2faEmailButton" class="sr-only peer" %%2FAEMAILCHECKED%%>
-								<div class="relative w-11 h-6 peer-focus:outline-none rounded-full peer bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all  peer-checked:bg-blue-700"></div>
-								<span class="ms-2 text-medium font-large text-gray-300">Send email</span>
-							</label>
-						</div>
-					</div>
-					<div class="my-4 p-3 border border-gray-700 rounded-lg ">
-						<div>
+						<div class="text-white font-medium mb-2">Tokens</div>
+						<div class="grid grid-cols-3">
+							%%TOTPBUTTON%%
+							<button id="logoutButton"
+								class="cursor-pointer mx-3 bg-red-500 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Log
+								out</button>		
 							<button id="invalidateTokenButton"
-								class="mx-auto cursor-pointer block bg-red-500 mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Invalidate token</button>
+								class="cursor-pointer bg-red-500 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Invalidate token</button>
+			
 						</div>
 					</div>
 				</div>
@@ -277,7 +247,7 @@ const totpHtmlString: string = `
 	<dialog id="totpDialog" class="m-auto w-92 content-center rounded-lg shadow border bg-gray-800 border-gray-100">
 		<div class="p-3">
 			<h1 class="text-xl font-bold text-white mb-2">
-				2FA
+				TOTP
 			</h1>
 			<div id="totpQRCode" class="bg-white h-86 w-86"></div>
 			<div class="text-white text-wrap text-center my-2">Scan the QR code or enter this key into your authenticator app</div>
@@ -298,3 +268,32 @@ const totpHtmlString: string = `
 			</form>
 		</div>
 	</dialog>`;
+
+const changePasswordHtmlString: string = `
+	<div class="my-3 p-3 border border-gray-700 rounded-lg">
+		<span class="text-white font-medium mb-4">Change password</span>
+		<form id="changePasswordForm">
+			<div>
+				<input type="password" id="currentPassword" placeholder="Current password" required="true"
+					class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+			</div>
+			<div>
+				<input type="password" id="newPassword" placeholder="New password" minlength="8" required="true"
+					class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+			</div>
+			<div>
+				<input type="password" id="repeatPassword" placeholder="Repeat password" minlength="8" required="true"
+					class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+			</div>
+			<div>
+				<button type="submit" formmethod="post"
+					class="ml-auto cursor-pointer block text-right mt-2 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Update</button>
+			</div>
+		</form>
+	</div>`;
+
+const enableTOTPHtmlString: string = `
+	<button id="enableTOTPButton" class="cursor-pointer bg-green-500 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Enable TOTP</button>`;
+
+const disableTOTPHtmlString: string = `
+	<button id="disableTOTPButton" class="cursor-pointer bg-red-500 text-white hover:bg-gray-800 font-medium rounded-lg p-2">Disable TOTP</button>`;

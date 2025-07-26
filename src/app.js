@@ -28,22 +28,27 @@ const dropTables = {
     dropMatches: false
 };
 const db = new DatabaseSync(process.env.DB);
-initUsers(db, dropTables.dropUsers);
-initFriends(db, dropTables.dropFriends);
-initMatches(db, dropTables.dropMatches);
-homePage(fastify, db);
-playPage(fastify, db);
-tournamentPage(fastify, db);
-profilePage(fastify, db);
-matchesPage(fastify, db);
-friendsPage(fastify, db);
-googleAuth(fastify, db);
-userEndpoints(fastify, db);
-devEndpoints(fastify, db);
-fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
-    if (err) {
-        console.log(err);
-        fastify.log.error(err);
-        process.exit(1);
-    }
-});
+try {
+    initUsers(db, dropTables.dropUsers);
+    initFriends(db, dropTables.dropFriends);
+    initMatches(db, dropTables.dropMatches);
+    homePage(fastify, db);
+    playPage(fastify, db);
+    tournamentPage(fastify, db);
+    profilePage(fastify, db);
+    matchesPage(fastify, db);
+    friendsPage(fastify, db);
+    googleAuth(fastify, db);
+    userEndpoints(fastify, db);
+    devEndpoints(fastify, db);
+    fastify.listen({ port: parseInt(process.env.PORT) }, (err, address) => {
+        if (err) {
+            console.log(err);
+            fastify.log.error(err);
+            process.exit(1);
+        }
+    });
+}
+catch (e) {
+    console.log("Fatal error - exiting!");
+}

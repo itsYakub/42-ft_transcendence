@@ -13,16 +13,18 @@ export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		markUserOnline(db, user.id);
 
+		const params = { ...user, page: "friends", language: request.cookies.language };
+
 		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, "friends", user);
-			if ("db_error" == frame) {
+			const frame = frameHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
 			return reply.type("text/html").send(frame);
 		}
 		else {
-			const frame = frameAndContentHtml(db, "friends", user);
-			if ("db_error" == frame.navbar) {
+			const frame = frameAndContentHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
 			return reply.send(frame);

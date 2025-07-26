@@ -11,7 +11,7 @@ export function friendsFunctions() {
 
 			const response = await fetch("/friends/find", {
 				method: "POST",
-				body: JSON.stringify({ "email": friendEmail })
+				body: JSON.stringify({ email: friendEmail })
 			});
 
 			if (404 == response.status) {
@@ -31,7 +31,7 @@ export function friendsFunctions() {
 		removeFriendButtons[i].addEventListener("click", async function () {
 			const response = await fetch("/friends/remove", {
 				method: "POST",
-				body: JSON.stringify({ "friendID": this.dataset.id })
+				body: JSON.stringify({ friendID: this.dataset.id })
 			});
 			if (response.ok)
 				navigate("/friends");

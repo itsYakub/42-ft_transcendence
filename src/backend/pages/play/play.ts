@@ -10,19 +10,21 @@ export function playPage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (user.id)
 			markUserOnline(db, user.id);
 
+		const params = { ...user, page: "play", language: request.cookies.language };
+
 		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, "play", user);
-			if ("db_error" == frame) {
+			const frame = frameHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
-			return reply.code(200).type("text/html").send(frame);
+			return reply.type("text/html").send(frame);
 		}
 
-		const frame = frameAndContentHtml(db, "play", user);
-		if ("db_error" == frame.navbar) {
+		const frame = frameAndContentHtml(db, params);
+		if (frame.error) {
 			return reply.code(500);
 		}
-		return reply.code(200).send(frame);
+		return reply.send(frame);
 	});
 }
 

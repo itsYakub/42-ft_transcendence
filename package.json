@@ -24,10 +24,6 @@
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.10",
-		"apidoc": "^1.2.0",
 		"typescript": "^5.8.3"
-	},
-	"apidoc": {
-		"title": "Custom apiDoc browser title"
 	}
 }

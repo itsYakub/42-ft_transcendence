@@ -7,11 +7,11 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		const code: string = request.query["code"];
 
 		const params = {
-			"client_id": process.env.GOOGLE_CLIENT,
-			"client_secret": process.env.GOOGLE_SECRET,
-			"code": code,
-			"grant_type": "authorization_code",
-			"redirect_uri": process.env.GOOGLE_REDIRECT
+			client_id: process.env.GOOGLE_CLIENT,
+			client_secret: process.env.GOOGLE_SECRET,
+			code: code,
+			grant_type: "authorization_code",
+			redirect_uri: process.env.GOOGLE_REDIRECT
 		}
 
 		const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -32,10 +32,10 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		const avatar = await convertFile(user.picture);
 
 		const userJSON = {
-			"nick": user.name,
-			"email": user.email,
-			"avatar": avatar,
-			"online": 1
+			nick: user.name,
+			email: user.email,
+			avatar: avatar,
+			online: 1
 		}
 
 		const payload = addGoogleUser(db, userJSON);

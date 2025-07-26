@@ -24,8 +24,10 @@ export function getMatches(db: DatabaseSync, id: number) {
 		return matches;
 	}
 	catch (e) {
-		console.log(e);
-		throw (e);
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
 	}
 }
 
@@ -34,13 +36,13 @@ export function addMatch(db: DatabaseSync, json: any, date: Date = new Date()): 
 		const select = db.prepare("INSERT INTO Matches (UserID, Message, Rating, PlayedAt) VALUES (?, ?, ?, ?)");
 		select.run(json.id, json.message, json.rating, date.toLocaleDateString("pl-PL"));
 		return {
-			"message": "Added match!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }

@@ -39,6 +39,10 @@ export function registerFunctions() {
 					alert(payload.error);
 					return;
 				}
+				const date = new Date();
+				date.setFullYear(date.getFullYear() + 1);
+				document.cookie = `language=english; expires=${date}`;
+
 				navigate("/");
 			};
 		});

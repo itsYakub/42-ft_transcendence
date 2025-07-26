@@ -1,13 +1,28 @@
 export function navbarHtml(user: any): string {
 	const loggedIn = !user.error;
+	let language = user.language;
+	let languageSelect = englishHtmlString;
+
+	switch (language) {
+		case "dutch":
+			languageSelect = dutchHtmlString;
+			break;
+		case "polish":
+			languageSelect = polishHtmlString;
+			break;
+	}
+
 	if (loggedIn) {
 		let html = loggedInHtmlString;
 		html = html.replace("%%AVATAR%%", user.avatar);
 		html = html.replace("%%NICK%%", user.nick);
+		html = html.replace("%%LANGUAGESELECT", languageSelect);
 		return html;
 	}
 	else {
-		return loggedOutHtmlString + loginHtmlString + registerHtmlString;
+		let html = loggedOutHtmlString;		
+		html = html.replace("%%LANGUAGESELECT", languageSelect);
+		return html + loginHtmlString + registerHtmlString;
 	}
 }
 
@@ -28,6 +43,12 @@ const loggedOutHtmlString: string = `
 				class="cursor-pointer text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
 				Tournament
 			</button>
+
+		<div>
+			<select id="languageSelect">
+				%%LANGUAGESELECT%%
+			</select>
+		</div>
 		</div>
 
 		<div class="ml-82">
@@ -59,11 +80,17 @@ const loggedInHtmlString: string = `
 			</button>
 		</div>
 
-		<div class="ml-82 mr-4">
+		<div>
+			<select id="languageSelect">
+				%%LANGUAGESELECT%%
+			</select>
+		</div>
+
+		<!--div class="ml-82 mr-4">
 			<button id="logoutButton"
 				class="cursor-pointer text-center rounded-lg p-2 bg-red-500 hover:bg-gray-700 group text-gray-300">Log
 				out</button>
-		</div>
+		</div-->
 
 		<div>
 			<img id="profileAvatar" class="rounded-full mx-auto border border-gray-800 cursor-pointer h-20 w-20"
@@ -144,3 +171,21 @@ const registerHtmlString: string = `
 			</div>
 		</div>
 	</dialog>`;
+
+const englishHtmlString: string = `
+	<option value="english" selected>English</option>
+	<option value="polish">Polish</option>
+	<option value="dutch">Dutch</option>
+`;
+
+const polishHtmlString: string = `
+	<option value="english">English</option>
+	<option value="polish" selected>Polish</option>
+	<option value="dutch">Dutch</option>
+`;
+
+const dutchHtmlString: string = `
+	<option value="english">English</option>
+	<option value="polish">Polish</option>
+	<option value="dutch" selected>Dutch</option>
+`;

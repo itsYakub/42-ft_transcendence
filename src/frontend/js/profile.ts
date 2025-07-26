@@ -12,7 +12,7 @@ export function profileFunctions() {
 				navigate("/");
 		}, { once: true });
 	}
-	
+
 	const changePasswordForm = <HTMLFormElement>document.getElementById("changePasswordForm");
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
@@ -29,7 +29,7 @@ export function profileFunctions() {
 				alert("New password can't be the same as old password!");
 				return;
 			}
-			
+
 			const response = await fetch("/profile/password", {
 				method: "POST",
 				body: JSON.stringify({
@@ -107,19 +107,17 @@ export function profileFunctions() {
 	}
 
 	/*
-		The switch to toggle whether 2FA is enabled
+		Shows the dialog to scan the TOTP QR code
 	*/
-	const toggle2faButton = <HTMLInputElement>document.getElementById("toggle2faButton");
-	if (toggle2faButton) {
-		toggle2faButton.addEventListener("change", async () => {
-			toggle2faEmailButton.disabled = !toggle2faButton.checked;
-			if (toggle2faButton.checked) {
-				const response = await fetch("/profile/totp/enable", {
-					method: "POST"
-				})
+	const enableTOTPButton = document.getElementById("enableTOTPButton");
+	if (enableTOTPButton) {
+		enableTOTPButton.addEventListener("click", async () => {
+			const response = await fetch("/profile/totp/enable", {
+				method: "POST"
+			});
 
-				if (response.ok) {
-					const json = await response.json();
+			if (response.ok) {
+				const json = await response.json();
 
 				const qrCode = document.getElementById("totpQRCode");
 				qrCode.innerHTML = json.qrcode;
@@ -129,26 +127,26 @@ export function profileFunctions() {
 
 				const totpDialog = <HTMLDialogElement>document.getElementById("totpDialog");
 				totpDialog.showModal();
-				}
 			}
-			else {
-				const response = await fetch("/profile/totp/disable", {
-					method: "POST"
-				})
-			}
-		})
+		});
 	}
 
 	/*
-		The switch to toggle whether 2FA emails are sent on login
+		Turns off TOTP
 	*/
-	const toggle2faEmailButton = <HTMLInputElement>document.getElementById("toggle2faEmailButton");
-	if (toggle2faEmailButton) {
-		toggle2faEmailButton.addEventListener("change", () => {
-			console.log(toggle2faEmailButton.checked);
-		})
+	const disableTOTPButton = document.getElementById("disableTOTPButton");
+	if (disableTOTPButton) {
+		disableTOTPButton.addEventListener("click", async () => {
+			const response = await fetch("/profile/totp/disable", {
+				method: "POST"
+			});
+			navigate("/profile");
+		});
 	}
 
+	/*
+		Checks the entered TOTP code
+	*/
 	const totpForm = <HTMLFormElement>document.getElementById("totpForm");
 	if (totpForm) {
 		totpForm.addEventListener("submit", async (e) => {
@@ -164,14 +162,13 @@ export function profileFunctions() {
 					code
 				})
 			});
-			console.log(await response.text());
-
-			// const payload = await response.json();
-			// if (payload.error) {
-			// 	alert(payload.error);
-			// 	return;
-			// }
-			// navigate("/");
+			const text = await response.text();
+			if (null == text) {
+				alert("Could not verify TOTP!");
+				return;
+			}
+			alert("Enabled TOTP!");
+			navigate("/profile");
 		});
 	}
 }

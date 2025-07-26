@@ -7,8 +7,8 @@ export function matchesFunctions() {
 			const response = await fetch("/friends/add", {
 				method: "POST",
 				body: JSON.stringify({
-					"friendID": this.dataset.id,
-					"friendNick": this.dataset.nick
+					friendID: this.dataset.id,
+					friendNick: this.dataset.nick
 				})
 			});
 			if (response.ok) {
@@ -24,10 +24,10 @@ export function matchesFunctions() {
 			const response = await fetch("/matches/add", {
 				method: "POST",
 				body: JSON.stringify({
-					"p1ID": 1,
-					"p2Name": "Ed",
-					"p1Score": 4,
-					"p2Score": 10
+					p1ID: 1,
+					p2Name: "Ed",
+					p1Score: 4,
+					p2Score: 10
 				})
 			});
 			if (response.ok) {

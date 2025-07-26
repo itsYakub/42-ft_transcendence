@@ -22,8 +22,10 @@ export function getFriends(db: DatabaseSync, id: number) {
 		return friends;
 	}
 	catch (e) {
-		console.log(e);
-		throw (e);
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
 	}
 }
 
@@ -35,13 +37,13 @@ export function addFriend(db: DatabaseSync, json: any): any {
 		const select = db.prepare("INSERT INTO Friends (UserID, FriendID) VALUES (?, ?)");
 		select.run(json.id, json.friendID);
 		return {
-			"message": "Added friend!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }
@@ -54,13 +56,13 @@ export function removeFriend(db: DatabaseSync, json: any): any {
 		const select = db.prepare("DELETE FROM Friends WHERE UserID = ? AND FriendID = ?");
 		select.run(json.id, json.friendID);
 		return {
-			"message": "Removed friend!"
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
 		return {
-			"code": 500,
-			"error": "SQL error!"
+			code: 500,
+			error: "ERR_DB"
 		};
 	}
 }

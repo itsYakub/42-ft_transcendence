@@ -10,19 +10,21 @@ export function tournamentPage(fastify: FastifyInstance, db: DatabaseSync): void
 		if (user.id)
 			markUserOnline(db, user.id);
 
+		const params = { ...user, page: "tournament", language: request.cookies.language };
+
 		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, "tournament", user);
-			if ("db_error" == frame) {
-				return reply.code(500);
+			const frame = frameHtml(db, params);
+			if (frame.error) {
+				return reply.code(frame.code);
 			}
-			return reply.code(200).type("text/html").send(frame);
+			return reply.type("text/html").send(frame);
 		}
 
-		const frame = frameAndContentHtml(db, "tournament", user);
-		if ("db_error" == frame.navbar) {
-			return reply.code(500);
+		const frame = frameAndContentHtml(db, params);
+		if (frame.error) {
+			return reply.code(frame.code);
 		}
-		return reply.code(200).send(frame);
+		return reply.send(frame);
 	});
 }
 

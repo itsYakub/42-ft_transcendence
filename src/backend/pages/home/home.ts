@@ -3,49 +3,46 @@ import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
 
-/**
- * @api {get} /user/:id Request User information
- * @apiName GetUser
- * @apiGroup User
- *
- * @apiParam {Number} id Users unique ID.
- *
- * @apiSuccess {String} firstname Firstname of the User.
- * @apiSuccess {String} lastname  Lastname of the User.
- */
+/*
+	Registers the routes connected with the home page
+*/
 export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		
-		if (user.id)
+
+		if (!user.error)
 			markUserOnline(db, user.id);
 
+		const params = { ...user, page: "home", language: request.cookies.language };
+
 		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, "home", user);
-			if ("db_error" == frame) {
-				return reply.code(500);
+			const frame = frameHtml(db, params);
+			if (frame.error) {
+				return reply.code(frame.code);
 			}
-			return reply.code(200).type("text/html").send(frame);
+			return reply.type("text/html").send(frame);
 		}
 
-		const frame = frameAndContentHtml(db, "home", user);
-		if ("db_error" == frame.navbar) {
-			return reply.code(500);
+		const frame = frameAndContentHtml(db, params);
+		if (frame.error) {
+			return reply.code(frame.code);
 		}
-		return reply.code(200).send(frame);
+		return reply.send(frame);
 	});
 }
 
+/*
+	The HTML returned to the browser. Replace any placeholders here
+*/
 export function homeHtml(db: DatabaseSync, user: any): string {
 	let html = homeHtmlString;
 
-	return injectUser(html, user);
-}
-
-function injectUser(html: string, user: any): string {
 	return html;
 }
 
+/*
+	The HTML that represents the home page
+*/
 const homeHtmlString: string = `
 	<!-- <img src="images/team.jpg" class="w-full h-235 opacity-5"/> -->
 	<div class="h-full bg-gray-900 content-center text-center">

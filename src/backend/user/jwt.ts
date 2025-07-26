@@ -35,14 +35,14 @@ export function refreshToken(id: number): string {
 function createJWT(id: number, date: Date): string {
 	let header = JSON.stringify(
 		{
-			"typ": "JWT",
-			"alg": "HS256"
+			typ: "JWT",
+			alg: "HS256"
 		});
 
 	let payload = JSON.stringify(
 		{
-			"sub": id,
-			"exp": date
+			sub: id,
+			exp: date
 		});
 	header = btoa(header);
 	payload = btoa(payload);

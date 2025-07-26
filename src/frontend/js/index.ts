@@ -7,6 +7,7 @@ import { pageButtons } from "./pages.js";
 import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
 import { devButtons } from "./devButtons.js";
+import { translations } from "./translations.js";
 
 /*
 	Simulates moving to a new page
@@ -38,6 +39,7 @@ window.addEventListener('popstate', function (event) {
 */
 export function addFunctions() {
 	pageButtons();
+	translations();
 	profileFunctions();
 	friendsFunctions();
 	matchesFunctions();

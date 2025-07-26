@@ -31,6 +31,8 @@ export function loginFunctions() {
 				alert(payload.error);
 				return;
 			}
+
+			console.log(payload);
 			navigate("/");
 		});
 	}

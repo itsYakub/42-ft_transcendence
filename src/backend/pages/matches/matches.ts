@@ -14,19 +14,21 @@ export function matchesPage(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		markUserOnline(db, user.id);
 
+		const params = { ...user, page: "matches", language: request.cookies.language };
+
 		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, "matches", user);
-			if ("db_error" == frame) {
+			const frame = frameHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
 			return reply.code(200).type("text/html").send(frame);
 		}
 		else {
-			const frame = frameAndContentHtml(db, "matches", user);
-			if ("db_error" == frame.navbar) {
+			const frame = frameAndContentHtml(db, params);
+			if (frame.error) {
 				return reply.code(500);
 			}
-			return reply.code(200).send(frame);
+			return reply.send(frame);
 		}
 	});
 
