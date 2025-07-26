@@ -1,5 +1,8 @@
 import { navigate } from "./index.js";
 
+/*
+	The functions that change the whole page
+*/
 export function pageButtons() {
 	document.getElementById("homeButton").addEventListener("click", () => {
 		navigate("/");

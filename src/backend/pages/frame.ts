@@ -12,7 +12,7 @@ export function frameHtml(db: DatabaseSync, json: any): any {
 	let html = frameHtmlString;
 	let navbar = navbarHtml(json);
 
-	const content = contentHtml(db, json.page, json);
+	const content = contentHtml(db, json);
 	if ("ERR_DB" == content) {
 		return {
 			code: 500,
@@ -32,7 +32,7 @@ export function frameHtml(db: DatabaseSync, json: any): any {
 export function frameAndContentHtml(db: DatabaseSync, json: any): any {
 	let navbar = navbarHtml(json);
 
-	const content = contentHtml(db, json.page, json);
+	const content = contentHtml(db, json);
 	if ("ERR_DB" == content) {
 		return {
 			navbar: "ERR_DB",
@@ -62,20 +62,20 @@ function highlightPage(navbar: string, view: string) {
 }
 
 /* Gets the correct HTMl from the db */
-function contentHtml(db: DatabaseSync, view: string, user: any): string {
-	switch (view) {
+function contentHtml(db: DatabaseSync, json: any): string {
+	switch (json.page) {
 		case "friends":
-			return friendsHtml(db, user);
+			return friendsHtml(db, json);
 		case "home":
-			return homeHtml(db, user);
+			return homeHtml(db, json);
 		case "matches":
-			return matchesHtml(db, user);
+			return matchesHtml(db, json);
 		case "play":
-			return playHtml(db, user);
+			return playHtml(db, json);
 		case "profile":
-			return profileHtml(db, user);
+			return profileHtml(db, json);
 		case "tournament":
-			return tournamentHtml(db, user);
+			return tournamentHtml(db, json);
 		default:
 			return "ERR_DB";
 	}

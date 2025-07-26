@@ -1,18 +1,80 @@
-import { navigate } from "./index.js";
+import { addFunctions, navigate } from "./index.js";
 
+/*
+	The buttons and events create by the /profile page
+*/
 export function profileFunctions() {
 
-	const invalidateTokenButton = document.getElementById("invalidateTokenButton");
-	if (invalidateTokenButton) {
-		invalidateTokenButton.addEventListener("click", async () => {
-			const response = await fetch("/user/invalidate-token", {
-				method: "POST",
-			});
-			if (response.ok)
-				navigate("/");
-		}, { once: true });
+	/*
+		Shows the dialog to choose a file
+	*/
+	const avatarUploadButton = <HTMLInputElement>document.getElementById("avatarFilename");
+	const avatarImage = document.getElementById("avatarImage");
+	if (avatarImage) {
+		avatarImage.addEventListener("click", () => {
+			avatarUploadButton.click();
+		})
 	}
 
+	/*
+		Updates the user's avatar
+	*/
+	if (avatarUploadButton) {
+		avatarUploadButton.addEventListener("change", () => {
+			const files = avatarUploadButton.files;
+			if (1 == files.length) {
+				if (files[0].size > 500 * 1024) {
+					alert("The selected avatar is too big - 500KiB max!");
+					return;
+				}
+
+				const reader = new FileReader();
+				reader.readAsDataURL(files[0]);
+				reader.onloadend = async () => {
+					const avatar = reader.result as string;
+					const response = await fetch("/profile/avatar", {
+						method: "POST",
+						body: JSON.stringify({
+							avatar
+						})
+					});
+
+					const message = await response.json();
+					if (!message.error)
+						navigate("/profile");
+					else
+						alert(message.error);
+				}
+			}
+		});
+	}
+
+	/*
+		Updates the user's nickname - must be unique!
+	*/
+	const changeNickForm = <HTMLFormElement>document.getElementById("changeNickForm");
+	if (changeNickForm) {
+		changeNickForm.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const nick = changeNickForm.newNick.value;
+			const response = await fetch("/profile/nick", {
+				method: "POST",
+				body: JSON.stringify({
+					nick
+				})
+			});
+
+			const message = await response.json();
+			if (!message.error)
+				navigate("/profile");
+			else
+				alert(message.error);
+		});
+	}
+
+	/*
+		Updating a user's password
+	*/
 	const changePasswordForm = <HTMLFormElement>document.getElementById("changePasswordForm");
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
@@ -48,64 +110,6 @@ export function profileFunctions() {
 		});
 	}
 
-	const changeNickForm = <HTMLFormElement>document.getElementById("changeNickForm");
-	if (changeNickForm) {
-		changeNickForm.addEventListener("submit", async (e) => {
-			e.preventDefault();
-			const nick = changeNickForm.newNick.value;
-			const response = await fetch("/profile/nick", {
-				method: "POST",
-				body: JSON.stringify({
-					nick
-				})
-			});
-
-			const message = await response.json();
-			if (!message.error)
-				navigate("/profile");
-			else
-				alert(message.error);
-		});
-	}
-
-	const avatarUploadButton = <HTMLInputElement>document.getElementById("avatarFilename");
-	const avatarImage = document.getElementById("avatarImage");
-	if (avatarImage) {
-		avatarImage.addEventListener("click", () => {
-			avatarUploadButton.click();
-		})
-	}
-
-	if (avatarUploadButton) {
-		avatarUploadButton.addEventListener("change", () => {
-			const files = avatarUploadButton.files;
-			if (1 == files.length) {
-				if (files[0].size > 500 * 1024) {
-					alert("The selected avatar is too big - 500KiB max!");
-					return;
-				}
-
-				const reader = new FileReader();
-				reader.readAsDataURL(files[0]);
-				reader.onloadend = async () => {
-					const avatar = reader.result as string;
-					const response = await fetch("/profile/avatar", {
-						method: "POST",
-						body: JSON.stringify({
-							avatar
-						})
-					});
-
-					const message = await response.json();
-					if (!message.error)
-						navigate("/profile");
-					else
-						alert(message.error);
-				}
-			}
-		});
-	}
-
 	/*
 		Shows the dialog to scan the TOTP QR code
 	*/
@@ -137,6 +141,7 @@ export function profileFunctions() {
 	const disableTOTPButton = document.getElementById("disableTOTPButton");
 	if (disableTOTPButton) {
 		disableTOTPButton.addEventListener("click", async () => {
+			// password protect this!
 			const response = await fetch("/profile/totp/disable", {
 				method: "POST"
 			});
@@ -170,5 +175,39 @@ export function profileFunctions() {
 			alert("Enabled TOTP!");
 			navigate("/profile");
 		});
+	}
+	
+	/*
+		Logs out the user and returns to the home page
+	*/
+	const logoutButton = document.getElementById("logoutButton");
+	if (logoutButton) {
+		logoutButton.addEventListener("click", async () => {
+			const response = await fetch("/user/logout", {
+				method: "GET"
+			});
+
+			// Sets the frame's navbar and content
+			if (response.ok) {
+				const text = await response.json();
+				document.querySelector("#navbar").innerHTML = text.navbar;
+				document.querySelector("#content").innerHTML = text.content;
+				addFunctions();
+			}
+		}, { once: true });
+	}
+
+	/*
+		Invalidates the user's refresh token, forcing a new log in even if someone has the token
+	*/
+	const invalidateTokenButton = document.getElementById("invalidateTokenButton");
+	if (invalidateTokenButton) {
+		invalidateTokenButton.addEventListener("click", async () => {
+			const response = await fetch("/user/invalidate-token", {
+				method: "POST",
+			});
+			if (response.ok)
+				navigate("/");
+		}, { once: true });
 	}
 }

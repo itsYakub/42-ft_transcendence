@@ -1,7 +1,6 @@
 import { friendsFunctions } from "./friends.js";
 import { googleFunctions } from "./googleAuth.js";
 import { loginFunctions } from "./login.js";
-import { logoutFunctions } from "./logout.js";
 import { matchesFunctions } from "./matches.js";
 import { pageButtons } from "./pages.js";
 import { profileFunctions } from "./profile.js";
@@ -13,7 +12,7 @@ import { translations } from "./translations.js";
 	Simulates moving to a new page
 */
 export async function navigate(url: string): Promise<void> {
-	history.pushState(null, null, url);
+	history.replaceState(null, null, url);
 
 	const response = await fetch(url, {
 		method: "GET"
@@ -28,7 +27,7 @@ export async function navigate(url: string): Promise<void> {
 }
 
 /* 
-	Changes view on back/forward buttons
+	Changes page on back/forward buttons
 */
 window.addEventListener('popstate', function (event) {
 	navigate(window.location.pathname);
@@ -44,7 +43,6 @@ export function addFunctions() {
 	friendsFunctions();
 	matchesFunctions();
 	loginFunctions();
-	logoutFunctions();
 	registerFunctions();
 	googleFunctions();
 
@@ -52,6 +50,9 @@ export function addFunctions() {
 	devButtons();
 }
 
+/*
+	Registers the functions and also shows an error if Google sign-in/up was unsuccessful
+*/
 window.addEventListener("DOMContentLoaded", () => {
 	addFunctions();
 	if (-1 != document.cookie.indexOf("googleautherror=true")) {
@@ -60,4 +61,11 @@ window.addEventListener("DOMContentLoaded", () => {
 		alert("Couldn't sign in/up with Google!");
 		document.cookie = `googleautherror=false; Domain=localhost; expires=${date}; Path=/;`;
 	}
+});
+
+/*
+	Marks the user as offline when the url changes
+*/
+window.addEventListener("beforeunload", (event) => {
+	fetch("/user/leave", { method: "POST" });
 });
