@@ -10,7 +10,7 @@ export function playPage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (user.id)
 			markUserOnline(db, user.id);
 
-		const params = { ...user, page: "play", language: request.cookies.language };
+		const params = { ...user, page: "play", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);

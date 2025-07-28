@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
+import { translateBackend } from '../translations.js';
 
 /*
 	Registers the routes connected with the home page
@@ -13,7 +14,7 @@ export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (!user.error)
 			markUserOnline(db, user.id);
 
-		const params = { ...user, page: "home", language: request.cookies.language };
+		const params = { ...user, page: "home", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);
@@ -36,6 +37,20 @@ export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 */
 export function homeHtml(db: DatabaseSync, user: any): string {
 	let html = homeHtmlString;
+	html = translate(html, user.language);
+	
+	return html;
+}
+
+function translate(html: string, language: string): string {
+	const toBeTranslated = [ "TITLE" ];
+
+	toBeTranslated.forEach((text) => {
+		html = html.replaceAll(`%%HOME_${text}_TEXT%%`, translateBackend({
+			language,
+			text: `HOME_${text}_TEXT`
+		}));
+	});
 
 	return html;
 }
@@ -46,8 +61,7 @@ export function homeHtml(db: DatabaseSync, user: any): string {
 const homeHtmlString: string = `
 	<!-- <img src="images/team.jpg" class="w-full h-235 opacity-5"/> -->
 	<div class="h-full bg-gray-900 content-center text-center">
-		<div class="text-white">Welcome to
-			Transcendence!</div>
+		<div class="text-white">%%HOME_TITLE_TEXT%%</div>
 		<button id="wipeAllButton"
 			class="mt-4 mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 			Wipe and recreate db

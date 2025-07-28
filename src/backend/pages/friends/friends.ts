@@ -3,6 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { frameAndContentHtml, frameHtml } from '../frame.js';
 import { getUser, getUserByEmail, markUserOnline } from '../../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendsDB.js';
+import { translateBackend } from '../translations.js';
 
 export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -13,7 +14,7 @@ export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		markUserOnline(db, user.id);
 
-		const params = { ...user, page: "friends", language: request.cookies.language };
+		const params = { ...user, page: "friends", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);
@@ -93,6 +94,20 @@ export function friendsHtml(db: DatabaseSync, user: any): string {
 	}
 
 	html = html.replaceAll("%%FRIENDLIST%%", friendList);
+	html = translate(html, user.language);
+	
+	return html;
+}
+
+function translate(html: string, language: string): string {
+	const toBeTranslated = [ "ADD_FRIEND" ];
+
+	toBeTranslated.forEach((text) => {
+		html = html.replaceAll(`%%FRIENDS_${text}_TEXT%%`, translateBackend({
+			language,
+			text: `FRIENDS_${text}_TEXT`
+		}));
+	});
 
 	return html;
 }
@@ -133,7 +148,7 @@ const friendsHtmlString: string = `
 						%%FRIENDLIST%%
 					</div>
 					<div class="m-auto text-right">
-						<button id="addFriendButton" class="border border-gray-700 p-2 cursor-pointer hover:bg-gray-700 rounded-lg text-white bg-gray-800">Add friend</button>
+						<button id="addFriendButton" class="border border-gray-700 p-2 cursor-pointer hover:bg-gray-700 rounded-lg text-white bg-gray-800">%%FRIENDS_ADD_FRIEND_TEXT%%</button>
 					</div>
 				</div>
 			</div>

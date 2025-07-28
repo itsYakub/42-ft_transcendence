@@ -35,7 +35,8 @@ export function frameAndContentHtml(db: DatabaseSync, json: any): any {
 	const content = contentHtml(db, json);
 	if ("ERR_DB" == content) {
 		return {
-			navbar: "ERR_DB",
+			code: 500,
+			error: "ERR_DB",
 		};
 	}
 

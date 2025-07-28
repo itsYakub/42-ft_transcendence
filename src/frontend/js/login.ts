@@ -27,12 +27,42 @@ export function loginFunctions() {
 			});
 
 			const payload = await response.json();
+
+			if (payload.totpEnabled) {
+				let totpCode = prompt("TOTP code:");
+
+				if (!totpCode) {
+					alert("Bad code!");
+					return;
+				}
+
+				const response = await fetch("/user/totp/check", {
+					method: "POST",
+					body: JSON.stringify({
+						email,
+						password,
+						code: totpCode
+					})
+				});
+
+				const totpResponse = await response.json();
+				if (totpResponse.error) {
+					// translate!
+					alert(totpResponse.error);
+					return;
+				}
+
+				if (response.ok) {
+					navigate("/");
+					return;
+				}
+			}
+
 			if (payload.error) {
 				alert(payload.error);
 				return;
 			}
-
-			console.log(payload);
+			
 			navigate("/");
 		});
 	}

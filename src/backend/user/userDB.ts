@@ -14,13 +14,13 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		UserID INTEGER PRIMARY KEY AUTOINCREMENT,
 		Nick TEXT NOT NULL,
 		Email TEXT UNIQUE NOT NULL,
-		Avatar TEXT NOT NULL,
+		TOTPVerified INTEGER NOT NULL DEFAULT 0,
+		TOTPEmail INTEGER NOT NULL DEFAULT 1,
 		Online INTEGER NOT NULL,
+		Avatar TEXT NOT NULL,
 		Password TEXT,
 		RefreshToken TEXT UNIQUE,
-		TOTPSecret TEXT,
-		TOTPVerified INTEGER NOT NULL DEFAULT 0,
-		TOTPEmail INTEGER NOT NULL DEFAULT 1
+		TOTPSecret TEXT
 		);`);
 }
 
@@ -187,6 +187,10 @@ export function loginUser(db: DatabaseSync, { email, password }) {
 			return user;
 		}
 
+		// if (1 == user.totpEnabled) {
+		// 	return user;
+		// }
+
 		if (compareSync(password, user.password)) {
 			const token = refreshToken(user.id);
 			updateRefreshtoken(db, {
@@ -194,9 +198,12 @@ export function loginUser(db: DatabaseSync, { email, password }) {
 			});
 			return {
 				nick: user.nick,
+				email: user.email,
 				avatar: user.avatar,
 				accessToken: accessToken(user.id),
-				refreshToken: token
+				refreshToken: token,
+				totpEnabled: user.totpEnabled,
+				totpSecret: user.totpSecret
 			}
 		}
 		return {
@@ -270,7 +277,8 @@ export function getUserByEmail(db: DatabaseSync, email: string): any {
 				nick: user.Nick,
 				avatar: user.Avatar,
 				password: user.Password,
-				totpEnabled: user.TOTPVerified
+				totpEnabled: user.TOTPVerified,
+				totpSecret: user.TOTPSecret
 			}
 		}
 		return {

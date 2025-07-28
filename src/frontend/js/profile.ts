@@ -167,13 +167,16 @@ export function profileFunctions() {
 					code
 				})
 			});
-			const text = await response.text();
-			if (null == text) {
-				alert("Could not verify TOTP!");
+
+			if (response.ok) {
+				alert("Enabled TOTP!");
+				navigate("/profile");
 				return;
 			}
-			alert("Enabled TOTP!");
-			navigate("/profile");
+			
+			totpForm.code.value = "";
+			totpForm.code.focus();
+			alert("Could not verify TOTP!");
 		});
 	}
 	

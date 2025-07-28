@@ -1,3 +1,5 @@
+import { navigate } from "./index.js";
+
 function translateDutch({ text }) {
 	switch (text) {
 		case "": return "";
@@ -30,14 +32,11 @@ export function translateFrontend({ language, text }) {
 export function translations() {
 	const languageSelect = <HTMLSelectElement>document.getElementById("languageSelect");
 	if (languageSelect) {
-		// const cookieValue = document.cookie
-		// 	.split("; ")
-		// 	.find((row) => row.startsWith("language="))
-		// 	?.split("=")[1];
 		languageSelect.addEventListener("change", (event) => {
 			const date = new Date();
 			date.setFullYear(date.getFullYear() + 1);
 			document.cookie = `language=${languageSelect.value}; expires=${date}`;
+			navigate(window.location.href);
 		})
 	}
 }

@@ -14,7 +14,7 @@ export function matchesPage(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		markUserOnline(db, user.id);
 
-		const params = { ...user, page: "matches", language: request.cookies.language };
+		const params = { ...user, page: "matches", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);

@@ -19,23 +19,26 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
-		const payload = loginUser(db, JSON.parse(request.body as string));
-		console.log(payload);
-		if (payload.error) {
+		const user = loginUser(db, JSON.parse(request.body as string));
+		if (user.error) {
 			const date = new Date();
 			date.setDate(date.getDate() - 3);
 			return reply.header(
 				"Set-Cookie", `accessToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).header(
-					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(payload);
+					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(user);
 		}
-		
+
+		if (user.totpEnabled) {
+			return reply.send(user);
+		}
+
 		const accessTokenDate = new Date();
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${payload.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${payload.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(payload);
+			"Set-Cookie", `accessToken=${user.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(user);
 	});
 
 	fastify.get("/user/logout", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -51,6 +54,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error) {
 			return reply.send(user);
 		}
+
 		invalidateToken(db, user);
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
@@ -60,26 +64,32 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/user/totp/check", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const params = JSON.parse(request.body as string);
+		const user = loginUser(db, params);
 		if (user.error) {
-			return reply.send(user);
+			return reply.code(user.code).send(user);
 		}
 
 		let totp = new OTPAuth.TOTP({
 			issuer: "Transcendence",
 			label: user.email,
-			algorithm: "SHA256",
+			algorithm: "SHA1",
 			digits: 6,
 			period: 30,
 			secret: user.totpSecret,
 		});
 
-		const params = JSON.parse(request.body as string);
 		if (null == totp.validate({ token: params.code, window: 1 })) {
-			return reply.code(403);
+			return reply.code(403).send({ error: "ERR_BAD_TOTP" });
 		}
 
-		return reply.send("OK!");
+		const accessTokenDate = new Date();
+		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
+		const refreshTokenDate = new Date();
+		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
+		return reply.header(
+			"Set-Cookie", `accessToken=${user.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(user);
 	});
 
 	fastify.post("/user/leave", async (request: FastifyRequest, reply: FastifyReply) => {
