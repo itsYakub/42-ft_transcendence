@@ -1,4 +1,5 @@
 import { addFunctions, navigate } from "./index.js";
+import { translateFrontend } from "./translations.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -24,7 +25,7 @@ export function profileFunctions() {
 			const files = avatarUploadButton.files;
 			if (1 == files.length) {
 				if (files[0].size > 500 * 1024) {
-					alert("The selected avatar is too big - 500KiB max!");
+					alert(translateFrontend("ERR_AVATAR_TOO_BIG"));
 					return;
 				}
 
@@ -83,12 +84,12 @@ export function profileFunctions() {
 			const newPassword = changePasswordForm.newPassword.value;
 			const repeatPassword = changePasswordForm.repeatPassword.value;
 			if (newPassword != repeatPassword) {
-				alert("Please repeat the password!");
+				alert(translateFrontend("ERR_PASSWORDS_DONT_MATCH"));
 				return;
 			}
 
 			if (newPassword == currentPassword) {
-				alert("New password can't be the same as old password!");
+				alert(translateFrontend("ERR_NO_NEW_PASSWORD"));
 				return;
 			}
 
@@ -102,11 +103,11 @@ export function profileFunctions() {
 
 			const message = await response.json();
 			if (!message.error) {
-				alert("Password changed!");
+				alert(translateFrontend("SUCCESS_PASSWORD_CHANGED"));
 				navigate("/profile");
 			}
 			else
-				alert(message.error);
+				alert(translateFrontend(message.error));
 		});
 	}
 
@@ -169,14 +170,14 @@ export function profileFunctions() {
 			});
 
 			if (response.ok) {
-				alert("Enabled TOTP!");
+				alert(translateFrontend("SUCCESS_ENABLED_TOTP"));
 				navigate("/profile");
 				return;
 			}
 			
 			totpForm.code.value = "";
 			totpForm.code.focus();
-			alert("Could not verify TOTP!");
+			alert(translateFrontend("ERR_VERIFY_TOTP"));
 		});
 	}
 	

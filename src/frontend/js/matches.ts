@@ -1,22 +1,22 @@
 import { navigate } from "./index.js";
 
 export function matchesFunctions() {
-	const addToFriendsButtons = document.getElementsByClassName("addToFriendsButton");
-	for (let i = 0; i < addToFriendsButtons.length; i++) {
-		addToFriendsButtons[i].addEventListener("click", async function () {
-			const response = await fetch("/friends/add", {
-				method: "POST",
-				body: JSON.stringify({
-					friendID: this.dataset.id,
-					friendNick: this.dataset.nick
-				})
-			});
-			if (response.ok) {
-				alert(`Added ${this.dataset.nick} as a friend!`);
-				navigate("/matches");
-			}
-		}, { once: true });
-	}
+	// const addToFriendsButtons = document.getElementsByClassName("addToFriendsButton");
+	// for (let i = 0; i < addToFriendsButtons.length; i++) {
+	// 	addToFriendsButtons[i].addEventListener("click", async function () {
+	// 		const response = await fetch("/friends/add", {
+	// 			method: "POST",
+	// 			body: JSON.stringify({
+	// 				friendID: this.dataset.id,
+	// 				friendNick: this.dataset.nick
+	// 			})
+	// 		});
+	// 		if (response.ok) {
+	// 			alert(`Added ${this.dataset.nick} as a friend!`);
+	// 			navigate("/matches");
+	// 		}
+	// 	}, { once: true });
+	// }
 
 	const addMatchButton = document.getElementById("addMatchButton");
 	if (addMatchButton) {

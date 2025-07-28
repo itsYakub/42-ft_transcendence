@@ -6,7 +6,7 @@ import { pageButtons } from "./pages.js";
 import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
 import { devButtons } from "./devButtons.js";
-import { translations } from "./translations.js";
+import { translateFrontend, translations } from "./translations.js";
 
 /*
 	Simulates moving to a new page
@@ -58,7 +58,8 @@ window.addEventListener("DOMContentLoaded", () => {
 	if (-1 != document.cookie.indexOf("googleautherror=true")) {
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
-		alert("Couldn't sign in/up with Google!");
+
+		alert(translateFrontend("ERR_GOOGLE"));
 		document.cookie = `googleautherror=false; Domain=localhost; expires=${date}; Path=/;`;
 	}
 });

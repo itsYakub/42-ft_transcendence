@@ -1,10 +1,11 @@
 import { navigate } from "./index.js";
+import { translateFrontend } from "./translations.js";
 
 export function friendsFunctions() {
 	const addFriendButton = document.getElementById("addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async function () {
-			let friendEmail = prompt("Friend's email");
+			let friendEmail = prompt(translateFrontend("PROMPT_FRIENDS_EMAIL"));
 
 			if (!friendEmail)
 				return;
@@ -15,12 +16,12 @@ export function friendsFunctions() {
 			});
 
 			if (404 == response.status) {
-				alert("User not found!");
+				alert(translateFrontend("ERR_NO_USER"));
 				return;
 			}
 
 			if (response.ok) {
-				alert("Added friend!");
+				alert(translateFrontend("SUCCESS_ADDED_FRIEND"));
 				navigate("/friends");
 			}
 		});

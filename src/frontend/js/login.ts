@@ -1,4 +1,5 @@
 import { navigate } from "./index.js";
+import { translateFrontend } from "./translations.js";
 
 export function loginFunctions() {
 	const loginButton = document.getElementById("loginButton");
@@ -29,10 +30,10 @@ export function loginFunctions() {
 			const payload = await response.json();
 
 			if (payload.totpEnabled) {
-				let totpCode = prompt("TOTP code:");
+				let totpCode = prompt(translateFrontend("PROMPT_TOTP_CODE"));
 
 				if (!totpCode) {
-					alert("Bad code!");
+					alert(translateFrontend("ERR_TOTP_CODE"));
 					return;
 				}
 
@@ -47,8 +48,7 @@ export function loginFunctions() {
 
 				const totpResponse = await response.json();
 				if (totpResponse.error) {
-					// translate!
-					alert(totpResponse.error);
+					alert(translateFrontend("ERR_TOTP_CODE"));
 					return;
 				}
 
@@ -59,10 +59,10 @@ export function loginFunctions() {
 			}
 
 			if (payload.error) {
-				alert(payload.error);
+					alert(translateFrontend(payload.error));
 				return;
 			}
-			
+
 			navigate("/");
 		});
 	}
