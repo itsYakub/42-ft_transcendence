@@ -1,8 +1,7 @@
 import { translateBackend } from "./translations.js";
 
-export function navbarHtml(user: any): string {
+export function navbarHtml({ user, language }): string {
 	const loggedIn = !user.error;
-	let language = user.language;
 	let languageSelect = englishHtmlString;
 
 	switch (language) {

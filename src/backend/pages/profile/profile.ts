@@ -16,7 +16,7 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		markUserOnline(db, user.id);
 
-		const params = { ...user, page: "profile", language: request.cookies.language ?? "english" };
+		const params = { user, page: "profile", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);
@@ -177,14 +177,14 @@ export function profilePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 }
 
-export function profileHtml(db: DatabaseSync, user: any): string {
+export function profileHtml(db: DatabaseSync, { user, language }): string {
 	let html = profileHtmlString;
 
 	html = html.replaceAll("%%NICK%%", user.nick);
 	html = html.replaceAll("%%AVATAR%%", user.avatar);
 	html = html.replace("%%CHANGEPASSWORD%%", user.google ? "" : changePasswordHtmlString);
 	html = html.replace("%%TOTPBUTTON%%", 1 == user.totpVerified ? disableTOTPHtmlString : enableTOTPHtmlString);
-	html = translate(html, user.language);
+	html = translate(html, language);
 
 	return html + totpHtmlString;
 }

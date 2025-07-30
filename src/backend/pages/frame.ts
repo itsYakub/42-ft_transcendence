@@ -6,13 +6,15 @@ import { navbarHtml } from "./navbar.js";
 import { playHtml } from "./play/play.js";
 import { profileHtml } from "./profile/profile.js";
 import { tournamentHtml } from "./tournament/tournament.js";
+import { tournamentMatchHtml } from "./tournamentMatch/tournamentMatch.js";
 
 /* Returns the whole page, for external links, or db_error */
-export function frameHtml(db: DatabaseSync, json: any): any {
+export function frameHtml(db: DatabaseSync, params: any): any {
 	let html = frameHtmlString;
-	let navbar = navbarHtml(json);
+	let navbar = navbarHtml(params);
 
-	const content = contentHtml(db, json);
+	const content = contentHtml(db, params);	
+
 	if ("ERR_DB" == content) {
 		return {
 			code: 500,
@@ -20,7 +22,7 @@ export function frameHtml(db: DatabaseSync, json: any): any {
 		};
 	}
 
-	navbar = highlightPage(navbar, json.page);
+	navbar = highlightPage(navbar, params.page);
 
 	html = html.replace("%%NAVBAR%%", navbar);
 	html = html.replace("%%CONTENT%%", content);
@@ -29,10 +31,10 @@ export function frameHtml(db: DatabaseSync, json: any): any {
 }
 
 /* Returns the navbar and content separately, for internal links */
-export function frameAndContentHtml(db: DatabaseSync, json: any): any {
-	let navbar = navbarHtml(json);
+export function frameAndContentHtml(db: DatabaseSync, params: any): any {
+	let navbar = navbarHtml(params);
 
-	const content = contentHtml(db, json);
+	const content = contentHtml(db, params);
 	if ("ERR_DB" == content) {
 		return {
 			code: 500,
@@ -40,7 +42,7 @@ export function frameAndContentHtml(db: DatabaseSync, json: any): any {
 		};
 	}
 
-	navbar = highlightPage(navbar, json.page);
+	navbar = highlightPage(navbar, params.page);
 
 	return {
 		navbar,
@@ -63,20 +65,22 @@ function highlightPage(navbar: string, view: string) {
 }
 
 /* Gets the correct HTMl from the db */
-function contentHtml(db: DatabaseSync, json: any): string {
-	switch (json.page) {
+function contentHtml(db: DatabaseSync, params: any): string {
+	switch (params.page) {
 		case "friends":
-			return friendsHtml(db, json);
+			return friendsHtml(db, params);
 		case "home":
-			return homeHtml(db, json);
+			return homeHtml(db, params);
 		case "matches":
-			return matchesHtml(db, json);
+			return matchesHtml(db, params);
 		case "play":
-			return playHtml(db, json);
+			return playHtml(db, params);
 		case "profile":
-			return profileHtml(db, json);
+			return profileHtml(db, params);
 		case "tournament":
-			return tournamentHtml(db, json);
+			return tournamentHtml(db, params);
+		case "tournamentMatch":
+			return tournamentMatchHtml(db, params);
 		default:
 			return "ERR_DB";
 	}
@@ -90,7 +94,7 @@ const frameHtmlString: string = `
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 			<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-			<script type="module" src="js/index.js"></script>
+			<script type="module" src="/js/index.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 			<title>Transcendence</title>
 		</head>

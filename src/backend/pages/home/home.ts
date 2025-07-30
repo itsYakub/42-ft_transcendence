@@ -14,7 +14,7 @@ export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (!user.error)
 			markUserOnline(db, user.id);
 
-		const params = { ...user, page: "home", language: request.cookies.language ?? "english" };
+		const params = { user, page: "home", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);
@@ -35,9 +35,9 @@ export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 /*
 	The HTML returned to the browser. Replace any placeholders here
 */
-export function homeHtml(db: DatabaseSync, user: any): string {
+export function homeHtml(db: DatabaseSync, { user, language }): string {
 	let html = homeHtmlString;
-	html = translate(html, user.language);
+	html = translate(html, language);
 	
 	return html;
 }
@@ -89,5 +89,9 @@ const homeHtmlString: string = `
 		<button id="addMockFriendsButton"
 			class="mt-4 block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
 			Add mock friends
+		</button>
+		<button id="testButton"
+			class="mt-4 block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
+			Test
 		</button>
 	</div>`;

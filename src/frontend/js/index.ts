@@ -7,6 +7,8 @@ import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
 import { devButtons } from "./devButtons.js";
 import { translateFrontend, translations } from "./translations.js";
+import { tournamentFunctions } from "./tournament.js";
+import { playFunctions } from "./play.js";
 
 /*
 	Simulates moving to a new page
@@ -38,6 +40,7 @@ window.addEventListener('popstate', function (event) {
 */
 export function addFunctions() {
 	pageButtons();
+	tournamentFunctions();
 	translations();
 	profileFunctions();
 	friendsFunctions();
@@ -45,6 +48,7 @@ export function addFunctions() {
 	loginFunctions();
 	registerFunctions();
 	googleFunctions();
+	playFunctions();
 
 	// remove!
 	devButtons();
@@ -70,3 +74,23 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("beforeunload", (event) => {
 	fetch("/user/leave", { method: "POST" });
 });
+
+/*
+	A match has finished with a winner
+*/
+document.addEventListener("matchOver", async (e: CustomEvent) => {
+	// figure out if tournament or game
+	// update matches in DB
+
+	const response = await fetch("/tournament/update", {
+		method: "POST",
+		body: JSON.stringify({
+			code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
+			p1Score: e.detail.p1Score,
+			p2Score: e.detail.p2Score
+		})
+	});
+	if (response.ok)
+		navigate(document.location.href);
+});
+

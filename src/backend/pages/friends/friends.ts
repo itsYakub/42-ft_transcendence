@@ -14,7 +14,7 @@ export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		markUserOnline(db, user.id);
 
-		const params = { ...user, page: "friends", language: request.cookies.language ?? "english" };
+		const params = { user, page: "friends", language: request.cookies.language ?? "english" };
 
 		if (!request.headers["referer"]) {
 			const frame = frameHtml(db, params);
@@ -84,7 +84,7 @@ export function friendsPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 }
 
-export function friendsHtml(db: DatabaseSync, user: any): string {
+export function friendsHtml(db: DatabaseSync, { user, language }): string {
 	const friends = getFriends(db, user.id);
 	let html = friendsHtmlString;
 
@@ -94,7 +94,7 @@ export function friendsHtml(db: DatabaseSync, user: any): string {
 	}
 
 	html = html.replaceAll("%%FRIENDLIST%%", friendList);
-	html = translate(html, user.language);
+	html = translate(html, language);
 	
 	return html;
 }

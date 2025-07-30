@@ -97,4 +97,11 @@ export function devButtons() {
 				alert("Something went wrong!");
 		}, { once: true });
 	}
+
+	const testButton = document.getElementById("testButton")
+	if (testButton) {
+		testButton.addEventListener("click", async () => {
+			document.dispatchEvent(new Event("build"));
+		}, { once: true });
+	}
 }

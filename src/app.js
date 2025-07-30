@@ -14,6 +14,8 @@ import { initUsers } from "./backend/user/userDB.js";
 import { initFriends } from "./backend/pages/friends/friendsDB.js";
 import { initMatches } from "./backend/pages/matches/matchesDB.js";
 import { devEndpoints } from "./backend/devTools.js";
+import { initTournaments } from "./backend/pages/tournament/tournamentDB.js";
+import { tournamentMatchPage } from "./backend/pages/tournamentMatch/tournamentMatch.js";
 const __dirname = import.meta.dirname;
 const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -25,16 +27,19 @@ fastify.register(fastifyStatic, {
 const dropTables = {
     dropUsers: false,
     dropFriends: false,
-    dropMatches: false
+    dropMatches: false,
+    dropTournaments: false
 };
 const db = new DatabaseSync(process.env.DB);
 try {
     initUsers(db, dropTables.dropUsers);
     initFriends(db, dropTables.dropFriends);
     initMatches(db, dropTables.dropMatches);
+    initTournaments(db, dropTables.dropTournaments);
     homePage(fastify, db);
     playPage(fastify, db);
     tournamentPage(fastify, db);
+    tournamentMatchPage(fastify, db);
     profilePage(fastify, db);
     matchesPage(fastify, db);
     friendsPage(fastify, db);
