@@ -1,7 +1,6 @@
 import { friendsFunctions } from "./friends.js";
 import { googleFunctions } from "./googleAuth.js";
 import { loginFunctions } from "./login.js";
-import { matchesFunctions } from "./matches.js";
 import { pageButtons } from "./pages.js";
 import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
@@ -17,22 +16,13 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	if (updateHistory)
 		history.pushState(null, null, url);
 
-	const response = await fetch(url, {
-		method: "GET"
-	});
+	const response = await fetch(url);
+	const body = await response.text();
+	const start = body.indexOf("<body>");
+	const end = body.indexOf("</body>") + 7;
 
-	if (response.ok) {
-		const body = await response.text();
-		const start = body.indexOf("<body>");
-		const end = body.indexOf("</body>") + 7;
-
-		document.querySelector('body').innerHTML = body.substring(start, end);
-		addFunctions();
-	}
-	else {
-		document.getElementById("content").innerHTML = "No dice!";
-		//addFunctions();
-	}
+	document.querySelector('body').innerHTML = body.substring(start, end);
+	addFunctions();
 }
 
 /* 
@@ -51,7 +41,6 @@ export function addFunctions() {
 	translations();
 	profileFunctions();
 	friendsFunctions();
-	matchesFunctions();
 	loginFunctions();
 	registerFunctions();
 	googleFunctions();
@@ -70,8 +59,8 @@ window.addEventListener("DOMContentLoaded", () => {
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
 
-		alert(translateFrontend("ERR_GOOGLE"));
-		document.cookie = `googleautherror=false; Domain=localhost; expires=${date}; Path=/;`;
+		showAlert("ERR_GOOGLE");
+		document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 	}
 });
 
@@ -83,6 +72,24 @@ window.addEventListener("beforeunload", (event) => {
 		method: "POST"
 	});
 });
+
+export function showAlert(message: string) {
+	const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+	if (alertDialog) {
+		const closeAlertButton = document.querySelector("#closeAlertButton");
+		closeAlertButton.addEventListener("click", () => {
+			alertDialog.close();
+		});
+		const alertShim = <HTMLDialogElement>document.getElementById("alertShim");
+		const content = translateFrontend(message);
+		document.querySelector("#alertContent").textContent = content;
+		alertDialog.addEventListener("close", (e) => {
+			alertShim.close();
+		});
+		alertShim.showModal();
+		alertDialog.showModal();
+	}
+}
 
 /*
 	A match has finished with a winner
@@ -97,7 +104,8 @@ document.addEventListener("matchOver", async (e: CustomEvent) => {
 				p2Score: e.detail.p2Score
 			})
 		});
-		if (response.ok)
+		const json = await response.json();
+		if (!json.error)
 			navigate(document.location.href);
 	}
 	else if (document.location.href.includes("3000/play")) {
@@ -109,7 +117,8 @@ document.addEventListener("matchOver", async (e: CustomEvent) => {
 				p2Name: e.detail.p2Name
 			})
 		});
-		if (response.ok)
+		const json = await response.json();
+		if (!json.error)
 			navigate(document.location.href);
 	}
 });

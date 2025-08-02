@@ -13,17 +13,15 @@ export function navbarHtml({ user, language }): string {
 			break;
 	}
 
-	if (loggedIn) {
-		let html = loggedInString(user, languageSelect);
-		html = translate(html, language);
-		return html;
-	}
-	else {
-		let html = loggedOutString(languageSelect);
-		html += shimString() + loginString() + registerString()
-		html = translate(html, language);
-		return html;
-	}
+	let html: string = alertString() + shimString() + alertShimString();
+
+	if (loggedIn)
+		html += loggedInString(user, languageSelect);
+	else
+		html += loggedOutString(languageSelect) + loginString() + registerString()
+
+	html = translate(html, language);
+	return html;
 }
 
 function translate(html: string, language: string): string {
@@ -121,6 +119,27 @@ function shimString(): string {
 	`;
 }
 
+function alertShimString(): string {
+	return `
+	<dialog id="alertShim" class="max-h-full m-auto max-w-full w-screen h-screen bg-black opacity-70"></dialog>
+	`;
+}
+
+function alertString(): string {
+	return `	
+	<dialog id="alertDialog" class="mx-auto mt-20 rounded-lg shadow border w-120 bg-gray-900 border-gray-100 p-2">
+		<div>
+			<h1 class="text-xl font-bold text-white text-center">
+				Transcendence
+			</h1>
+			<p id="alertContent" class="text-gray-400 text-center text-wrap"></p>
+			<button id="closeAlertButton"
+				class="float-right cursor-pointer border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 font-medium rounded-lg px-2 py-1">OK</button>
+		</div>
+	</dialog>
+	`;
+}
+
 function loginString(): string {
 	return `
 	<dialog id="loginDialog" class="m-auto content-center rounded-lg shadow border w-100 bg-gray-900 border-gray-100 text-center items-center">
@@ -135,7 +154,7 @@ function loginString(): string {
 						required="true">
 				</div>
 				<div>
-					<input type="password" name="password" minlength="8" placeholder="%%NAVBAR_PASSWORD_TEXT%%"
+					<input type="password" name="password" placeholder="%%NAVBAR_PASSWORD_TEXT%%"
 						class="mt-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>

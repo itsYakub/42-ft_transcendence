@@ -45,6 +45,6 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		params["id"] = user.id;
 
 		const response = addMatch(db, params);
-		return reply.code(response.code).send(response);
+		return reply.send(response);
 	});
 }

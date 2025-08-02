@@ -10,12 +10,13 @@ function translateDutch(text: string): string {
 		case "ERR_NO_NEW_PASSWORD": return "!";
 		case "ERR_NO_USER": return "!";
 		case "ERR_PASSWORDS_DONT_MATCH": return "!";
+		case "ERR_SAME_NAME": return "!";
 		case "ERR_TOTP_CODE": return "!";
-		case "ERR_VERIFY_TOTP": return "!";
 		case "PROMPT_FRIENDS_EMAIL": return "";
 		case "PROMPT_TOTP_CODE": return "";
 		case "SUCCESS_ADDED_FRIEND": return "!";
 		case "SUCCESS_ENABLED_TOTP": return "!";
+		case "SUCCESS_INVALIDATED_TOKEN": return "!";
 		case "SUCCESS_PASSWORD_CHANGED": return "!";
 		default: return "NLUnknown text";
 	}
@@ -23,7 +24,7 @@ function translateDutch(text: string): string {
 
 function translateEnglish(text: string): string {
 	switch (text) {
-		case "ERR_AVATAR_TOO_BIG": return "The selected avatar is too big - 500KiB max!";
+		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 500KiB max!";
 		case "ERR_BAD_PASSWORD": return "Incorrect password!";
 		case "ERR_DB": return "Database error!";
 		case "ERR_EMAIL_IN_USE": return "Email already registered!";
@@ -31,12 +32,13 @@ function translateEnglish(text: string): string {
 		case "ERR_NO_NEW_PASSWORD": return "New password can't be the same as old password!";
 		case "ERR_NO_USER": return "User not found!";
 		case "ERR_PASSWORDS_DONT_MATCH": return "Please repeat the password!";
-		case "ERR_TOTP_CODE": return "Bad TOTP code!";
-		case "ERR_VERIFY_TOTP": return "Couldn't verify TOTP!";
+		case "ERR_SAME_NAME": return "Names must be unique!";
+		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
 		case "PROMPT_FRIENDS_EMAIL": return "Friend's email";
 		case "PROMPT_TOTP_CODE": return "TOTP code";
 		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
 		case "SUCCESS_ENABLED_TOTP": return "Enabled TOTP!";
+		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
 		case "SUCCESS_PASSWORD_CHANGED": return "Password changed!";
 		default: return "ENUnknown text";
 	}
@@ -52,12 +54,13 @@ function translatePolish(text: string): string {
 		case "ERR_NO_NEW_PASSWORD": return "!";
 		case "ERR_NO_USER": return "!";
 		case "ERR_PASSWORDS_DONT_MATCH": return "!";
+		case "ERR_SAME_NAME": return "!";
 		case "ERR_TOTP_CODE": return "!";
-		case "ERR_VERIFY_TOTP": return "!";
 		case "PROMPT_FRIENDS_EMAIL": return "";
 		case "PROMPT_TOTP_CODE": return "";
 		case "SUCCESS_ADDED_FRIEND": return "!";
 		case "SUCCESS_ENABLED_TOTP": return "!";
+		case "SUCCESS_INVALIDATED_TOKEN": return "!";
 		case "SUCCESS_PASSWORD_CHANGED": return "!";
 		default: return "PLUnknown text";
 	}

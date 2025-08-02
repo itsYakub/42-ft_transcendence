@@ -1,13 +1,14 @@
 import { startMatch } from "./game.js";
+import { showAlert } from "./index.js";
 
 export function playFunctions() {
-	const form = <HTMLFormElement>document.getElementById("singleGameForm");
+	const form = <HTMLFormElement>document.querySelector("#singleGameForm");
 	if (form) {
 		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
 
 			if (form.p1Name.value == form.p2Name.value) {
-				alert("Must be unique!");
+				showAlert("ERR_SAME_NAME");
 				return;
 			}
 

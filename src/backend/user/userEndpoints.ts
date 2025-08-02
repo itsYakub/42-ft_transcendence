@@ -8,29 +8,32 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const json = JSON.parse(request.body as string);
 		json["online"] = 1;
 
-		const payload = addUser(db, json);
+		const response = addUser(db, json);
+		if (response.error)
+			return reply.send(response);
+
 		const accessTokenDate = new Date();
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${payload.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${payload.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
+			"Set-Cookie", `accessToken=${response.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${response.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
 					message: "SUCCESS"
 				});
 	});
 
 	fastify.post("/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = loginUser(db, JSON.parse(request.body as string));
-		if (user.error) {
+		const response = loginUser(db, JSON.parse(request.body as string));
+		if (response.error) {
 			const date = new Date();
 			date.setDate(date.getDate() - 3);
 			return reply.header(
 				"Set-Cookie", `accessToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).header(
-					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(user);
+					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(response);
 		}
 
-		if (user.totpEnabled) {
+		if (response.totpEnabled) {
 			return reply.send({
 				message: "SUCCESS",
 				totpEnabled: true
@@ -42,8 +45,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${user.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+			"Set-Cookie", `accessToken=${response.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${response.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
 					message: "SUCCESS",
 					totpEnabled: false
 				});

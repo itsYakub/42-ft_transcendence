@@ -21,7 +21,7 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		if (200 != response.status) {
 			return reply.header(
-				"Set-Cookie", `googleautherror=true; Domain=localhost; Path=/;`).redirect("/");
+				"Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
 		}
 
 		const json = await response.json();
@@ -44,8 +44,8 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${payload.accessToken}; Domain=localhost; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${payload.refreshToken}; Domain=localhost; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).redirect("/");
+			"Set-Cookie", `accessToken=${payload.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${payload.refreshToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).redirect("/");
 	});
 
 	/* Converts the image blob into base64 */

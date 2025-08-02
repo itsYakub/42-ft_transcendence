@@ -42,12 +42,10 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 	});
 
 	fastify.post('/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-
 		const params = JSON.parse(request.body as string);
 
 		const response = addTournament(db, params);
-		return reply.code(response.code).send(response);
+		return reply.send(response);
 	});
 
 	fastify.post('/tournament/update', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -57,6 +55,6 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		params["user"] = user;
 
 		const response = updateTournament(db, params);
-		return reply.code(response.code).send(response);
+		return reply.send(response);
 	});
 }

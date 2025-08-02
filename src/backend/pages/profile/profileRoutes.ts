@@ -30,46 +30,37 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post('/profile/nick', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
-			return reply.code(user.code).send(user);
+			return reply.send(user);
 
 		const params = JSON.parse(request.body as string);
 		params["id"] = user.id;
 
 		const response = updateNick(db, params);
-		if (response.error) {
-			return reply.code(response.code).send(response);
-		}
 		return reply.send(response);
 	});
 
 	fastify.post('/profile/avatar', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
-			return reply.code(user.code).send(user);
+			return reply.send(user);
 
 		const params = JSON.parse(request.body as string);
 		params["id"] = user.id;
 
 		const response = updateAvatar(db, params);
-		if (response.error)
-			return reply.code(response.code).send(response);
-		
 		return reply.send(response);
 	});
 
 	fastify.post('/profile/password', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
-			return reply.code(user.code).send(user);
+			return reply.send(user);
 
 		const params = JSON.parse(request.body as string);
 		params["id"] = user.id;
 		params["password"] = user.password;
 
 		const response = updatePassword(db, params);
-		if (response.error)
-			return reply.code(response.code).send(response);
-
 		return reply.send(response);
 	});
 
@@ -133,17 +124,16 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post("/profile/totp/disable", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
-			return reply.code(user.code).send(user);
+			return reply.send(user);
 
 		const response = removeTOTPSecret(db, user.id);
-
 		reply.send(response);
 	});
 
 	fastify.post("/profile/totp/verify", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
-			return reply.code(user.code).send(user);
+			return reply.send(user);
 
 		let totp = new OTPAuth.TOTP({
 			issuer: "Transcendence",
@@ -157,9 +147,15 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const params = JSON.parse(request.body as string);
 		if (null != totp.validate({ token: params.code, window: 1 })) {
 			confirmTOTP(db, user.id);
-			return reply.send({ message: "SUCCESS" });
+			return reply.send({
+				code: 200,
+				message: "SUCCESS"
+			});
 		}
 
-		return reply.code(403).send({ error: "ERR_BAD_TOTP" });
+		return reply.send({
+			code: 403,
+			error: "ERR_BAD_TOTP"
+		});
 	});
 }

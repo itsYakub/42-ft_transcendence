@@ -1,8 +1,7 @@
 import { startMatch } from "./game.js";
-import { navigate } from "./index.js";
+import { navigate, showAlert } from "./index.js";
 
 async function generateTournament(names: string[]): Promise<string> {
-
 	const code = Date.now().toString(36).substring(4);
 	const shuffled = names.sort(() => Math.random() - 0.5);
 	const response = await fetch("/tournament/add", {
@@ -15,7 +14,9 @@ async function generateTournament(names: string[]): Promise<string> {
 			m2p2: shuffled[3]
 		})
 	});
-	if (response.ok)
+
+	const json = await response.json();
+	if (!json.error)
 		return code;
 	else
 		return "ERR_BAD_TOURNAMENT";
@@ -23,14 +24,14 @@ async function generateTournament(names: string[]): Promise<string> {
 
 export function tournamentFunctions() {
 
-	const nextMatchButton = document.getElementById("nextMatchButton");
+	const nextMatchButton = <HTMLButtonElement>document.querySelector("#nextMatchButton");
 	if (nextMatchButton) {
 		nextMatchButton.addEventListener("click", async () => {
 			startMatch(nextMatchButton.dataset.p1, nextMatchButton.dataset.p2);
 		});
 	}
 
-	const form = <HTMLFormElement>document.getElementById("newTournamentForm");
+	const form = <HTMLFormElement>document.querySelector("#newTournamentForm");
 	if (form) {
 		form.addEventListener("submit", async (e) => {
 			e.preventDefault();
@@ -48,7 +49,7 @@ export function tournamentFunctions() {
 	
 			const code = await generateTournament(names);
 			if ("ERR_BAD_TOURNAMENT" == code) {
-				alert("Couldn't create tournament!");
+				showAlert("ERR_BAD_TOURNAMENT");
 				return;
 			}
 			navigate(`/tournament/${code}`);

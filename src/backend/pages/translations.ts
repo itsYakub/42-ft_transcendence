@@ -35,6 +35,12 @@ function translateDutch(text: string): string {
 		case "PROFILE_DISABLE_TOTP_TEXT": return "";
 		case "PROFILE_LOGOUT_TEXT": return "";
 		case "PROFILE_INVALIDATE_TOKEN_TEXT": return "";
+		case "PROFILE_TOTP_TITLE_TEXT": return "";
+		case "PROFILE_TOTP_SCAN_TEXT": return "";
+		case "PROFILE_TOTP_INPUT_TEXT": return "";
+		case "PROFILE_TOTP_CODE_TEXT": return "";
+		case "PROFILE_TOTP_CANCEL_TEXT": return "";
+		case "PROFILE_TOTP_VERIFY_TEXT": return "";
 		// matches
 		case "MATCHES_PROFILE_TEXT": return "";
 		case "MATCHES_MATCHES_TEXT": return "";
@@ -110,6 +116,12 @@ function translateEnglish(text: string): string {
 		case "PROFILE_DISABLE_TOTP_TEXT": return "Disable TOTP";
 		case "PROFILE_LOGOUT_TEXT": return "Log out";
 		case "PROFILE_INVALIDATE_TOKEN_TEXT": return "Invalidate token";
+		case "PROFILE_TOTP_TITLE_TEXT": return "TOTP";
+		case "PROFILE_TOTP_SCAN_TEXT": return "Scan the QR code or enter this key into your authenticator app";
+		case "PROFILE_TOTP_INPUT_TEXT": return "And input the code below";
+		case "PROFILE_TOTP_CODE_TEXT": return "Code";
+		case "PROFILE_TOTP_CANCEL_TEXT": return "Cancel";
+		case "PROFILE_TOTP_VERIFY_TEXT": return "Verify";
 		// matches
 		case "MATCHES_PROFILE_TEXT": return "Profile";
 		case "MATCHES_MATCHES_TEXT": return "Matches";
@@ -185,6 +197,12 @@ function translatePolish(text: string): string {
 		case "PROFILE_DISABLE_TOTP_TEXT": return "";
 		case "PROFILE_LOGOUT_TEXT": return "";
 		case "PROFILE_INVALIDATE_TOKEN_TEXT": return "";
+		case "PROFILE_TOTP_TITLE_TEXT": return "";
+		case "PROFILE_TOTP_SCAN_TEXT": return "";
+		case "PROFILE_TOTP_INPUT_TEXT": return "";
+		case "PROFILE_TOTP_CODE_TEXT": return "";
+		case "PROFILE_TOTP_CANCEL_TEXT": return "";
+		case "PROFILE_TOTP_VERIFY_TEXT": return "";
 		// matches
 		case "MATCHES_PROFILE_TEXT": return "";
 		case "MATCHES_MATCHES_TEXT": return "";

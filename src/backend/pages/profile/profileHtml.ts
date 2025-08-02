@@ -2,15 +2,17 @@ import { translateBackend } from '../translations.js';
 
 export function profileHtml({ user, language }): string {
 	let html = profileString(user);
+	html += shimString() + totpString();
 	html = translate(html, language);
 
-	return html + totpString();
+	return html;
 }
 
 function translate(html: string, language: string): string {
 	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "USER_PROFILE", "CHANGE_AVATAR", "CHANGE_NICK",
 		"CHANGE_PASSWORD", "NEW_NICK", "CURRENT_PASSWORD", "NEW_PASSWORD", "REPEAT_PASSWORD", "UPDATE", "TOKENS",
-		"ENABLE_TOTP", "DISABLE_TOTP", "LOGOUT", "INVALIDATE_TOKEN"];
+		"ENABLE_TOTP", "DISABLE_TOTP", "LOGOUT", "INVALIDATE_TOKEN", "TOTP_TITLE", "TOTP_SCAN", "TOTP_INPUT", 
+		"TOTP_CODE", "TOTP_CANCEL", "TOTP_VERIFY", ];
 
 	toBeTranslated.forEach((text) => {
 		html = html.replaceAll(`%%PROFILE_${text}_TEXT%%`, translateBackend({
@@ -81,28 +83,34 @@ function profileString(user: any): string {
 	`;
 }
 
+function shimString(): string {
+	return `
+	<dialog id="dialogShim" class="max-h-full m-auto max-w-full w-screen h-screen bg-black opacity-70"></dialog>
+	`;
+}
+
 function totpString(): string {
 	return `
-	<dialog id="totpDialog" class="m-auto w-92 content-center rounded-lg shadow border bg-gray-800 border-gray-100">
+	<dialog id="totpDialog" class="m-auto w-100 content-center rounded-lg shadow border bg-gray-900 border-gray-100">
 		<div class="p-3">
-			<h1 class="text-xl font-bold text-white mb-2">
-				TOTP
+			<h1 class="text-xl font-bold text-white mb-2 text-center">
+				%%PROFILE_TOTP_TITLE_TEXT%%
 			</h1>
-			<div id="totpQRCode" class="bg-white h-86 w-86"></div>
-			<div class="text-white text-wrap text-center my-2">Scan the QR code or enter this key into your authenticator app</div>
+			<div id="totpQRCode" class="bg-white h-86 w-86 mx-auto"></div>
+			<div class="text-gray-400 text-wrap text-center my-2">%%PROFILE_TOTP_SCAN_TEXT%%</div>
 			<div id="totpSecret" class="text-white text-center"></div>
-			<div class="text-white text-wrap text-center my-2">And input the code below</div>
+			<div class="text-gray-400 text-wrap text-center my-2">%%PROFILE_TOTP_INPUT_TEXT%%</div>
 			<form id="totpForm">
 				<input type="submit" class="hidden" />
-				<input type="text" name="code" placeholder="Code" minlength="6" maxlength="6"
+				<input type="text" name="code" placeholder="%%PROFILE_TOTP_CODE_TEXT%%" minlength="6" maxlength="6"
 					class="border rounded-lg block w-full p-2.5 dark:bg-gray-700 border-gray-600 placeholder-gray-600 text-white"
 					required="true">
 				<div>
 					<button id="cancelTOTPButton"
 						class="cursor-pointer float-left text-red-500 my-4 hover:bg-gray-700 font-medium rounded-lg p-2 text-center"
-						type="submit" formmethod="dialog" formnovalidate>Cancel</button>
+						type="submit" formmethod="dialog" formnovalidate>%%PROFILE_TOTP_CANCEL_TEXT%%</button>
 					<button id="verifyTOTPButton" type="submit" formmethod="post"
-						class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 font-medium rounded-lg p-2 text-center">Verify</button>
+						class="cursor-pointer float-right my-4 text-white hover:bg-gray-700 border border-gray-700 bg-gray-800 font-medium rounded-lg p-2 text-center">%%PROFILE_TOTP_VERIFY_TEXT%%</button>
 				</div>
 			</form>
 		</div>

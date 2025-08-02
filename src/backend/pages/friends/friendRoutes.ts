@@ -36,42 +36,41 @@ export function friendRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		return reply.type("text/html").send(frame);
 	});
 
+
+	// todo
 	fastify.post("/friends/add", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error) {
-			return reply.code(user.code).send(user);
-		}
+		if (user.error)
+			return reply.send(user);
 
 		const json = JSON.parse(request.body as string);
 		json["id"] = user.id;
 
 		const response = addFriend(db, json);
-		return reply.code(response.code).send(response);
+		return reply.send(response);
 	});
 
 	fastify.post("/friends/remove", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error) {
-			return reply.code(user.code).send(user);
-		}
+		if (user.error)
+			return reply.send(user);
 
 		const json = JSON.parse(request.body as string);
 		json["id"] = user.id;
 
 		const response = removeFriend(db, json);
-		return reply.code(user.code).send(response);
+		return reply.send(response);
 	});
 
 	fastify.post("/friends/find", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
-			return reply.code(user.code).send(user);
+			return reply.send(user);
 
 		const json = JSON.parse(request.body as string);
 		const response = getUserByEmail(db, json.email);
-		if (response.error) {
-			return reply.code(response.code).send(response);
-		}
+		if (response.error)
+			return reply.send(response);
 
 		addFriend(db, {
 			"id": user.id,

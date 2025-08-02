@@ -1,4 +1,4 @@
-import { navigate } from "./index.js";
+import { navigate, showAlert } from "./index.js";
 
 export function registerFunctions() {
 	const registerButton = document.getElementById("registerButton");
@@ -41,7 +41,7 @@ export function registerFunctions() {
 
 				const payload = await response.json();
 				if (payload.error) {
-					alert(payload.error);
+					showAlert(payload.error);
 					return;
 				}
 				const date = new Date();

@@ -15,7 +15,6 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		Nick TEXT NOT NULL,
 		Email TEXT UNIQUE NOT NULL,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
-		TOTPEmail INTEGER NOT NULL DEFAULT 1,
 		Online INTEGER NOT NULL,
 		Avatar TEXT NOT NULL,
 		Password TEXT,

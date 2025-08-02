@@ -1,5 +1,4 @@
-import { navigate } from "./index.js";
-import { translateFrontend } from "./translations.js";
+import { navigate, showAlert } from "./index.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -9,8 +8,8 @@ export function profileFunctions() {
 	/*
 		Shows the dialog to choose a file
 	*/
-	const avatarUploadButton = <HTMLInputElement>document.getElementById("avatarFilename");
-	const avatarImage = document.getElementById("avatarImage");
+	const avatarUploadButton = <HTMLInputElement>document.querySelector("#avatarFilename");
+	const avatarImage = document.querySelector("#avatarImage");
 	if (avatarImage) {
 		avatarImage.addEventListener("click", () => {
 			avatarUploadButton.click();
@@ -25,7 +24,7 @@ export function profileFunctions() {
 			const files = avatarUploadButton.files;
 			if (1 == files.length) {
 				if (files[0].size > 500 * 1024) {
-					alert(translateFrontend("ERR_AVATAR_TOO_BIG"));
+					showAlert("ERR_AVATAR_TOO_BIG");
 					return;
 				}
 
@@ -44,7 +43,7 @@ export function profileFunctions() {
 					if (!message.error)
 						navigate("/profile");
 					else
-						alert(message.error);
+						showAlert(message.error);
 				}
 			}
 		});
@@ -53,7 +52,7 @@ export function profileFunctions() {
 	/*
 		Updates the user's nickname - must be unique!
 	*/
-	const changeNickForm = <HTMLFormElement>document.getElementById("changeNickForm");
+	const changeNickForm = <HTMLFormElement>document.querySelector("#changeNickForm");
 	if (changeNickForm) {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
@@ -76,7 +75,7 @@ export function profileFunctions() {
 	/*
 		Updating a user's password
 	*/
-	const changePasswordForm = <HTMLFormElement>document.getElementById("changePasswordForm");
+	const changePasswordForm = <HTMLFormElement>document.querySelector("#changePasswordForm");
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
@@ -84,12 +83,12 @@ export function profileFunctions() {
 			const newPassword = changePasswordForm.newPassword.value;
 			const repeatPassword = changePasswordForm.repeatPassword.value;
 			if (newPassword != repeatPassword) {
-				alert(translateFrontend("ERR_PASSWORDS_DONT_MATCH"));
+				showAlert("ERR_PASSWORDS_DONT_MATCH");
 				return;
 			}
 
 			if (newPassword == currentPassword) {
-				alert(translateFrontend("ERR_NO_NEW_PASSWORD"));
+				showAlert("ERR_NO_NEW_PASSWORD");
 				return;
 			}
 
@@ -103,18 +102,18 @@ export function profileFunctions() {
 
 			const message = await response.json();
 			if (!message.error) {
-				alert(translateFrontend("SUCCESS_PASSWORD_CHANGED"));
+				showAlert("SUCCESS_PASSWORD_CHANGED");
 				navigate("/profile");
 			}
 			else
-				alert(translateFrontend(message.error));
+				showAlert(message.error);
 		});
 	}
 
 	/*
 		Shows the dialog to scan the TOTP QR code
 	*/
-	const enableTOTPButton = document.getElementById("enableTOTPButton");
+	const enableTOTPButton = document.querySelector("#enableTOTPButton");
 	if (enableTOTPButton) {
 		enableTOTPButton.addEventListener("click", async () => {
 			const response = await fetch("/profile/totp/enable", {
@@ -124,13 +123,18 @@ export function profileFunctions() {
 			if (response.ok) {
 				const json = await response.json();
 
-				const qrCode = document.getElementById("totpQRCode");
+				const qrCode = document.querySelector("#totpQRCode");
 				qrCode.innerHTML = json.qrcode;
 
-				const totpSecret = document.getElementById("totpSecret");
+				const totpSecret = document.querySelector("#totpSecret");
 				totpSecret.innerHTML = json.secret;
 
-				const totpDialog = <HTMLDialogElement>document.getElementById("totpDialog");
+				const dialogShim = <HTMLDialogElement>document.getElementById("dialogShim");
+				const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
+				totpDialog.addEventListener("close", (e) => {
+					dialogShim.close();
+				});
+				dialogShim.showModal();
 				totpDialog.showModal();
 			}
 		});
@@ -139,7 +143,7 @@ export function profileFunctions() {
 	/*
 		Turns off TOTP
 	*/
-	const disableTOTPButton = document.getElementById("disableTOTPButton");
+	const disableTOTPButton = document.querySelector("#disableTOTPButton");
 	if (disableTOTPButton) {
 		disableTOTPButton.addEventListener("click", async () => {
 			// password protect this!
@@ -153,7 +157,7 @@ export function profileFunctions() {
 	/*
 		Checks the entered TOTP code
 	*/
-	const totpForm = <HTMLFormElement>document.getElementById("totpForm");
+	const totpForm = <HTMLFormElement>document.querySelector("#totpForm");
 	if (totpForm) {
 		totpForm.addEventListener("submit", async (e) => {
 			if ("cancelTOTPButton" == e.submitter.id)
@@ -169,28 +173,26 @@ export function profileFunctions() {
 				})
 			});
 
-			if (response.ok) {
-				alert(translateFrontend("SUCCESS_ENABLED_TOTP"));
+			const json = await response.json();
+			if (!json.error) {
+				showAlert("SUCCESS_ENABLED_TOTP");
 				navigate("/profile");
 				return;
 			}
-			
+
 			totpForm.code.value = "";
 			totpForm.code.focus();
-			alert(translateFrontend("ERR_VERIFY_TOTP"));
+			showAlert("ERR_TOTP_CODE");
 		});
 	}
-	
+
 	/*
 		Logs out the user and returns to the home page
 	*/
-	const logoutButton = document.getElementById("logoutButton");
+	const logoutButton = document.querySelector("#logoutButton");
 	if (logoutButton) {
 		logoutButton.addEventListener("click", async () => {
-			const response = await fetch("/user/logout", {
-				method: "GET"
-			});
-
+			const response = await fetch("/user/logout");
 			if (response.ok)
 				navigate("/");
 		}, { once: true });
@@ -199,14 +201,16 @@ export function profileFunctions() {
 	/*
 		Invalidates the user's refresh token, forcing a new log in even if someone has the token
 	*/
-	const invalidateTokenButton = document.getElementById("invalidateTokenButton");
+	const invalidateTokenButton = document.querySelector("#invalidateTokenButton");
 	if (invalidateTokenButton) {
 		invalidateTokenButton.addEventListener("click", async () => {
 			const response = await fetch("/user/invalidate-token", {
 				method: "POST",
 			});
-			if (response.ok)
+			if (response.ok) {
+				showAlert("SUCCESS_INVALIDATED_TOKEN");
 				navigate("/");
+			}
 		}, { once: true });
 	}
 }

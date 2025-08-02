@@ -1,8 +1,8 @@
-import { navigate } from "./index.js";
+import { navigate, showAlert } from "./index.js";
 import { translateFrontend } from "./translations.js";
 
 export function friendsFunctions() {
-	const addFriendButton = document.getElementById("addFriendButton");
+	const addFriendButton = document.querySelector("#addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async function () {
 			let friendEmail = prompt(translateFrontend("PROMPT_FRIENDS_EMAIL"));
@@ -15,13 +15,15 @@ export function friendsFunctions() {
 				body: JSON.stringify({ email: friendEmail })
 			});
 
-			if (404 == response.status) {
-				alert(translateFrontend("ERR_NO_USER"));
+			const json = await response.json();
+
+			if (404 == json.code) {
+				showAlert("ERR_NO_USER");
 				return;
 			}
 
-			if (response.ok) {
-				alert(translateFrontend("SUCCESS_ADDED_FRIEND"));
+			if (!json.error) {
+				showAlert("SUCCESS_ADDED_FRIEND");
 				navigate("/friends");
 			}
 		});
@@ -36,7 +38,10 @@ export function friendsFunctions() {
 					friendID: this.dataset.id
 				})
 			});
-			if (response.ok)
+
+			const json = await response.json();
+
+			if (!json.error)
 				navigate("/friends");
 		}, { once: true });
 	}

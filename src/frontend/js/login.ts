@@ -1,4 +1,4 @@
-import { navigate } from "./index.js";
+import { navigate, showAlert } from "./index.js";
 import { translateFrontend } from "./translations.js";
 
 export function loginFunctions() {
@@ -38,7 +38,7 @@ export function loginFunctions() {
 				let totpCode = prompt(translateFrontend("PROMPT_TOTP_CODE"));
 
 				if (!totpCode) {
-					alert(translateFrontend("ERR_TOTP_CODE"));
+					showAlert("ERR_TOTP_CODE");
 					return;
 				}
 
@@ -53,7 +53,7 @@ export function loginFunctions() {
 
 				const totpResponse = await response.json();
 				if (totpResponse.error) {
-					alert(translateFrontend("ERR_TOTP_CODE"));
+					showAlert("ERR_TOTP_CODE");
 					return;
 				}
 
@@ -64,7 +64,7 @@ export function loginFunctions() {
 			}
 
 			if (payload.error) {
-				alert(translateFrontend(payload.error));
+				showAlert(payload.error);
 				return;
 			}
 
