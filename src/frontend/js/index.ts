@@ -13,18 +13,25 @@ import { playFunctions } from "./play.js";
 /*
 	Simulates moving to a new page
 */
-export async function navigate(url: string): Promise<void> {
-	history.replaceState(null, null, url);
+export async function navigate(url: string, updateHistory: boolean = true): Promise<void> {
+	if (updateHistory)
+		history.pushState(null, null, url);
 
 	const response = await fetch(url, {
 		method: "GET"
 	});
 
 	if (response.ok) {
-		const text = await response.json();
-		document.querySelector("#navbar").innerHTML = text.navbar;
-		document.querySelector("#content").innerHTML = text.content;
+		const body = await response.text();
+		const start = body.indexOf("<body>");
+		const end = body.indexOf("</body>") + 7;
+
+		document.querySelector('body').innerHTML = body.substring(start, end);
 		addFunctions();
+	}
+	else {
+		document.getElementById("content").innerHTML = "No dice!";
+		//addFunctions();
 	}
 }
 
@@ -32,11 +39,11 @@ export async function navigate(url: string): Promise<void> {
 	Changes page on back/forward buttons
 */
 window.addEventListener('popstate', function (event) {
-	navigate(window.location.pathname);
+	navigate(window.location.pathname, false);
 });
 
 /*
-	Sets up all the listeners after a "page" refresh
+	Sets up all the listeners after navigating to a new page
 */
 export function addFunctions() {
 	pageButtons();
@@ -72,25 +79,37 @@ window.addEventListener("DOMContentLoaded", () => {
 	Marks the user as offline when the url changes
 */
 window.addEventListener("beforeunload", (event) => {
-	fetch("/user/leave", { method: "POST" });
+	fetch("/user/leave", {
+		method: "POST"
+	});
 });
 
 /*
 	A match has finished with a winner
 */
 document.addEventListener("matchOver", async (e: CustomEvent) => {
-	// figure out if tournament or game
-	// update matches in DB
-
-	const response = await fetch("/tournament/update", {
-		method: "POST",
-		body: JSON.stringify({
-			code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
-			p1Score: e.detail.p1Score,
-			p2Score: e.detail.p2Score
-		})
-	});
-	if (response.ok)
-		navigate(document.location.href);
+	if (document.location.href.includes("tournament")) {
+		const response = await fetch("/tournament/update", {
+			method: "POST",
+			body: JSON.stringify({
+				code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
+				p1Score: e.detail.p1Score,
+				p2Score: e.detail.p2Score
+			})
+		});
+		if (response.ok)
+			navigate(document.location.href);
+	}
+	else if (document.location.href.includes("3000/play")) {
+		const response = await fetch("/match/add", {
+			method: "POST",
+			body: JSON.stringify({
+				score: e.detail.p1Score,
+				p2Score: e.detail.p2Score,
+				p2Name: e.detail.p2Name
+			})
+		});
+		if (response.ok)
+			navigate(document.location.href);
+	}
 });
-

@@ -6,14 +6,38 @@ The function gets passed the two player names and an optional options object. Th
 When the match finishes call the endMatch function with the two scores and the tournament/database will be updated.
 
 TODO (Luke):
-- history not working properly
-- handle params in history?
 - sanitise git repo
 - generate key and cert with docker
-- SSL
 - move key/cert
 - add emails to cloud
 - clean up tailwind
 - unknown routes
 - check what happens if db down
-- check API replies to the browser - no leaking!
+
+Page endpoints (all GET)
+-	/
+-	/play
+-	/tournament
+-	/profile
+-	/matches
+-	/friends
+
+Profile endpoints (all POST)
+-	/profile/nick
+-	/profile/avatar
+-	/profile/password
+-	/profile/totp/enable
+-	/profile/totp/disable
+-	/profile/totp/verify
+
+Friends endpoints (all POST)
+-	/friends/add
+-	/friends/remove
+-	/friends/find
+-	/user/leave
+
+Game endpoints (all POST)
+-	/match/add
+-	/tournament/add
+-	/tournament/update
+-	/tournament/:id

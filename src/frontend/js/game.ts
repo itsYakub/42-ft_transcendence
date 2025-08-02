@@ -10,9 +10,9 @@ export function startMatch(p1Name: string, p2Name: string, options: any = null) 
 			const winningPlayer = Math.floor(Math.random() * 2);
 			const losingScore = Math.floor(Math.random() * 9);
 			if (0 == winningPlayer)
-				endMatch(10, losingScore);
+				endMatch(10, losingScore, p2Name);
 			else
-				endMatch(losingScore, 10);
+				endMatch(losingScore, 10, p2Name);
 		});
 	}
 
@@ -24,11 +24,12 @@ export function startMatch(p1Name: string, p2Name: string, options: any = null) 
 /*
 	When the match ends with a definitive winner
 */
-function endMatch(p1Score: number, p2Score: number) {
+function endMatch(p1Score: number, p2Score: number, p2Name: string) {
 	document.dispatchEvent(new CustomEvent("matchOver", {
 		detail: {
 			p1Score,
-			p2Score
+			p2Score,
+			p2Name
 		}
 	}));
 }

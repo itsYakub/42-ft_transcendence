@@ -32,7 +32,9 @@ export function friendsFunctions() {
 		removeFriendButtons[i].addEventListener("click", async function () {
 			const response = await fetch("/friends/remove", {
 				method: "POST",
-				body: JSON.stringify({ friendID: this.dataset.id })
+				body: JSON.stringify({
+					friendID: this.dataset.id
+				})
 			});
 			if (response.ok)
 				navigate("/friends");

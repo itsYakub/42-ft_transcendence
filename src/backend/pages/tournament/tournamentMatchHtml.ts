@@ -1,52 +1,30 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
-import { frameAndContentHtml, frameHtml } from '../frame.js';
-import { getUser, markUserOnline } from '../../user/userDB.js';
-import { getTournamentByCode } from '../tournament/tournamentDB.js';
 import { gameHtmlString } from '../game/game.js';
+import { translateBackend } from '../translations.js';
 
-export function tournamentMatchPage(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		const { id } = request.params as any;
+export function tournamentMatchHtml({ user, language, tournament }): string {
+	if (tournament.error)
+		return notFoundString();
 
-		if (user.id)
-			markUserOnline(db, user.id);
+	const m1String = match1String(tournament);
+	const m2String = match2String(tournament);
+	const final = finalString(tournament);
+	const nextMatch = nextMatchString(tournament);
 
-		const tournament = getTournamentByCode(db, id);
+	let html = tournamentMatchHtmlString(tournament.code, m1String, m2String, final, nextMatch);
+	html = translate(html, language);
 
-		const params = { user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };
-
-		if (!request.headers["referer"]) {
-			const frame = frameHtml(db, params);
-
-			if (frame.error) {
-				return reply.code(frame.code);
-			}
-			return reply.type("text/html").send(frame);
-		}
-
-		const frame = frameAndContentHtml(db, params);
-		if (frame.error) {
-			return reply.code(frame.code);
-		}
-		return reply.send(frame);
-	});
+	return html + gameHtmlString();
 }
 
-export function tournamentMatchHtml(db: DatabaseSync, { user, language, tournament }): string {
-	if (tournament.error)
-		return notFoundHtmlString;
+function translate(html: string, language: string): string {
+	const toBeTranslated = ["TITLE", "CODE", "SEMI_FINALS", "FINAL", "TBD", "NEXT_MATCH", "PLAY", "CONGRATULATIONS", "UNKNOWN"];
 
-	let html = tournamentMatchHtmlString;
-
-	html = html.replace("%%TOURNAMENT_CODE%%", tournament.code);
-	html = html.replace("%%MATCH1%%", match1String(tournament));
-	html = html.replace("%%MATCH2%%", match2String(tournament));
-	html = html.replace("%%FINAL%%", finalString(tournament));
-	html = html.replace("%%NEXTMATCH%%", nextMatchString(tournament));
- 
-	html += gameHtmlString;
+	toBeTranslated.forEach((text) => {
+		html = html.replaceAll(`%%TOURNAMENT_${text}_TEXT%%`, translateBackend({
+			language,
+			text: `TOURNAMENT_${text}_TEXT`
+		}));
+	});
 
 	return html;
 }
@@ -86,7 +64,7 @@ function match2String(tournament: any): string {
 function finalString(tournament: any): string {
 	switch (tournament.match) {
 		case 1:
-			return `<div class="text-white">${tournament.m3p1} vs TBD</div>`;
+			return `<div class="text-white">${tournament.m3p1} vs %%TOURNAMENT_TBD_TEXT%%</div>`;
 		case 2:
 			return `<div class="text-white">${tournament.m3p1} vs ${tournament.m3p2}</div>`;
 
@@ -100,26 +78,29 @@ function finalString(tournament: any): string {
 					<span class="text-${p2Colour}-300"> ${tournament.m3p2Score} ${tournament.m3p2}</span>
 				</div>`;
 		default:
-			return `<div class="text-white">TBD vs TBD</div>`;
+			return `<div class="text-white">%%TOURNAMENT_TBD_TEXT%% vs %%TOURNAMENT_TBD_TEXT%%</div>`;
 	}
 }
 
-const tournamentMatchHtmlString: string = `
+function tournamentMatchHtmlString(code: string, m1String: string, m2String: string, final: string, nextMatch: string): string {
+	return `
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
-		<h1 class="text-white pt-4 mb-2 text-5xl">Tournament</h1>
-		<p class="text-white">Tournament code: %%TOURNAMENT_CODE%%</p>
+		<h1 class="text-white pt-4 mb-2 text-4xl">%%TOURNAMENT_TITLE_TEXT%%</h1>
+		<p class="text-white">%%TOURNAMENT_CODE_TEXT%%: ${code}</p>
 		<div>
-			<h2 class="text-white text-xl my-4">Semi-finals</h2>
-			%%MATCH1%%
-			%%MATCH2%%
-			<h2 class="text-white text-xl my-4">Final</h2>
-			%%FINAL%%
+			<h2 class="text-white text-xl my-4">%%TOURNAMENT_SEMI_FINALS_TEXT%%</h2>
+			${m1String}
+			${m2String}
+			<h2 class="text-white text-xl my-4">%%TOURNAMENT_FINAL_TEXT%%</h2>
+			${final}
 			<div class="mt-8 border w-100 border-gray-400 rounded-lg p-4 mx-auto">
-				%%NEXTMATCH%%
+				<span class="text-white">%%TOURNAMENT_NEXT_MATCH_TEXT%%</span>
+				${nextMatch}
 			</div>
 		</div>
-	</div>`;
-
+	</div>
+	`;
+}
 
 function nextMatchString(tournament: any) {
 	let p1: string;
@@ -140,13 +121,20 @@ function nextMatchString(tournament: any) {
 			return `<div class="text-white">${p1} vs ${p2}</div>${nextMatchButtonString(p1, p2)}`;
 		default:
 			p1 = tournament.m3p1Score > tournament.m3p2Score ? tournament.m3p1 : tournament.m3p2;
-			return `<div class="text-white">Congratulations ${p1}!</div>`;
+			return `<div class="text-white">%%TOURNAMENT_CONGRATULATIONS_TEXT%% ${p1}!</div>`;
 	}
 }
 
 function nextMatchButtonString(p1: string, p2: string) {
-	return `<button id="nextMatchButton" data-p1="${p1}" data-p2="${p2}" class="text-white mt-4 bg-gray-800 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700">Play!</button>`;
+	return `
+	<button id="nextMatchButton" data-p1="${p1}" data-p2="${p2}" class="text-white mt-4 bg-gray-800 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700">%%TOURNAMENT_PLAY_TEXT%%!</button>
+	`;
 }
 
-const notFoundHtmlString: string = `
-	<h1>Not found</h1>`;
+function notFoundString(): string {
+	return `
+	<div class="h-full bg-gray-900 content-center text-center">
+		<div class="text-white">%%TOURNAMENT_UNKNOWN_TEXT%%</div>
+	</div>
+	`;
+}

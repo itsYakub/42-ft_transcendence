@@ -5,7 +5,12 @@ export function loginFunctions() {
 	const loginButton = document.getElementById("loginButton");
 	if (loginButton) {
 		loginButton.addEventListener("click", async function (e) {
+			const dialogShim = <HTMLDialogElement>document.getElementById("dialogShim");
 			let dialog = <HTMLDialogElement>document.getElementById("loginDialog");
+			dialog.addEventListener("close", (e) => {
+				dialogShim.close();
+			});
+			dialogShim.showModal();
 			dialog.showModal();
 		});
 	}
@@ -59,7 +64,7 @@ export function loginFunctions() {
 			}
 
 			if (payload.error) {
-					alert(translateFrontend(payload.error));
+				alert(translateFrontend(payload.error));
 				return;
 			}
 

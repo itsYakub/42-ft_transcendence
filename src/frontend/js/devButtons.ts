@@ -1,7 +1,7 @@
-import { addFunctions } from "./index.js";
+import { navigate } from "./index.js";
 
 export function devButtons() {
-	const wipeAllButton = document.getElementById("wipeAllButton")
+	const wipeAllButton = document.querySelector("#wipeAllButton")
 	if (wipeAllButton) {
 		wipeAllButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/wipe", {
@@ -9,18 +9,15 @@ export function devButtons() {
 			});
 
 			if (response.ok) {
-				const text = await response.json();
-				document.querySelector("#navbar").innerHTML = text.navbar;
-				document.querySelector("#content").innerHTML = text.content;
-				addFunctions();
 				alert("Wiped and re-created DB!");
+				navigate("/");
 			}
 			else
 				alert("Something went wrong!");
 		}, { once: true });
 	}
 
-	const wipeUsersButton = document.getElementById("wipeUsersButton")
+	const wipeUsersButton = document.querySelector("#wipeUsersButton")
 	if (wipeUsersButton) {
 		wipeUsersButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/wipe/users", {
@@ -33,7 +30,7 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const wipeMatchesButton = document.getElementById("wipeMatchesButton")
+	const wipeMatchesButton = document.querySelector("#wipeMatchesButton")
 	if (wipeMatchesButton) {
 		wipeMatchesButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/wipe/matches", {
@@ -46,7 +43,7 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const wipeFriendsButton = document.getElementById("wipeFriendsButton")
+	const wipeFriendsButton = document.querySelector("#wipeFriendsButton")
 	if (wipeFriendsButton) {
 		wipeFriendsButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/wipe/friends", {
@@ -59,7 +56,20 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const addMockUsersButton = document.getElementById("addMockUsersButton")
+	const wipeTournamentsButton = document.querySelector("#wipeTournamentsButton")
+	if (wipeTournamentsButton) {
+		wipeTournamentsButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/tournaments", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Wiped tournaments!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
+	const addMockUsersButton = document.querySelector("#addMockUsersButton")
 	if (addMockUsersButton) {
 		addMockUsersButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/add/users", {
@@ -72,7 +82,7 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const addMockMatchesButton = document.getElementById("addMockMatchesButton")
+	const addMockMatchesButton = document.querySelector("#addMockMatchesButton")
 	if (addMockMatchesButton) {
 		addMockMatchesButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/add/matches", {
@@ -85,7 +95,7 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const addMockFriendsButton = document.getElementById("addMockFriendsButton")
+	const addMockFriendsButton = document.querySelector("#addMockFriendsButton")
 	if (addMockFriendsButton) {
 		addMockFriendsButton.addEventListener("click", async () => {
 			const response = await fetch("/dev/add/friends", {
@@ -95,13 +105,6 @@ export function devButtons() {
 				alert("Added mock friends!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
-	}
-
-	const testButton = document.getElementById("testButton")
-	if (testButton) {
-		testButton.addEventListener("click", async () => {
-			document.dispatchEvent(new Event("build"));
 		}, { once: true });
 	}
 }

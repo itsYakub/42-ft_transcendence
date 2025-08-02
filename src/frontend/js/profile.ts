@@ -1,4 +1,4 @@
-import { addFunctions, navigate } from "./index.js";
+import { navigate } from "./index.js";
 import { translateFrontend } from "./translations.js";
 
 /*
@@ -191,13 +191,8 @@ export function profileFunctions() {
 				method: "GET"
 			});
 
-			// Sets the frame's navbar and content
-			if (response.ok) {
-				const text = await response.json();
-				document.querySelector("#navbar").innerHTML = text.navbar;
-				document.querySelector("#content").innerHTML = text.content;
-				addFunctions();
-			}
+			if (response.ok)
+				navigate("/");
 		}, { once: true });
 	}
 

@@ -15,7 +15,9 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
 			"Set-Cookie", `accessToken=${payload.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${payload.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send(payload);
+				"Set-Cookie", `refreshToken=${payload.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
+					message: "SUCCESS"
+				});
 	});
 
 	fastify.post("/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -29,7 +31,10 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		}
 
 		if (user.totpEnabled) {
-			return reply.send(user);
+			return reply.send({
+				message: "SUCCESS",
+				totpEnabled: true
+			});
 		}
 
 		const accessTokenDate = new Date();
@@ -38,7 +43,10 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
 			"Set-Cookie", `accessToken=${user.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(user);
+				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+					message: "SUCCESS",
+					totpEnabled: false
+				});
 	});
 
 	fastify.get("/user/logout", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -80,7 +88,9 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		});
 
 		if (null == totp.validate({ token: params.code, window: 1 })) {
-			return reply.code(403).send({ error: "ERR_BAD_TOTP" });
+			return reply.code(403).send({
+				error: "ERR_BAD_TOTP"
+			});
 		}
 
 		const accessTokenDate = new Date();
@@ -89,7 +99,9 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
 			"Set-Cookie", `accessToken=${user.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(user);
+				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+					message: "SUCCESS"
+				});
 	});
 
 	fastify.post("/user/leave", async (request: FastifyRequest, reply: FastifyReply) => {

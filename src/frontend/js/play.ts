@@ -1,10 +1,17 @@
 import { startMatch } from "./game.js";
 
 export function playFunctions() {
-	const startSingleGameButton = document.getElementById("startSingleGameButton");
-	if (startSingleGameButton) {
-		startSingleGameButton.addEventListener("click", () => {
-			startMatch("John", "Ed");
-		});
+	const form = <HTMLFormElement>document.getElementById("singleGameForm");
+	if (form) {
+		form.addEventListener("submit", async (e) => {
+			e.preventDefault();
+
+			if (form.p1Name.value == form.p2Name.value) {
+				alert("Must be unique!");
+				return;
+			}
+
+			startMatch(form.p1Name.value, form.p2Name.value);
+		})
 	}
 }

@@ -1,61 +1,27 @@
-import { DatabaseSync } from "node:sqlite";
-import { friendsHtml } from "./friends/friends.js";
-import { homeHtml } from "./home/home.js";
-import { matchesHtml } from "./matches/matches.js";
 import { navbarHtml } from "./navbar.js";
-import { playHtml } from "./play/play.js";
-import { profileHtml } from "./profile/profile.js";
-import { tournamentHtml } from "./tournament/tournament.js";
-import { tournamentMatchHtml } from "./tournamentMatch/tournamentMatch.js";
+import { translateBackend } from "./translations.js";
 
-/* Returns the whole page, for external links, or db_error */
-export function frameHtml(db: DatabaseSync, params: any): any {
-	let html = frameHtmlString;
-	let navbar = navbarHtml(params);
-
-	const content = contentHtml(db, params);	
-
-	if ("ERR_DB" == content) {
-		return {
-			code: 500,
-			error: "ERR_DB"
-		};
+/*
+	Returns the whole page, or an error page
+*/
+export function frameHtml(params: any, content: string = null): any {
+	if (!content) {
+		content = errorString(params);
 	}
-
-	navbar = highlightPage(navbar, params.page);
-
-	html = html.replace("%%NAVBAR%%", navbar);
-	html = html.replace("%%CONTENT%%", content);
-
-	return html;
+	const navbar = navbarString(params);
+	return frameString(navbar, content);
 }
 
-/* Returns the navbar and content separately, for internal links */
-export function frameAndContentHtml(db: DatabaseSync, params: any): any {
+/*
+	Returns the navbar with the current "page" marked
+*/
+function navbarString(params: any) {
 	let navbar = navbarHtml(params);
 
-	const content = contentHtml(db, params);
-	if ("ERR_DB" == content) {
-		return {
-			code: 500,
-			error: "ERR_DB",
-		};
-	}
-
-	navbar = highlightPage(navbar, params.page);
-
-	return {
-		navbar,
-		content
-	};
-}
-
-/* Marks the current "page" */
-function highlightPage(navbar: string, view: string) {
 	const views = ["HOME", "PLAY", "TOURNAMENT"];
 
 	views.forEach((value) => {
-		if (value == view.toUpperCase())
+		if (value == params.page.toUpperCase())
 			navbar = navbar.replace(`%%${value}_COLOUR%%`, "gray-700");
 		else
 			navbar = navbar.replace(`%%${value}_COLOUR%%`, "transparent");
@@ -64,29 +30,8 @@ function highlightPage(navbar: string, view: string) {
 	return navbar;
 }
 
-/* Gets the correct HTMl from the db */
-function contentHtml(db: DatabaseSync, params: any): string {
-	switch (params.page) {
-		case "friends":
-			return friendsHtml(db, params);
-		case "home":
-			return homeHtml(db, params);
-		case "matches":
-			return matchesHtml(db, params);
-		case "play":
-			return playHtml(db, params);
-		case "profile":
-			return profileHtml(db, params);
-		case "tournament":
-			return tournamentHtml(db, params);
-		case "tournamentMatch":
-			return tournamentMatchHtml(db, params);
-		default:
-			return "ERR_DB";
-	}
-}
-
-const frameHtmlString: string = `
+function frameString(navbar: string, content: string): string {
+	return `
 	<!DOCTYPE html>
 	<html>
 		<head>
@@ -101,8 +46,26 @@ const frameHtmlString: string = `
 
 		<body>
 			<div class="h-screen flex flex-col">
-				<div id="navbar" class="h-32">%%NAVBAR%%</div>
-				<div id="content" class="grow">%%CONTENT%%</div>
+				<div id="navbar" class="h-32">${navbar}</div>
+				<div id="content" class="grow">${content}</div>
 			</div>
 		</body>
-	</html>`;
+	</html>
+	`;
+}
+
+/*
+	A frame with an error message body
+*/
+function errorString(params: any) {
+	const message = translateBackend({
+		language: params.language,
+		text: params.errorMessage
+	});
+
+	return `
+	<div class="h-full bg-gray-900 content-center text-center">
+		<div class="text-white">${params.errorCode} - ${message}</div>
+	</div>
+	`;
+}

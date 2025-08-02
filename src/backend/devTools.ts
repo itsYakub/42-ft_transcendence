@@ -3,8 +3,9 @@ import { DatabaseSync } from "node:sqlite";
 import { addUser, initUsers } from "./user/userDB.js";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { addFriend, initFriends } from './pages/friends/friendsDB.js';
-import { addMatch, initMatches } from './pages/matches/matchesDB.js';
+import { addFriend, initFriends } from './pages/friends/friendDB.js';
+import { addMatch, initMatches } from './pages/matches/matchDB.js';
+import { initTournaments } from './pages/tournament/tournamentDB.js';
 
 const __dirname = import.meta.dirname;
 
@@ -32,6 +33,10 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
 	fastify.get("/dev/wipe/friends", async (request: FastifyRequest, reply: FastifyReply) => {
 		initFriends(db, true);
+	});
+
+	fastify.get("/dev/wipe/tournaments", async (request: FastifyRequest, reply: FastifyReply) => {
+		initTournaments(db, true);
 	});
 
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -85,28 +90,38 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		try {
 			addMatch(db, {
 				id: 1,
-				message: "Lost 10-3 to Ed",
-				rating: 0
+				p2Name: "Ed",
+				score: 5,
+				p2Score: 10,
+				tournamentWin: false
 			});
 			addMatch(db, {
 				id: 1,
-				message: "Beat John 10-0",
-				rating: 2
+				p2Name: "Frank",
+				score: 10,
+				p2Score: 5,
+				tournamentWin: false
 			});
 			addMatch(db, {
 				id: 1,
-				message: "Won a tournament!",
-				rating: 3
+				p2Name: "Ed",
+				score: 7,
+				p2Score: 10,
+				tournamentWin: false
 			});
 			addMatch(db, {
 				id: 1,
-				message: "Came last in a tournament!",
-				rating: 0
+				p2Name: "John",
+				score: 10,
+				p2Score: 9,
+				tournamentWin: true
 			});
 			addMatch(db, {
 				id: 2,
-				message: "Won a tournament!",
-				rating: 3
+				p2Name: "Ed",
+				score: 5,
+				p2Score: 10,
+				tournamentWin: true
 			});
 		}
 		catch (e) {

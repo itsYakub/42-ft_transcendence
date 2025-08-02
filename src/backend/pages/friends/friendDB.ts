@@ -15,11 +15,14 @@ export function initFriends(db: DatabaseSync, dropFriends: boolean): void {
 /*
 	Gets all the user's friends
 */
-export function getFriends(db: DatabaseSync, id: number) {
+export function getFriends(db: DatabaseSync, id: number): any {
 	try {
 		const select = db.prepare("SELECT * FROM Friends INNER JOIN Users ON Users.UserID = Friends.FriendID WHERE Friends.UserID = ? ORDER BY Online DESC, Nick");
 		const friends = select.all(id);
-		return friends;
+		return {
+			code: 200,
+			friends
+		};
 	}
 	catch (e) {
 		return {
@@ -37,6 +40,7 @@ export function addFriend(db: DatabaseSync, json: any): any {
 		const select = db.prepare("INSERT INTO Friends (UserID, FriendID) VALUES (?, ?)");
 		select.run(json.id, json.friendID);
 		return {
+			code: 201,
 			message: "SUCCESS"
 		};
 	}
@@ -56,6 +60,7 @@ export function removeFriend(db: DatabaseSync, json: any): any {
 		const select = db.prepare("DELETE FROM Friends WHERE UserID = ? AND FriendID = ?");
 		select.run(json.id, json.friendID);
 		return {
+			code: 204,
 			message: "SUCCESS"
 		};
 	}

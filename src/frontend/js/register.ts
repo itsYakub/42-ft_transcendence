@@ -4,7 +4,12 @@ export function registerFunctions() {
 	const registerButton = document.getElementById("registerButton");
 	if (registerButton) {
 		registerButton.addEventListener("click", async function (e) {
+			const dialogShim = <HTMLDialogElement>document.getElementById("dialogShim");
 			const dialog = <HTMLDialogElement>document.getElementById("registerDialog");
+			dialog.addEventListener("close", (e) => {
+				dialogShim.close();
+			});
+			dialogShim.showModal();
 			dialog.showModal();
 		});
 	}
@@ -14,7 +19,7 @@ export function registerFunctions() {
 		registerForm.addEventListener("submit", async (e) => {
 			if ("cancelRegisterButton" == e.submitter.id)
 				return;
-			
+
 			e.preventDefault();
 			const nick = registerForm.nick.value;
 			const email = registerForm.email.value;

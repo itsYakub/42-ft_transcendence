@@ -5,6 +5,7 @@ function translateDutch(text: string): string {
 		case "ERR_AVATAR_TOO_BIG": return "!";
 		case "ERR_BAD_PASSWORD": return "!";
 		case "ERR_DB": return "!";
+		case "ERR_EMAIL_IN_USE": return "!";
 		case "ERR_GOOGLE": return "!";
 		case "ERR_NO_NEW_PASSWORD": return "!";
 		case "ERR_NO_USER": return "!";
@@ -25,6 +26,7 @@ function translateEnglish(text: string): string {
 		case "ERR_AVATAR_TOO_BIG": return "The selected avatar is too big - 500KiB max!";
 		case "ERR_BAD_PASSWORD": return "Incorrect password!";
 		case "ERR_DB": return "Database error!";
+		case "ERR_EMAIL_IN_USE": return "Email already registered!";
 		case "ERR_GOOGLE": return "Couldn't sign in/up with Google!";
 		case "ERR_NO_NEW_PASSWORD": return "New password can't be the same as old password!";
 		case "ERR_NO_USER": return "User not found!";
@@ -45,6 +47,7 @@ function translatePolish(text: string): string {
 		case "ERR_AVATAR_TOO_BIG": return "!";
 		case "ERR_BAD_PASSWORD": return "!";
 		case "ERR_DB": return "!";
+		case "ERR_EMAIL_IN_USE": return "!";
 		case "ERR_GOOGLE": return "!";
 		case "ERR_NO_NEW_PASSWORD": return "!";
 		case "ERR_NO_USER": return "!";

@@ -72,40 +72,48 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): any {
 	Returns a complete user from the DB
 */
 export function getUser(db: DatabaseSync, accessToken: string, refreshToken: string): any {
-	const valid = validJWT(accessToken);
-	if (valid) {
-		let payload = accessToken.split(".")[1];
-		payload = atob(payload);
-		const { sub, exp } = JSON.parse(payload);
-		const date = new Date(exp);
-		if (date < new Date()) {
-			return getUserByRefreshToken(db, refreshToken);
-		}
-
-		const select = db.prepare("SELECT * FROM Users WHERE UserID = ?");
-		const user = select.get(sub);
-		if (!user) {
-			return {
-				code: 404,
-				error: "ERR_UNKNOWN_USER"
+	try {
+		const valid = validJWT(accessToken);
+		if (valid) {
+			let payload = accessToken.split(".")[1];
+			payload = atob(payload);
+			const { sub, exp } = JSON.parse(payload);
+			const date = new Date(exp);
+			if (date < new Date()) {
+				return getUserByRefreshToken(db, refreshToken);
 			}
+
+			const select = db.prepare("SELECT * FROM Users WHERE UserID = ?");
+			const user = select.get(sub);
+			if (!user) {
+				return {
+					code: 404,
+					error: "ERR_UNKNOWN_USER"
+				}
+			}
+			return {
+				id: user.UserID,
+				nick: user.Nick,
+				email: user.Email,
+				avatar: user.Avatar,
+				password: user.Password,
+				refreshToken: user.RefreshToken,
+				online: user.Online,
+				totpSecret: user.TOTPSecret,
+				totpVerified: user.TOTPVerified,
+				totpEmail: user.TOTPEmail,
+				google: user.Password == null
+			};
 		}
-		return {
-			id: user.UserID,
-			nick: user.Nick,
-			email: user.Email,
-			avatar: user.Avatar,
-			password: user.Password,
-			refreshToken: user.RefreshToken,
-			online: user.Online,
-			totpSecret: user.TOTPSecret,
-			totpVerified: user.TOTPVerified,
-			totpEmail: user.TOTPEmail,
-			google: user.Password == null
-		};
+		else
+			return getUserByRefreshToken(db, refreshToken);
 	}
-	else
-		return getUserByRefreshToken(db, refreshToken);
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		}
+	}
 }
 
 /*
@@ -208,7 +216,7 @@ export function loginUser(db: DatabaseSync, { email, password }) {
 		}
 		return {
 			code: 401,
-			error: "ERR_UNKNOWN_USER"
+			error: "ERR_NO_USER"
 		};
 	}
 	catch (e) {
@@ -237,7 +245,7 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 		// 			period: 30,
 		// 			secret: user.totpSecret,
 		// 		});
-		
+
 		// 		const params = JSON.parse(request.body as string);
 		// 		if (null == totp.validate({ token: params.code, window: 1 })) {
 
@@ -255,7 +263,7 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 		}
 		return {
 			code: 401,
-			error: "ERR_UNKNOWN_USER"
+			error: "ERR_NO_USER"
 		};
 	}
 	catch (e) {
@@ -275,6 +283,7 @@ export function getUserByEmail(db: DatabaseSync, email: string): any {
 			return {
 				id: user.UserID,
 				nick: user.Nick,
+				email: user.Email,
 				avatar: user.Avatar,
 				password: user.Password,
 				totpEnabled: user.TOTPVerified,
@@ -283,7 +292,7 @@ export function getUserByEmail(db: DatabaseSync, email: string): any {
 		}
 		return {
 			code: 404,
-			error: "ERR_UNKNOWN_USER"
+			error: "ERR_NO_USER"
 		};
 	}
 	catch (e) {
@@ -299,6 +308,7 @@ export function updateRefreshtoken(db: DatabaseSync, { id, refreshToken }) {
 		const select = db.prepare("UPDATE Users SET RefreshToken = ? WHERE UserID = ?");
 		select.run(refreshToken, id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -315,6 +325,7 @@ export function invalidateToken(db: DatabaseSync, { id }) {
 		const select = db.prepare("UPDATE Users SET RefreshToken = NULL WHERE UserID = ?");
 		select.run(id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -331,6 +342,7 @@ export function markUserOnline(db: DatabaseSync, id: number) {
 		const select = db.prepare("UPDATE Users SET Online = 1 WHERE UserID = ?");
 		select.run(id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -347,6 +359,7 @@ export function markUserOffline(db: DatabaseSync, id: number) {
 		const select = db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
 		select.run(id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}

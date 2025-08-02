@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import { addMatch } from "../matches/matchDB.js";
 
 export function initTournaments(db: DatabaseSync, dropTournaments: boolean): void {
 	if (dropTournaments)
@@ -65,6 +66,7 @@ export function addTournament(db: DatabaseSync, { code, m1p1, m1p2, m2p1, m2p2 }
 		const select = db.prepare("INSERT INTO Tournaments (Code, M1P1, M1P2, M2P1, M2P2) VALUES (?, ?, ?, ?, ?)");
 		select.run(code, m1p1, m1p2, m2p1, m2p2);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -76,26 +78,58 @@ export function addTournament(db: DatabaseSync, { code, m1p1, m1p2, m2p1, m2p2 }
 	}
 }
 
-export function updateTournament(db: DatabaseSync, { code, p1Score, p2Score }) {
+export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Score }) {
 	try {
 		const tournament = getTournamentByCode(db, code);
 		const match = tournament.match as number + 1;
 		if (match < 3) {
 			let winner: string;
-			if (1 == match)
+			let loser: string;
+			if (1 == match) {
 				winner = p1Score > p2Score ? tournament.m1p1 as string : tournament.m1p2 as string;
-			else if (2 == match)
+				loser = p1Score < p2Score ? tournament.m1p1 as string : tournament.m1p2 as string;
+			}
+			else if (2 == match) {
 				winner = p1Score > p2Score ? tournament.m2p1 as string : tournament.m2p2 as string;
+				loser = p1Score < p2Score ? tournament.m2p1 as string : tournament.m2p2 as string;
+			}
 			const select = db.prepare(`UPDATE Tournaments SET Match = ?, M${match}P1Score = ?, M${match}P2Score = ?, M3P${match} = ? WHERE TournamentID = ?;`);
 			select.run(match, p1Score, p2Score, winner, tournament.id);
+
+			if (user.nick == winner) {
+				addMatch(db, {
+					id: user.id,
+					message: "won",
+					rating: 2
+				});
+			}
+			else if (user.nick == loser) {
+				addMatch(db, {
+					id: user.id,
+					message: "lost",
+					rating: 0
+				});
+			}
+
 			return {
+				code: 200,
 				message: "SUCCESS"
 			};
 		}
 		else {
+			const winner = p1Score > p2Score ? tournament.m3p1 as string : tournament.m3p2 as string;
+			const loser = p1Score < p2Score ? tournament.m3p1 as string : tournament.m3p2 as string;
 			const select = db.prepare(`UPDATE Tournaments SET Match = ?, M${match}P1Score = ?, M${match}P2Score = ? WHERE TournamentID = ?;`);
 			select.run(match, p1Score, p2Score, tournament.id);
+			if (user.nick == winner) {
+				addMatch(db, {
+					id: user.id,
+					message: "won tournament",
+					rating: 3
+				});
+			}
 			return {
+				code: 200,
 				message: "SUCCESS"
 			};
 		}
