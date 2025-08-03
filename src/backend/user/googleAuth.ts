@@ -20,8 +20,7 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		});
 
 		if (200 != response.status) {
-			return reply.header(
-				"Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
+			return reply.header("Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
 		}
 
 		const json = await response.json();
@@ -39,6 +38,9 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 
 		const payload = addGoogleUser(db, userJSON);
+		if (payload.error)
+			return reply.header("Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
+
 		const accessTokenDate = new Date();
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
 		const refreshTokenDate = new Date();

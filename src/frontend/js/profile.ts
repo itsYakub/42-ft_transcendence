@@ -50,7 +50,7 @@ export function profileFunctions() {
 	}
 
 	/*
-		Updates the user's nickname - must be unique!
+		Updates the user's nickname
 	*/
 	const changeNickForm = <HTMLFormElement>document.querySelector("#changeNickForm");
 	if (changeNickForm) {
@@ -65,15 +65,20 @@ export function profileFunctions() {
 			});
 
 			const message = await response.json();
-			if (!message.error)
-				navigate("/profile");
+			if (!message.error) {
+				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", () => {
+					navigate("/profile");
+				});
+				showAlert("done");
+			}
 			else
-				alert(message.error);
+				showAlert(message.error);
 		});
 	}
 
 	/*
-		Updating a user's password
+		Updates a user's password
 	*/
 	const changePasswordForm = <HTMLFormElement>document.querySelector("#changePasswordForm");
 	if (changePasswordForm) {
@@ -102,8 +107,11 @@ export function profileFunctions() {
 
 			const message = await response.json();
 			if (!message.error) {
+				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", () => {
+					navigate("/profile");
+				});
 				showAlert("SUCCESS_PASSWORD_CHANGED");
-				navigate("/profile");
 			}
 			else
 				showAlert(message.error);
@@ -129,12 +137,7 @@ export function profileFunctions() {
 				const totpSecret = document.querySelector("#totpSecret");
 				totpSecret.innerHTML = json.secret;
 
-				const dialogShim = <HTMLDialogElement>document.getElementById("dialogShim");
 				const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
-				totpDialog.addEventListener("close", (e) => {
-					dialogShim.close();
-				});
-				dialogShim.showModal();
 				totpDialog.showModal();
 			}
 		});
@@ -150,7 +153,15 @@ export function profileFunctions() {
 			const response = await fetch("/profile/totp/disable", {
 				method: "POST"
 			});
-			navigate("/profile");
+			
+			const json = await response.json();
+			if (!json.error) {
+				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", async () => {
+					navigate("/profile");
+				});
+				showAlert("SUCCESS_DISABLED_TOTP");
+			}
 		});
 	}
 
@@ -159,11 +170,17 @@ export function profileFunctions() {
 	*/
 	const totpForm = <HTMLFormElement>document.querySelector("#totpForm");
 	if (totpForm) {
+		totpForm.code.addEventListener("keydown", (e: any) => {
+			if (e.key != "Enter" && isNaN(e.key))
+				e.preventDefault();
+		});
+
 		totpForm.addEventListener("submit", async (e) => {
 			if ("cancelTOTPButton" == e.submitter.id)
 				return;
 
 			e.preventDefault();
+			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 			const code = totpForm.code.value;
 
 			const response = await fetch("/profile/totp/verify", {
@@ -175,13 +192,19 @@ export function profileFunctions() {
 
 			const json = await response.json();
 			if (!json.error) {
+				alertDialog.addEventListener("close", async () => {
+					const response = await fetch("/user/logout");
+					if (response.ok)
+						navigate("/");
+				});
 				showAlert("SUCCESS_ENABLED_TOTP");
-				navigate("/profile");
 				return;
 			}
 
-			totpForm.code.value = "";
-			totpForm.code.focus();
+			alertDialog.addEventListener("close", () => {
+				totpForm.code.value = "";
+				totpForm.code.focus();
+			});
 			showAlert("ERR_TOTP_CODE");
 		});
 	}
@@ -207,9 +230,14 @@ export function profileFunctions() {
 			const response = await fetch("/user/invalidate-token", {
 				method: "POST",
 			});
-			if (response.ok) {
+
+			const json = await response.json();
+			if (!json.error) {
+				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", () => {
+					navigate("/");
+				});
 				showAlert("SUCCESS_INVALIDATED_TOKEN");
-				navigate("/");
 			}
 		}, { once: true });
 	}

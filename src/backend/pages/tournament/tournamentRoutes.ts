@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frame.js';
+import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
 import { addTournament, getTournamentByCode, updateTournament } from './tournamentDB.js';
 import { tournamentHtml } from './tournamentHtml.js';
@@ -36,7 +36,7 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		const params = { user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };
 
 		const html = tournamentMatchHtml(params);
-		
+
 		const frame = frameHtml(params, html);
 		return reply.type("text/html").send(frame);
 	});

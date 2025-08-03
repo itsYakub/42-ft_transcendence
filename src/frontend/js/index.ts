@@ -5,7 +5,7 @@ import { pageButtons } from "./pages.js";
 import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
 import { devButtons } from "./devButtons.js";
-import { translateFrontend, translations } from "./translations.js";
+import { translateFrontend, translationFunctions } from "./translations.js";
 import { tournamentFunctions } from "./tournament.js";
 import { playFunctions } from "./play.js";
 
@@ -38,7 +38,7 @@ window.addEventListener('popstate', function (event) {
 export function addFunctions() {
 	pageButtons();
 	tournamentFunctions();
-	translations();
+	translationFunctions();
 	profileFunctions();
 	friendsFunctions();
 	loginFunctions();
@@ -80,13 +80,8 @@ export function showAlert(message: string) {
 		closeAlertButton.addEventListener("click", () => {
 			alertDialog.close();
 		});
-		const alertShim = <HTMLDialogElement>document.getElementById("alertShim");
 		const content = translateFrontend(message);
 		document.querySelector("#alertContent").textContent = content;
-		alertDialog.addEventListener("close", (e) => {
-			alertShim.close();
-		});
-		alertShim.showModal();
 		alertDialog.showModal();
 	}
 }

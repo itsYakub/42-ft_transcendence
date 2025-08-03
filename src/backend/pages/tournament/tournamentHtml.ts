@@ -38,7 +38,7 @@ function tournamentString(player1String: string): string {
 				<input type="text" name="p2Name" required="true" placeholder="%%TOURNAMENT_PLAYER_TEXT%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 				<input type="text" name="p3Name" required="true" placeholder="%%TOURNAMENT_PLAYER_TEXT%% 3" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 				<input type="text" name="p4Name" required="true" placeholder="%%TOURNAMENT_PLAYER_TEXT%% 4" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
-				<button type="submit" class="text-white mt-4 bg-gray-800 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700">%%TOURNAMENT_START_TEXT%%</button>
+				<button type="submit" class="text-white mt-4 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%TOURNAMENT_START_TEXT%%</button>
 			</form>
 		</div>
 	</div>

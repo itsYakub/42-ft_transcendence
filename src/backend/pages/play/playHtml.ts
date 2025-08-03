@@ -35,9 +35,12 @@ function playString(p1String: string): string {
 		<h1 class="text-white pt-4 mb-4 text-4xl">%%PLAY_SINGLE_GAME_TEXT%%</h1>
 		<div class="flex flex-col w-300 mx-auto text-center items-center content-center">
 			<form id="singleGameForm">
-				${p1String}
-				<input type="text" name="p2Name" required="true" placeholder="%%PLAY_PLAYER_TEXT%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
-				<button type="submit" class="text-white mt-4 bg-gray-800 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700">%%PLAY_START_TEXT%%</button>
+				<div class="grid grid-cols-2 gap-2">
+					${p1String}
+					<input type="text" name="p2Name" required="true" placeholder="%%PLAY_PLAYER_TEXT%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+				</div>
+				<p class="mt-2 text-gray-400">All customisation options should be put here</p>
+				<button type="submit" class="text-white mt-4 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%PLAY_START_TEXT%%</button>
 			</form>
 		</div>
 	</div>

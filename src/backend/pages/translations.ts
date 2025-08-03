@@ -1,8 +1,5 @@
 function translateDutch(text: string): string {
 	switch (text) {
-		// site errors
-		case "ERR_DB": return "";
-		case "ERR_NOT_FOUND": return "";
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Start";
 		case "NAVBAR_PLAY_TEXT": return "Spelen";
@@ -15,7 +12,9 @@ function translateDutch(text: string): string {
 		case "NAVBAR_NICK_TEXT": return "";
 		case "NAVBAR_EMAIL_TEXT": return "";
 		case "NAVBAR_PASSWORD_TEXT": return "";
-		case "NAVBAR_CANCEL_TEXT": return "Terug";
+		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "";
+		case "NAVBAR_TOTP_CODE_TEXT": return "";
+		case "NAVBAR_TOTP_CODE_VERIFY_TEXT": return "";
 		// home
 		case "HOME_TITLE_TEXT": return "Welkom bij Transcendence!";
 		// profile
@@ -39,7 +38,6 @@ function translateDutch(text: string): string {
 		case "PROFILE_TOTP_SCAN_TEXT": return "";
 		case "PROFILE_TOTP_INPUT_TEXT": return "";
 		case "PROFILE_TOTP_CODE_TEXT": return "";
-		case "PROFILE_TOTP_CANCEL_TEXT": return "";
 		case "PROFILE_TOTP_VERIFY_TEXT": return "";
 		// matches
 		case "MATCHES_PROFILE_TEXT": return "";
@@ -57,6 +55,8 @@ function translateDutch(text: string): string {
 		case "FRIENDS_ONLINE_TEXT": return "";
 		case "FRIENDS_OFFLINE_TEXT": return "";
 		case "FRIENDS_REMOVE_TEXT": return "";
+		case "FRIENDS_ADD_TITLE_TEXT": return "";
+		case "FRIENDS_ADD_EMAIL_TEXT": return "";
 		case "FRIENDS_ADD_FRIEND_TEXT": return "";
 		// play
 		case "PLAY_SINGLE_GAME_TEXT": return "";
@@ -81,9 +81,6 @@ function translateDutch(text: string): string {
 
 function translateEnglish(text: string): string {
 	switch (text) {
-		// site errors
-		case "ERR_DB": return "Database error!";
-		case "ERR_NOT_FOUND": return "Not found!";
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Home";
 		case "NAVBAR_PLAY_TEXT": return "Play";
@@ -96,7 +93,9 @@ function translateEnglish(text: string): string {
 		case "NAVBAR_NICK_TEXT": return "Nickname";
 		case "NAVBAR_EMAIL_TEXT": return "Email";
 		case "NAVBAR_PASSWORD_TEXT": return "Password";
-		case "NAVBAR_CANCEL_TEXT": return "Cancel";
+		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "Enter TOTP code";
+		case "NAVBAR_TOTP_CODE_TEXT": return "Code";
+		case "NAVBAR_TOTP_CODE_VERIFY_TEXT": return "Verify";
 		// home
 		case "HOME_TITLE_TEXT": return "Welcome to Transcendence!";
 		// profile
@@ -120,7 +119,6 @@ function translateEnglish(text: string): string {
 		case "PROFILE_TOTP_SCAN_TEXT": return "Scan the QR code or enter this key into your authenticator app";
 		case "PROFILE_TOTP_INPUT_TEXT": return "And input the code below";
 		case "PROFILE_TOTP_CODE_TEXT": return "Code";
-		case "PROFILE_TOTP_CANCEL_TEXT": return "Cancel";
 		case "PROFILE_TOTP_VERIFY_TEXT": return "Verify";
 		// matches
 		case "MATCHES_PROFILE_TEXT": return "Profile";
@@ -138,6 +136,8 @@ function translateEnglish(text: string): string {
 		case "FRIENDS_ONLINE_TEXT": return "Online";
 		case "FRIENDS_OFFLINE_TEXT": return "Offline";
 		case "FRIENDS_REMOVE_TEXT": return "Remove";
+		case "FRIENDS_ADD_TITLE_TEXT": return "Friend's email address";
+		case "FRIENDS_ADD_EMAIL_TEXT": return "Email";
 		case "FRIENDS_ADD_FRIEND_TEXT": return "Add friend";
 		// play
 		case "PLAY_SINGLE_GAME_TEXT": return "Single game";
@@ -162,9 +162,6 @@ function translateEnglish(text: string): string {
 
 function translatePolish(text: string): string {
 	switch (text) {
-		// site errors
-		case "ERR_DB": return "";
-		case "ERR_NOT_FOUND": return "";
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Strona Główna";
 		case "NAVBAR_PLAY_TEXT": return "Grać";
@@ -177,7 +174,9 @@ function translatePolish(text: string): string {
 		case "NAVBAR_NICK_TEXT": return "Nick";
 		case "NAVBAR_EMAIL_TEXT": return "Mail";
 		case "NAVBAR_PASSWORD_TEXT": return "Hasło";
-		case "NAVBAR_CANCEL_TEXT": return "Cofnij";
+		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "";
+		case "NAVBAR_TOTP_CODE_TEXT": return "";
+		case "NAVBAR_TOTP_CODE_VERIFY_TEXT": return "";
 		// home
 		case "HOME_TITLE_TEXT": return "Witamy w projekcie Transcendence!";
 		// profile
@@ -201,7 +200,6 @@ function translatePolish(text: string): string {
 		case "PROFILE_TOTP_SCAN_TEXT": return "";
 		case "PROFILE_TOTP_INPUT_TEXT": return "";
 		case "PROFILE_TOTP_CODE_TEXT": return "";
-		case "PROFILE_TOTP_CANCEL_TEXT": return "";
 		case "PROFILE_TOTP_VERIFY_TEXT": return "";
 		// matches
 		case "MATCHES_PROFILE_TEXT": return "";
@@ -219,6 +217,8 @@ function translatePolish(text: string): string {
 		case "FRIENDS_ONLINE_TEXT": return "";
 		case "FRIENDS_OFFLINE_TEXT": return "";
 		case "FRIENDS_REMOVE_TEXT": return "";
+		case "FRIENDS_ADD_TITLE_TEXT": return "";
+		case "FRIENDS_ADD_EMAIL_TEXT": return "";
 		case "FRIENDS_ADD_FRIEND_TEXT": return "";
 		// play
 		case "PLAY_SINGLE_GAME_TEXT": return "";

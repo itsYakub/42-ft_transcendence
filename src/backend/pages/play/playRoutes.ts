@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frame.js';
+import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
 import { playHtml } from './playHtml.js';
 

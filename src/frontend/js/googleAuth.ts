@@ -1,5 +1,5 @@
 export function googleFunctions() {
-	const googleSignupButton = document.getElementById("googleSignupButton");
+	const googleSignupButton = document.getElementById("googleButton");
 	if (googleSignupButton) {
 		googleSignupButton.addEventListener("click", () => {
 			googleAuth();

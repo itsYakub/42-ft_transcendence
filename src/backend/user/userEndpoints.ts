@@ -19,6 +19,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=${response.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${response.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
+					code: 200,
 					message: "SUCCESS"
 				});
 	});
@@ -35,6 +36,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		if (response.totpEnabled) {
 			return reply.send({
+				code: 200,
 				message: "SUCCESS",
 				totpEnabled: true
 			});
@@ -47,6 +49,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=${response.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${response.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+					code: 200,
 					message: "SUCCESS",
 					totpEnabled: false
 				});
@@ -77,9 +80,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post("/user/totp/check", async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = JSON.parse(request.body as string);
 		const user = loginUser(db, params);
-		if (user.error) {
-			return reply.code(user.code).send(user);
-		}
+		if (user.error)
+			return reply.send(user);
 
 		let totp = new OTPAuth.TOTP({
 			issuer: "Transcendence",
@@ -91,7 +93,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		});
 
 		if (null == totp.validate({ token: params.code, window: 1 })) {
-			return reply.code(403).send({
+			return reply.send({
+				code: 403,
 				error: "ERR_BAD_TOTP"
 			});
 		}
@@ -103,6 +106,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=${user.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+					code: 200,
 					message: "SUCCESS"
 				});
 	});

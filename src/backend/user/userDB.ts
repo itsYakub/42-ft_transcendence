@@ -44,7 +44,7 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): any {
 		if (!user) {
 			return {
 				code: 404,
-				error: "ERR_UNKNOWN_USER"
+				error: "ERR_NO_USER"
 			}
 		}
 		return {
@@ -63,7 +63,7 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): any {
 	}
 	return {
 		code: 404,
-		error: "ERR_UNKNOWN_USER"
+		error: "ERR_NO_USER"
 	}
 }
 
@@ -87,7 +87,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 			if (!user) {
 				return {
 					code: 404,
-					error: "ERR_UNKNOWN_USER"
+					error: "ERR_NO_USER"
 				}
 			}
 			return {
@@ -164,6 +164,7 @@ export function addGoogleUser(db: DatabaseSync, { nick, email, avatar, online })
 				refreshToken: token
 			};
 		}
+		
 		const insert = db.prepare('INSERT INTO Users (Nick, Email, Avatar, Online) VALUES (?, ?, ?, ?)');
 		const statementSync = insert.run(nick, email, avatar, online);
 		const id: number = statementSync.lastInsertRowid as number;

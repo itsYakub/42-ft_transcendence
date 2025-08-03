@@ -12,6 +12,7 @@ export function updatePassword(db: DatabaseSync, json: any): any {
 			const select = db.prepare("UPDATE Users SET Password = ? WHERE UserID = ?");
 			select.run(hashedPassword, json.id);
 			return {
+				code: 200,
 				message: "SUCCESS"
 			};
 		}
@@ -37,6 +38,7 @@ export function updateNick(db: DatabaseSync, user: any): any {
 		const select = db.prepare("UPDATE Users SET Nick = ? WHERE UserID = ?");
 		select.run(user.nick, user.id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -56,6 +58,7 @@ export function updateAvatar(db: DatabaseSync, json: any): any {
 		const select = db.prepare("UPDATE Users SET Avatar = ? WHERE UserID = ?");
 		select.run(json.avatar, json.id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -75,6 +78,7 @@ export function addTOTPSecret(db: DatabaseSync, json: any) {
 		const select = db.prepare("UPDATE Users SET TOTPSecret = ? WHERE UserID = ?");
 		select.run(json.secret, json.id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -94,6 +98,7 @@ export function confirmTOTP(db: DatabaseSync, id: number) {
 		const select = db.prepare("UPDATE Users SET TOTPVerified = 1 WHERE UserID = ?");
 		select.run(id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -113,6 +118,7 @@ export function removeTOTPSecret(db: DatabaseSync, id: number) {
 		const select = db.prepare("UPDATE Users SET TOTPSecret = NULL, TOTPVerified = 0 WHERE UserID = ?");
 		select.run(id);
 		return {
+			code: 200,
 			message: "SUCCESS"
 		};
 	}

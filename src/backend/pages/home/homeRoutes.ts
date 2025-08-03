@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frame.js';
+import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
 import { homeHtml } from './homeHtml.js';
 
@@ -19,7 +19,7 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			};
 			return reply.type("text/html").send(frameHtml(params));
 		}
-		
+
 		if (!user.error)
 			markUserOnline(db, user.id);
 

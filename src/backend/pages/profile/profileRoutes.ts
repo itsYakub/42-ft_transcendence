@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frame.js';
+import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
 import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
 import * as OTPAuth from "otpauth";
@@ -10,7 +10,7 @@ import { profileHtml } from './profileHtml.js';
 export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		
+
 		if (user.error)
 			return reply.redirect("/");
 

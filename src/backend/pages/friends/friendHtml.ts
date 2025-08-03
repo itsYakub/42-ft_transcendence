@@ -6,14 +6,15 @@ export function friendHtml(friends: any, { user, language }): string {
 		friendList += friendString(friends[key]);
 	}
 
-	let html = friendsString(friendList);
+	let html = friendsString(friendList) + addFriendString();
 	html = translate(html, language);
 
 	return html;
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "ONLINE", "OFFLINE", "REMOVE", "ADD_FRIEND"];
+	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "ONLINE", "OFFLINE", "REMOVE", "ADD_FRIEND", 
+		"ADD_TITLE", "ADD_EMAIL"];
 
 	toBeTranslated.forEach((text) => {
 		html = html.replaceAll(`%%FRIENDS_${text}_TEXT%%`, translateBackend({
@@ -67,5 +68,34 @@ function friendsString(friendlist: string): string {
 			</div>
 		</div>
 	</div>
+	`;
+}
+
+function addFriendString(): string {
+	return `
+	<dialog id="addFriendDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 m-auto content-center rounded-lg shadow border w-100 bg-gray-900 border-gray-100 text-center items-center">
+		<div>
+			<h1 class="text-xl font-bold text-white">
+				%%FRIENDS_ADD_TITLE_TEXT%%
+			</h1>
+			<form id="addFriendForm">
+				<div>
+					<input type="email" placeholder="%%FRIENDS_ADD_EMAIL_TEXT%%" name="email"
+						class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
+						required="true">
+				</div>
+				<input type="submit" class="hidden" />
+
+				<div class="grid grid-cols-2 justify-between my-4">
+					<button id="cancelAddFriendButton" type="submit" formmethod="dialog" formnovalidate
+						class="hover:bg-gray-700 text-gray-400 w-10 h-10 rounded-full my-auto">
+						<i class="fa-solid fa-arrow-left "></i>
+					</button>
+					<button type="submit" formmethod="post"
+						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-2 py-2">%%FRIENDS_ADD_FRIEND_TEXT%%</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
 	`;
 }

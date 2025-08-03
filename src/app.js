@@ -11,7 +11,7 @@ import { initFriends } from "./backend/pages/friends/friendDB.js";
 import { initMatches } from "./backend/pages/matches/matchDB.js";
 import { devEndpoints } from "./backend/devTools.js";
 import { initTournaments } from "./backend/pages/tournament/tournamentDB.js";
-import { frameHtml } from "./backend/pages/frame.js";
+import { frameHtml } from "./backend/pages/frameHtml.js";
 import { matchRoutes } from "./backend/pages/matches/matchRoutes.js";
 import { friendRoutes } from "./backend/pages/friends/friendRoutes.js";
 import { homeRoutes } from "./backend/pages/home/homeRoutes.js";

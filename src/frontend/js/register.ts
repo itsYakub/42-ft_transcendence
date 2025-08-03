@@ -4,12 +4,7 @@ export function registerFunctions() {
 	const registerButton = document.getElementById("registerButton");
 	if (registerButton) {
 		registerButton.addEventListener("click", async function (e) {
-			const dialogShim = <HTMLDialogElement>document.getElementById("dialogShim");
 			const dialog = <HTMLDialogElement>document.getElementById("registerDialog");
-			dialog.addEventListener("close", (e) => {
-				dialogShim.close();
-			});
-			dialogShim.showModal();
 			dialog.showModal();
 		});
 	}

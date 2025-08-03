@@ -1,16 +1,10 @@
 import { navigate, showAlert } from "./index.js";
-import { translateFrontend } from "./translations.js";
 
 export function loginFunctions() {
 	const loginButton = document.getElementById("loginButton");
 	if (loginButton) {
 		loginButton.addEventListener("click", async function (e) {
-			const dialogShim = <HTMLDialogElement>document.getElementById("dialogShim");
 			let dialog = <HTMLDialogElement>document.getElementById("loginDialog");
-			dialog.addEventListener("close", (e) => {
-				dialogShim.close();
-			});
-			dialogShim.showModal();
 			dialog.showModal();
 		});
 	}
@@ -35,40 +29,52 @@ export function loginFunctions() {
 			const payload = await response.json();
 
 			if (payload.totpEnabled) {
-				let totpCode = prompt(translateFrontend("PROMPT_TOTP_CODE"));
+				const totpCodeDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
+				if (totpCodeDialog)
+					totpCodeDialog.showModal();
 
-				if (!totpCode) {
-					showAlert("ERR_TOTP_CODE");
-					return;
-				}
+				const totpCodeForm = <HTMLFormElement>document.querySelector("#totpCodeForm");
+				if (totpCodeForm) {
+					totpCodeForm.code.addEventListener("keydown", (e: any) => {
+						if (e.key != "Enter" && isNaN(e.key))
+							e.preventDefault();
+					});
 
-				const response = await fetch("/user/totp/check", {
-					method: "POST",
-					body: JSON.stringify({
-						email,
-						password,
-						code: totpCode
-					})
-				});
+					totpCodeForm.addEventListener("submit", async (e) => {
+						if ("cancelTotpCodeButton" == e.submitter.id)
+							return;
 
-				const totpResponse = await response.json();
-				if (totpResponse.error) {
-					showAlert("ERR_TOTP_CODE");
-					return;
-				}
+						e.preventDefault();
+						const response = await fetch("/user/totp/check", {
+							method: "POST",
+							body: JSON.stringify({
+								email,
+								password,
+								code: totpCodeForm.code.value
+							})
+						});
 
-				if (response.ok) {
-					navigate("/");
-					return;
+						const totpResponse = await response.json();
+						if (totpResponse.error) {
+							const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+							alertDialog.addEventListener("close", () => {
+								totpCodeForm.code.value = "";
+								totpCodeForm.code.focus();
+							});
+							showAlert("ERR_TOTP_CODE");
+							return;
+						}
+
+						navigate("/");
+					});
 				}
 			}
-
-			if (payload.error) {
+			else if (payload.error) {
 				showAlert(payload.error);
 				return;
 			}
-
-			navigate("/");
+			else
+				navigate("/");
 		});
 	}
 }

@@ -1,15 +1,25 @@
 import { navigate, showAlert } from "./index.js";
-import { translateFrontend } from "./translations.js";
 
 export function friendsFunctions() {
 	const addFriendButton = document.querySelector("#addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async function () {
-			let friendEmail = prompt(translateFrontend("PROMPT_FRIENDS_EMAIL"));
+			const addFriendDialog = <HTMLDialogElement>document.querySelector("#addFriendDialog");
+			if (addFriendDialog) {
+				addFriendDialog.showModal();
+			}
+		});
+	}
 
-			if (!friendEmail)
+	const addFriendForm = <HTMLFormElement>document.querySelector("#addFriendForm");
+	if (addFriendForm) {
+		addFriendForm.addEventListener("submit", async (e) => {
+			if ("cancelAddFriendButton" == e.submitter.id)
 				return;
 
+			e.preventDefault();
+
+			const friendEmail = addFriendForm.email.value;
 			const response = await fetch("/friends/find", {
 				method: "POST",
 				body: JSON.stringify({ email: friendEmail })
@@ -17,15 +27,17 @@ export function friendsFunctions() {
 
 			const json = await response.json();
 
-			if (404 == json.code) {
-				showAlert("ERR_NO_USER");
+			if (200 != json.code) {
+				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", () => {
+					addFriendForm.email.value = "";
+					addFriendForm.email.focus();
+				});
+				showAlert(json.error);
 				return;
 			}
 
-			if (!json.error) {
-				showAlert("SUCCESS_ADDED_FRIEND");
-				navigate("/friends");
-			}
+			navigate("/friends");
 		});
 	}
 
