@@ -1,13 +1,15 @@
 import { friendsFunctions } from "./friends.js";
 import { googleFunctions } from "./googleAuth.js";
 import { loginFunctions } from "./login.js";
-import { pageButtons } from "./pages.js";
+import { navbarFunctions } from "./navbar.js";
 import { profileFunctions } from "./profile.js";
 import { registerFunctions } from "./register.js";
 import { devButtons } from "./devButtons.js";
 import { translateFrontend, translationFunctions } from "./translations.js";
 import { tournamentFunctions } from "./tournament.js";
-import { playFunctions } from "./play.js";
+import { localMatchFunctions } from "./localMatch.js";
+import { PlayFunctions } from "./play.js";
+import { chatFunctions } from "./chat.js";
 
 /*
 	Simulates moving to a new page
@@ -36,7 +38,7 @@ window.addEventListener('popstate', function (event) {
 	Sets up all the listeners after navigating to a new page
 */
 export function addFunctions() {
-	pageButtons();
+	navbarFunctions();
 	tournamentFunctions();
 	translationFunctions();
 	profileFunctions();
@@ -44,7 +46,9 @@ export function addFunctions() {
 	loginFunctions();
 	registerFunctions();
 	googleFunctions();
-	playFunctions();
+	PlayFunctions();
+	localMatchFunctions();
+	chatFunctions();
 
 	// remove!
 	devButtons();

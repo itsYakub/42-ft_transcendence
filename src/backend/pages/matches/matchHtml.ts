@@ -66,7 +66,7 @@ function stats(matches: any): string {
 function matchesString(matchList: string, statsString: string): string {
 	return `
 	<div class="w-full h-full bg-gray-900">
-		<div class="h-full w-200 m-auto text-center flex flex-row">
+		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-50">
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"

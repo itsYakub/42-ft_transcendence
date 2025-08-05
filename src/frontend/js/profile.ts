@@ -3,7 +3,27 @@ import { navigate, showAlert } from "./index.js";
 /*
 	The buttons and events create by the /profile page
 */
-export function profileFunctions() {
+export function profileFunctions() {	
+	const profileButton = document.getElementById("profileButton");
+	if (profileButton) {
+		profileButton.addEventListener("click", () => {
+			navigate("/profile");
+		}, { once: true });
+	}
+
+	const matchesButton = document.getElementById("matchesButton");
+	if (matchesButton) {
+		matchesButton.addEventListener("click", () => {
+			navigate("/matches");
+		}, { once: true });
+	}
+
+	const friendsButton = document.getElementById("friendsButton");
+	if (friendsButton) {
+		friendsButton.addEventListener("click", () => {
+			navigate("/friends");
+		}, { once: true });
+	}
 
 	/*
 		Shows the dialog to choose a file

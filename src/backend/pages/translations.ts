@@ -2,7 +2,7 @@ function translateDutch(text: string): string {
 	switch (text) {
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Start";
-		case "NAVBAR_PLAY_TEXT": return "Spelen";
+		case "NAVBAR_PLAY_TEXT": return "Speel!";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Toernooi";
 		case "NAVBAR_LOGIN_TEXT": return "Inloggen";
 		case "NAVBAR_OR_TEXT": return "of";
@@ -83,7 +83,7 @@ function translateEnglish(text: string): string {
 	switch (text) {
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Home";
-		case "NAVBAR_PLAY_TEXT": return "Play";
+		case "NAVBAR_PLAY_TEXT": return "Play!";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Tournament";
 		case "NAVBAR_LOGIN_TEXT": return "Log in";
 		case "NAVBAR_OR_TEXT": return "or";
@@ -164,7 +164,7 @@ function translatePolish(text: string): string {
 	switch (text) {
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Strona Główna";
-		case "NAVBAR_PLAY_TEXT": return "Grać";
+		case "NAVBAR_PLAY_TEXT": return "Graj!";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Turniej";
 		case "NAVBAR_LOGIN_TEXT": return "Zaloguj się";
 		case "NAVBAR_OR_TEXT": return "lub";

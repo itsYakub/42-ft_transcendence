@@ -1,18 +1,17 @@
-import { startMatch } from "./game.js";
-import { showAlert } from "./index.js";
+import { navigate } from "./index.js";
 
-export function playFunctions() {
-	const form = <HTMLFormElement>document.querySelector("#singleGameForm");
-	if (form) {
-		form.addEventListener("submit", async (e) => {
-			e.preventDefault();
+export function PlayFunctions() {
+	const localMatchButton = document.querySelector("#localMatchButton");
+	if (localMatchButton) {
+		localMatchButton.addEventListener("click", () => {
+			navigate("/play/match")
+		});
+	}
 
-			if (form.p1Name.value == form.p2Name.value) {
-				showAlert("ERR_SAME_NAME");
-				return;
-			}
-
-			startMatch(form.p1Name.value, form.p2Name.value);
-		})
+	const localTournamentButton = document.querySelector("#localTournamentButton");
+	if (localTournamentButton) {
+		localTournamentButton.addEventListener("click", () => {
+			navigate("/play/tournament")
+		});
 	}
 }

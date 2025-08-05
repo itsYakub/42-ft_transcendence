@@ -27,7 +27,7 @@ function translate(html: string, language: string): string {
 function profileString(user: any): string {
 	return `
 	<div class="w-full h-full bg-gray-900">
-		<div class="h-full w-200 m-auto text-center flex flex-row">
+		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-50">
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"
@@ -39,7 +39,7 @@ function profileString(user: any): string {
 				</div>
 			</div>
 			<div class="grow bg-gray-900">
-				<div class="py-8 pl-8 m-auto text-left">
+				<div class="py-8 px-8 m-auto text-left">
 					<div class="text-white text-left text-xl mt-1">${user.nick}</div>					
 					<div class="flex flex-row my-4">
 						<div class="p-3 border border-gray-700 rounded-lg">

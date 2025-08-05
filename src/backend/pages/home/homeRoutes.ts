@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
@@ -32,4 +33,13 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const frame = frameHtml(params, homeHtml(params));
 		return reply.type("text/html").send(frame);
 	});
+
+	fastify.get('/hello-ws', { websocket: true }, (connection, req) => {
+			console.log("ghh");
+		connection.socket.on('message', message => {
+			console.log("ghh");
+			connection.socket.send('Hello Fastify WebSockets');
+		});
+	});
 }
+

@@ -3,27 +3,9 @@ import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../../user/userDB.js';
 import { addTournament, getTournamentByCode, updateTournament } from './tournamentDB.js';
-import { tournamentHtml } from './tournamentHtml.js';
 import { tournamentMatchHtml } from './tournamentMatchHtml.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/tournament', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-
-		if (user.id)
-			markUserOnline(db, user.id);
-
-		const params = {
-			user,
-			page: "tournament",
-			language: request.cookies.language ?? "english"
-		};
-		const html = tournamentHtml(params);
-
-		const frame = frameHtml(params, html);
-		return reply.type("text/html").send(frame);
-	});
-
 	fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 

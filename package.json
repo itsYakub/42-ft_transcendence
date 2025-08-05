@@ -2,16 +2,18 @@
 	"name": "transcendence",
 	"version": "1.0.0",
 	"description": "",
-	"main": "app.js",
+	"main": "dist/app.js",
 	"type": "module",
 	"scripts": {
-		"start": "tsc && node --env-file=.env src/app.js"
+		"build": "tsc && cp -r src/frontend/images dist/frontend/images && cp src/transcendence.crt ./dist/transcendence.crt && cp src/transcendence.key ./dist/transcendence.key",
+		"start": "npm run build && node --env-file=.env dist/app.js"
 	},
 	"keywords": [],
 	"author": "lwillis",
 	"license": "MIT",
 	"dependencies": {
 		"@fastify/static": "^8.2.0",
+		"@fastify/websocket": "^11.2.0",
 		"@tailwindcss/cli": "^4.1.10",
 		"bcrypt-ts": "^7.1.0",
 		"fastify": "^5.4.0",
@@ -19,10 +21,13 @@
 		"fastify-plugin": "^5.0.1",
 		"otpauth": "^9.4.0",
 		"qr": "^0.5.0",
-		"tailwindcss": "^4.1.10"
+		"tailwindcss": "^4.1.10",
+		"ws": "^8.18.3"
 	},
 	"devDependencies": {
-		"@types/node": "^24.0.10",
+		"@types/node": "^24.1.0",
+		"@types/ws": "^8.18.1",
+		"ts-node": "^10.9.2",
 		"typescript": "^5.8.3"
 	}
 }

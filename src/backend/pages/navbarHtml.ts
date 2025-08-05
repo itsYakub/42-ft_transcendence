@@ -41,7 +41,7 @@ function translate(html: string, language: string): string {
 function loggedOutString(languageSelect: string): string {
 	return `
 	<div class="h-full bg-gray-800">
-		<div class="h-full w-200 mx-auto flex flex-row items-center">
+		<div class="h-full w-300 mx-auto flex flex-row items-center">
 			<div class="mr-auto">
 				<button id="loginButton"
 					class="cursor-pointer rounded-lg p-2 bg-%%COLOUR%% hover:bg-gray-700 group text-gray-300">%%NAVBAR_LOGIN_TEXT%%</button>
@@ -52,18 +52,13 @@ function loggedOutString(languageSelect: string): string {
 
 			<div class="mx-auto">
 				<button id="homeButton"
-					class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+					class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 					%%NAVBAR_HOME_TEXT%%
 				</button>
 
 				<button id="playButton"
-					class="mx-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+					class="ml-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 					%%NAVBAR_PLAY_TEXT%%
-				</button>
-
-				<button id="tournamentButton"
-					class="cursor-pointer text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-					%%NAVBAR_TOURNAMENT_TEXT%%
 				</button>
 			</div>
 
@@ -80,7 +75,7 @@ function loggedOutString(languageSelect: string): string {
 function loggedInString(user: any, languageSelect: string): string {
 	return `
 	<div class="h-full bg-gray-800">
-		<div class="h-full w-200 mx-auto flex flex-row items-center">
+		<div class="h-full w-300 mx-auto flex flex-row items-center">
 			<div class="mr-auto">
 				<img id="profileAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-pointer h-20 w-20"
 					src="${user.avatar}" />
@@ -88,18 +83,13 @@ function loggedInString(user: any, languageSelect: string): string {
 
 			<div class="mx-auto">
 				<button id="homeButton"
-					class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+					class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 					%%NAVBAR_HOME_TEXT%%
 				</button>
 
 				<button id="playButton"
-					class="mx-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
+					class="ml-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 					%%NAVBAR_PLAY_TEXT%%
-				</button>
-
-				<button id="tournamentButton"
-					class="cursor-pointer text-left bg-%%TOURNAMENT_COLOUR%% text-gray-300 p-2 rounded-lg hover:bg-gray-700">
-					%%NAVBAR_TOURNAMENT_TEXT%%
 				</button>
 			</div>
 

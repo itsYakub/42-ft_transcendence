@@ -18,7 +18,7 @@ export function frameHtml(params: any, content: string = null): any {
 function navbarString(params: any) {
 	let navbar = navbarHtml(params);
 
-	const views = ["HOME", "PLAY", "TOURNAMENT"];
+	const views = ["HOME", "PLAY"];
 
 	views.forEach((value) => {
 		if (value == params.page.toUpperCase())
@@ -46,9 +46,17 @@ function frameString(navbar: string, content: string): string {
 		</head>
 
 		<body>
-			<div class="h-screen flex flex-col">
+			<div class="h-screen w-screen bg-gray-900 flex flex-col">
 				<div id="navbar" class="h-32">${navbar}</div>
-				<div id="content" class="grow">${content}</div>
+				<div class="w-300 mx-auto grow">
+					<div class="flex flex-row grow h-full">
+						<div id="content" class="grow">${content}</div>
+						<div id="chat" class="w-100 flex flex-col mt-4 mb-8 ">
+							<div id="chats" class="p-4 border border-gray-700 rounded-lg grow"></div>
+							<button id="sendMessageButton" class="w-50 mt-2 text-white bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">Send</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</body>
 	</html>

@@ -5,7 +5,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { addFriend, initFriends } from './pages/friends/friendDB.js';
 import { addMatch, initMatches } from './pages/matches/matchDB.js';
-import { initTournaments } from './pages/tournament/tournamentDB.js';
+import { initTournaments } from './pages/play/tournamentDB.js';
 
 const __dirname = import.meta.dirname;
 
