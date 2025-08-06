@@ -66,10 +66,6 @@ export function sendChat(to: string, text: string) {
 		console.warn("❌ Cannot send message — WebSocket not initialized");
 		return;
 	}
-	if (s.readyState !== WebSocket.OPEN) {
-		console.warn(`❌ Cannot send message — WebSocket not open (state: ${s.readyState})`);
-		return;
-	}
 	console.log("📤 Sending chat message:", { to, text });
 	s.send(JSON.stringify({ type: 'chat', to, text }));
 }

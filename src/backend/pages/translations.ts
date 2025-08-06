@@ -4,17 +4,21 @@ function translateDutch(text: string): string {
 		case "NAVBAR_HOME_TEXT": return "Start";
 		case "NAVBAR_PLAY_TEXT": return "Speel!";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Toernooi";
-		case "NAVBAR_LOGIN_TEXT": return "Inloggen";
-		case "NAVBAR_OR_TEXT": return "of";
-		case "NAVBAR_REGISTER_TEXT": return "Registreren";
-		case "NAVBAR_REGISTER_TITLE_TEXT": return "";
-		case "NAVBAR_LOGIN_TITLE_TEXT": return "";
-		case "NAVBAR_NICK_TEXT": return "";
-		case "NAVBAR_EMAIL_TEXT": return "";
-		case "NAVBAR_PASSWORD_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_VERIFY_TEXT": return "";
+		case "NAVBAR_PLAYER_NAME_TITLE_TEXT": return "";
+		case "NAVBAR_PLAYER_NAME_TEXT": return "";
+		case "NAVBAR_PLAYER_NAME_SET_TEXT": return "";
+		// user
+		case "USER_TITLE_TEXT": return "";
+		case "USER_FORM_TITLE_TEXT": return "Inloggen of registreren";
+		case "USER_EMAIL_TEXT": return "Mail";
+		case "USER_PASSWORD_TEXT": return "Hasło";
+		case "USER_LOGIN_TEXT": return "Inloggen";
+		case "USER_REGISTER_TEXT": return "Registreren";
+		case "USER_GOOGLE_TITLE_TEXT": return "";
+		case "USER_GUEST_TITLE_TEXT": return "";
 		// home
 		case "HOME_TITLE_TEXT": return "Welkom bij Transcendence!";
 		// profile
@@ -85,17 +89,21 @@ function translateEnglish(text: string): string {
 		case "NAVBAR_HOME_TEXT": return "Home";
 		case "NAVBAR_PLAY_TEXT": return "Play!";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Tournament";
-		case "NAVBAR_LOGIN_TEXT": return "Log in";
-		case "NAVBAR_OR_TEXT": return "or";
-		case "NAVBAR_REGISTER_TEXT": return "Register";
-		case "NAVBAR_REGISTER_TITLE_TEXT": return "Register a new Account";
-		case "NAVBAR_LOGIN_TITLE_TEXT": return "Log in to your account";
-		case "NAVBAR_NICK_TEXT": return "Nickname";
-		case "NAVBAR_EMAIL_TEXT": return "Email";
-		case "NAVBAR_PASSWORD_TEXT": return "Password";
 		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "Enter TOTP code";
 		case "NAVBAR_TOTP_CODE_TEXT": return "Code";
 		case "NAVBAR_TOTP_CODE_VERIFY_TEXT": return "Verify";
+		case "NAVBAR_PLAYER_NAME_TITLE_TEXT": return "Choose a name";
+		case "NAVBAR_PLAYER_NAME_TEXT": return "Player name";
+		case "NAVBAR_PLAYER_NAME_SET_TEXT": return "Set";
+		// user
+		case "USER_TITLE_TEXT": return "Please choose an option to continue";
+		case "USER_FORM_TITLE_TEXT": return "Log in or register";
+		case "USER_EMAIL_TEXT": return "Email";
+		case "USER_PASSWORD_TEXT": return "Password";
+		case "USER_LOGIN_TEXT": return "Log in";
+		case "USER_REGISTER_TEXT": return "Register";
+		case "USER_GOOGLE_TITLE_TEXT": return "Continue with Google";
+		case "USER_GUEST_TITLE_TEXT": return "Continue as a guest";
 		// home
 		case "HOME_TITLE_TEXT": return "Welcome to Transcendence!";
 		// profile
@@ -166,17 +174,21 @@ function translatePolish(text: string): string {
 		case "NAVBAR_HOME_TEXT": return "Strona Główna";
 		case "NAVBAR_PLAY_TEXT": return "Graj!";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Turniej";
-		case "NAVBAR_LOGIN_TEXT": return "Zaloguj się";
-		case "NAVBAR_OR_TEXT": return "lub";
-		case "NAVBAR_REGISTER_TEXT": return "Zapisać się";
-		case "NAVBAR_REGISTER_TITLE_TEXT": return "";
-		case "NAVBAR_LOGIN_TITLE_TEXT": return "";
-		case "NAVBAR_NICK_TEXT": return "Nick";
-		case "NAVBAR_EMAIL_TEXT": return "Mail";
-		case "NAVBAR_PASSWORD_TEXT": return "Hasło";
 		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_VERIFY_TEXT": return "";
+		case "NAVBAR_PLAYER_NAME_TITLE_TEXT": return "";
+		case "NAVBAR_PLAYER_NAME_TEXT": return "";
+		case "NAVBAR_PLAYER_NAME_SET_TEXT": return "";
+		// user
+		case "USER_TITLE_TEXT": return "";
+		case "USER_FORM_TITLE_TEXT": return "Zaloguj się lub załóż konto";
+		case "USER_EMAIL_TEXT": return "Mail";
+		case "USER_PASSWORD_TEXT": return "Hasło";
+		case "USER_LOGIN_TEXT": return "Zaloguj się";
+		case "USER_REGISTER_TEXT": return "Załóż konto";
+		case "USER_GOOGLE_TITLE_TEXT": return "";
+		case "USER_GUEST_TITLE_TEXT": return "";
 		// home
 		case "HOME_TITLE_TEXT": return "Witamy w projekcie Transcendence!";
 		// profile

@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addGoogleUser } from './userDB.js';
+import { addGoogleUser } from '../pages/user/userDB.js';
 
 export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/auth/google", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -31,10 +31,8 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		const avatar = await convertFile(user.picture);
 
 		const userJSON = {
-			nick: user.name,
 			email: user.email,
 			avatar: avatar,
-			online: 1
 		}
 
 		const payload = addGoogleUser(db, userJSON);

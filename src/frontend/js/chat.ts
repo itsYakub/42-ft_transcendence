@@ -13,4 +13,5 @@ export async function chatFunctions() {
 	} catch (err) {
 		console.error("❌ WebSocket failed:", err);
 	}
+	
 }

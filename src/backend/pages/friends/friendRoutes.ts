@@ -1,36 +1,36 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, getUserByEmail, markUserOnline } from '../../user/userDB.js';
+import { getUser, getUserByEmail, markUserOnline } from '../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendDB.js';
 import { friendHtml } from './friendHtml.js';
+import { noUser } from '../home/homeRoutes.js';
 
 export function friendRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error)
-			return reply.redirect("/");
+		const language = request.cookies.language ?? "english";
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUser(userResponse, language));
 
-		markUserOnline(db, user.id);
+		markUserOnline(db, userResponse.user.id);
 
-		const response = getFriends(db, user.id);
-		if (response.error) {
+		const friendsResponse = getFriends(db, userResponse.user.id);
+		if (friendsResponse.error) {
 			const params = {
-				user,
-				page: "friends",
-				language: request.cookies.language ?? "english",
-				errorCode: response.code,
-				errorMessage: response.error
+				user: userResponse.user,
+				language,
+				errorCode: friendsResponse.code,
+				errorMessage: friendsResponse.error
 			};
 			return reply.type("text/html").send(frameHtml(params));
 		}
 
 		const params = {
-			user,
-			page: "friends",
-			language: request.cookies.language ?? "english"
+			user: userResponse.user,
+			language
 		};
-		const html = friendHtml(response.friends, params);
+		const html = friendHtml(friendsResponse.friends, params);
 
 		const frame = frameHtml(params, html);
 		return reply.type("text/html").send(frame);

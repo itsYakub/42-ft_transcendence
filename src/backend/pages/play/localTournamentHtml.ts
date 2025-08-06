@@ -33,7 +33,7 @@ function tournamentString(player1String: string): string {
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
 		<h1 class="text-white pt-4 mb-4 text-4xl">%%TOURNAMENT_NEW_TEXT%%</h1>
 		<div class="flex flex-col mx-auto text-center items-center content-center">
-			<form id="newTournamentForm">
+			<form id="newTournamentForm" class="w-75">
 				${player1String}
 				<input type="text" name="p2Name" required="true" placeholder="%%TOURNAMENT_PLAYER_TEXT%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 				<input type="text" name="p3Name" required="true" placeholder="%%TOURNAMENT_PLAYER_TEXT%% 3" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">

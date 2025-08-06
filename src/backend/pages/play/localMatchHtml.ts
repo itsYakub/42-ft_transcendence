@@ -35,7 +35,7 @@ function localMatchString(p1String: string): string {
 		<h1 class="text-white pt-4 mb-4 text-4xl">%%PLAY_SINGLE_GAME_TEXT%%</h1>
 		<div class="flex flex-col mx-auto text-center items-center content-center">
 			<form id="singleGameForm">
-				<div class="grid grid-cols-2 gap-2">
+				<div class="grid grid-cols-2 gap-2 w-150">
 					${p1String}
 					<input type="text" name="p2Name" required="true" placeholder="%%PLAY_PLAYER_TEXT%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 				</div>

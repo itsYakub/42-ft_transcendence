@@ -1,36 +1,36 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../user/userDB.js';
 import { addMatch, getMatches } from './matchDB.js';
 import { matchHtml } from './matchHtml.js';
+import { noUser } from '../home/homeRoutes.js';
 
 export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/matches', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error)
-			return reply.redirect("/");
+		const language = request.cookies.language ?? "english";
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUser(userResponse, language));
 
-		markUserOnline(db, user.id);
+		markUserOnline(db, userResponse.user.id);
 
-		const response = getMatches(db, user.id);
-		if (response.error) {
+		const matchesResponse = getMatches(db, userResponse.user.id);
+		if (matchesResponse.error) {
 			const params = {
-				user,
-				page: "matches",
-				language: request.cookies.language ?? "english",
-				errorCode: response.code,
-				errorMessage: response.error
+				user: userResponse.user,
+				language,
+				errorCode: matchesResponse.code,
+				errorMessage: matchesResponse.error
 			};
 			return reply.type("text/html").send(frameHtml(params));
 		}
 
 		const params = {
-			user,
-			page: "matches",
-			language: request.cookies.language ?? "english"
+			user: userResponse.user,
+			language
 		};
-		const html = matchHtml(response.matches, params);
+		const html = matchHtml(matchesResponse.matches, params);
 
 		const frame = frameHtml(params, html);
 		return reply.type("text/html").send(frame);

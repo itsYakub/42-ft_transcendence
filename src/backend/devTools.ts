@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser, initUsers } from "./user/userDB.js";
+import { addUser, initUsers } from "./pages/user/userDB.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { addFriend, initFriends } from './pages/friends/friendDB.js';
@@ -43,39 +43,29 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		try {
 			const avatar = readFileSync(join(__dirname, '../frontend/images/default.jpg'), { encoding: 'base64' });
 			addUser(db, {
-				nick: "test1",
 				password: "12345678",
 				email: "test1@test.com",
-				avatar: "data:image/jpeg;base64," + avatar,
-				online: 1
+				avatar: "data:image/jpeg;base64," + avatar
 			});
 			addUser(db, {
-				nick: "test2",
 				password: "12345678",
 				email: "test2@test.com",
-				avatar: "data:image/jpeg;base64," + avatar,
-				online: 0
+				avatar: "data:image/jpeg;base64," + avatar
 			});
 			addUser(db, {
-				nick: "test3",
 				password: "12345678",
 				email: "test3@test.com",
-				avatar: "data:image/jpeg;base64," + avatar,
-				online: 1
+				avatar: "data:image/jpeg;base64," + avatar
 			});
 			addUser(db, {
-				nick: "test4",
 				password: "12345678",
 				email: "test4@test.com",
-				avatar: "data:image/jpeg;base64," + avatar,
-				online: 1
+				avatar: "data:image/jpeg;base64," + avatar
 			});
 			addUser(db, {
-				nick: "test5",
 				password: "12345678",
 				email: "test5@test.com",
-				avatar: "data:image/jpeg;base64," + avatar,
-				online: 0
+				avatar: "data:image/jpeg;base64," + avatar
 			});
 		}
 		catch (e) {

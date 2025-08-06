@@ -1,15 +1,13 @@
 import { friendsFunctions } from "./friends.js";
-import { googleFunctions } from "./googleAuth.js";
-import { loginFunctions } from "./login.js";
 import { navbarFunctions } from "./navbar.js";
 import { profileFunctions } from "./profile.js";
-import { registerFunctions } from "./register.js";
 import { devButtons } from "./devButtons.js";
 import { translateFrontend, translationFunctions } from "./translations.js";
 import { tournamentFunctions } from "./tournament.js";
 import { localMatchFunctions } from "./localMatch.js";
 import { PlayFunctions } from "./play.js";
 import { chatFunctions } from "./chat.js";
+import { userFunctions } from "./user.js";
 
 /*
 	Simulates moving to a new page
@@ -43,12 +41,13 @@ export function addFunctions() {
 	translationFunctions();
 	profileFunctions();
 	friendsFunctions();
-	loginFunctions();
-	registerFunctions();
-	googleFunctions();
 	PlayFunctions();
 	localMatchFunctions();
-	chatFunctions();
+
+	userFunctions();
+
+	// sockets
+	// chatFunctions();
 
 	// remove!
 	devButtons();
@@ -58,7 +57,6 @@ export function addFunctions() {
 	Registers the functions and also shows an error if Google sign-in/up was unsuccessful
 */
 window.addEventListener("DOMContentLoaded", () => {
-	addFunctions();
 	if (-1 != document.cookie.indexOf("googleautherror=true")) {
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
@@ -66,6 +64,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		showAlert("ERR_GOOGLE");
 		document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 	}
+	addFunctions();
 });
 
 /*
@@ -78,6 +77,8 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 export function showAlert(message: string) {
+	//const alertBanner = document.querySelector("#alertBanner");
+	//alertBanner.classList += " hidden";
 	const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 	if (alertDialog) {
 		const closeAlertButton = document.querySelector("#closeAlertButton");

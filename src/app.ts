@@ -2,12 +2,12 @@ import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import fastifyWebsocket from "@fastify/websocket";
-import { userEndpoints } from "./backend/user/userEndpoints.js";
+import { userEndpoints } from "./backend/pages/user/userEndpoints.js";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { DatabaseSync } from "node:sqlite";
-import { googleAuth } from "./backend/user/googleAuth.js";
-import { getUser, initUsers } from "./backend/user/userDB.js";
+import { googleAuth } from "./backend/auth/googleAuth.js";
+import { getUser, initUsers } from "./backend/pages/user/userDB.js";
 import { initFriends } from "./backend/pages/friends/friendDB.js";
 import { initMatches } from "./backend/pages/matches/matchDB.js";
 import { devEndpoints } from "./backend/devTools.js";
@@ -21,6 +21,8 @@ import { profileRoutes } from "./backend/pages/profile/profileRoutes.js";
 import { playRoutes } from "./backend/pages/play/playRoutes.js";
 import { initChats } from "./backend/pages/chat/chatDB.js";
 import { chatRoutes } from "./backend/pages/chat/chatRoutes.js";
+import { networkInterfaces } from 'os';
+import { userRoutes } from "./backend/pages/user/userRoutes.js";
 
 const __dirname = import.meta.dirname;
 
@@ -47,8 +49,8 @@ await fastify.register(fastifyWebsocket);
 */
 await fastify.register(fastifyStatic, {
 	root: __dirname + "/frontend",
-  	prefix: "/", 
-  	index: false,
+	prefix: "/",
+	index: false,
 });
 
 /*
@@ -87,6 +89,7 @@ try {
 	initChats(db, dropTables.dropChats);
 
 	homeRoutes(fastify, db);
+	userRoutes(fastify, db);
 	playRoutes(fastify, db);
 	tournamentRoutes(fastify, db);
 	profileRoutes(fastify, db);
@@ -100,12 +103,34 @@ try {
 	// Remove!
 	devEndpoints(fastify, db);
 
+	const nets = networkInterfaces();
+	const results = {};
+
+	for (const name of Object.keys(nets)) {
+		for (const net of nets[name]) {
+			const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+			if (net.family === familyV4Value && !net.internal) {
+				if (!results[name]) {
+					results[name] = [];
+				}
+				results[name].push(net.address);
+			}
+		}
+	}
+
+	const ip = Object.keys(results)[0];
+	const port = parseInt(process.env.PORT ?? "3000");
+
 	// Start listening
-	fastify.listen({ host: "0.0.0.0", port: parseInt(process.env.PORT ?? "3000") }, (err, address) => {
+	fastify.listen({
+		host: "0.0.0.0",
+		port: port
+	}, (err, address) => {
 		if (err) {
 			console.log(err);
 			process.exit(1);
 		}
+		console.log(`Listening on https://${results[ip]}:${port}`);
 	});
 }
 catch (e) {

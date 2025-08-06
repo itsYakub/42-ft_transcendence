@@ -1,12 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser, getUser, invalidateToken, loginUser, markUserOffline } from './userDB.js';
+import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline } from './userDB.js';
 import * as OTPAuth from "otpauth";
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
 		const json = JSON.parse(request.body as string);
-		json["online"] = 1;
 
 		const response = addUser(db, json);
 		if (response.error)
@@ -22,6 +21,18 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 					code: 200,
 					message: "SUCCESS"
 				});
+	});
+
+	fastify.post("/guest/register", async (request: FastifyRequest, reply: FastifyReply) => {
+		const response = addGuest(db);
+		if (response.error)
+			return reply.send(response);
+
+		return reply.header(
+			"Set-Cookie", `accessToken=${response.accessToken}; Path=/; Secure; HttpOnly;`).send({
+				code: 200,
+				message: "SUCCESS"
+			});
 	});
 
 	fastify.post("/user/login", async (request: FastifyRequest, reply: FastifyReply) => {

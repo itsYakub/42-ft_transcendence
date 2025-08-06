@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { hashPassword } from "../../user/jwt.js";
+import { hashPassword } from "../../auth/jwt.js";
 import { compareSync } from "bcrypt-ts";
 
 /*

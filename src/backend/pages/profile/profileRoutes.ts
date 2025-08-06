@@ -1,25 +1,25 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../../user/userDB.js';
+import { getUser, markUserOnline } from '../user/userDB.js';
 import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
 import * as OTPAuth from "otpauth";
 import encodeQR from 'qr';
 import { profileHtml } from './profileHtml.js';
+import { noUser } from '../home/homeRoutes.js';
 
 export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		const language = request.cookies.language ?? "english";
+		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != response.code)
+			return reply.type("text/html").send(noUser(response, language));
 
-		if (user.error)
-			return reply.redirect("/");
-
-		markUserOnline(db, user.id);
+		markUserOnline(db, response.user.id);
 
 		const params = {
-			user,
-			page: "profile",
-			language: request.cookies.language ?? "english"
+			user: response.user,
+			language
 		};
 		const html = profileHtml(params);
 

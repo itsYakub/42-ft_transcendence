@@ -13,7 +13,7 @@ export interface ChatMessage {
  * Initializes the Chats table.
  * If `dropChats` is true, the table is dropped and recreated.
  */
-export function initChats(db: DatabaseSync, dropChats: boolean ): void {
+export function initChats(db: DatabaseSync, dropChats: boolean): void {
 	if (dropChats)
 		db.exec(`DROP TABLE IF EXISTS Chats;`);
 
