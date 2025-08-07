@@ -90,36 +90,27 @@ async function login(email: string, password: string) {
 }
 
 async function register(email: string, password: string) {
-	const defaultAvatar = fetch("images/default.jpg");
-	const blob = await (await defaultAvatar).blob();
-	const reader = new FileReader();
-	reader.readAsDataURL(blob);
-	reader.onloadend = async () => {
-		const avatar = reader.result as string;
+	const response = await fetch("/user/register", {
+		method: "POST",
+		body: JSON.stringify({
+			email,
+			password
+		})
+	});
 
-		const response = await fetch("/user/register", {
-			method: "POST",
-			body: JSON.stringify({
-				email,
-				password,
-				avatar
-			})
-		});
+	const payload = await response.json();
+	if (payload.error) {
+		showAlert(payload.error);
+		return;
+	}
+	const date = new Date();
+	date.setFullYear(date.getFullYear() + 1);
+	document.cookie = `language=english; expires=${date}`;
 
-		const payload = await response.json();
-		if (payload.error) {
-			showAlert(payload.error);
-			return;
-		}
-		const date = new Date();
-		date.setFullYear(date.getFullYear() + 1);
-		document.cookie = `language=english; expires=${date}`;
-
-		navigate("/");
-	};
+	navigate("/");
 }
 
-function googleLogin() {	
+function googleLogin() {
 	// 	const query = {
 	// 	client_id: "700864958995-a6qbsqc8t8pqub1cg06kai263h2b2dbj.apps.googleusercontent.com",
 	// 	redirect_uri: "https://10.11.7.3.nip.io:3000/auth/google",

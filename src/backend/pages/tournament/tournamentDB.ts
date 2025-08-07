@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { addMatch } from "../matches/matchDB.js";
+import { addMatch } from "../matches/matchesDB.js";
 
 export function initTournaments(db: DatabaseSync, dropTournaments: boolean): void {
 	if (dropTournaments)
@@ -96,20 +96,20 @@ export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Scor
 			const select = db.prepare(`UPDATE Tournaments SET Match = ?, M${match}P1Score = ?, M${match}P2Score = ?, M3P${match} = ? WHERE TournamentID = ?;`);
 			select.run(match, p1Score, p2Score, winner, tournament.id);
 
-			if (user.nick == winner) {
-				addMatch(db, {
-					id: user.id,
-					message: "won",
-					rating: 2
-				});
-			}
-			else if (user.nick == loser) {
-				addMatch(db, {
-					id: user.id,
-					message: "lost",
-					rating: 0
-				});
-			}
+			// if (user.nick == winner) {
+			// 	addMatch(db, {
+			// 		id: user.id,
+			// 		message: "won",
+			// 		rating: 2
+			// 	});
+			// }
+			// else if (user.nick == loser) {
+			// 	addMatch(db, {
+			// 		id: user.id,
+			// 		message: "lost",
+			// 		rating: 0
+			// 	});
+			// }
 
 			return {
 				code: 200,
@@ -121,13 +121,12 @@ export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Scor
 			const loser = p1Score < p2Score ? tournament.m3p1 as string : tournament.m3p2 as string;
 			const select = db.prepare(`UPDATE Tournaments SET Match = ?, M${match}P1Score = ?, M${match}P2Score = ? WHERE TournamentID = ?;`);
 			select.run(match, p1Score, p2Score, tournament.id);
-			if (user.nick == winner) {
-				addMatch(db, {
-					id: user.id,
-					message: "won tournament",
-					rating: 3
-				});
-			}
+			// if (user.nick == winner) {
+			// 	addMatch(db, {
+			// 		id: user.id,
+			// 		rating: 3
+			// 	});
+			// }
 			return {
 				code: 200,
 				message: "SUCCESS"

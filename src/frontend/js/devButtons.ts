@@ -69,6 +69,19 @@ export function devButtons() {
 		}, { once: true });
 	}
 
+	const wipeMessagesButton = document.querySelector("#wipeMessagesButton")
+	if (wipeMessagesButton) {
+		wipeMessagesButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/messages", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Wiped messages!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
 	const addMockUsersButton = document.querySelector("#addMockUsersButton")
 	if (addMockUsersButton) {
 		addMockUsersButton.addEventListener("click", async () => {
@@ -103,6 +116,19 @@ export function devButtons() {
 			});
 			if (response.ok)
 				alert("Added mock friends!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
+	const addMockMessagesButton = document.querySelector("#addMockMessagesButton")
+	if (addMockMessagesButton) {
+		addMockMessagesButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/add/messages", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Added mock messages!");
 			else
 				alert("Something went wrong!");
 		}, { once: true });

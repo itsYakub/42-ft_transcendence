@@ -25,6 +25,7 @@ function translateDutch(text: string): string {
 		case "PROFILE_PROFILE_TEXT": return "";
 		case "PROFILE_MATCHES_TEXT": return "";
 		case "PROFILE_FRIENDS_TEXT": return "";
+		case "PROFILE_MESSAGES_TEXT": return "";
 		case "PROFILE_CHANGE_AVATAR_TEXT": return "";
 		case "PROFILE_CHANGE_NICK_TEXT": return "";
 		case "PROFILE_CHANGE_PASSWORD_TEXT": return "";
@@ -47,6 +48,7 @@ function translateDutch(text: string): string {
 		case "MATCHES_PROFILE_TEXT": return "";
 		case "MATCHES_MATCHES_TEXT": return "";
 		case "MATCHES_FRIENDS_TEXT": return "";
+		case "MATCHES_MESSAGES_TEXT": return "";
 		case "MATCHES_WON_TEXT": return "";
 		case "MATCHES_MATCH_SINGULAR_TEXT": return "";
 		case "MATCHES_MATCH_PLURAL_TEXT": return "";
@@ -56,12 +58,19 @@ function translateDutch(text: string): string {
 		case "FRIENDS_PROFILE_TEXT": return "";
 		case "FRIENDS_MATCHES_TEXT": return "";
 		case "FRIENDS_FRIENDS_TEXT": return "";
+		case "FRIENDS_MESSAGES_TEXT": return "";
 		case "FRIENDS_ONLINE_TEXT": return "";
 		case "FRIENDS_OFFLINE_TEXT": return "";
 		case "FRIENDS_REMOVE_TEXT": return "";
 		case "FRIENDS_ADD_TITLE_TEXT": return "";
 		case "FRIENDS_ADD_EMAIL_TEXT": return "";
 		case "FRIENDS_ADD_FRIEND_TEXT": return "";
+		// messages
+		case "MESSAGES_PROFILE_TEXT": return "";
+		case "MESSAGES_MATCHES_TEXT": return "";
+		case "MESSAGES_FRIENDS_TEXT": return "";
+		case "MESSAGES_MESSAGES_TEXT": return "";
+		case "MESSAGES_SEND_TEXT": return "";
 		// play
 		case "PLAY_SINGLE_GAME_TEXT": return "";
 		case "PLAY_PLAYER_TEXT": return "";
@@ -110,6 +119,7 @@ function translateEnglish(text: string): string {
 		case "PROFILE_PROFILE_TEXT": return "Profile";
 		case "PROFILE_MATCHES_TEXT": return "Matches";
 		case "PROFILE_FRIENDS_TEXT": return "Friends";
+		case "PROFILE_MESSAGES_TEXT": return "Messages";
 		case "PROFILE_CHANGE_AVATAR_TEXT": return "Change avatar";
 		case "PROFILE_CHANGE_NICK_TEXT": return "Change nickname";
 		case "PROFILE_CHANGE_PASSWORD_TEXT": return "Change password";
@@ -132,6 +142,7 @@ function translateEnglish(text: string): string {
 		case "MATCHES_PROFILE_TEXT": return "Profile";
 		case "MATCHES_MATCHES_TEXT": return "Matches";
 		case "MATCHES_FRIENDS_TEXT": return "Friends";
+		case "MATCHES_MESSAGES_TEXT": return "Messages";
 		case "MATCHES_WON_TEXT": return "Won";
 		case "MATCHES_MATCH_SINGULAR_TEXT": return "match";
 		case "MATCHES_MATCH_PLURAL_TEXT": return "matches";
@@ -141,12 +152,19 @@ function translateEnglish(text: string): string {
 		case "FRIENDS_PROFILE_TEXT": return "Profile";
 		case "FRIENDS_MATCHES_TEXT": return "Matches";
 		case "FRIENDS_FRIENDS_TEXT": return "Friends";
+		case "FRIENDS_MESSAGES_TEXT": return "Messages";
 		case "FRIENDS_ONLINE_TEXT": return "Online";
 		case "FRIENDS_OFFLINE_TEXT": return "Offline";
 		case "FRIENDS_REMOVE_TEXT": return "Remove";
 		case "FRIENDS_ADD_TITLE_TEXT": return "Friend's email address";
 		case "FRIENDS_ADD_EMAIL_TEXT": return "Email";
 		case "FRIENDS_ADD_FRIEND_TEXT": return "Add friend";
+		// messages
+		case "MESSAGES_PROFILE_TEXT": return "Profile";
+		case "MESSAGES_MATCHES_TEXT": return "Matches";
+		case "MESSAGES_FRIENDS_TEXT": return "Friends";
+		case "MESSAGES_MESSAGES_TEXT": return "Messages";
+		case "MESSAGES_SEND_TEXT": return "Send";
 		// play
 		case "PLAY_SINGLE_GAME_TEXT": return "Single game";
 		case "PLAY_PLAYER_TEXT": return "Player";
@@ -195,6 +213,7 @@ function translatePolish(text: string): string {
 		case "PROFILE_PROFILE_TEXT": return "";
 		case "PROFILE_MATCHES_TEXT": return "";
 		case "PROFILE_FRIENDS_TEXT": return "";
+		case "PROFILE_MESSAGES_TEXT": return "";
 		case "PROFILE_CHANGE_AVATAR_TEXT": return "";
 		case "PROFILE_CHANGE_NICK_TEXT": return "";
 		case "PROFILE_CHANGE_PASSWORD_TEXT": return "";
@@ -217,6 +236,7 @@ function translatePolish(text: string): string {
 		case "MATCHES_PROFILE_TEXT": return "";
 		case "MATCHES_MATCHES_TEXT": return "";
 		case "MATCHES_FRIENDS_TEXT": return "";
+		case "MATCHES_MESSAGES_TEXT": return "";
 		case "MATCHES_WON_TEXT": return "";
 		case "MATCHES_MATCH_SINGULAR_TEXT": return "";
 		case "MATCHES_MATCH_PLURAL_TEXT": return "";
@@ -226,12 +246,19 @@ function translatePolish(text: string): string {
 		case "FRIENDS_PROFILE_TEXT": return "";
 		case "FRIENDS_MATCHES_TEXT": return "";
 		case "FRIENDS_FRIENDS_TEXT": return "";
+		case "FRIENDS_MESSAGES_TEXT": return "";
 		case "FRIENDS_ONLINE_TEXT": return "";
 		case "FRIENDS_OFFLINE_TEXT": return "";
 		case "FRIENDS_REMOVE_TEXT": return "";
 		case "FRIENDS_ADD_TITLE_TEXT": return "";
 		case "FRIENDS_ADD_EMAIL_TEXT": return "";
 		case "FRIENDS_ADD_FRIEND_TEXT": return "";
+		// messages
+		case "MESSAGES_PROFILE_TEXT": return "";
+		case "MESSAGES_MATCHES_TEXT": return "";
+		case "MESSAGES_FRIENDS_TEXT": return "";
+		case "MESSAGES_MESSAGES_TEXT": return "";
+		case "MESSAGES_SEND_TEXT": return "";
 		// play
 		case "PLAY_SINGLE_GAME_TEXT": return "";
 		case "PLAY_PLAYER_TEXT": return "";

@@ -2,11 +2,11 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
-import { addMatch, getMatches } from './matchDB.js';
-import { matchHtml } from './matchHtml.js';
+import { addMatch, getMatches } from './matchesDB.js';
+import { matchesHtml } from './matchesHtml.js';
 import { noUser } from '../home/homeRoutes.js';
 
-export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+export function matchesRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/matches', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
@@ -30,9 +30,8 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			user: userResponse.user,
 			language
 		};
-		const html = matchHtml(matchesResponse.matches, params);
 
-		const frame = frameHtml(params, html);
+		const frame = frameHtml(params, matchesHtml(matchesResponse.matches, params));
 		return reply.type("text/html").send(frame);
 	});
 

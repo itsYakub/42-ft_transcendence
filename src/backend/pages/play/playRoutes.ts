@@ -3,8 +3,6 @@ import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
 import { playHtml } from './playHtml.js';
-import { localMatchHtml } from './localMatchHtml.js';
-import { localTournamentHtml } from './localTournamentHtml.js';
 import { noUser } from '../home/homeRoutes.js';
 
 export function playRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -24,42 +22,6 @@ export function playRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		};
 
 		const frame = frameHtml(params, playHtml(params));
-		return reply.type("text/html").send(frame);
-	});
-
-	fastify.get('/play/match', async (request: FastifyRequest, reply: FastifyReply) => {
-		const language = request.cookies.language ?? "english";
-		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		
-		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
-		
-		markUserOnline(db, response.user.id);
-
-		const params = {
-			user: response.user,
-			language
-		};
-
-		const frame = frameHtml(params, localMatchHtml(params));
-		return reply.type("text/html").send(frame);
-	});
-
-	fastify.get('/play/tournament', async (request: FastifyRequest, reply: FastifyReply) => {
-		const language = request.cookies.language ?? "english";
-		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		
-		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
-			
-		markUserOnline(db, response.user.id);
-
-		const params = {
-			user: response.user,
-			language
-		};
-
-		const frame = frameHtml(params, localTournamentHtml(params));
 		return reply.type("text/html").send(frame);
 	});
 }

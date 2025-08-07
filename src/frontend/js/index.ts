@@ -8,6 +8,7 @@ import { localMatchFunctions } from "./localMatch.js";
 import { PlayFunctions } from "./play.js";
 import { chatFunctions } from "./chat.js";
 import { userFunctions } from "./user.js";
+import { MessagesFunctions } from "./messages.js";
 
 /*
 	Simulates moving to a new page
@@ -41,6 +42,7 @@ export function addFunctions() {
 	translationFunctions();
 	profileFunctions();
 	friendsFunctions();
+	MessagesFunctions();
 	PlayFunctions();
 	localMatchFunctions();
 

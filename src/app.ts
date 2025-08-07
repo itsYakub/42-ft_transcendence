@@ -8,21 +8,24 @@ import { join } from "path";
 import { DatabaseSync } from "node:sqlite";
 import { googleAuth } from "./backend/auth/googleAuth.js";
 import { getUser, initUsers } from "./backend/pages/user/userDB.js";
-import { initFriends } from "./backend/pages/friends/friendDB.js";
-import { initMatches } from "./backend/pages/matches/matchDB.js";
+import { initFriends } from "./backend/pages/friends/friendsDB.js";
+import { initMatches } from "./backend/pages/matches/matchesDB.js";
 import { devEndpoints } from "./backend/devTools.js";
-import { initTournaments } from "./backend/pages/play/tournamentDB.js";
+import { initTournaments } from "./backend/pages/tournament/tournamentDB.js";
 import { frameHtml } from "./backend/pages/frameHtml.js";
-import { matchRoutes } from "./backend/pages/matches/matchRoutes.js";
-import { friendRoutes } from "./backend/pages/friends/friendRoutes.js";
+import { matchesRoutes } from "./backend/pages/matches/matchesRoutes.js";
+import { friendsRoutes } from "./backend/pages/friends/friendsRoutes.js";
 import { homeRoutes } from "./backend/pages/home/homeRoutes.js";
-import { tournamentRoutes } from "./backend/pages/play/tournamentRoutes.js";
+import { tournamentRoutes } from "./backend/pages/tournament/tournamentRoutes.js";
 import { profileRoutes } from "./backend/pages/profile/profileRoutes.js";
 import { playRoutes } from "./backend/pages/play/playRoutes.js";
 import { initChats } from "./backend/pages/chat/chatDB.js";
 import { chatRoutes } from "./backend/pages/chat/chatRoutes.js";
 import { networkInterfaces } from 'os';
 import { userRoutes } from "./backend/pages/user/userRoutes.js";
+import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
+import { initMessages } from "./backend/pages/messages/messagesDB.js";
+import { matchRoutes } from "./backend/pages/match/matchRoutes.js";
 
 const __dirname = import.meta.dirname;
 
@@ -76,7 +79,8 @@ const dropTables = {
 	dropFriends: false,
 	dropMatches: false,
 	dropTournaments: false,
-	dropChats: false
+	dropChats: false,
+	dropMessages: false
 };
 
 const db = new DatabaseSync(process.env.DB);
@@ -87,14 +91,17 @@ try {
 	initMatches(db, dropTables.dropMatches);
 	initTournaments(db, dropTables.dropTournaments);
 	initChats(db, dropTables.dropChats);
+	initMessages(db, dropTables.dropMessages);
 
 	homeRoutes(fastify, db);
 	userRoutes(fastify, db);
 	playRoutes(fastify, db);
+	matchRoutes(fastify, db);
 	tournamentRoutes(fastify, db);
 	profileRoutes(fastify, db);
-	matchRoutes(fastify, db);
-	friendRoutes(fastify, db);
+	matchesRoutes(fastify, db);
+	friendsRoutes(fastify, db);
+	messageRoutes(fastify, db);
 	chatRoutes(fastify, db);
 
 	googleAuth(fastify, db);

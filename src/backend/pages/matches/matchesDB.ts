@@ -36,10 +36,10 @@ export function getMatches(db: DatabaseSync, id: number): any {
 	}
 }
 
-export function addMatch(db: DatabaseSync, json: any, date: Date = new Date()): any {
+export function addMatch(db: DatabaseSync, { id, p2Name, score, p2Score, tournamentWin}, date: Date = new Date()): any {
 	try {
 		const select = db.prepare("INSERT INTO Matches (UserID, P2Name, Score, P2Score, TournamentWin, PlayedAt) VALUES (?, ?, ?, ?, ?, ?)");
-		select.run(json.id, json.p2Name, json.score, json.p2Score, json.tournamentWin ? 1 : 0, date.toISOString());
+		select.run(id, p2Name, score, p2Score, tournamentWin ? 1 : 0, date.toISOString());
 		return {
 			code: 200,
 			message: "SUCCESS"

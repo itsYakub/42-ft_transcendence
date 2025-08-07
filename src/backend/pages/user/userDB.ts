@@ -1,6 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { accessToken, hashPassword, refreshToken, validJWT } from "../../auth/jwt.js";
 import { compareSync } from "bcrypt-ts";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+const __dirname = import.meta.dirname;
 
 /*
 	Sets up the Users table
@@ -125,12 +129,17 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 /*
 	Adds a user to the DB after a sign up with email/password
 */
-export function addUser(db: DatabaseSync, { email, password, avatar }): any {
+export function addUser(db: DatabaseSync, { email, password }): any {
 	try {
-		const nick = getNickname(db);
+		const response = getNickname(db);
+		if (200 != response.code)
+			return response;
+
+		const avatar = "data:image/jpeg;base64," + readFileSync(join(__dirname, '../../default.jpg'), { encoding: 'base64' });
+
 		const pw = hashPassword(password);
-		const insert = db.prepare('INSERT INTO Users (Nick, Email, Password, Avatar) VALUES (?, ?, ?, ?, ?)');
-		const statementSync = insert.run(nick, email, pw, avatar);
+		const insert = db.prepare('INSERT INTO Users (Nick, Email, Password, Avatar) VALUES (?, ?, ?, ?)');
+		const statementSync = insert.run(response.nickname, email, pw, avatar);
 		const id: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(id);
 		updateRefreshtoken(db, {
@@ -435,6 +444,62 @@ export function allNicknames(db: DatabaseSync) {
 		return {
 			code: 200,
 			nicknames
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+/*
+	Returns a list of all nicknames currently in the DB
+*/
+export function allUsers(db: DatabaseSync) {
+	try {
+		const select = db.prepare("SELECT UserID, Nick FROM Users");
+		const result = select.all();
+		let users = [];
+		result.forEach((user) => {
+			users.push({
+				id: user.UserID,
+				nick: user.Nick
+			});
+		});
+
+		return {
+			code: 200,
+			users
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+/*
+	Returns a list of all nicknames currently in the DB
+*/
+export function allOtherUsers(db: DatabaseSync, id: number) {
+	try {
+		const select = db.prepare("SELECT UserID, Nick FROM Users WHERE ? != UserID");
+		const result = select.all(id);
+		let users = [];
+		result.forEach((user) => {
+			users.push({
+				id: user.UserID,
+				nick: user.Nick
+			});
+		});
+
+		return {
+			code: 200,
+			users
 		};
 	}
 	catch (e) {

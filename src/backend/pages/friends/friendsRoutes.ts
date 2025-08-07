@@ -2,11 +2,11 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { getUser, getUserByEmail, markUserOnline } from '../user/userDB.js';
-import { addFriend, getFriends, removeFriend } from './friendDB.js';
-import { friendHtml } from './friendHtml.js';
+import { addFriend, getFriends, removeFriend } from './friendsDB.js';
+import { friendsHtml } from './friendsHtml.js';
 import { noUser } from '../home/homeRoutes.js';
 
-export function friendRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
@@ -30,7 +30,7 @@ export function friendRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			user: userResponse.user,
 			language
 		};
-		const html = friendHtml(friendsResponse.friends, params);
+		const html = friendsHtml(friendsResponse.friends, params);
 
 		const frame = frameHtml(params, html);
 		return reply.type("text/html").send(frame);

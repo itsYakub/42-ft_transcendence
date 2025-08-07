@@ -1,6 +1,6 @@
 import { translateBackend } from "../translations.js";
 
-export function matchHtml(matches: any, { user, language }): string {
+export function matchesHtml(matches: any, { user, language }): string {
 	let matchList = "";
 	for (var key in matches) {
 		matchList += matchString(matches[key]);
@@ -14,7 +14,7 @@ export function matchHtml(matches: any, { user, language }): string {
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "WON", "MATCH_SINGULAR", "MATCH_PLURAL", "TOURNAMENT_SINGULAR", "TOURNAMENT_PLURAL"];
+	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "MESSAGES", "WON", "MATCH_SINGULAR", "MATCH_PLURAL", "TOURNAMENT_SINGULAR", "TOURNAMENT_PLURAL"];
 
 	toBeTranslated.forEach((text) => {
 		html = html.replaceAll(`%%MATCHES_${text}_TEXT%%`, translateBackend({
@@ -67,7 +67,7 @@ function matchesString(matchList: string, statsString: string): string {
 	return `
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
-			<div class="w-50">
+			<div class="w-30">
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"
 						class="cursor-pointer text-right w-full text-gray-300 hover:bg-gray-800 p-2 rounded-lg">%%MATCHES_PROFILE_TEXT%%</button>
@@ -75,10 +75,12 @@ function matchesString(matchList: string, statsString: string): string {
 						class="my-4 text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%MATCHES_MATCHES_TEXT%%</button>
 					<button id="friendsButton"
 						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%MATCHES_FRIENDS_TEXT%%</button>
+					<button id="messagesButton"
+						class="mt-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%MATCHES_MESSAGES_TEXT%%</button>
 				</div>
 			</div>
 			<div class="grow bg-gray-900">
-				<div class="p-8 text-left">
+				<div class="py-8 pl-8 text-left">
 					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 overflow-auto">
 						${matchList}					
 					</div>

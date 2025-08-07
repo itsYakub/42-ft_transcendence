@@ -25,6 +25,13 @@ export function profileFunctions() {
 		}, { once: true });
 	}
 
+	const messagesButton = document.getElementById("messagesButton");
+	if (messagesButton) {
+		messagesButton.addEventListener("click", () => {
+			navigate("/messages");
+		}, { once: true });
+	}
+
 	/*
 		Shows the dialog to choose a file
 	*/

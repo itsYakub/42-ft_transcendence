@@ -35,10 +35,10 @@ export function getFriends(db: DatabaseSync, id: number): any {
 /*
 	Adds a friend to a user's list
 */
-export function addFriend(db: DatabaseSync, json: any): any {
+export function addFriend(db: DatabaseSync, { id, friendID }): any {
 	try {
 		const select = db.prepare("INSERT INTO Friends (UserID, FriendID) VALUES (?, ?)");
-		select.run(json.id, json.friendID);
+		select.run(id, friendID);
 		return {
 			code: 201,
 			message: "SUCCESS"

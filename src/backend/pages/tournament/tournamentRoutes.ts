@@ -5,9 +5,28 @@ import { getUser, markUserOnline } from '../user/userDB.js';
 import { addTournament, getTournamentByCode, updateTournament } from './tournamentDB.js';
 import { tournamentMatchHtml } from './tournamentMatchHtml.js';
 import { noUser } from '../home/homeRoutes.js';
+import { localTournamentHtml } from './localTournamentHtml.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.get('/tournament/local', async (request: FastifyRequest, reply: FastifyReply) => {
+		const language = request.cookies.language ?? "english";
+		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+
+		if (200 != response.code)
+			return reply.type("text/html").send(noUser(response, language));
+
+		markUserOnline(db, response.user.id);
+
+		const params = {
+			user: response.user,
+			language
+		};
+
+		const frame = frameHtml(params, localTournamentHtml(params));
+		return reply.type("text/html").send(frame);
+	});
+
+	fastify.get('/tournament/local/:id', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != response.code)

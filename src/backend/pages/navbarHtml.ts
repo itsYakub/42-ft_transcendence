@@ -58,7 +58,7 @@ function loggedOutString(languageSelect: string): string {
 	return `
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">
-			<div class="ml-auto text-white">
+			<div class="ml-auto text-gray-300">
 				<select id="languageSelect">
 					${languageSelect}
 				</select>
@@ -90,7 +90,7 @@ function loggedInString(user: any, languageSelect: string): string {
 				</button>
 			</div>
 
-			<div class="ml-auto text-white">
+			<div class="ml-auto text-gray-300">
 				<select id="languageSelect">
 					${languageSelect}
 				</select>
@@ -120,7 +120,7 @@ function guestString(user: any, languageSelect: string): string {
 				</button>
 			</div>
 
-			<div class="ml-auto text-white">
+			<div class="ml-auto text-gray-300">
 				<select id="languageSelect">
 					${languageSelect}
 				</select>
