@@ -2,12 +2,12 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
-import { addMatch, getMatches } from './matchesDB.js';
-import { matchesHtml } from './matchesHtml.js';
+import { addHistory, getHistory } from './historyDB.js';
+import { historyHtml } from './historyHtml.js';
 import { noUser } from '../home/homeRoutes.js';
 
-export function matchesRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/matches', async (request: FastifyRequest, reply: FastifyReply) => {
+export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+	fastify.get('/history', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
@@ -15,7 +15,7 @@ export function matchesRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		markUserOnline(db, userResponse.user.id);
 
-		const matchesResponse = getMatches(db, userResponse.user.id);
+		const matchesResponse = getHistory(db, userResponse.user.id);
 		if (matchesResponse.error) {
 			const params = {
 				user: userResponse.user,
@@ -31,11 +31,11 @@ export function matchesRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 			language
 		};
 
-		const frame = frameHtml(params, matchesHtml(matchesResponse.matches, params));
+		const frame = frameHtml(params, historyHtml(matchesResponse.matches, params));
 		return reply.type("text/html").send(frame);
 	});
 
-	fastify.post("/match/add", async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.post("/history/add", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (user.error)
 			return reply.code(user.code).send(user);
@@ -43,7 +43,7 @@ export function matchesRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const params = JSON.parse(request.body as string);
 		params["id"] = user.id;
 
-		const response = addMatch(db, params);
+		const response = addHistory(db, params);
 		return reply.send(response);
 	});
 }

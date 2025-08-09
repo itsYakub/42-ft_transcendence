@@ -14,6 +14,7 @@ import { MessagesFunctions } from "./messages.js";
 	Simulates moving to a new page
 */
 export async function navigate(url: string, updateHistory: boolean = true): Promise<void> {
+	
 	if (updateHistory)
 		history.pushState(null, null, url);
 
@@ -23,6 +24,10 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
+	if (url.includes("/tournament/") || url.includes("/match/"))
+		fetch("/user/leave", {
+		method: "POST"
+	});
 	addFunctions();
 }
 
@@ -30,6 +35,7 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	Changes page on back/forward buttons
 */
 window.addEventListener('popstate', function (event) {
+	console.log(event);
 	navigate(window.location.pathname, false);
 });
 

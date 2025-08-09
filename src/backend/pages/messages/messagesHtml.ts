@@ -11,7 +11,7 @@ export function messagesHtml({ users, messages, senders, fromID }, { user, langu
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "MESSAGES", "SEND"];
+	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "SEND"];
 
 	toBeTranslated.forEach((text) => {
 		html = html.replaceAll(`%%MESSAGES_${text}_TEXT%%`, translateBackend({
@@ -31,8 +31,8 @@ function messagesString(users: any, messages: any, fromID: number): string {
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"
 						class="cursor-pointer text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%MESSAGES_PROFILE_TEXT%%</button>
-					<button id="matchesButton"
-						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%MESSAGES_MATCHES_TEXT%%</button>
+					<button id="historyButton"
+						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%MESSAGES_HISTORY_TEXT%%</button>
 					<button id="friendsButton"
 						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%MESSAGES_FRIENDS_TEXT%%</button>
 					<button id="messagesButton"

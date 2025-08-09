@@ -10,6 +10,10 @@ import { userHtml } from '../user/userHtml.js';
 	Handles the home page route
 */
 export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+	fastify.get('/#test', async (request: FastifyRequest, reply: FastifyReply) => {
+		console.log("test");
+	});
+
 	fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);

@@ -30,14 +30,14 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const wipeMatchesButton = document.querySelector("#wipeMatchesButton")
-	if (wipeMatchesButton) {
-		wipeMatchesButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/wipe/matches", {
+	const wipeHistoryButton = document.querySelector("#wipeHistoryButton")
+	if (wipeHistoryButton) {
+		wipeHistoryButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/history", {
 				method: "GET"
 			});
 			if (response.ok)
-				alert("Wiped matches!");
+				alert("Wiped history!");
 			else
 				alert("Something went wrong!");
 		}, { once: true });
@@ -82,6 +82,19 @@ export function devButtons() {
 		}, { once: true });
 	}
 
+	const wipeRoomsButton = document.querySelector("#wipeRoomsButton")
+	if (wipeRoomsButton) {
+		wipeRoomsButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/wipe/rooms", {
+				method: "GET"
+			});
+			if (response.ok)
+				alert("Wiped rooms!");
+			else
+				alert("Something went wrong!");
+		}, { once: true });
+	}
+
 	const addMockUsersButton = document.querySelector("#addMockUsersButton")
 	if (addMockUsersButton) {
 		addMockUsersButton.addEventListener("click", async () => {
@@ -95,14 +108,14 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const addMockMatchesButton = document.querySelector("#addMockMatchesButton")
-	if (addMockMatchesButton) {
-		addMockMatchesButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/add/matches", {
+	const addMockHistoryButton = document.querySelector("#addMockHistoryButton")
+	if (addMockHistoryButton) {
+		addMockHistoryButton.addEventListener("click", async () => {
+			const response = await fetch("/dev/add/history", {
 				method: "GET"
 			});
 			if (response.ok)
-				alert("Added mock matches!");
+				alert("Added mock history!");
 			else
 				alert("Something went wrong!");
 		}, { once: true });

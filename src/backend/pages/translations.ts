@@ -23,7 +23,7 @@ function translateDutch(text: string): string {
 		case "HOME_TITLE_TEXT": return "Welkom bij Transcendence!";
 		// profile
 		case "PROFILE_PROFILE_TEXT": return "";
-		case "PROFILE_MATCHES_TEXT": return "";
+		case "PROFILE_HISTORY_TEXT": return "";
 		case "PROFILE_FRIENDS_TEXT": return "";
 		case "PROFILE_MESSAGES_TEXT": return "";
 		case "PROFILE_CHANGE_AVATAR_TEXT": return "";
@@ -44,19 +44,19 @@ function translateDutch(text: string): string {
 		case "PROFILE_TOTP_INPUT_TEXT": return "";
 		case "PROFILE_TOTP_CODE_TEXT": return "";
 		case "PROFILE_TOTP_VERIFY_TEXT": return "";
-		// matches
-		case "MATCHES_PROFILE_TEXT": return "";
-		case "MATCHES_MATCHES_TEXT": return "";
-		case "MATCHES_FRIENDS_TEXT": return "";
-		case "MATCHES_MESSAGES_TEXT": return "";
-		case "MATCHES_WON_TEXT": return "";
-		case "MATCHES_MATCH_SINGULAR_TEXT": return "";
-		case "MATCHES_MATCH_PLURAL_TEXT": return "";
-		case "MATCHES_TOURNAMENT_SINGULAR_TEXT": return "";
-		case "MATCHES_TOURNAMENT_PLURAL_TEXT": return "";
+		// history
+		case "HISTORY_PROFILE_TEXT": return "";
+		case "HISTORY_HISTORY_TEXT": return "";
+		case "HISTORY_FRIENDS_TEXT": return "";
+		case "HISTORY_MESSAGES_TEXT": return "";
+		case "HISTORY_WON_TEXT": return "";
+		case "HISTORY_MATCH_SINGULAR_TEXT": return "";
+		case "HISTORY_MATCH_PLURAL_TEXT": return "";
+		case "HISTORY_TOURNAMENT_SINGULAR_TEXT": return "";
+		case "HISTORY_TOURNAMENT_PLURAL_TEXT": return "";
 		// friends
 		case "FRIENDS_PROFILE_TEXT": return "";
-		case "FRIENDS_MATCHES_TEXT": return "";
+		case "FRIENDS_HISTORY_TEXT": return "";
 		case "FRIENDS_FRIENDS_TEXT": return "";
 		case "FRIENDS_MESSAGES_TEXT": return "";
 		case "FRIENDS_ONLINE_TEXT": return "";
@@ -67,7 +67,7 @@ function translateDutch(text: string): string {
 		case "FRIENDS_ADD_FRIEND_TEXT": return "";
 		// messages
 		case "MESSAGES_PROFILE_TEXT": return "";
-		case "MESSAGES_MATCHES_TEXT": return "";
+		case "MESSAGES_HISTORY_TEXT": return "";
 		case "MESSAGES_FRIENDS_TEXT": return "";
 		case "MESSAGES_MESSAGES_TEXT": return "";
 		case "MESSAGES_SEND_TEXT": return "";
@@ -117,7 +117,7 @@ function translateEnglish(text: string): string {
 		case "HOME_TITLE_TEXT": return "Welcome to Transcendence!";
 		// profile
 		case "PROFILE_PROFILE_TEXT": return "Profile";
-		case "PROFILE_MATCHES_TEXT": return "Matches";
+		case "PROFILE_HISTORY_TEXT": return "History";
 		case "PROFILE_FRIENDS_TEXT": return "Friends";
 		case "PROFILE_MESSAGES_TEXT": return "Messages";
 		case "PROFILE_CHANGE_AVATAR_TEXT": return "Change avatar";
@@ -138,19 +138,19 @@ function translateEnglish(text: string): string {
 		case "PROFILE_TOTP_INPUT_TEXT": return "And input the code below";
 		case "PROFILE_TOTP_CODE_TEXT": return "Code";
 		case "PROFILE_TOTP_VERIFY_TEXT": return "Verify";
-		// matches
-		case "MATCHES_PROFILE_TEXT": return "Profile";
-		case "MATCHES_MATCHES_TEXT": return "Matches";
-		case "MATCHES_FRIENDS_TEXT": return "Friends";
-		case "MATCHES_MESSAGES_TEXT": return "Messages";
-		case "MATCHES_WON_TEXT": return "Won";
-		case "MATCHES_MATCH_SINGULAR_TEXT": return "match";
-		case "MATCHES_MATCH_PLURAL_TEXT": return "matches";
-		case "MATCHES_TOURNAMENT_SINGULAR_TEXT": return "tournament";
-		case "MATCHES_TOURNAMENT_PLURAL_TEXT": return "tournaments";
+		// history
+		case "HISTORY_PROFILE_TEXT": return "Profile";
+		case "HISTORY_HISTORY_TEXT": return "History";
+		case "HISTORY_FRIENDS_TEXT": return "Friends";
+		case "HISTORY_MESSAGES_TEXT": return "Messages";
+		case "HISTORY_WON_TEXT": return "Won";
+		case "HISTORY_MATCH_SINGULAR_TEXT": return "match";
+		case "HISTORY_MATCH_PLURAL_TEXT": return "matches";
+		case "HISTORY_TOURNAMENT_SINGULAR_TEXT": return "tournament";
+		case "HISTORY_TOURNAMENT_PLURAL_TEXT": return "tournaments";
 		// friends
 		case "FRIENDS_PROFILE_TEXT": return "Profile";
-		case "FRIENDS_MATCHES_TEXT": return "Matches";
+		case "FRIENDS_HISTORY_TEXT": return "History";
 		case "FRIENDS_FRIENDS_TEXT": return "Friends";
 		case "FRIENDS_MESSAGES_TEXT": return "Messages";
 		case "FRIENDS_ONLINE_TEXT": return "Online";
@@ -161,7 +161,7 @@ function translateEnglish(text: string): string {
 		case "FRIENDS_ADD_FRIEND_TEXT": return "Add friend";
 		// messages
 		case "MESSAGES_PROFILE_TEXT": return "Profile";
-		case "MESSAGES_MATCHES_TEXT": return "Matches";
+		case "MESSAGES_HISTORY_TEXT": return "History";
 		case "MESSAGES_FRIENDS_TEXT": return "Friends";
 		case "MESSAGES_MESSAGES_TEXT": return "Messages";
 		case "MESSAGES_SEND_TEXT": return "Send";
@@ -211,7 +211,7 @@ function translatePolish(text: string): string {
 		case "HOME_TITLE_TEXT": return "Witamy w projekcie Transcendence!";
 		// profile
 		case "PROFILE_PROFILE_TEXT": return "";
-		case "PROFILE_MATCHES_TEXT": return "";
+		case "PROFILE_HISTORY_TEXT": return "";
 		case "PROFILE_FRIENDS_TEXT": return "";
 		case "PROFILE_MESSAGES_TEXT": return "";
 		case "PROFILE_CHANGE_AVATAR_TEXT": return "";
@@ -232,19 +232,19 @@ function translatePolish(text: string): string {
 		case "PROFILE_TOTP_INPUT_TEXT": return "";
 		case "PROFILE_TOTP_CODE_TEXT": return "";
 		case "PROFILE_TOTP_VERIFY_TEXT": return "";
-		// matches
-		case "MATCHES_PROFILE_TEXT": return "";
-		case "MATCHES_MATCHES_TEXT": return "";
-		case "MATCHES_FRIENDS_TEXT": return "";
-		case "MATCHES_MESSAGES_TEXT": return "";
-		case "MATCHES_WON_TEXT": return "";
-		case "MATCHES_MATCH_SINGULAR_TEXT": return "";
-		case "MATCHES_MATCH_PLURAL_TEXT": return "";
-		case "MATCHES_TOURNAMENT_SINGULAR_TEXT": return "";
-		case "MATCHES_TOURNAMENT_PLURAL_TEXT": return "";
+		// history
+		case "HISTORY_PROFILE_TEXT": return "";
+		case "HISTORY_HISTORY_TEXT": return "";
+		case "HISTORY_FRIENDS_TEXT": return "";
+		case "HISTORY_MESSAGES_TEXT": return "";
+		case "HISTORY_WON_TEXT": return "";
+		case "HISTORY_MATCH_SINGULAR_TEXT": return "";
+		case "HISTORY_MATCH_PLURAL_TEXT": return "";
+		case "HISTORY_TOURNAMENT_SINGULAR_TEXT": return "";
+		case "HISTORY_TOURNAMENT_PLURAL_TEXT": return "";
 		// friends
 		case "FRIENDS_PROFILE_TEXT": return "";
-		case "FRIENDS_MATCHES_TEXT": return "";
+		case "FRIENDS_HISTORY_TEXT": return "";
 		case "FRIENDS_FRIENDS_TEXT": return "";
 		case "FRIENDS_MESSAGES_TEXT": return "";
 		case "FRIENDS_ONLINE_TEXT": return "";
@@ -255,7 +255,7 @@ function translatePolish(text: string): string {
 		case "FRIENDS_ADD_FRIEND_TEXT": return "";
 		// messages
 		case "MESSAGES_PROFILE_TEXT": return "";
-		case "MESSAGES_MATCHES_TEXT": return "";
+		case "MESSAGES_HISTORY_TEXT": return "";
 		case "MESSAGES_FRIENDS_TEXT": return "";
 		case "MESSAGES_MESSAGES_TEXT": return "";
 		case "MESSAGES_SEND_TEXT": return "";

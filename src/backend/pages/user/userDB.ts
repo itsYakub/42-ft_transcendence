@@ -18,6 +18,7 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		UserID INTEGER PRIMARY KEY AUTOINCREMENT,
 		Nick TEXT UNIQUE NOT NULL,
 		Email TEXT,
+		RoomID TEXT,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
 		Online INTEGER NOT NULL DEFAULT 1,
 		Avatar TEXT,
@@ -65,7 +66,8 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): any {
 				totpSecret: user.TOTPSecret,
 				totpVerified: user.TOTPVerified,
 				totpEmail: user.TOTPEmail,
-				type: user.Type
+				type: user.Type,
+				roomID: user.RoomID
 			}
 		};
 	}
@@ -111,7 +113,8 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 					totpSecret: user.TOTPSecret,
 					totpVerified: user.TOTPVerified,
 					totpEmail: user.TOTPEmail,
-					type: user.Type
+					type: user.Type,
+					roomID: user.RoomID
 				}
 			};
 		}
@@ -412,10 +415,30 @@ export function markUserOnline(db: DatabaseSync, id: number) {
 	}
 }
 
-export function markUserOffline(db: DatabaseSync, id: number) {
+export function markUserOffline(db: DatabaseSync, user: any) {
 	try {
 		const select = db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
-		select.run(id);
+		select.run(user.id);
+		return {
+			code: 200,
+			message: "SUCCESS"
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+export function markUserOffline2(db: DatabaseSync, user: any) {
+	try {
+		let select = db.prepare("UPDATE Rooms SET Players = Players - 1 WHERE RoomID = ?");
+		select.run(user.roomID);
+		console.log(`User ${user.nick} left ${user.roomID}`);
+		select = db.prepare("UPDATE Users SET RoomID = NULL WHERE UserID = ?");
+		select.run(user.id);
 		return {
 			code: 200,
 			message: "SUCCESS"

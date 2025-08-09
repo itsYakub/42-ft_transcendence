@@ -11,10 +11,10 @@ export function profileFunctions() {
 		}, { once: true });
 	}
 
-	const matchesButton = document.getElementById("matchesButton");
-	if (matchesButton) {
-		matchesButton.addEventListener("click", () => {
-			navigate("/matches");
+	const historyButton = document.getElementById("historyButton");
+	if (historyButton) {
+		historyButton.addEventListener("click", () => {
+			navigate("/history");
 		}, { once: true });
 	}
 

@@ -3,7 +3,7 @@ import { navigate, showAlert } from "./index.js";
 export function MessagesFunctions() {
 	const messageButtons = document.getElementsByClassName("messageUserButton");
 	for (var i = 0; i < messageButtons.length; i++) {
-		messageButtons[i].addEventListener("click", async function () {
+		messageButtons[i].addEventListener("click", async function() {
 			navigate(`/messages/${this.dataset.id}`);
 		});
 	}

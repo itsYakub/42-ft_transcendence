@@ -6,6 +6,7 @@ import { addTournament, getTournamentByCode, updateTournament } from './tourname
 import { tournamentMatchHtml } from './tournamentMatchHtml.js';
 import { noUser } from '../home/homeRoutes.js';
 import { localTournamentHtml } from './localTournamentHtml.js';
+import { joinRoom } from '../play/playDB.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament/local', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -43,6 +44,30 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 
 		const frame = frameHtml(params, html);
 		return reply.type("text/html").send(frame);
+	});
+
+	fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+		const language = request.cookies.language ?? "english";
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUser(userResponse, language));
+
+		const { id } = request.params as any;
+
+		markUserOnline(db, userResponse.user.id);
+
+		const roomResponse = joinRoom(db, {
+			roomID: id,
+			userID: userResponse.user.id
+		});
+
+		// const tournament = getTournamentByCode(db, id);
+		// const params = { user: response.user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };
+
+		// const html = tournamentMatchHtml(params);
+
+		// const frame = frameHtml(params, html);
+		return reply.type("text/html").send(userResponse.user.nick);
 	});
 
 	fastify.post('/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {

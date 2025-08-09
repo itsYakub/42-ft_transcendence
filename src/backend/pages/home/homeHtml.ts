@@ -40,9 +40,9 @@ function homeString(): string {
 					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 					Wipe users
 				</button>
-				<button id="wipeMatchesButton"
+				<button id="wipeHistoryButton"
 					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
-					Wipe matches
+					Wipe history
 				</button>
 				<button id="wipeFriendsButton"
 					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
@@ -56,15 +56,19 @@ function homeString(): string {
 					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 					Wipe messages
 				</button>
+				<button id="wipeRoomsButton"
+					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+					Wipe rooms
+				</button>
 			</div>
 			<div class="flex flex-col justify-between">
 				<button id="addMockUsersButton"
 					class="block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
 					Add mock users
 				</button>
-				<button id="addMockMatchesButton"
+				<button id="addMockHistoryButton"
 					class="block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
-					Add mock matches
+					Add mock history
 				</button>
 				<button id="addMockFriendsButton"
 					class="block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">

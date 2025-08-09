@@ -9,7 +9,7 @@ export function profileHtml({ user, language }): string {
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "MESSAGES", "USER_PROFILE", "CHANGE_AVATAR", "CHANGE_NICK",
+	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "USER_PROFILE", "CHANGE_AVATAR", "CHANGE_NICK",
 		"CHANGE_PASSWORD", "NEW_NICK", "CURRENT_PASSWORD", "NEW_PASSWORD", "REPEAT_PASSWORD", "UPDATE", "TOKENS",
 		"ENABLE_TOTP", "DISABLE_TOTP", "LOGOUT", "INVALIDATE_TOKEN", "TOTP_TITLE", "TOTP_SCAN", "TOTP_INPUT", 
 		"TOTP_CODE", "TOTP_VERIFY", ];
@@ -32,8 +32,8 @@ function profileString(user: any): string {
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"
 						class="text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%PROFILE_PROFILE_TEXT%%</button>
-					<button id="matchesButton"
-						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%PROFILE_MATCHES_TEXT%%</button>
+					<button id="historyButton"
+						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%PROFILE_HISTORY_TEXT%%</button>
 					<button id="friendsButton"
 						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%PROFILE_FRIENDS_TEXT%%</button>
 					<button id="messagesButton"

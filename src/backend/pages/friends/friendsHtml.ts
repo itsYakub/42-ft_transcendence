@@ -13,7 +13,7 @@ export function friendsHtml(friends: any, { user, language }): string {
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "MATCHES", "FRIENDS", "MESSAGES", "ONLINE", "OFFLINE", "REMOVE", "ADD_FRIEND", 
+	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "ONLINE", "OFFLINE", "REMOVE", "ADD_FRIEND", 
 		"ADD_TITLE", "ADD_EMAIL"];
 
 	toBeTranslated.forEach((text) => {
@@ -34,8 +34,8 @@ function friendsString(friendlist: string): string {
 				<div class="flex flex-col items-end content-end mt-8">
 					<button id="profileButton"
 						class="cursor-pointer text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%FRIENDS_PROFILE_TEXT%%</button>
-					<button id="matchesButton"
-						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%FRIENDS_MATCHES_TEXT%%</button>
+					<button id="historyButton"
+						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%FRIENDS_HISTORY_TEXT%%</button>
 					<button id="friendsButton"
 						class="text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%FRIENDS_FRIENDS_TEXT%%</button>
 					<button id="messagesButton"

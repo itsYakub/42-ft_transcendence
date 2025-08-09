@@ -1,5 +1,4 @@
 import { DatabaseSync } from "node:sqlite";
-import { addMatch } from "../matches/matchesDB.js";
 
 export function initTournaments(db: DatabaseSync, dropTournaments: boolean): void {
 	if (dropTournaments)

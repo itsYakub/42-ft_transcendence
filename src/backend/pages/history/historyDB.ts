@@ -1,11 +1,11 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initMatches(db: DatabaseSync, dropMatches: boolean): void {
+export function initHistory(db: DatabaseSync, dropMatches: boolean): void {
 	if (dropMatches)
-		db.exec(`DROP TABLE IF EXISTS Matches;`);
+		db.exec(`DROP TABLE IF EXISTS History;`);
 
 	db.exec(`
-		CREATE TABLE IF NOT EXISTS Matches (
+		CREATE TABLE IF NOT EXISTS History (
 		MatchID INTEGER PRIMARY KEY AUTOINCREMENT,
 		UserID INTEGER NOT NULL,
 		P2Name TEXT NOT NULL,
@@ -19,9 +19,9 @@ export function initMatches(db: DatabaseSync, dropMatches: boolean): void {
 /*
 	Gets all the user's matches
 */
-export function getMatches(db: DatabaseSync, id: number): any {
+export function getHistory(db: DatabaseSync, id: number): any {
 	try {
-		const select = db.prepare("SELECT * FROM Matches WHERE UserID = ? ORDER BY PlayedAt DESC");
+		const select = db.prepare("SELECT * FROM History WHERE UserID = ? ORDER BY PlayedAt DESC");
 		const matches = select.all(id);
 		return {
 			code: 200,
@@ -36,9 +36,9 @@ export function getMatches(db: DatabaseSync, id: number): any {
 	}
 }
 
-export function addMatch(db: DatabaseSync, { id, p2Name, score, p2Score, tournamentWin}, date: Date = new Date()): any {
+export function addHistory(db: DatabaseSync, { id, p2Name, score, p2Score, tournamentWin}, date: Date = new Date()): any {
 	try {
-		const select = db.prepare("INSERT INTO Matches (UserID, P2Name, Score, P2Score, TournamentWin, PlayedAt) VALUES (?, ?, ?, ?, ?, ?)");
+		const select = db.prepare("INSERT INTO History (UserID, P2Name, Score, P2Score, TournamentWin, PlayedAt) VALUES (?, ?, ?, ?, ?, ?)");
 		select.run(id, p2Name, score, p2Score, tournamentWin ? 1 : 0, date.toISOString());
 		return {
 			code: 200,
