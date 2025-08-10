@@ -1,0 +1,22 @@
+networks:
+  transcendence-net:
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: .
+    image: transcendence:latest
+    container_name: transcendence
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: "3000"
+      DB: "/data/transcendence.db"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    networks:
+      - transcendence-net
