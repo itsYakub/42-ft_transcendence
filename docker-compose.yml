@@ -37,15 +37,15 @@ services:
       # WAF listening ports
       PORT: "8080"
       SSL_PORT: "8443"
-      SERVER_NAME: "localhost" # domain here (prolly gon be transcendence)
+      SERVER_NAME: "transcendence" # domain
       NGINX_ALWAYS_TLS_REDIRECT: "on"
 
-      # blocking tuning, to be setup according to our needs
-      MODSEC_RULE_ENGINE: "On" # "DetectionOnly" -> for log validation / testing
-      DETECTION_PARANOIA: "1"
-      BLOCKING_PARANOIA: "1" # > blocks at score >= 5
-      ANOMALY_INBOUND: "5"
-      ANOMALY_OUTBOUND: "5"
+      # CORE SETUP
+      MODSEC_RULE_ENGINE: "On" # if u want 2 do some log validation / testing, set "DetectionOnly"
+      DETECTION_PARANOIA: "2"
+      BLOCKING_PARANOIA: "2"
+      ANOMALY_INBOUND: "4"
+      ANOMALY_OUTBOUND: "4"
 
     ports:
       - "80:8080"

