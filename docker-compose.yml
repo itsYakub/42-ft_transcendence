@@ -8,15 +8,50 @@ services:
       context: .
     image: transcendence:latest
     container_name: transcendence
-    ports:
-      - "3000:3000"
+    # NO PORT MAPPING please DONT change this
+    # app shall be accessible ONLY through our WAF proxy
     env_file:
       - .env
     environment:
       PORT: "3000"
+      HOST: "0.0.0.0"
       DB: "/data/transcendence.db"
     volumes:
       - ./data:/data
+    expose:
+      - "3000"
+    restart: unless-stopped
+    networks:
+      - transcendence-net
+
+  waf:
+    image: owasp/modsecurity-crs:nginx
+    container_name: transcendence-waf
+    depends_on:
+      - app
+    environment:
+      # WAF <-> app comms 
+      # (They talk thru HTTP)
+      BACKEND: "http://app:3000"
+
+      # WAF listening ports
+      PORT: "8080"
+      SSL_PORT: "8443"
+      SERVER_NAME: "localhost" # domain here (prolly gon be transcendence)
+      NGINX_ALWAYS_TLS_REDIRECT: "on"
+
+      # blocking tuning, to be setup according to our needs
+      MODSEC_RULE_ENGINE: "On" # "DetectionOnly" -> for log validation / testing
+      DETECTION_PARANOIA: "1"
+      BLOCKING_PARANOIA: "1" # > blocks at score >= 5
+      ANOMALY_INBOUND: "5"
+      ANOMALY_OUTBOUND: "5"
+
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - ./waf/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     restart: unless-stopped
     networks:
       - transcendence-net

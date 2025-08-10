@@ -1,0 +1,2 @@
+curl -sk "https://localhost/?path=..%2F..%2Fsecret.txt"
+curl -sk "https://localhost/?path=/var/www/html/../../etc/hosts"

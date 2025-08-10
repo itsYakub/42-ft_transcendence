@@ -32,10 +32,11 @@ const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
 	ignoreTrailingSlash: true,
-	https: {
-		key: readFileSync(join(__dirname, 'transcendence.key')),
-		cert: readFileSync(join(__dirname, 'transcendence.crt'))
-	}
+	trustProxy: true,
+	// https: {
+	// 	key: readFileSync(join(__dirname, 'transcendence.key')),
+	// 	cert: readFileSync(join(__dirname, 'transcendence.crt'))
+	// }
 });
 
 /*
