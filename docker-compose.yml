@@ -37,7 +37,7 @@ services:
       # WAF listening ports
       PORT: "8080"
       SSL_PORT: "8443"
-      SERVER_NAME: "transcendence" # domain
+      SERVER_NAME: "transcendence" # domain "transcendence.nip.io"
       NGINX_ALWAYS_TLS_REDIRECT: "on"
 
       # CORE SETUP
