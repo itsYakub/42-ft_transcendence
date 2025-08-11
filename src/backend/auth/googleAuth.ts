@@ -45,7 +45,7 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
 			"Set-Cookie", `accessToken=${payload.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${payload.refreshToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).redirect("/");
+				"Set-Cookie", `refreshToken=${payload.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).redirect("/");
 	});
 
 	/* Converts the image blob into base64 */

@@ -23,8 +23,10 @@ export function devButtons() {
 			const response = await fetch("/dev/wipe/users", {
 				method: "GET"
 			});
-			if (response.ok)
+			if (response.ok) {
 				alert("Wiped users!");
+				navigate("/");
+			}
 			else
 				alert("Something went wrong!");
 		}, { once: true });

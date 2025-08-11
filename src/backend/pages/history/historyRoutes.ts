@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../user/userDB.js';
+import { getUser, leaveRoom, markUserOnline } from '../user/userDB.js';
 import { addHistory, getHistory } from './historyDB.js';
 import { historyHtml } from './historyHtml.js';
 import { noUser } from '../home/homeRoutes.js';
@@ -14,6 +14,7 @@ export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 			return reply.type("text/html").send(noUser(userResponse, language));
 
 		markUserOnline(db, userResponse.user.id);
+		leaveRoom(db, userResponse);
 
 		const matchesResponse = getHistory(db, userResponse.user.id);
 		if (matchesResponse.error) {

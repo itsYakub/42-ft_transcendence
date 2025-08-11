@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../user/userDB.js';
+import { getUser, leaveRoom, markUserOnline } from '../user/userDB.js';
 import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
 import * as OTPAuth from "otpauth";
 import encodeQR from 'qr';
@@ -11,14 +11,15 @@ import { noUser } from '../home/homeRoutes.js';
 export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
-		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUser(userResponse, language));
 
-		markUserOnline(db, response.user.id);
+		markUserOnline(db, userResponse.user.id);
+		leaveRoom(db, userResponse);
 
 		const params = {
-			user: response.user,
+			user: userResponse.user,
 			language
 		};
 		const html = profileHtml(params);

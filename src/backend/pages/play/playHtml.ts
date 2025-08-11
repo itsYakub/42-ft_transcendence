@@ -29,7 +29,7 @@ function playString(roomsHtmlString: string): string {
 		<div class="flex flex-row mx-auto justify-center">
 			<div class="w-95 flex flex-col gap-8 px-8">
 				<p class="text-gray-300 text-2xl">Join...</p>
-				<div class="flex flex-col border border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
+				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
 					${roomsHtmlString}
 				</div>
 			</div>
@@ -57,10 +57,10 @@ function roomsString(rooms): string {
 	return roomStrings;
 }
 
-function roomString(room): string {
+function roomString(room: any): string {
 	const type = room.MaxPlayers == 4 ? "tournament" : "match";
 
 	return `
-	<button class="joinRoomButton text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${room.RoomID}">${room.RoomID} ${room.Players}/${room.MaxPlayers}</button>
+	<button class="joinRoomButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${room.RoomID}">${room.RoomID} ${room.Players}/${room.MaxPlayers}</button>
 	`;
 }
