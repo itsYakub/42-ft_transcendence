@@ -137,5 +137,5 @@ dist
 # javascript
 *.js.map
 *.js
-
 db.AppImage
+dist

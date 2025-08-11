@@ -1,11 +1,16 @@
 {
-	"compilerOptions": {
-		"target": "ES2021",
-		"module": "ESNext",
-		"removeComments": true,
-		"moduleResolution": "node10"
-	},
 	"types": [
         "babylonjs"
-    ]
+    ],
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"target": "ES2021",
+		"outDir": "dist",
+		"rootDir": "src",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"allowImportingTsExtensions": false
+	}
 }
