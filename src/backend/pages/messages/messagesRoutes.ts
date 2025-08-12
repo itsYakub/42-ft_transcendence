@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { allOtherUsers, getUser, leaveRoom, markUserOnline } from '../user/userDB.js';
-import { noUser } from '../home/homeRoutes.js';
+import { noUserError } from '../home/homeRoutes.js';
 import { messagesHtml } from './messagesHtml.js';
 import { addMessage, getMessages, getMessageSenders } from './messagesDB.js';
 
@@ -11,7 +11,7 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 		const id = userResponse.user.id;
 
 		markUserOnline(db, id);
@@ -21,7 +21,7 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		const messageSendersResponse = getMessageSenders(db, id);
 		if (200 != messageSendersResponse.code)
-			return reply.type("text/html").send(noUser(messageSendersResponse, language));
+			return reply.type("text/html").send(noUserError(messageSendersResponse, language));
 
 		const params = {
 			user: userResponse.user,
@@ -43,7 +43,7 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 		const id = userResponse.user.id;
 
 		const { fromID } = request.params as any;
@@ -54,11 +54,11 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const usersResponse = allOtherUsers(db, id);
 		const messagesResponse = getMessages(db, id, fromID);
 		if (200 != messagesResponse.code)
-			return reply.type("text/html").send(noUser(messagesResponse, language));
+			return reply.type("text/html").send(noUserError(messagesResponse, language));
 
 		const messageSendersResponse = getMessageSenders(db, id);
 		if (200 != messageSendersResponse.code)
-			return reply.type("text/html").send(noUser(messageSendersResponse, language));
+			return reply.type("text/html").send(noUserError(messageSendersResponse, language));
 
 		const params = {
 			user: userResponse.user,
@@ -80,7 +80,7 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const params = JSON.parse(request.body as string);
 		params["fromID"] = userResponse.user.id;

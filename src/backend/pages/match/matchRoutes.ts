@@ -3,7 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
 import { localMatchHtml } from '../match/localMatchHtml.js';
-import { noUser } from '../home/homeRoutes.js';
+import { noUserError } from '../home/homeRoutes.js';
 import { joinRoom } from '../play/playDB.js';
 import { remoteTournamentHtml } from '../tournament/remoteTournament.js';
 
@@ -12,7 +12,7 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const language = request.cookies.language ?? "english";
 		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
+			return reply.type("text/html").send(noUserError(response, language));
 
 		markUserOnline(db, response.user.id);
 
@@ -29,7 +29,7 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const language = request.cookies.language ?? "english";
 		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
+			return reply.type("text/html").send(noUserError(response, language));
 
 	});
 
@@ -37,7 +37,7 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const { id } = request.params as any;
 
@@ -49,7 +49,7 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		});
 
 		if (200 != roomResponse.code)
-			return reply.type("text/html").send(noUser(roomResponse, language));
+			return reply.type("text/html").send(noUserError(roomResponse, language));
 
 		// const tournament = getTournamentByCode(db, id);
 		// const params = { user: response.user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };

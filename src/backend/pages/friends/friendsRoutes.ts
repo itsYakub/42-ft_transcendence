@@ -4,14 +4,14 @@ import { frameHtml } from '../frameHtml.js';
 import { getUser, getUserByEmail, leaveRoom, markUserOnline } from '../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendsDB.js';
 import { friendsHtml } from './friendsHtml.js';
-import { noUser } from '../home/homeRoutes.js';
+import { noUserError } from '../home/homeRoutes.js';
 
 export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		markUserOnline(db, userResponse.user.id);
 		leaveRoom(db, userResponse);

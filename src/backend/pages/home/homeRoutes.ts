@@ -14,7 +14,7 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language, "home"));
+			return reply.type("text/html").send(noUserError(userResponse, language, "home"));
 
 		markUserOnline(db, userResponse.user.id);
 		leaveRoom(db, userResponse);
@@ -39,7 +39,28 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 /*
 	If there is no user logged in/guest or a DB error
 */
-export function noUser(response: any, language: string, page: string = null) {
+export function noUserError(response: any, language: string, page: string = null) {
+	if (404 == response.code) {
+		const params = {
+			language
+		};
+
+		return frameHtml(params, userHtml(params));
+	}
+
+	const params = {
+		page,
+		language,
+		errorCode: response.code,
+		errorMessage: response.error
+	};
+	return frameHtml(params);
+}
+
+/*
+	If there is a user logged in/guest but some other error
+*/
+export function userError(response: any, language: string, page: string = null) {
 	if (404 == response.code) {
 		const params = {
 			language

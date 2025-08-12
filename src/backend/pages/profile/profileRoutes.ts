@@ -6,14 +6,14 @@ import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick,
 import * as OTPAuth from "otpauth";
 import encodeQR from 'qr';
 import { profileHtml } from './profileHtml.js';
-import { noUser } from '../home/homeRoutes.js';
+import { noUserError } from '../home/homeRoutes.js';
 
 export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		markUserOnline(db, userResponse.user.id);
 		leaveRoom(db, userResponse);
