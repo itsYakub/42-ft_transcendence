@@ -84,19 +84,6 @@ export function devButtons() {
 		}, { once: true });
 	}
 
-	const wipeRoomsButton = document.querySelector("#wipeRoomsButton")
-	if (wipeRoomsButton) {
-		wipeRoomsButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/wipe/rooms", {
-				method: "GET"
-			});
-			if (response.ok)
-				alert("Wiped rooms!");
-			else
-				alert("Something went wrong!");
-		}, { once: true });
-	}
-
 	const addMockUsersButton = document.querySelector("#addMockUsersButton")
 	if (addMockUsersButton) {
 		addMockUsersButton.addEventListener("click", async () => {

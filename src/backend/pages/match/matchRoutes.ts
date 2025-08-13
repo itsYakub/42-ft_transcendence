@@ -4,20 +4,21 @@ import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
 import { localMatchHtml } from '../match/localMatchHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
-import { joinRoom } from '../play/playDB.js';
-import { remoteTournamentHtml } from '../tournament/remoteTournament.js';
+import { joinRoom, roomPlayers } from '../play/playDB.js';
+import { matchHtml } from './matchHtml.js';
+import { getRoomMessages } from '../messages/messagesDB.js';
 
 export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/match/local', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
-		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != response.code)
-			return reply.type("text/html").send(noUserError(response, language));
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
-		markUserOnline(db, response.user.id);
+		markUserOnline(db, userResponse.user.id);
 
 		const params = {
-			user: response.user,
+			user: userResponse.user,
 			language
 		};
 
@@ -45,18 +46,31 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		const roomResponse = joinRoom(db, {
 			roomID: id,
-			userID: userResponse.user.id
+			user: userResponse.user
 		});
 
-		if (200 != roomResponse.code)
-			return reply.type("text/html").send(noUserError(roomResponse, language));
+		if (200 != roomResponse.code) {
+			const params = {
+				language,
+				user: userResponse.user,
+				errorCode: roomResponse.code,
+				errorMessage: roomResponse.error
+			};
+			return reply.type("text/html").send(frameHtml(params));
+		}
 
-		// const tournament = getTournamentByCode(db, id);
-		// const params = { user: response.user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };
+		userResponse.user["roomID"] = id;
+		const playersResponse = roomPlayers(db, { roomID: id });
+		const messagesResponse = getRoomMessages(db, id);
 
-		// const html = tournamentMatchHtml(params);
+		const params = {
+			players: playersResponse.players,
+			user: userResponse.user,
+			messages: messagesResponse.messages,
+			language
+		};
 
-		// const frame = frameHtml(params, html);
-		return reply.type("text/html").send("match");
+		const frame = frameHtml(params, matchHtml(params));
+		return reply.type("text/html").send(frame);
 	});
 }

@@ -48,7 +48,7 @@ async function login(email: string, password: string) {
 		const totpCodeForm = <HTMLFormElement>document.querySelector("#totpCodeForm");
 		if (totpCodeForm) {
 			totpCodeForm.code.addEventListener("keydown", (e: any) => {
-				if (e.key != "Enter" && isNaN(e.key))
+				if (!("Escape" == e.key || "Enter" == e.key || "Backspace" == e.key || "Delete" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key) && isNaN(e.key))
 					e.preventDefault();
 			});
 

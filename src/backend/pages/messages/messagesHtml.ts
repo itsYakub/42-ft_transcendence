@@ -48,19 +48,19 @@ function messagesString(users: any, messages: any, fromID: number): string {
 							</div>
 							<div class="bg-gray-700 w-0.5"></div>
 							<div class="flex flex-col grow pl-2">
-							${messages}
-							<div class="mt-2">
-								<form id="sendMessageForm">
-									<div class="flex flex-row gap-1">
-										<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-										<input type="submit" data-id="${fromID}" hidden>
-										<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${fromID}">%%MESSAGES_SEND_TEXT%%</button>
-									</div>
-								</form>
-							</div>						
-						</div>
+								${messages}
+								<div class="mt-2">
+									<form id="sendMessageForm">
+										<div class="flex flex-row gap-1">
+											<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
+											<input type="submit" data-id="${fromID}" hidden>
+											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${fromID}">%%MESSAGES_SEND_TEXT%%</button>
+										</div>
+									</form>
+								</div>						
+							</div>
+						</div>					
 					</div>
-					
 				</div>
 			</div>
 		</div>

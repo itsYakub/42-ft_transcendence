@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, getUserByEmail, leaveRoom, markUserOnline } from '../user/userDB.js';
+import { getUser, getUserByEmail, markUserOnline } from '../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendsDB.js';
 import { friendsHtml } from './friendsHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
+import { leaveRoom } from '../play/playDB.js';
 
 export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {

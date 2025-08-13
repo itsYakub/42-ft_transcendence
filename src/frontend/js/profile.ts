@@ -198,7 +198,7 @@ export function profileFunctions() {
 	const totpForm = <HTMLFormElement>document.querySelector("#totpForm");
 	if (totpForm) {
 		totpForm.code.addEventListener("keydown", (e: any) => {
-			if (e.key != "Enter" && isNaN(e.key))
+			if (!("Escape" == e.key || "Enter" == e.key || "Backspace" == e.key || "Delete" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key) && isNaN(e.key))
 				e.preventDefault();
 		});
 

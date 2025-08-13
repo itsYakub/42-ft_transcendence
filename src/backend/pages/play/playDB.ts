@@ -1,24 +1,12 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initRooms(db: DatabaseSync, dropRooms: boolean): void {
-	if (dropRooms)
-		db.exec(`DROP TABLE IF EXISTS Rooms;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS Rooms (
-		RoomID TEXT PRIMARY KEY,
-		Players INTEGER NOT NULL DEFAULT 0,
-		MaxPlayers INTEGER NOT NULL
-		);`);
-}
-
 export function getRooms(db: DatabaseSync) {
 	try {
-		const select = db.prepare("SELECT * FROM Rooms");
-		const rooms = select.all();
+		const select = db.prepare("SELECT RoomID, GROUP_CONCAT(Nick) AS Nicks FROM USERS WHERE NOT RoomID IS NULL GROUP BY RoomID");
+		const result = select.all();
 		return {
 			code: 200,
-			rooms
+			rooms: result
 		};
 	}
 	catch (e) {
@@ -29,11 +17,30 @@ export function getRooms(db: DatabaseSync) {
 	}
 }
 
-export function addRoom(db: DatabaseSync, { maxPlayers, userID }) {
+export function roomPlayers(db: DatabaseSync, { roomID }) {
 	try {
-		const roomID = Date.now().toString(36).substring(4);
-		const select = db.prepare("INSERT INTO ROOMS (RoomID, MaxPlayers) VALUES (?, ?)");
-		select.run(roomID, maxPlayers);
+		const select = db.prepare("SELECT UserID, Nick, Ready FROM USERS WHERE RoomID IS ?");
+		const players = select.all(roomID);
+		return {
+			code: 200,
+			message: "SUCCESS",
+			players
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+export function addToRoom(db: DatabaseSync, { roomID, user }) {
+	try {
+		if (user.roomID != roomID) {
+			const select = db.prepare(`UPDATE Users SET RoomID = ? WHERE UserID = ?;`);
+			select.run(roomID, user.id);
+		}
 		return {
 			code: 200,
 			message: "SUCCESS",
@@ -48,24 +55,42 @@ export function addRoom(db: DatabaseSync, { maxPlayers, userID }) {
 	}
 }
 
-export function joinRoom(db: DatabaseSync, { roomID, userID }) {
+export function joinRoom(db: DatabaseSync, { roomID, user }) {
 	try {
-		let select = db.prepare(`SELECT Players, MaxPlayers FROM Rooms WHERE RoomID = ?`);
-		const count = select.get(roomID);
-		if (count.Players == count.MaxPlayers)
+		let select = db.prepare(`SELECT COUNT(RoomID) AS count FROM Users WHERE RoomID = ?`);
+		const result = select.get(roomID);
+		if (0 == result.count)
+			return {
+				code: 404,
+				error: "ERR_NOT_FOUND"
+			};
+		
+		if (user.roomID != roomID && (2 == result.count && roomID.startsWith("m") || 4 == result.count && roomID.startsWith("t")))
 			return {
 				code: 423,
-				message: "ERR_FULL"
-			}
+				error: "ERR_FULL"
+			};
 
-		select = db.prepare(`UPDATE Users SET RoomID = ? WHERE UserID = ?;`);
-		select.run(roomID, userID);
-		select = db.prepare(`UPDATE Rooms SET Players = Players + 1 WHERE RoomID = ?;`);
-		select.run(roomID);
+		return addToRoom(db, {
+			roomID,
+			user
+		});
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+export function leaveRoom(db: DatabaseSync, { id }) {
+	try {
+		const select = db.prepare(`UPDATE Users SET RoomID = NULL, Ready = 0 WHERE UserID = ?`);
+		select.run(id);
 		return {
 			code: 200,
-			message: "SUCCESS",
-			roomID
+			message: "SUCCESS"
 		};
 	}
 	catch (e) {
@@ -76,10 +101,10 @@ export function joinRoom(db: DatabaseSync, { roomID, userID }) {
 	}
 }
 
-export function leaveRoom(db: DatabaseSync, { userID }) {
+export function makeReady(db: DatabaseSync, { id }) {
 	try {
-		const select = db.prepare(`UPDATE Users SET RoomID = NULL WHERE UserID = ?;`);
-		select.run(userID);
+		const select = db.prepare(`UPDATE Users SET Ready = 1 WHERE UserID = ?`);
+		select.run(id);
 		return {
 			code: 200,
 			message: "SUCCESS"

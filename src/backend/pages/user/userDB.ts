@@ -19,6 +19,7 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		Nick TEXT UNIQUE NOT NULL,
 		Email TEXT,
 		RoomID TEXT,
+		Ready INTEGER NOT NULL DEFAULT 0,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
 		Online INTEGER NOT NULL DEFAULT 1,
 		Avatar TEXT,
@@ -432,35 +433,7 @@ export function markUserOffline(db: DatabaseSync, user: any) {
 	}
 }
 
-export function leaveRoom(db: DatabaseSync, { user }) {
-	try {
-		const roomID = user.roomID
-		if (roomID) {
-			let select = db.prepare("UPDATE Users SET RoomID = NULL WHERE UserID = ?");
-			select.run(user.id);
-			select = db.prepare("SELECT Players FROM Rooms WHERE RoomID = ?");
-			const room = select.get(roomID);
-			if (room.Players as number > 1) {
-				select = db.prepare("UPDATE Rooms SET Players = ? WHERE RoomID = ?");
-				select.run(room.Players as number - 1, roomID);	
-			}
-			else {
-				select = db.prepare("DELETE FROM Rooms WHERE RoomID = ?");
-				select.run(roomID);
-			}
-		}
-		return {
-			code: 200,
-			message: "SUCCESS"
-		};
-	}
-	catch (e) {
-		return {
-			code: 500,
-			error: "ERR_DB"
-		};
-	}
-}
+
 
 export function markUserOffline2(db: DatabaseSync, user: any) {
 	try {

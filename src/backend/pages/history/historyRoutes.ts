@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, leaveRoom, markUserOnline } from '../user/userDB.js';
+import { getUser, markUserOnline } from '../user/userDB.js';
 import { addHistory, getHistory } from './historyDB.js';
 import { historyHtml } from './historyHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
+import { leaveRoom } from '../play/playDB.js';
 
 export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/history', async (request: FastifyRequest, reply: FastifyReply) => {

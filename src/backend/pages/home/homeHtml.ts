@@ -56,10 +56,6 @@ function homeString(): string {
 					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 					Wipe messages
 				</button>
-				<button id="wipeRoomsButton"
-					class="mx-auto block cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
-					Wipe rooms
-				</button>
 			</div>
 			<div class="flex flex-col justify-between">
 				<button id="addMockUsersButton"

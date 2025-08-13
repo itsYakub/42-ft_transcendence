@@ -2,9 +2,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { getUser, leaveRoom, markUserOnline } from '../user/userDB.js';
+import { getUser, markUserOnline } from '../user/userDB.js';
 import { homeHtml } from './homeHtml.js';
 import { userHtml } from '../user/userHtml.js';
+import { leaveRoom } from '../play/playDB.js';
 
 /*
 	Handles the home page route
