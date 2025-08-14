@@ -4,9 +4,11 @@ import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
 import { addTournament, getTournamentByCode, updateTournament } from './tournamentDB.js';
 import { tournamentMatchHtml } from './tournamentMatchHtml.js';
-import { noUser } from '../home/homeRoutes.js';
+import { noUserError } from '../home/homeRoutes.js';
 import { localTournamentHtml } from './localTournamentHtml.js';
-import { joinRoom } from '../play/playDB.js';
+import { joinRoom, roomPlayers } from '../play/playDB.js';
+import { getRoomMessages } from '../messages/messagesDB.js';
+import { tournamentHtml } from './tournamentHtml.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament/local', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -14,7 +16,7 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 
 		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
+			return reply.type("text/html").send(noUserError(response, language));
 
 		markUserOnline(db, response.user.id);
 
@@ -31,7 +33,7 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		const language = request.cookies.language ?? "english";
 		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language));
+			return reply.type("text/html").send(noUserError(response, language));
 
 		const { id } = request.params as any;
 
@@ -50,7 +52,7 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUser(userResponse, language));
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const { id } = request.params as any;
 
@@ -58,16 +60,32 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 
 		const roomResponse = joinRoom(db, {
 			roomID: id,
-			userID: userResponse.user.id
+			user: userResponse.user
 		});
 
-		// const tournament = getTournamentByCode(db, id);
-		// const params = { user: response.user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };
+		if (200 != roomResponse.code) {
+			const params = {
+				language,
+				user: userResponse.user,
+				errorCode: roomResponse.code,
+				errorMessage: roomResponse.error
+			};
+			return reply.type("text/html").send(frameHtml(params));
+		}
 
-		// const html = tournamentMatchHtml(params);
+		userResponse.user["roomID"] = id;
+		const playersResponse = roomPlayers(db, { roomID: id });
+		const messagesResponse = getRoomMessages(db, id);
 
-		// const frame = frameHtml(params, html);
-		return reply.type("text/html").send(userResponse.user.nick);
+		const params = {
+			players: playersResponse.players,
+			user: userResponse.user,
+			messages: messagesResponse.messages,
+			language
+		};
+
+		const frame = frameHtml(params, tournamentHtml(params));
+		return reply.type("text/html").send(frame);
 	});
 
 	fastify.post('/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {

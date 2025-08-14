@@ -23,8 +23,10 @@ export function devButtons() {
 			const response = await fetch("/dev/wipe/users", {
 				method: "GET"
 			});
-			if (response.ok)
+			if (response.ok) {
 				alert("Wiped users!");
+				navigate("/");
+			}
 			else
 				alert("Something went wrong!");
 		}, { once: true });
@@ -77,19 +79,6 @@ export function devButtons() {
 			});
 			if (response.ok)
 				alert("Wiped messages!");
-			else
-				alert("Something went wrong!");
-		}, { once: true });
-	}
-
-	const wipeRoomsButton = document.querySelector("#wipeRoomsButton")
-	if (wipeRoomsButton) {
-		wipeRoomsButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/wipe/rooms", {
-				method: "GET"
-			});
-			if (response.ok)
-				alert("Wiped rooms!");
 			else
 				alert("Something went wrong!");
 		}, { once: true });

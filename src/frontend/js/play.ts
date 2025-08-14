@@ -17,18 +17,18 @@ export function PlayFunctions() {
 	const remoteMatchButton = document.querySelector("#remoteMatchButton");
 	if (remoteMatchButton) {
 		remoteMatchButton.addEventListener("click", async () => {
-			const response = await fetch("/play/new", {
+			const roomID = `m${Date.now().toString(36).substring(5)}`;
+			const response = await fetch(`/play/new`, {
 				method: "POST",
-				body: JSON.stringify({ maxPlayers: 2 })
+				body: JSON.stringify({
+					roomID
+				})
 			});
-
 			const json = await response.json();
-			if (200 != json.code) {
-				showAlert(json.error);
-				return;
-			}
-
-			navigate(`/match/${json.roomID}`);
+			if (200 == json.code)
+				navigate(`/match/${roomID}`);
+			else
+				showAlert("ERR_DB");
 		});
 	}
 
@@ -42,18 +42,18 @@ export function PlayFunctions() {
 	const remoteTournamentButton = document.querySelector("#remoteTournamentButton");
 	if (remoteTournamentButton) {
 		remoteTournamentButton.addEventListener("click", async () => {
-			const response = await fetch("/play/new", {
+			const roomID = `t${Date.now().toString(36).substring(5)}`;
+			const response = await fetch(`/play/new`, {
 				method: "POST",
-				body: JSON.stringify({ maxPlayers: 4 })
+				body: JSON.stringify({
+					roomID
+				})
 			});
-
 			const json = await response.json();
-			if (200 != json.code) {
-				showAlert(json.error);
-				return;
-			}
-
-			navigate(`/tournament/${json.roomID}`);
+			if (200 == json.code)
+				navigate(`/tournament/${roomID}`);
+			else
+				showAlert("ERR_DB");
 		});
 	}
 

@@ -5,25 +5,23 @@ import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
 import { homeHtml } from './homeHtml.js';
 import { userHtml } from '../user/userHtml.js';
+import { leaveRoom } from '../play/playDB.js';
 
 /*
 	Handles the home page route
 */
 export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/#test', async (request: FastifyRequest, reply: FastifyReply) => {
-		console.log("test");
-	});
-
 	fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
-		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != response.code)
-			return reply.type("text/html").send(noUser(response, language, "home"));
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUserError(userResponse, language, "home"));
 
-		markUserOnline(db, response.user.id);
+		markUserOnline(db, userResponse.user.id);
+		leaveRoom(db, userResponse);
 
 		const params = {
-			user: response.user,
+			user: userResponse.user,
 			page: "home",
 			language
 		};
@@ -42,7 +40,28 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 /*
 	If there is no user logged in/guest or a DB error
 */
-export function noUser(response: any, language: string, page: string = null) {
+export function noUserError(response: any, language: string, page: string = null) {
+	if (404 == response.code) {
+		const params = {
+			language
+		};
+
+		return frameHtml(params, userHtml(params));
+	}
+
+	const params = {
+		page,
+		language,
+		errorCode: response.code,
+		errorMessage: response.error
+	};
+	return frameHtml(params);
+}
+
+/*
+	If there is a user logged in/guest but some other error
+*/
+export function userError(response: any, language: string, page: string = null) {
 	if (404 == response.code) {
 		const params = {
 			language

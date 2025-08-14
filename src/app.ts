@@ -26,7 +26,6 @@ import { userRoutes } from "./backend/pages/user/userRoutes.js";
 import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
 import { initMessages } from "./backend/pages/messages/messagesDB.js";
 import { matchRoutes } from "./backend/pages/match/matchRoutes.js";
-import { initRooms } from "./backend/pages/play/playDB.js";
 
 const __dirname = import.meta.dirname;
 
@@ -81,8 +80,7 @@ const dropTables = {
 	dropHistory: false,
 	dropTournaments: false,
 	dropChats: false,
-	dropMessages: false,
-	dropRooms: false
+	dropMessages: false
 };
 
 const db = new DatabaseSync(process.env.DB);
@@ -94,7 +92,6 @@ try {
 	initTournaments(db, dropTables.dropTournaments);
 	initChats(db, dropTables.dropChats);
 	initMessages(db, dropTables.dropMessages);
-	initRooms(db, dropTables.dropRooms);
 
 	homeRoutes(fastify, db);
 	userRoutes(fastify, db);
@@ -141,7 +138,7 @@ try {
 			process.exit(1);
 		}
 		//console.log(`Listening on https://${results[ip]}:${port}`);
-		console.log("Listening on 172.17.0.1.nip.io:3000");
+		console.log("Listening on https://172.17.0.1.nip.io:3000");
 	});
 }
 catch (e) {

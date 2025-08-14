@@ -10,7 +10,7 @@ export function playHtml(rooms, { user, language }): string {
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "START"];
+	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "START", "MATCH", "TOURNAMENT"];
 
 	toBeTranslated.forEach((text) => {
 		html = html.replaceAll(`%%PLAY_${text}_TEXT%%`, translateBackend({
@@ -25,11 +25,10 @@ function translate(html: string, language: string): string {
 function playString(roomsHtmlString: string): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
-		<h1 class="text-gray-300 pt-4 mb-8 text-4xl">Play</h1>
-		<div class="flex flex-row mx-auto justify-center">
+		<div class="flex flex-row h-150 mx-auto justify-center pt-8">
 			<div class="w-95 flex flex-col gap-8 px-8">
 				<p class="text-gray-300 text-2xl">Join...</p>
-				<div class="flex flex-col border border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
+				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
 					${roomsHtmlString}
 				</div>
 			</div>
@@ -50,17 +49,32 @@ function roomsString(rooms): string {
 	let roomStrings: string = "";
 
 	rooms.forEach(room => {
-		if (room.Players < room.MaxPlayers)
-			roomStrings += roomString(room);
+		roomStrings += roomString(room);
 	});
 
 	return roomStrings;
 }
 
-function roomString(room): string {
-	const type = room.MaxPlayers == 4 ? "tournament" : "match";
+function roomString(room: any): string {
+	const roomID: string = room.RoomID;
+	const players: string[] = room.Nicks.split(",");
+	if ((roomID.startsWith("t") && 4 == players.length) || (roomID.startsWith("m") && 2 == players.length))
+		return "";
+
+	const type = roomID.startsWith("t") ? "tournament" : "match";
+	const title = roomID.startsWith("t") ? "%%PLAY_TOURNAMENT_TEXT%%" : "%%PLAY_MATCH_TEXT%%";
+	let playersString = "";
+	players.forEach((name) => {
+		playersString += nameString(name);
+	});
 
 	return `
-	<button class="joinRoomButton text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${room.RoomID}">${room.RoomID} ${room.Players}/${room.MaxPlayers}</button>
+	<button class="joinRoomButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${roomID}"><span class="text-green-300">${title}</span>${playersString}</button>
+	`;
+}
+
+function nameString(player: string) {
+	return `
+	<div class="">${player}</div>
 	`;
 }

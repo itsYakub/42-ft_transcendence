@@ -7,7 +7,7 @@ export function initMessages(db: DatabaseSync, dropMessages: boolean): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Messages (
 		MessageID INTEGER PRIMARY KEY AUTOINCREMENT,
-		ToID INTEGER NOT NULL,
+		ToID TEXT NOT NULL,
 		FromID INTEGER NOT NULL,
 		Message TEXT NOT NULL,
 		SentAt TEXT NOT NULL
@@ -65,6 +65,26 @@ export function getMessages(db: DatabaseSync, toID: number, fromID: number): any
 }
 
 /*
+	Gets all the room's messages
+*/
+export function getRoomMessages(db: DatabaseSync, roomID: number): any {
+	try {
+		const select = db.prepare("SELECT FromID, Message, Nick FROM Messages INNER JOIN Users ON Users.UserID = Messages.FromID WHERE ToID = ? ORDER BY SentAt DESC");
+		const messages = select.all(roomID);
+		return {
+			code: 200,
+			messages
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+/*
 	Adds a private message (DM)
 */
 export function addMessage(db: DatabaseSync, { toID, fromID, message }): any {
@@ -72,7 +92,7 @@ export function addMessage(db: DatabaseSync, { toID, fromID, message }): any {
 		const select = db.prepare("INSERT INTO Messages (ToID, FromID, Message, SentAt) VALUES (?, ?, ?, ?)");
 		select.run(toID, fromID, message, new Date().toISOString());
 		return {
-			code: 201,
+			code: 200,
 			message: "SUCCESS"
 		};
 	}

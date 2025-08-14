@@ -11,6 +11,8 @@ TODO (Luke):
 - move key/cert
 - add emails to cloud
 - clean up tailwind
+- replace online detection with websockets - and roomIDs
+- delete guest on websocket disconnect?
 
 Page endpoints (all GET)
 -	/

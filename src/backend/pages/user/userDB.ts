@@ -19,6 +19,7 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		Nick TEXT UNIQUE NOT NULL,
 		Email TEXT,
 		RoomID TEXT,
+		Ready INTEGER NOT NULL DEFAULT 0,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
 		Online INTEGER NOT NULL DEFAULT 1,
 		Avatar TEXT,
@@ -431,6 +432,8 @@ export function markUserOffline(db: DatabaseSync, user: any) {
 		};
 	}
 }
+
+
 
 export function markUserOffline2(db: DatabaseSync, user: any) {
 	try {

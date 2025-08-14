@@ -5,7 +5,6 @@ import { addFriend, initFriends } from './pages/friends/friendsDB.js';
 import { addHistory, initHistory } from './pages/history/historyDB.js';
 import { initTournaments } from './pages/tournament/tournamentDB.js';
 import { addMessage, initMessages } from './pages/messages/messagesDB.js';
-import { initRooms } from './pages/play/playDB.js';
 
 const __dirname = import.meta.dirname;
 
@@ -46,10 +45,6 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
 	fastify.get("/dev/wipe/messages", async (request: FastifyRequest, reply: FastifyReply) => {
 		initMessages(db, true);
-	});
-
-	fastify.get("/dev/wipe/rooms", async (request: FastifyRequest, reply: FastifyReply) => {
-		initRooms(db, true);
 	});
 
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {

@@ -9,12 +9,13 @@ import { PlayFunctions } from "./play.js";
 import { chatFunctions } from "./chat.js";
 import { userFunctions } from "./user.js";
 import { MessagesFunctions } from "./messages.js";
+import { matchFunctions } from "./match.js";
 
 /*
 	Simulates moving to a new page
 */
 export async function navigate(url: string, updateHistory: boolean = true): Promise<void> {
-	
+
 	if (updateHistory)
 		history.pushState(null, null, url);
 
@@ -26,8 +27,8 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	document.querySelector('body').innerHTML = body.substring(start, end);
 	if (url.includes("/tournament/") || url.includes("/match/"))
 		fetch("/user/leave", {
-		method: "POST"
-	});
+			method: "POST"
+		});
 	addFunctions();
 }
 
@@ -51,6 +52,7 @@ export function addFunctions() {
 	MessagesFunctions();
 	PlayFunctions();
 	localMatchFunctions();
+	matchFunctions();
 
 	userFunctions();
 
@@ -64,7 +66,7 @@ export function addFunctions() {
 /*
 	Registers the functions and also shows an error if Google sign-in/up was unsuccessful
 */
-window.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 	if (-1 != document.cookie.indexOf("googleautherror=true")) {
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
@@ -78,11 +80,12 @@ window.addEventListener("DOMContentLoaded", () => {
 /*
 	Marks the user as offline when the url changes
 */
-window.addEventListener("beforeunload", (event) => {
+document.addEventListener("beforeunload", (event) => {
 	fetch("/user/leave", {
 		method: "POST"
 	});
 });
+
 
 export function showAlert(message: string) {
 	//const alertBanner = document.querySelector("#alertBanner");
