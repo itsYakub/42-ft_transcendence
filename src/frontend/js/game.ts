@@ -1,4 +1,4 @@
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from 'babylonjs'
 
 /*
 	Entry point for the game
@@ -78,7 +78,7 @@ export class Game {
 		/* Create a babylon layer
 		 * */
 		console.log('[ INFO ] Creating a babylon engine');
-		this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true } );
+		this.m_engine = new BABYLON.Engine(this.m_canvas, true, {preserveDrawingBuffer: true, stencil: true } );
 
 		console.log('[ INFO ] Creating a babylon scene');
 		this.m_scene = this.createScene();

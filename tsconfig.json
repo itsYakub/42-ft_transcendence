@@ -1,7 +1,4 @@
 {
-	"types": [
-        "babylonjs"
-    ],
 	"compilerOptions": {
 		"module": "ESNext",
 		"moduleResolution": "node",
@@ -12,5 +9,8 @@
 		"allowSyntheticDefaultImports": true,
 		"skipLibCheck": true,
 		"allowImportingTsExtensions": false
-	}
+	},
+	"types": [
+        "babylonjs"
+    ]
 }
