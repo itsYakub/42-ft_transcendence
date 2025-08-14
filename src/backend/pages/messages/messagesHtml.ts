@@ -4,7 +4,7 @@ export function messagesHtml({ users, messages, senders, fromID }, { user, langu
 	const userListHtml = userListString(users, senders, fromID);
 	const messageListHtml = messageListString(user.id, messages, fromID);
 
-	let html = messagesString(userListHtml, messageListHtml, fromID);
+	let html = messagesString(user, userListHtml, messageListHtml, fromID);
 	html = translate(html, language);
 
 	return html;
@@ -23,8 +23,9 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function messagesString(users: any, messages: any, fromID: number): string {
+function messagesString(user, users: any, messages: any, fromID: number): string {
 	return `
+	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">

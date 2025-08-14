@@ -10,6 +10,7 @@ import { chatFunctions } from "./chat.js";
 import { userFunctions } from "./user.js";
 import { MessagesFunctions } from "./messages.js";
 import { matchFunctions } from "./match.js";
+import { registerEvents, userJoinedRoom, userLeftRoom } from "./events.js";
 
 /*
 	Simulates moving to a new page
@@ -25,20 +26,34 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
-	if (url.includes("/tournament/") || url.includes("/match/"))
-		fetch("/user/leave", {
-			method: "POST"
-		});
+	raiseNavigationEvent();
 	addFunctions();
+}
+
+function raiseNavigationEvent() {
+	const data = <HTMLElement>document.querySelector("#data");
+	if (data) {
+		const userID = parseInt(data.dataset.id);
+		const roomID = data.dataset.room;
+		if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
+			userJoinedRoom({
+				userID,
+				roomID: "abc"
+			});
+		}
+		else
+			userLeftRoom({ userID });
+	}
 }
 
 /* 
 	Changes page on back/forward buttons
 */
 window.addEventListener('popstate', function (event) {
-	console.log(event);
 	navigate(window.location.pathname, false);
 });
+
+registerEvents();
 
 /*
 	Sets up all the listeners after navigating to a new page
@@ -74,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		showAlert("ERR_GOOGLE");
 		document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 	}
+	raiseNavigationEvent();
 	addFunctions();
 });
 
@@ -86,10 +102,7 @@ document.addEventListener("beforeunload", (event) => {
 	});
 });
 
-
 export function showAlert(message: string) {
-	//const alertBanner = document.querySelector("#alertBanner");
-	//alertBanner.classList += " hidden";
 	const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 	if (alertDialog) {
 		const closeAlertButton = document.querySelector("#closeAlertButton");
@@ -101,35 +114,3 @@ export function showAlert(message: string) {
 		alertDialog.showModal();
 	}
 }
-
-/*
-	A match has finished with a winner
-*/
-document.addEventListener("matchOver", async (e: CustomEvent) => {
-	if (document.location.href.includes("tournament")) {
-		const response = await fetch("/tournament/update", {
-			method: "POST",
-			body: JSON.stringify({
-				code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
-				p1Score: e.detail.p1Score,
-				p2Score: e.detail.p2Score
-			})
-		});
-		const json = await response.json();
-		if (!json.error)
-			navigate(document.location.href);
-	}
-	else if (document.location.href.includes("3000/play")) {
-		const response = await fetch("/match/add", {
-			method: "POST",
-			body: JSON.stringify({
-				score: e.detail.p1Score,
-				p2Score: e.detail.p2Score,
-				p2Name: e.detail.p2Name
-			})
-		});
-		const json = await response.json();
-		if (!json.error)
-			navigate(document.location.href);
-	}
-});

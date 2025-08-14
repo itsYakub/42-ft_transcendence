@@ -30,6 +30,7 @@ function matchString(players: any, messages: any, user: any): string {
 	});
 
 	return `
+	<span id="data" data-id="${user.id}" data-room="${user.roomID}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto">
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%PLAY_SINGLE_GAME_TEXT%%</h1>
 		<div class="flex flex-row h-150">

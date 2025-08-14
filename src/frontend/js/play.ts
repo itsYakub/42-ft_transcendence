@@ -8,12 +8,14 @@ export function PlayFunctions() {
 			navigate("/match/local")
 		});
 	}
+
 	const aiMatchButton = document.querySelector("#aiMatchButton");
 	if (aiMatchButton) {
 		aiMatchButton.addEventListener("click", () => {
 			//navigate("/match/local")
 		});
 	}
+	
 	const remoteMatchButton = document.querySelector("#remoteMatchButton");
 	if (remoteMatchButton) {
 		remoteMatchButton.addEventListener("click", async () => {

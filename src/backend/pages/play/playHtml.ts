@@ -3,7 +3,7 @@ import { translateBackend } from "../translations.js";
 
 export function playHtml(rooms, { user, language }): string {
 	const roomsHtmlString = roomsString(rooms);
-	let html = playString(roomsHtmlString);
+	let html = playString(user, roomsHtmlString);
 	html = translate(html, language);
 
 	return html + gameHtmlString();
@@ -22,8 +22,9 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function playString(roomsHtmlString: string): string {
+function playString(user: any, roomsHtmlString: string): string {
 	return `
+	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
 		<div class="flex flex-row h-150 mx-auto justify-center pt-8">
 			<div class="w-95 flex flex-col gap-8 px-8">

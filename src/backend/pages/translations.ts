@@ -1,6 +1,7 @@
 function translateDutch(text: string): string {
 	switch (text) {
-		// errors		
+		// errors
+		case "ERR_FORBIDDEN": return "!";
 		case "ERR_FULL": return "!";
 		case "ERR_NOT_FOUND": return "!";
 		// navbar, including register and log in dialogs
@@ -102,7 +103,8 @@ function translateDutch(text: string): string {
 
 function translateEnglish(text: string): string {
 	switch (text) {
-		// errors		
+		// errors
+		case "ERR_FORBIDDEN": return "Forbidden!";
 		case "ERR_FULL": return "Room full!";
 		case "ERR_NOT_FOUND": return "Not found!";
 		// navbar, including register and log in dialogs
@@ -204,7 +206,8 @@ function translateEnglish(text: string): string {
 
 function translatePolish(text: string): string {
 	switch (text) {
-		// errors		
+		// errors
+		case "ERR_FORBIDDEN": return "!";
 		case "ERR_FULL": return "!";
 		case "ERR_NOT_FOUND": return "!";
 		// navbar, including register and log in dialogs
