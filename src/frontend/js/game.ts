@@ -48,15 +48,25 @@ function endMatch(p1Score: number, p2Score: number, p2Name: string) {
  * */
 
 export class Game {
+	/* HTML DOM Elements
+	 * */
 	private m_dialog : HTMLDialogElement;
 	private	m_canvas : HTMLCanvasElement;
 
+	/* babylonjs elements
+	 * */
+	private	m_engine : BABYLON.Engine;
+	private	m_scene : BABYLON.Scene;
+
+	/* SECTION:
+	 *  Public Methods
+	 * */
+	
 	public	setupElements() {
 		/* Get the dialog element from the document
 		 * */
-		console.log('[ INFO ] Showing modal dialog');
+		console.log('[ INFO ] Referencing the modal dialog');
 		this.m_dialog = document.getElementById('gameDialog') as HTMLDialogElement;
-		this.m_dialog.showModal();
 
 		/* Create a canvas element and set it as the child of the dialog
 		 * */
@@ -65,18 +75,47 @@ export class Game {
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
 
-		console.log('[ INFO ] Appending canvas to dialog');
-		this.m_dialog.appendChild(this.m_canvas);
+		/* Create a babylon layer
+		 * */
+		console.log('[ INFO ] Creating a babylon engine');
+		this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true } );
 
-		console.log('[ INFO ] Game is set up');
+		console.log('[ INFO ] Creating a babylon scene');
+		this.m_scene = this.createScene();
+		
+		console.log('[ INFO ] Preparing the game');
+		this.m_dialog.appendChild(this.m_canvas);
+		this.m_dialog.showModal();
+		this.m_engine.runRenderLoop(() => this.m_scene.render());
+
+		console.log('[ INFO ] Game is running...');
 	}
 
-	public dispose() {
+	public	dispose() {
+		console.log('[ INFO ] Disposing babylon engine');
+		this.m_engine.stopRenderLoop();
+		this.m_engine.dispose();
+
 		console.log('[ INFO ] Removing canvas object from dialog');
 		this.m_dialog.removeChild(this.m_canvas);
+		
 		console.log('[ INFO ] Closing dialog');
 		this.m_dialog.close();
-		console.log('[ INFO ] Game is disposed');
+		
+		console.log('[ INFO ] Game is disposed...');
+	}
+
+	/* SECTION:
+	 *  Private Methods
+	 * */
+
+	private	createScene() {
+		let	scene = new BABYLON.Scene(this.m_engine);
+		let	camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -5), scene);
+        camera.setTarget(BABYLON.Vector3.Zero());
+
+		scene.clearColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1.0);
+		return (scene);
 	}
 }
 
