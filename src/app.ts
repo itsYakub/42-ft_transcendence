@@ -3,8 +3,6 @@ import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import fastifyWebsocket from "@fastify/websocket";
 import { userEndpoints } from "./backend/pages/user/userEndpoints.js";
-import { readFileSync } from "fs";
-import { join } from "path";
 import { DatabaseSync } from "node:sqlite";
 import { googleAuth } from "./backend/auth/googleAuth.js";
 import { getUser, initUsers } from "./backend/pages/user/userDB.js";
@@ -30,10 +28,7 @@ const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
 	ignoreTrailingSlash: true,
-	https: {
-		key: readFileSync(join(__dirname, 'transcendence.key')),
-		cert: readFileSync(join(__dirname, 'transcendence.crt'))
-	}
+	trustProxy: true
 });
 
 /*
@@ -120,11 +115,9 @@ try {
 			console.log(err);
 			process.exit(1);
 		}
-		//console.log("Listening on https://172.17.0.1.nip.io:3000");
 		console.log(`Listening on https://transcendence.nip.io:${port}`);
 	});
 }
 catch (e) {
 	console.log("Fatal error - exiting!");
 }
-
