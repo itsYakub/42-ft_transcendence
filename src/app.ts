@@ -120,7 +120,6 @@ try {
 			console.log(err);
 			process.exit(1);
 		}
-		//console.log(`Listening on https://${results[ip]}:${port}`);
 		//console.log("Listening on https://172.17.0.1.nip.io:3000");
 		console.log(`Listening on https://transcendence.nip.io:${port}`);
 	});

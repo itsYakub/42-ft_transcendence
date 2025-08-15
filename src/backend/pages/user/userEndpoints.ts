@@ -36,16 +36,16 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
-		const response = loginUser(db, JSON.parse(request.body as string));
-		if (response.error) {
+		const userResponse = loginUser(db, JSON.parse(request.body as string));
+		if (200 != userResponse.code) {
 			const date = new Date();
 			date.setDate(date.getDate() - 3);
 			return reply.header(
 				"Set-Cookie", `accessToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).header(
-					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(response);
+					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(userResponse);
 		}
 
-		if (response.totpEnabled) {
+		if (userResponse.user.totpEnabled) {
 			return reply.send({
 				code: 200,
 				message: "SUCCESS",
@@ -58,8 +58,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${response.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${response.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+			"Set-Cookie", `accessToken=${userResponse.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${userResponse.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
 					code: 200,
 					message: "SUCCESS",
 					totpEnabled: false
@@ -138,5 +138,16 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 == userResponse.code)
 			markUserOffline2(db, userResponse.user);
+	});
+
+	fastify.get("/user/id", async (request: FastifyRequest, reply: FastifyReply) => {
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.send(userResponse);
+
+		return reply.send({
+			code: 200,
+			id: userResponse.user.id
+		});
 	});
 }

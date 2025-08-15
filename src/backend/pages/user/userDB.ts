@@ -243,31 +243,26 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 */
 export function loginUser(db: DatabaseSync, { email, password }) {
 	try {
-		const user = getUserByEmail(db, email);
-		if (user.error) {
-			return user;
-		}
+		const userResponse = getUserByEmail(db, email);
+		if (200 != userResponse.code)
+			return userResponse;
 
-		// if (1 == user.totpEnabled) {
-		// 	return user;
-		// }
-
-		if (compareSync(password, user.password)) {
-			const token = refreshToken(user.id);
+		if (compareSync(password, userResponse.user.password)) {
+			const token = refreshToken(userResponse.user.id);
 			updateRefreshtoken(db, {
-				id: user.id, refreshToken: token
+				id: userResponse.user.id, refreshToken: token
 			});
 			return {
 				code: 200,
 				user: {
-					nick: user.nick,
-					email: user.email,
-					avatar: user.avatar,
-					accessToken: accessToken(user.id),
-					refreshToken: token,
-					totpEnabled: user.totpEnabled,
-					totpSecret: user.totpSecret
-				}
+					nick: userResponse.user.nick,
+					email: userResponse.user.email,
+					avatar: userResponse.user.avatar,
+					totpEnabled: userResponse.user.totpEnabled,
+					totpSecret: userResponse.user.totpSecret
+				},
+				accessToken: accessToken(userResponse.user.id),
+				refreshToken: token
 			}
 		}
 		return {

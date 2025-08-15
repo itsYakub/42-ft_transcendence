@@ -87,10 +87,8 @@ async function login(email: string, password: string) {
 		showAlert(payloadJson.error);
 		return;
 	}
-	else {
-		console.log("user no totp", payloadJson);
+	else
 		navigate("/");
-	}
 }
 
 async function register(email: string, password: string) {
@@ -137,8 +135,5 @@ async function guestLogin() {
 		showAlert(json.error);
 		return;
 	}
-
-console.log("guest", json);
 	navigate("/");
 }
-

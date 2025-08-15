@@ -16,8 +16,8 @@ export function chatRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
 		const userId = 'Anonymous';
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		console.log(userResponse);
+		//const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		//console.log(userResponse);
 		socket.on("open", () => {
 			//mark online
 
@@ -69,9 +69,7 @@ export function chatRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		socket.on("close", () => {
 			// mark offline
-			// fetch("/user/leave", {
-			// 	method: "POST"
-			// });
+			// leave room
 			console.log(`❌ WebSocket disconnected: ${userId}`);
 		});
 	});

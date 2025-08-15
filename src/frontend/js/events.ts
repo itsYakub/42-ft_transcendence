@@ -1,6 +1,11 @@
+import { ExecFileSyncOptionsWithBufferEncoding } from "node:child_process";
 import { navigate } from "./index.js";
 
 interface navigatedDetail {
+	page: string
+}
+
+interface userNavigatedDetail {
 	userID: number,
 	page: string
 }
@@ -19,20 +24,26 @@ interface leftRoomEventDetail {
 	userID: number
 }
 
-export function userNavigated(detail: navigatedDetail) {
-	const event = new CustomEvent("onNavigated", {
-		detail
-	});
+export function navigated(detail: navigatedDetail) {
 
-	window.dispatchEvent(event);
 }
 
-export function userLoggedIn(detail: loggedInDetail) {
-	const event = new CustomEvent("onLoggedIn", {
-		detail
-	});
+export async function userNavigated(detail: navigatedDetail) {
+	console.log("navigated");
+	const userResponse = await fetch("/user/id");
+	const json = await userResponse.json();
+	if (200 == json.code) {
+		const params: userNavigatedDetail = {
+				userID: json.id,
+				page: detail.page
+		}
+		
+		const event = new CustomEvent("onUserNavigated", {
+			detail: params
+		});
 
-	window.dispatchEvent(event);
+		window.dispatchEvent(event);
+	}
 }
 
 export function userJoinedRoom(detail: joinedRoomEventDetail) {
@@ -71,6 +82,10 @@ export function registerEvents() {
 			else
 				userLeftRoom({ userID });
 		}
+	});
+
+	document.addEventListener("onUserNavigated", (e: CustomEvent) => {
+		console.log(`User ${e.detail.userID} navigated to ${e.detail.page}`);
 	});
 
 	/*
