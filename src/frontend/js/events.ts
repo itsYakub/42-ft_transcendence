@@ -1,23 +1,49 @@
 import { navigate } from "./index.js";
 
-interface joinedRoomEventDetails {
+interface navigatedDetail {
+	userID: number,
+	page: string
+}
+
+interface loggedInDetail {
+	userID: number,
+	nick: string
+}
+
+interface joinedRoomEventDetail {
 	userID: number,
 	roomID: string
 }
 
-interface leftRoomEventDetails {
+interface leftRoomEventDetail {
 	userID: number
 }
 
-export function userJoinedRoom(detail: joinedRoomEventDetails) {
-	const event = new CustomEvent("onRoomJoined", {
+export function userNavigated(detail: navigatedDetail) {
+	const event = new CustomEvent("onNavigated", {
 		detail
-	})
+	});
 
 	window.dispatchEvent(event);
 }
 
-export function userLeftRoom(detail: leftRoomEventDetails) {
+export function userLoggedIn(detail: loggedInDetail) {
+	const event = new CustomEvent("onLoggedIn", {
+		detail
+	});
+
+	window.dispatchEvent(event);
+}
+
+export function userJoinedRoom(detail: joinedRoomEventDetail) {
+	const event = new CustomEvent("onRoomJoined", {
+		detail
+	});
+
+	window.dispatchEvent(event);
+}
+
+export function userLeftRoom(detail: leftRoomEventDetail) {
 	const event = new CustomEvent("onRoomLeft", {
 		detail
 	})
@@ -27,6 +53,25 @@ export function userLeftRoom(detail: leftRoomEventDetails) {
 }
 
 export function registerEvents() {
+
+	/*
+		A user has changed the page
+	*/
+	document.addEventListener("onNavigated", (e: CustomEvent) => {
+		const data = <HTMLElement>document.querySelector("#data");
+		if (data) {
+			const userID = parseInt(data.dataset.id);
+			const roomID = data.dataset.room;
+			if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
+				userJoinedRoom({
+					userID,
+					roomID
+				});
+			}
+			else
+				userLeftRoom({ userID });
+		}
+	});
 
 	/*
 		A user has navigated to a room

@@ -16,7 +16,8 @@ import { registerEvents, userJoinedRoom, userLeftRoom } from "./events.js";
 	Simulates moving to a new page
 */
 export async function navigate(url: string, updateHistory: boolean = true): Promise<void> {
-
+	if ("/" == url)
+		console.log("possible log in");
 	if (updateHistory)
 		history.pushState(null, null, url);
 
@@ -72,7 +73,7 @@ export function addFunctions() {
 	userFunctions();
 
 	// sockets
-	// chatFunctions();
+	chatFunctions();
 
 	// remove!
 	devButtons();
@@ -82,6 +83,7 @@ export function addFunctions() {
 	Registers the functions and also shows an error if Google sign-in/up was unsuccessful
 */
 document.addEventListener("DOMContentLoaded", () => {
+	console.log("loaded");
 	if (-1 != document.cookie.indexOf("googleautherror=true")) {
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
@@ -91,15 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 	raiseNavigationEvent();
 	addFunctions();
-});
-
-/*
-	Marks the user as offline when the url changes
-*/
-document.addEventListener("beforeunload", (event) => {
-	fetch("/user/leave", {
-		method: "POST"
-	});
 });
 
 export function showAlert(message: string) {

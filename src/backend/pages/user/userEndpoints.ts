@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOffline2 } from './userDB.js';
+import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOffline2, markUserOnline } from './userDB.js';
 import * as OTPAuth from "otpauth";
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -120,6 +120,12 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 					code: 200,
 					message: "SUCCESS"
 				});
+	});
+
+	fastify.post("/user/join", async (request: FastifyRequest, reply: FastifyReply) => {
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 == userResponse.code)
+			markUserOnline(db, userResponse.user);
 	});
 
 	fastify.post("/user/leave", async (request: FastifyRequest, reply: FastifyReply) => {

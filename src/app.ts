@@ -21,7 +21,6 @@ import { profileRoutes } from "./backend/pages/profile/profileRoutes.js";
 import { playRoutes } from "./backend/pages/play/playRoutes.js";
 import { initChats } from "./backend/pages/chat/chatDB.js";
 import { chatRoutes } from "./backend/pages/chat/chatRoutes.js";
-import { networkInterfaces } from 'os';
 import { userRoutes } from "./backend/pages/user/userRoutes.js";
 import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
 import { initMessages } from "./backend/pages/messages/messagesDB.js";
@@ -110,22 +109,6 @@ try {
 	// Remove!
 	devEndpoints(fastify, db);
 
-	// const nets = networkInterfaces();
-	// const results = {};
-
-	// for (const name of Object.keys(nets)) {
-	// 	for (const net of nets[name]) {
-	// 		const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
-	// 		if (net.family === familyV4Value && !net.internal) {
-	// 			if (!results[name]) {
-	// 				results[name] = [];
-	// 			}
-	// 			results[name].push(net.address);
-	// 		}
-	// 	}
-	// }
-
-	// const ip = Object.keys(results)[0];
 	const port = parseInt(process.env.PORT ?? "3000");
 
 	// Start listening
@@ -138,7 +121,8 @@ try {
 			process.exit(1);
 		}
 		//console.log(`Listening on https://${results[ip]}:${port}`);
-		console.log("Listening on https://172.17.0.1.nip.io:3000");
+		//console.log("Listening on https://172.17.0.1.nip.io:3000");
+		console.log(`Listening on https://transcendence.nip.io:${port}`);
 	});
 }
 catch (e) {

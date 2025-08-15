@@ -17,7 +17,6 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language, "home"));
 
-		markUserOnline(db, userResponse.user.id);
 		leaveRoom(db, userResponse);
 
 		const params = {
@@ -29,12 +28,6 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const frame = frameHtml(params, homeHtml(params));
 		return reply.type("text/html").send(frame);
 	});
-
-	// fastify.get('/hello-ws', { websocket: true }, (connection, req) => {
-	// 	connection.socket.on('message', message => {
-	// 		connection.socket.send('Hello Fastify WebSockets');
-	// 	});
-	// });
 }
 
 /*

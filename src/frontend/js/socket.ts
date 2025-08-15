@@ -10,17 +10,8 @@ function getSocket(): WebSocket | null {
 /**
  * Initialize WebSocket connection for chat.
  */
-export function initChatSocket(userId: string): Promise<void> {
-	console.log(socket);
-	console.log("🟡 Initializing WebSocket for:", userId);
-
-	// if (!userId) {
-	// 	console.warn("⚠️ No userId provided to initChatSocket");
-	// 	userId = `User${Math.floor(Math.random() * 1000)}`;
-	// }
-
+export function initChatSocket(): Promise<void> {
 	const socketUrl = `wss://${window.location.host}/ws`;
-	console.log("🌐 Connecting to WebSocket at:", socketUrl);
 
 	if (!socket)
 		socket = new WebSocket(socketUrl);

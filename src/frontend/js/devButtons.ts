@@ -14,7 +14,7 @@ export function devButtons() {
 			}
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const wipeUsersButton = document.querySelector("#wipeUsersButton")
@@ -29,7 +29,7 @@ export function devButtons() {
 			}
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const wipeHistoryButton = document.querySelector("#wipeHistoryButton")
@@ -42,7 +42,7 @@ export function devButtons() {
 				alert("Wiped history!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const wipeFriendsButton = document.querySelector("#wipeFriendsButton")
@@ -55,7 +55,7 @@ export function devButtons() {
 				alert("Wiped friends!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const wipeTournamentsButton = document.querySelector("#wipeTournamentsButton")
@@ -68,7 +68,7 @@ export function devButtons() {
 				alert("Wiped tournaments!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const wipeMessagesButton = document.querySelector("#wipeMessagesButton")
@@ -81,7 +81,7 @@ export function devButtons() {
 				alert("Wiped messages!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const addMockUsersButton = document.querySelector("#addMockUsersButton")
@@ -94,7 +94,7 @@ export function devButtons() {
 				alert("Added mock users!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const addMockHistoryButton = document.querySelector("#addMockHistoryButton")
@@ -107,7 +107,7 @@ export function devButtons() {
 				alert("Added mock history!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const addMockFriendsButton = document.querySelector("#addMockFriendsButton")
@@ -120,7 +120,7 @@ export function devButtons() {
 				alert("Added mock friends!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 
 	const addMockMessagesButton = document.querySelector("#addMockMessagesButton")
@@ -133,6 +133,6 @@ export function devButtons() {
 				alert("Added mock messages!");
 			else
 				alert("Something went wrong!");
-		}, { once: true });
+		});
 	}
 }
