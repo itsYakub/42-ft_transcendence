@@ -41,15 +41,14 @@ services:
       NGINX_ALWAYS_TLS_REDIRECT: "on"
 
       # CORE SETUP
-      MODSEC_RULE_ENGINE: "On" # if u want 2 do some log validation / testing, set "DetectionOnly"
+      MODSEC_RULE_ENGINE: "DetectionOnly" # if u want 2 do some log validation / testing, set "DetectionOnly"
       DETECTION_PARANOIA: "2"
       BLOCKING_PARANOIA: "2"
       ANOMALY_INBOUND: "4"
       ANOMALY_OUTBOUND: "4"
 
     ports:
-      - "80:8080"
-      - "443:8443"
+      - "3000:8443"
     volumes:
       - ./waf/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     restart: unless-stopped

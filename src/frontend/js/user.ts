@@ -121,7 +121,7 @@ function googleLogin() {
 	// };
 	const query = {
 		client_id: "700864958995-a6qbsqc8t8pqub1cg06kai263h2b2dbj.apps.googleusercontent.com",
-		redirect_uri: "https://transcendence.nip.io/auth/google",
+		redirect_uri: "https://transcendence.nip.io:3000/auth/google",
 		response_type: "code",
 		scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
 	};
