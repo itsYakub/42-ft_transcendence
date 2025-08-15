@@ -38,12 +38,12 @@ services:
       MODSEC_RULE_ENGINE: "On"
       DETECTION_PARANOIA: "2"
       BLOCKING_PARANOIA: "2"
-      ANOMALY_INBOUND: "4"
+      ANOMALY_INBOUND: "6"
       ANOMALY_OUTBOUND: "4"
     ports:
       - "3000:8443"
     volumes:
-      - ./waf/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./waf/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./waf/modsec/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
     restart: unless-stopped
     networks:
