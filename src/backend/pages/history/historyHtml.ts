@@ -7,7 +7,7 @@ export function historyHtml(matches: any, { user, language }): string {
 	}
 
 	const statsString = stats(matches);
-	let html = matchesString(matchList, statsString);
+	let html = matchesString(user, matchList, statsString);
 	html = translate(html, language);
 
 	return html;
@@ -63,8 +63,9 @@ function stats(matches: any): string {
 	return `%%HISTORY_WON_TEXT%% ${won}/${matches.length} ${matchesReplacement} and ${tournamentsWon} ${tournamentsReplacement}!`;
 }
 
-function matchesString(matchList: string, statsString: string): string {
+function matchesString(user: any, matchList: string, statsString: string): string {
 	return `
+	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">

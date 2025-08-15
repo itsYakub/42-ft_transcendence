@@ -1,17 +1,17 @@
-import { initChatSocket, sendChat } from "./socket.js";
+import { initChatSocket } from "./socket.js";
 
 export async function chatFunctions() {
-	const sendBtn = document.getElementById("sendMessageButton");
-	if (sendBtn) {
-		sendBtn.addEventListener("click", () => {
-			sendChat("John", "hello");
-		});
-	}
-
 	try {
-		await initChatSocket("Ed");
+		await initChatSocket();
 	} catch (err) {
 		console.error("❌ WebSocket failed:", err);
 	}
-	
+	document.addEventListener("onLoggedIn", async (e: CustomEvent) => {
+		console.log("Logged in!", e.detail);
+
+	});
+
+	document.addEventListener("onNavigate", async (e: CustomEvent) => {
+
+	});
 }

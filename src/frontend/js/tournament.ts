@@ -52,7 +52,7 @@ export function tournamentFunctions() {
 				showAlert("ERR_BAD_TOURNAMENT");
 				return;
 			}
-			navigate(`/tournament/${code}`);
+			navigate(`/tournament/local/${code}`);
 		})
 	}
 }

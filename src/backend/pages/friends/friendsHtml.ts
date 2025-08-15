@@ -6,7 +6,7 @@ export function friendsHtml(friends: any, { user, language }): string {
 		friendList += friendString(friends[key]);
 	}
 
-	let html = friendsString(friendList) + addFriendString();
+	let html = friendsString(user, friendList) + addFriendString();
 	html = translate(html, language);
 
 	return html;
@@ -26,8 +26,9 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function friendsString(friendlist: string): string {
+function friendsString(user: any, friendlist: string): string {
 	return `
+	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">

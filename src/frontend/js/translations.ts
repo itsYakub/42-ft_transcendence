@@ -40,7 +40,7 @@ function translateDutch(text: string): string {
 		case "SUCCESS_ENABLED_TOTP": return "!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "!";
 		case "SUCCESS_PASSWORD_CHANGED": return "!";
-		default: return "NLUnknown text";
+		default: return "NLUnknown frontend text";
 	}
 }
 
@@ -64,7 +64,7 @@ function translateEnglish(text: string): string {
 		case "SUCCESS_ENABLED_TOTP": return "Enabled TOTP - please log in again!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
 		case "SUCCESS_PASSWORD_CHANGED": return "Password changed!";
-		default: return "ENUnknown text";
+		default: return "ENUnknown frontend text";
 	}
 }
 
@@ -88,7 +88,7 @@ function translatePolish(text: string): string {
 		case "SUCCESS_ENABLED_TOTP": return "!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "!";
 		case "SUCCESS_PASSWORD_CHANGED": return "!";
-		default: return "PLUnknown text";
+		default: return "PLUnknown frontend text";
 	}
 }
 

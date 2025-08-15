@@ -9,8 +9,11 @@ TODO (Luke):
 - sanitise git repo
 - generate key and cert with docker with other CN
 - move key/cert
-- add emails to cloud
 - clean up tailwind
+- replace online detection with websockets - and roomIDs
+- delete guest on websocket disconnect?
+- delete tournaments when finished
+- delete room chats when room is empty
 
 Page endpoints (all GET)
 -	/

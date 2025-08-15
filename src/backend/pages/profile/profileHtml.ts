@@ -26,6 +26,7 @@ function translate(html: string, language: string): string {
 
 function profileString(user: any): string {
 	return `
+	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">

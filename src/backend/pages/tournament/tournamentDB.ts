@@ -24,28 +24,43 @@ export function initTournaments(db: DatabaseSync, dropTournaments: boolean): voi
 		);`);
 }
 
-export function getTournamentByCode(db: DatabaseSync, code: string) {
+export function getTournamentByCode(db: DatabaseSync, userNick: string, code: string) {
 	try {
 		const select = db.prepare("SELECT * FROM Tournaments WHERE Code = ?");
 		const tournament = select.get(code);
 		if (tournament) {
+			const nicks = [
+				tournament.M1P1,
+				tournament.M1P2,
+				tournament.M2P1,
+				tournament.M2P2
+			];
+			if (nicks.includes(userNick))
+				return {
+					code: 200,
+					tournament: {
+						id: tournament.TournamentID,
+						code,
+						match: tournament.Match,
+						m1p1: tournament.M1P1,
+						m1p2: tournament.M1P2,
+						m2p1: tournament.M2P1,
+						m2p2: tournament.M2P2,
+						m3p1: tournament.M3P1,
+						m3p2: tournament.M3P2,
+						m1p1Score: tournament.M1P1Score,
+						m1p2Score: tournament.M1P2Score,
+						m2p1Score: tournament.M2P1Score,
+						m2p2Score: tournament.M2P2Score,
+						m3p1Score: tournament.M3P1Score,
+						m3p2Score: tournament.M3P2Score
+					}
+				}
+
 			return {
-				id: tournament.TournamentID,
-				code,
-				match: tournament.Match,
-				m1p1: tournament.M1P1,
-				m1p2: tournament.M1P2,
-				m2p1: tournament.M2P1,
-				m2p2: tournament.M2P2,
-				m3p1: tournament.M3P1,
-				m3p2: tournament.M3P2,
-				m1p1Score: tournament.M1P1Score,
-				m1p2Score: tournament.M1P2Score,
-				m2p1Score: tournament.M2P1Score,
-				m2p2Score: tournament.M2P2Score,
-				m3p1Score: tournament.M3P1Score,
-				m3p2Score: tournament.M3P2Score
-			}
+				code: 403,
+				error: "ERR_FORBIDDEN"
+			};
 		}
 		return {
 			code: 404,
@@ -79,21 +94,21 @@ export function addTournament(db: DatabaseSync, { code, m1p1, m1p2, m2p1, m2p2 }
 
 export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Score }) {
 	try {
-		const tournament = getTournamentByCode(db, code);
-		const match = tournament.match as number + 1;
+		const tournament = getTournamentByCode(db, user.nick, code);
+		const match = tournament.tournament.match as number + 1;
 		if (match < 3) {
 			let winner: string;
 			let loser: string;
 			if (1 == match) {
-				winner = p1Score > p2Score ? tournament.m1p1 as string : tournament.m1p2 as string;
-				loser = p1Score < p2Score ? tournament.m1p1 as string : tournament.m1p2 as string;
+				winner = p1Score > p2Score ? tournament.tournament.m1p1 as string : tournament.tournament.m1p2 as string;
+				loser = p1Score < p2Score ? tournament.tournament.m1p1 as string : tournament.tournament.m1p2 as string;
 			}
 			else if (2 == match) {
-				winner = p1Score > p2Score ? tournament.m2p1 as string : tournament.m2p2 as string;
-				loser = p1Score < p2Score ? tournament.m2p1 as string : tournament.m2p2 as string;
+				winner = p1Score > p2Score ? tournament.tournament.m2p1 as string : tournament.tournament.m2p2 as string;
+				loser = p1Score < p2Score ? tournament.tournament.m2p1 as string : tournament.tournament.m2p2 as string;
 			}
 			const select = db.prepare(`UPDATE Tournaments SET Match = ?, M${match}P1Score = ?, M${match}P2Score = ?, M3P${match} = ? WHERE TournamentID = ?;`);
-			select.run(match, p1Score, p2Score, winner, tournament.id);
+			select.run(match, p1Score, p2Score, winner, tournament.tournament.id);
 
 			// if (user.nick == winner) {
 			// 	addMatch(db, {
@@ -116,10 +131,10 @@ export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Scor
 			};
 		}
 		else {
-			const winner = p1Score > p2Score ? tournament.m3p1 as string : tournament.m3p2 as string;
-			const loser = p1Score < p2Score ? tournament.m3p1 as string : tournament.m3p2 as string;
+			const winner = p1Score > p2Score ? tournament.tournament.m3p1 as string : tournament.tournament.m3p2 as string;
+			const loser = p1Score < p2Score ? tournament.tournament.m3p1 as string : tournament.tournament.m3p2 as string;
 			const select = db.prepare(`UPDATE Tournaments SET Match = ?, M${match}P1Score = ?, M${match}P2Score = ? WHERE TournamentID = ?;`);
-			select.run(match, p1Score, p2Score, tournament.id);
+			select.run(match, p1Score, p2Score, tournament.tournament.id);
 			// if (user.nick == winner) {
 			// 	addMatch(db, {
 			// 		id: user.id,
