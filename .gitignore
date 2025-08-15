@@ -133,3 +133,5 @@ dist
 db.AppImage
 *.js
 dist
+
+./data/transcendence.db
