@@ -1,7 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "module": "CommonJS",
-    "sourceMap": true
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ES2021",
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": false
   }
 }

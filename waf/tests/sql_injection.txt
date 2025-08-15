@@ -1,0 +1,10 @@
+# injection in-form
+curl -sk -X POST https://transcendence.nip.io:3000/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data "username=admin&password=1' OR '1'='1"
+
+# basic
+curl -sk "https://transcendence.nip.io:3000/?q=<script>alert(1)</script>"
+
+# in-comment
+curl -sk "https://transcendence.nip.io:3000/?search=test'/*"
