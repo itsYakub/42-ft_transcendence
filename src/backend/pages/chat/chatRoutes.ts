@@ -18,59 +18,16 @@ export function chatRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const userId = 'Anonymous';
 		//const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		//console.log(userResponse);
-		socket.on("open", () => {
-			//mark online
-
-			console.log(`📡 WebSocket opened for user:: ${userId}`);
+		socket!.on("open", () => {
+			console.log(`WebSocket opened for user:: ${userId}`);
 		});
 
-		socket.on("message", (data: string | Buffer) => {
-			let msg;
-			try {
-				msg = JSON.parse(typeof data === "string" ? data : data.toString());
-				console.log(`📨 Received message from ${userId}:`, msg);
-			} catch {
-				console.warn("⚠️ Invalid message format:", data);
-				return;
-			}
-
-			switch (msg.type) {
-				case "chat": {
-					console.log(`💬 Storing message in DB from ${userId} to ${msg.to}: "${msg.text}"`);
-					addMessage(db, {
-						sender: userId,
-						recipient: msg.to,
-						message: msg.text,
-					});
-					const chatPayload = JSON.stringify({
-						type: "chat",
-						from: userId,
-						to: msg.to,
-						text: msg.text,
-					});
-					console.log("📤 Broadcasting chat to all clients");
-					fastify.websocketServer.clients.forEach((client: any) => {
-						if (client.readyState === 1) client.send(chatPayload);
-					});
-					break;
-				}
-				case "invite": {
-					console.log(`🎮 ${userId} is sending a game invite`);
-					const invitePayload = JSON.stringify({ type: "invite", from: userId });
-					fastify.websocketServer.clients.forEach((client: any) => {
-						if (client.readyState === 1) client.send(invitePayload);
-					});
-					break;
-				}
-				default:
-					console.warn("❓ Unknown message type:", msg.type);
-			}
+		socket!.on("message", (data: string | Buffer) => {
+			
 		});
 
-		socket.on("close", () => {
-			// mark offline
-			// leave room
-			console.log(`❌ WebSocket disconnected: ${userId}`);
+		socket!.on("close", () => {
+			console.log(`WebSocket disconnected: ${userId}`);
 		});
 	});
 }
