@@ -35,7 +35,7 @@ services:
       SSL_PORT: "8443"
       SERVER_NAME: "transcendence.nip.io"
       NGINX_ALWAYS_TLS_REDIRECT: "on"
-      MODSEC_RULE_ENGINE: "On"
+      MODSEC_RULE_ENGINE: "DetectionOnly"
       DETECTION_PARANOIA: "2"
       BLOCKING_PARANOIA: "2"
       ANOMALY_INBOUND: "6"
@@ -44,7 +44,7 @@ services:
       - "3000:8443"
     volumes:
       - ./waf/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ./waf/modsec/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
+      # - ./waf/modsec/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
     restart: unless-stopped
     networks:
       - transcendence-net
