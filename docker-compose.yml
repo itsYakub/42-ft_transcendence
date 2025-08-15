@@ -30,27 +30,22 @@ services:
     depends_on:
       - app
     environment:
-      # WAF <-> app comms 
-      # (They talk thru HTTP)
       BACKEND: "http://app:3000"
-
-      # WAF listening ports
       PORT: "8080"
       SSL_PORT: "8443"
-      SERVER_NAME: "transcendence.nip.io" # domain "transcendence.nip.io"
+      SERVER_NAME: "transcendence.nip.io"
       NGINX_ALWAYS_TLS_REDIRECT: "on"
-
-      # CORE SETUP
-      MODSEC_RULE_ENGINE: "DetectionOnly" # if u want 2 do some log validation / testing, set "DetectionOnly"
+      MODSEC_RULE_ENGINE: "On"
       DETECTION_PARANOIA: "2"
       BLOCKING_PARANOIA: "2"
       ANOMALY_INBOUND: "4"
       ANOMALY_OUTBOUND: "4"
-
     ports:
       - "3000:8443"
     volumes:
       - ./waf/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./waf/modsec/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
     restart: unless-stopped
     networks:
       - transcendence-net
+
