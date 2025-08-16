@@ -7,31 +7,37 @@ function getSocket(): WebSocket | null {
 	return socket;
 }
 
+export async function socketFunctions() {
+	window.addEventListener("onLoggedIn", async (e: CustomEvent) => {
+		console.log("Logged in!", e.detail);
+		try {
+			await initChatSocket();
+		} catch (err) {
+			console.error("❌ WebSocket failed:", err);
+		}
+	});
+}
+
 /**
  * Initialize WebSocket connection for chat.
  */
 export function initChatSocket(): Promise<void> {
-	//const socketUrl = `wss://transcendence.nip.io:3000/ws`;
-const socketUrl = `wss://${window.location.host}/ws`;
+	const socketUrl = `wss://${window.location.host}/ws`;
 
 	if (!socket)
 		socket = new WebSocket(socketUrl);
 
 	return new Promise((resolve, reject) => {
 		socket!.onopen = () => {
-			console.log("✅ WebSocket connection opened (state: OPEN)");
+			sendMessageToServer({
+				type: "joined"
+			});
 			resolve();
 		};
 
 		socket!.onmessage = (event) => {
-			console.log("client message received");
-			let msg;
-			try {
-				msg = JSON.parse(event.data);
-			} catch (err) {
-				console.warn("⚠️ Failed to parse WebSocket message:", event.data);
-				return;
-			}
+			const json = JSON.parse(event.data);
+			console.log("Received message", json);
 		};
 
 		socket!.onerror = (err) => {
@@ -46,9 +52,12 @@ const socketUrl = `wss://${window.location.host}/ws`;
 }
 
 /**
- * Send a chat message to a recipient.
+ * Send a message to a recipient.
  */
-export function sendChat() {
-	const s = getSocket();
-	s.send(JSON.stringify({ type: 'chat'}));
+export function sendMessageToServer({ type }) {
+	const socket = getSocket();
+	if (socket)
+		socket.send(JSON.stringify({
+			type
+		}));
 }

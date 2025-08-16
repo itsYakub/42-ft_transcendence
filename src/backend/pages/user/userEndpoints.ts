@@ -1,7 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOffline2, markUserOnline } from './userDB.js';
+import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOnline } from './userDB.js';
 import * as OTPAuth from "otpauth";
+import { leaveRoom } from '../play/playDB.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -131,13 +132,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post("/user/leave", async (request: FastifyRequest, reply: FastifyReply) => {
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 == userResponse.code)
-			markUserOffline(db, userResponse.user);
-	});
-
-	fastify.post("/user/leave-room", async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 == userResponse.code)
-			markUserOffline2(db, userResponse.user);
+			leaveRoom(db, userResponse.user);
 	});
 
 	fastify.get("/user/id", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -149,7 +144,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 			code: 200,
 			id: userResponse.user.id,
 			nick: userResponse.user.nick,
-			online: userResponse.user.online
+			online: userResponse.user.online,
+			roomID: userResponse.user.roomID
 		});
 	});
 }

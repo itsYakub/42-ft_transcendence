@@ -1,11 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../frameHtml.js';
-import { allOtherUsers, getUser, markUserOnline } from '../user/userDB.js';
+import { allOtherUsers, getUser } from '../user/userDB.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { messagesHtml } from './messagesHtml.js';
 import { addMessage, getMessages, getMessageSenders } from './messagesDB.js';
-import { leaveRoom } from '../play/playDB.js';
 
 export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/messages', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -14,9 +13,6 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
 		const id = userResponse.user.id;
-
-		markUserOnline(db, id);
-		leaveRoom(db, userResponse);
 
 		const usersResponse = allOtherUsers(db, id);
 
@@ -48,9 +44,6 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const id = userResponse.user.id;
 
 		const { fromID } = request.params as any;
-
-		//markUserOnline(db, id);
-		//leaveRoom(db, userResponse);
 
 		const usersResponse = allOtherUsers(db, id);
 		const messagesResponse = getMessages(db, id, fromID);

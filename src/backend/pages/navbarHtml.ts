@@ -39,10 +39,6 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function userString(user: any) {
-	return `<span data-id="${user.id}"></span>`
-}
-
 function loggedOutString(languageSelect: string): string {
 	return `
 	<div class="h-full bg-gray-800">

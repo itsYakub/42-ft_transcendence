@@ -5,7 +5,6 @@ import { frameHtml } from '../frameHtml.js';
 import { getUser, markUserOnline } from '../user/userDB.js';
 import { homeHtml } from './homeHtml.js';
 import { userHtml } from '../user/userHtml.js';
-import { leaveRoom } from '../play/playDB.js';
 
 /*
 	Handles the home page route
@@ -16,8 +15,6 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language, "home"));
-
-		//leaveRoom(db, userResponse);
 
 		const params = {
 			user: userResponse.user,

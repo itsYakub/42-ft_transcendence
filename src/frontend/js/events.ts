@@ -1,4 +1,3 @@
-
 import { navigate } from "./index.js";
 
 interface navigatedDetail {
@@ -22,20 +21,37 @@ interface leftRoomEventDetail {
 export async function navigated(detail: navigatedDetail) {
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
-	if (200 == json.code && 0 == json.online) {
-		const params: userLoggedInDetail = {
+	if (200 == json.code) {
+		if (0 == json.online) {
+			const params: userLoggedInDetail = {
 				userID: json.id,
 				nick: json.nick
+			}
+
+			const event = new CustomEvent("onLoggedIn", {
+				detail: params
+			});
+			window.dispatchEvent(event);
 		}
 
-		const event = new CustomEvent("onLoggedIn", {
-			detail: params
-		});
-		window.dispatchEvent(event);
+		const split = detail.page.split("/").filter(n => n);
+		if (2 == split.length && 4 == split[1].length) {
+			if (("match" == split[0] && split[1].startsWith("m")) || ("tournament" == split[0] && split[1].startsWith("t"))) {
+				userJoinedRoom({
+					userID: json.id,
+					roomID: split[1]
+				});
+				return;
+			}
+		}
+		if (json.roomID)
+			await fetch("/user/leave", {
+				method: "POST"
+			});
 	}
 }
 
-export function userJoinedRoom(detail: joinedRoomEventDetail) {
+function userJoinedRoom(detail: joinedRoomEventDetail) {
 	const event = new CustomEvent("onRoomJoined", {
 		detail
 	});
@@ -43,7 +59,7 @@ export function userJoinedRoom(detail: joinedRoomEventDetail) {
 	window.dispatchEvent(event);
 }
 
-export function userLeftRoom(detail: leftRoomEventDetail) {
+function userLeftRoom(detail: leftRoomEventDetail) {
 	const event = new CustomEvent("onRoomLeft", {
 		detail
 	})
@@ -53,40 +69,6 @@ export function userLeftRoom(detail: leftRoomEventDetail) {
 }
 
 export function registerEvents() {
-
-	/*
-		A user has changed the page
-	*/
-	window.addEventListener("onNavigated", (e: CustomEvent) => {
-		// const data = <HTMLElement>document.querySelector("#data");
-		// if (data) {
-		// 	const userID = parseInt(data.dataset.id);
-		// 	const roomID = data.dataset.room;
-		// 	if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
-		// 		userJoinedRoom({
-		// 			userID,
-		// 			roomID
-		// 		});
-		// 	}
-		// 	else
-		// 		userLeftRoom({ userID });
-		// }
-	});
-
-	/*
-		A user has navigated to a room
-	*/
-	window.addEventListener("onRoomJoined", (e: CustomEvent) => {
-		console.log(`${e.detail.userID} has joined room ${e.detail.roomID}`);
-	});
-
-	/*
-		A user has navigated away from a room
-	*/
-	window.addEventListener("onRoomleft", (e: CustomEvent) => {
-		console.log(`${e.detail.userID} has left the room`);
-	});
-
 	/*
 		A match has finished with a winner
 	*/

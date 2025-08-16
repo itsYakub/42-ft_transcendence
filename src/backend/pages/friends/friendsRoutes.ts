@@ -5,7 +5,6 @@ import { getUser, getUserByEmail, markUserOnline } from '../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendsDB.js';
 import { friendsHtml } from './friendsHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
-import { leaveRoom } from '../play/playDB.js';
 
 export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -13,9 +12,6 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
-
-		//markUserOnline(db, userResponse.user.id);
-		//leaveRoom(db, userResponse);
 
 		const friendsResponse = getFriends(db, userResponse.user.id);
 		if (friendsResponse.error) {

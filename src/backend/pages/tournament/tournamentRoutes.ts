@@ -19,8 +19,6 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		if (200 != response.code)
 			return reply.type("text/html").send(noUserError(response, language));
 
-		//markUserOnline(db, response.user.id);
-
 		const params = {
 			user: response.user,
 			language
@@ -37,7 +35,6 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const { id } = request.params as any;
-		//markUserOnline(db, userResponse.user.id);
 
 		const tournamentResponse = getTournamentByCode(db, userResponse.user.nick, id);
 		if (200 != tournamentResponse.code) {
@@ -69,8 +66,6 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const { id } = request.params as any;
-
-		markUserOnline(db, userResponse.user.id);
 
 		const roomResponse = joinRoom(db, {
 			roomID: id,

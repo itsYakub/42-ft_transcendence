@@ -84,10 +84,16 @@ export function joinRoom(db: DatabaseSync, { roomID, user }) {
 	}
 }
 
-export function leaveRoom(db: DatabaseSync, { id }) {
+export function leaveRoom(db: DatabaseSync, { id, roomID }) {
 	try {
-		const select = db.prepare(`UPDATE Users SET RoomID = NULL, Ready = 0 WHERE UserID = ?`);
+		let select = db.prepare(`UPDATE Users SET RoomID = NULL, Ready = 0 WHERE UserID = ?`);
 		select.run(id);
+		select = db.prepare("SELECT COUNT(RoomID) as roomCount FROM Users WHERE RoomID = ?");
+		const { roomCount } = select.get(roomID);
+		if (0 == roomCount) {
+			select = db.prepare("DELETE FROM Messages Where ToID = ?");
+			select.run(roomID);
+		}
 		return {
 			code: 200,
 			message: "SUCCESS"

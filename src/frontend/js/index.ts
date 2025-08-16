@@ -6,12 +6,11 @@ import { translateFrontend, translationFunctions } from "./translations.js";
 import { tournamentFunctions } from "./tournament.js";
 import { localMatchFunctions } from "./localMatch.js";
 import { PlayFunctions } from "./play.js";
-import { chatFunctions } from "./chat.js";
 import { userFunctions } from "./user.js";
 import { MessagesFunctions } from "./messages.js";
 import { matchFunctions } from "./match.js";
-import { registerEvents, userJoinedRoom, userLeftRoom, navigated } from "./events.js";
-import { initChatSocket } from "./socket.js";
+import { registerEvents, navigated } from "./events.js";
+import { socketFunctions } from "./socket.js";
 
 /*
 	Simulates moving to a new page
@@ -26,26 +25,26 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
-	raiseNavigationEvent();
+	//raiseNavigationEvent();
 	addFunctions();
 	navigated({ page: url });
 }
 
-function raiseNavigationEvent() {
-	const data = <HTMLElement>document.querySelector("#data");
-	if (data) {
-		const userID = parseInt(data.dataset.id);
-		const roomID = data.dataset.room;
-		if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
-			userJoinedRoom({
-				userID,
-				roomID: "abc"
-			});
-		}
-		else
-			userLeftRoom({ userID });
-	}
-}
+// function raiseNavigationEvent() {
+// 	const data = <HTMLElement>document.querySelector("#data");
+// 	if (data) {
+// 		const userID = parseInt(data.dataset.id);
+// 		const roomID = data.dataset.room;
+// 		if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
+// 			userJoinedRoom({
+// 				userID,
+// 				roomID: "abc"
+// 			});
+// 		}
+// 		else
+// 			userLeftRoom({ userID });
+// 	}
+// }
 
 /* 
 	Changes page on back/forward buttons
@@ -55,7 +54,7 @@ window.addEventListener('popstate', function (event) {
 });
 
 registerEvents();
-chatFunctions();
+socketFunctions();
 
 /*
 	Sets up all the listeners after navigating to a new page
@@ -90,7 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		showAlert("ERR_GOOGLE");
 		document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 	}
-	raiseNavigationEvent();
+	//raiseNavigationEvent();
 	addFunctions();
 	navigated({ page: window.location.pathname });
 });
