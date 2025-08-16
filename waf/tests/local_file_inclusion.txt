@@ -1,11 +1,11 @@
 # reach random files
-curl -sk "https://transcendence.nip.io:3000/?page=../../../../etc/passwd"
-curl -sk "https://transcendence.nip.io:3000/?file=..%2F..%2F..%2F..%2Fetc%2Fshadow"
+curl -sk "https://transcendence.nip.io:3000/?page=../../../../etc/passwd" -o /dev/null -w "%{http_code}\n"
+curl -sk "https://transcendence.nip.io:3000/?file=..%2F..%2F..%2F..%2Fetc%2Fshadow" -o /dev/null -w "%{http_code}\n"
 
 # reach env
-curl -sk "https://transcendence.nip.io:3000/?file=../../../../.env"
+curl -sk "https://transcendence.nip.io:3000/?file=../../../../.env" -o /dev/null -w "%{http_code}\n"
 
 # encoded variants
-curl -sk "https://transcendence.nip.io:3000/?file=%2e%2e%2f%2e%2e%2f%2e%2e%2f.env"
-curl -sk "https://transcendence.nip.io:3000/?file=%252e%252e%252f%252e%252e%252f.env"
+curl -sk "https://transcendence.nip.io:3000/?file=%2e%2e%2f%2e%2e%2f%2e%2e%2f.env" -o /dev/null -w "%{http_code}\n"
+curl -sk "https://transcendence.nip.io:3000/?file=%252e%252e%252f%252e%252e%252f.env" -o /dev/null -w "%{http_code}\n"
 

