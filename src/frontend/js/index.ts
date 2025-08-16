@@ -3,7 +3,6 @@ import { navbarFunctions } from "./navbar.js";
 import { profileFunctions } from "./profile.js";
 import { devButtons } from "./devButtons.js";
 import { translateFrontend, translationFunctions } from "./translations.js";
-import { tournamentFunctions } from "./tournament.js";
 import { localMatchFunctions } from "./localMatch.js";
 import { PlayFunctions } from "./play.js";
 import { userFunctions } from "./user.js";
@@ -11,6 +10,8 @@ import { MessagesFunctions } from "./messages.js";
 import { matchFunctions } from "./match.js";
 import { registerEvents, navigated } from "./events.js";
 import { socketFunctions } from "./socket.js";
+import { localTournamentFunctions } from "./localTournament.js";
+import { tournamentFunctions } from "./tournament.js";
 
 /*
 	Simulates moving to a new page
@@ -62,6 +63,7 @@ socketFunctions();
 export function addFunctions() {
 	navbarFunctions();
 	tournamentFunctions();
+	localTournamentFunctions();
 	translationFunctions();
 	profileFunctions();
 	friendsFunctions();
@@ -106,3 +108,4 @@ export function showAlert(message: string) {
 		alertDialog.showModal();
 	}
 }
+

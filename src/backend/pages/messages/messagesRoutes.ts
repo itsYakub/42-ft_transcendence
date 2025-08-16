@@ -78,8 +78,10 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		const params = JSON.parse(request.body as string);
 		params["fromID"] = userResponse.user.id;
+		params["toID"] = userResponse.user.roomID;
 
-		const response = addMessage(db, params);
+		const response = addMessage(db, params);		
+
 		return reply.send(response);
 	});
 }

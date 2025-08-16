@@ -1,4 +1,5 @@
 import { navigate } from "./index.js";
+import { getSocket } from "./socket.js";
 
 interface navigatedDetail {
 	page: string
@@ -9,13 +10,10 @@ interface userLoggedInDetail {
 	nick: string
 }
 
-interface joinedRoomEventDetail {
-	userID: number,
-	roomID: string
-}
-
-interface leftRoomEventDetail {
-	userID: number
+export interface messageDetail {
+	toID: string,
+	fromID: number,
+	message: string
 }
 
 export async function navigated(detail: navigatedDetail) {
@@ -37,35 +35,29 @@ export async function navigated(detail: navigatedDetail) {
 		const split = detail.page.split("/").filter(n => n);
 		if (2 == split.length && 4 == split[1].length) {
 			if (("match" == split[0] && split[1].startsWith("m")) || ("tournament" == split[0] && split[1].startsWith("t"))) {
-				userJoinedRoom({
-					userID: json.id,
-					roomID: split[1]
+				const event = new CustomEvent("onRoomJoined", {
+					detail: {
+						userID: json.id,
+						roomID: split[1]
+					}
 				});
+				window.dispatchEvent(event);
+				const socket = getSocket();
+				if (socket)
+					socket.send(JSON.stringify({
+						type: "room-join",
+						userID: json.id,
+						roomID: split[1]
+					}));
+
 				return;
 			}
 		}
-		if (json.roomID)
-			await fetch("/user/leave", {
-				method: "POST"
-			});
+		// if (json.roomID)
+		// 	await fetch("/user/leave", {
+		// 		method: "POST"
+		// 	});
 	}
-}
-
-function userJoinedRoom(detail: joinedRoomEventDetail) {
-	const event = new CustomEvent("onRoomJoined", {
-		detail
-	});
-
-	window.dispatchEvent(event);
-}
-
-function userLeftRoom(detail: leftRoomEventDetail) {
-	const event = new CustomEvent("onRoomLeft", {
-		detail
-	})
-
-	window.dispatchEvent(event);
-	// need to delete room chats when room is empty
 }
 
 export function registerEvents() {

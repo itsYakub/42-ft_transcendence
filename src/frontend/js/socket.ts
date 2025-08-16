@@ -1,9 +1,11 @@
+import { navigate } from "./index.js";
+
 let socket: WebSocket | null = null;
 
 /**
  * Returns the active WebSocket instance.
  */
-function getSocket(): WebSocket | null {
+export function getSocket(): WebSocket | null {
 	return socket;
 }
 
@@ -27,17 +29,37 @@ export function initChatSocket(): Promise<void> {
 	if (!socket)
 		socket = new WebSocket(socketUrl);
 
-	return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		socket!.onopen = () => {
-			sendMessageToServer({
-				type: "joined"
-			});
+			// sendMessageToServer({
+			// 	type: "joined",
+			// 	message: {}
+			// });
 			resolve();
 		};
 
-		socket!.onmessage = (event) => {
+		socket!.onmessage = async (event) => {
+			const userResponse = await fetch("/user/id");
+			const user = await userResponse.json();
 			const json = JSON.parse(event.data);
-			console.log("Received message", json);
+			if (user.id != json.userID) {
+				if (user.roomID == json.roomID) {
+					switch (json.type) {
+						case "room-message":
+						case "room-join":
+						case "room-ready":
+							navigate(window.location.href);
+							break;
+					}
+				}
+				else if ("/play" == window.location.pathname) {
+					switch (json.type) {
+						case "room-join":
+							navigate(window.location.href);
+							break;
+					}
+				}
+			}
 		};
 
 		socket!.onerror = (err) => {
@@ -54,10 +76,11 @@ export function initChatSocket(): Promise<void> {
 /**
  * Send a message to a recipient.
  */
-export function sendMessageToServer({ type }) {
+export function sendMessageToServer({ type, message }) {
 	const socket = getSocket();
 	if (socket)
 		socket.send(JSON.stringify({
-			type
+			type,
+			message
 		}));
 }

@@ -90,10 +90,10 @@ export function leaveRoom(db: DatabaseSync, { id, roomID }) {
 		select.run(id);
 		select = db.prepare("SELECT COUNT(RoomID) as roomCount FROM Users WHERE RoomID = ?");
 		const { roomCount } = select.get(roomID);
-		if (0 == roomCount) {
-			select = db.prepare("DELETE FROM Messages Where ToID = ?");
-			select.run(roomID);
-		}
+		// if (0 == roomCount) {
+		// 	select = db.prepare("DELETE FROM Messages Where ToID = ?");
+		// 	select.run(roomID);
+		// }
 		return {
 			code: 200,
 			message: "SUCCESS"

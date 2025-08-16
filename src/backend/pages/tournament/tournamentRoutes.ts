@@ -9,7 +9,6 @@ import { localTournamentHtml } from './localTournamentHtml.js';
 import { joinRoom, roomPlayers } from '../play/playDB.js';
 import { getRoomMessages } from '../messages/messagesDB.js';
 import { tournamentHtml } from './tournamentHtml.js';
-import { tournamentFunctions } from '../../../frontend/js/tournament.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament/local', async (request: FastifyRequest, reply: FastifyReply) => {
