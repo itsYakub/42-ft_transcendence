@@ -17,7 +17,7 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language, "home"));
 
-		leaveRoom(db, userResponse);
+		//leaveRoom(db, userResponse);
 
 		const params = {
 			user: userResponse.user,

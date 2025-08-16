@@ -1,3 +1,4 @@
+
 import { DatabaseSync } from "node:sqlite";
 import { accessToken, hashPassword, refreshToken, validJWT } from "../../auth/jwt.js";
 import { compareSync } from "bcrypt-ts";
@@ -21,7 +22,7 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		RoomID TEXT,
 		Ready INTEGER NOT NULL DEFAULT 0,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
-		Online INTEGER NOT NULL DEFAULT 1,
+		Online INTEGER NOT NULL DEFAULT 0,
 		Avatar TEXT,
 		Password TEXT,
 		RefreshToken TEXT UNIQUE,
@@ -427,8 +428,6 @@ export function markUserOffline(db: DatabaseSync, user: any) {
 		};
 	}
 }
-
-
 
 export function markUserOffline2(db: DatabaseSync, user: any) {
 	try {

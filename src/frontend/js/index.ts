@@ -10,14 +10,13 @@ import { chatFunctions } from "./chat.js";
 import { userFunctions } from "./user.js";
 import { MessagesFunctions } from "./messages.js";
 import { matchFunctions } from "./match.js";
-import { registerEvents, userJoinedRoom, userLeftRoom, userNavigated } from "./events.js";
+import { registerEvents, userJoinedRoom, userLeftRoom, navigated } from "./events.js";
+import { initChatSocket } from "./socket.js";
 
 /*
 	Simulates moving to a new page
 */
 export async function navigate(url: string, updateHistory: boolean = true): Promise<void> {
-	userNavigated({ page: url });
-
 	if (updateHistory)
 		history.pushState(null, null, url);
 
@@ -29,6 +28,7 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	document.querySelector('body').innerHTML = body.substring(start, end);
 	raiseNavigationEvent();
 	addFunctions();
+	navigated({ page: url });
 }
 
 function raiseNavigationEvent() {
@@ -55,6 +55,7 @@ window.addEventListener('popstate', function (event) {
 });
 
 registerEvents();
+chatFunctions();
 
 /*
 	Sets up all the listeners after navigating to a new page
@@ -73,7 +74,6 @@ export function addFunctions() {
 	userFunctions();
 
 	// sockets
-	chatFunctions();
 
 	// remove!
 	devButtons();
@@ -82,8 +82,7 @@ export function addFunctions() {
 /*
 	Registers the functions and also shows an error if Google sign-in/up was unsuccessful
 */
-document.addEventListener("DOMContentLoaded", () => {
-	userNavigated({ page: window.location.pathname });
+window.addEventListener("DOMContentLoaded", () => {
 	if (-1 != document.cookie.indexOf("googleautherror=true")) {
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
@@ -93,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 	raiseNavigationEvent();
 	addFunctions();
+	navigated({ page: window.location.pathname });
 });
 
 export function showAlert(message: string) {

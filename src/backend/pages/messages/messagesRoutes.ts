@@ -49,8 +49,8 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		const { fromID } = request.params as any;
 
-		markUserOnline(db, id);
-		leaveRoom(db, userResponse);
+		//markUserOnline(db, id);
+		//leaveRoom(db, userResponse);
 
 		const usersResponse = allOtherUsers(db, id);
 		const messagesResponse = getMessages(db, id, fromID);

@@ -13,8 +13,8 @@ export function playRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language, "play"));
 
-		markUserOnline(db, userResponse.user.id);
-		leaveRoom(db, userResponse.user);
+		//markUserOnline(db, userResponse.user.id);
+		//leaveRoom(db, userResponse.user);
 
 		const roomsResponse = getRooms(db);
 		if (200 != roomsResponse.code) {

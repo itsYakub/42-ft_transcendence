@@ -15,7 +15,7 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
-		markUserOnline(db, userResponse.user.id);
+		//markUserOnline(db, userResponse.user.id);
 
 		const params = {
 			user: userResponse.user,

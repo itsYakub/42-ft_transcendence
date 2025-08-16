@@ -147,7 +147,9 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		return reply.send({
 			code: 200,
-			id: userResponse.user.id
+			id: userResponse.user.id,
+			nick: userResponse.user.nick,
+			online: userResponse.user.online
 		});
 	});
 }

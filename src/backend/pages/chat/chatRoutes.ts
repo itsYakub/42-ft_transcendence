@@ -16,14 +16,12 @@ export function chatRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
 		const userId = 'Anonymous';
+		socket.send(JSON.stringify({ id: "A1", total: 3 }));
 		//const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		//console.log(userResponse);
-		socket!.on("open", () => {
-			console.log(`WebSocket opened for user:: ${userId}`);
-		});
 
 		socket!.on("message", (data: string | Buffer) => {
-			
+			console.log("server recieved message");
 		});
 
 		socket!.on("close", () => {

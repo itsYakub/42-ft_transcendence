@@ -14,8 +14,8 @@ export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
-		markUserOnline(db, userResponse.user.id);
-		leaveRoom(db, userResponse);
+		//markUserOnline(db, userResponse.user.id);
+		//leaveRoom(db, userResponse);
 
 		const matchesResponse = getHistory(db, userResponse.user.id);
 		if (matchesResponse.error) {
