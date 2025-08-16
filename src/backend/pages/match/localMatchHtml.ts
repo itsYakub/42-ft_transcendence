@@ -40,7 +40,6 @@ function localMatchString(user: any, p1String: string): string {
 					${p1String}
 					<input type="text" name="p2Name" required="true" placeholder="%%PLAY_PLAYER_TEXT%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
 				</div>
-				<p class="mt-2 text-gray-300">All customisation options should be put here</p>
 				<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%PLAY_START_TEXT%%</button>
 			</form>
 		</div>

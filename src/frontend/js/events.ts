@@ -1,111 +1,70 @@
-import { ExecFileSyncOptionsWithBufferEncoding } from "node:child_process";
 import { navigate } from "./index.js";
+import { getSocket } from "./socket.js";
 
 interface navigatedDetail {
 	page: string
 }
 
-interface userNavigatedDetail {
-	userID: number,
-	page: string
-}
-
-interface loggedInDetail {
+interface userLoggedInDetail {
 	userID: number,
 	nick: string
 }
 
-interface joinedRoomEventDetail {
-	userID: number,
-	roomID: string
+export interface messageDetail {
+	toID: string,
+	fromID: number,
+	message: string
 }
 
-interface leftRoomEventDetail {
-	userID: number
-}
-
-export function navigated(detail: navigatedDetail) {
-
-}
-
-export async function userNavigated(detail: navigatedDetail) {
-	console.log("navigated");
+export async function navigated(detail: navigatedDetail) {
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
 	if (200 == json.code) {
-		const params: userNavigatedDetail = {
+		if (0 == json.online) {
+			const params: userLoggedInDetail = {
 				userID: json.id,
-				page: detail.page
-		}
-		
-		const event = new CustomEvent("onUserNavigated", {
-			detail: params
-		});
+				nick: json.nick
+			}
 
-		window.dispatchEvent(event);
+			const event = new CustomEvent("onLoggedIn", {
+				detail: params
+			});
+			window.dispatchEvent(event);
+		}
+
+		const split = detail.page.split("/").filter(n => n);
+		if (2 == split.length && 4 == split[1].length) {
+			if (("match" == split[0] && split[1].startsWith("m")) || ("tournament" == split[0] && split[1].startsWith("t"))) {
+				const event = new CustomEvent("onRoomJoined", {
+					detail: {
+						userID: json.id,
+						roomID: split[1]
+					}
+				});
+				window.dispatchEvent(event);
+				const socket = getSocket();
+				if (socket)
+					socket.send(JSON.stringify({
+						type: "room-join",
+						userID: json.id,
+						roomID: split[1]
+					}));
+
+				return;
+			}
+		}
+		// if (json.roomID)
+		// 	await fetch("/user/leave", {
+		// 		method: "POST"
+		// 	});
 	}
 }
 
-export function userJoinedRoom(detail: joinedRoomEventDetail) {
-	const event = new CustomEvent("onRoomJoined", {
-		detail
-	});
-
-	window.dispatchEvent(event);
-}
-
-export function userLeftRoom(detail: leftRoomEventDetail) {
-	const event = new CustomEvent("onRoomLeft", {
-		detail
-	})
-
-	window.dispatchEvent(event);
-	// need to delete room chats when room is empty
-}
-
 export function registerEvents() {
-
-	/*
-		A user has changed the page
-	*/
-	document.addEventListener("onNavigated", (e: CustomEvent) => {
-		const data = <HTMLElement>document.querySelector("#data");
-		if (data) {
-			const userID = parseInt(data.dataset.id);
-			const roomID = data.dataset.room;
-			if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
-				userJoinedRoom({
-					userID,
-					roomID
-				});
-			}
-			else
-				userLeftRoom({ userID });
-		}
-	});
-
-	document.addEventListener("onUserNavigated", (e: CustomEvent) => {
-		console.log(`User ${e.detail.userID} navigated to ${e.detail.page}`);
-	});
-
-	/*
-		A user has navigated to a room
-	*/
-	document.addEventListener("onRoomJoined", (e: CustomEvent) => {
-		console.log(`${e.detail.userID} has joined room ${e.detail.roomID}`);
-	});
-
-	/*
-		A user has navigated away from a room
-	*/
-	document.addEventListener("onRoomleft", (e: CustomEvent) => {
-		console.log(`${e.detail.userID} has left the room`);
-	});
-
 	/*
 		A match has finished with a winner
 	*/
-	document.addEventListener("matchOver", async (e: CustomEvent) => {
+	window.addEventListener("matchOver", async (e: CustomEvent) => {
 		if (document.location.href.includes("tournament")) {
 			const response = await fetch("/tournament/update", {
 				method: "POST",

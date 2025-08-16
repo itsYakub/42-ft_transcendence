@@ -23,6 +23,7 @@ import { userRoutes } from "./backend/pages/user/userRoutes.js";
 import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
 import { initMessages } from "./backend/pages/messages/messagesDB.js";
 import { matchRoutes } from "./backend/pages/match/matchRoutes.js";
+import { socketRoutes } from "./backend/pages/socketRoutes.js";
 
 const __dirname = import.meta.dirname;
 
@@ -56,10 +57,9 @@ await fastify.register(fastifyStatic, {
 fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) => {
 	const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 	const params = {
-		user,
+		user: user.user,
 		errorCode: 404,
 		errorMessage: "ERR_NOT_FOUND",
-		page: "home",
 		language: request.cookies.language ?? "english"
 	};
 
@@ -100,6 +100,7 @@ try {
 
 	googleAuth(fastify, db);
 	userEndpoints(fastify, db);
+	socketRoutes(fastify, db);
 
 	// Remove!
 	devEndpoints(fastify, db);

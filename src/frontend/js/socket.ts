@@ -1,10 +1,23 @@
+import { navigate } from "./index.js";
+
 let socket: WebSocket | null = null;
 
 /**
  * Returns the active WebSocket instance.
  */
-function getSocket(): WebSocket | null {
+export function getSocket(): WebSocket | null {
 	return socket;
+}
+
+export async function socketFunctions() {
+	window.addEventListener("onLoggedIn", async (e: CustomEvent) => {
+		console.log("Logged in!", e.detail);
+		try {
+			await initChatSocket();
+		} catch (err) {
+			console.error("❌ WebSocket failed:", err);
+		}
+	});
 }
 
 /**
@@ -16,24 +29,36 @@ export function initChatSocket(): Promise<void> {
 	if (!socket)
 		socket = new WebSocket(socketUrl);
 
-	return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		socket!.onopen = () => {
-			console.log("✅ WebSocket connection opened (state: OPEN)");
-			(window as any).socket = socket; // ✅ attach to global for DevTools
+			// sendMessageToServer({
+			// 	type: "joined",
+			// 	message: {}
+			// });
 			resolve();
 		};
 
-		socket!.onmessage = (event) => {
-			let msg;
-			try {
-				msg = JSON.parse(event.data);
-			} catch (err) {
-				console.warn("⚠️ Failed to parse WebSocket message:", event.data);
-				return;
-			}
-
-			if (msg.type === 'chat') {
-				displayMessage(msg.from, msg.text);
+		socket!.onmessage = async (event) => {
+			const userResponse = await fetch("/user/id");
+			const user = await userResponse.json();
+			const json = JSON.parse(event.data);
+			if (user.id != json.userID) {
+				if (user.roomID == json.roomID) {
+					switch (json.type) {
+						case "room-message":
+						case "room-join":
+						case "room-ready":
+							navigate(window.location.href);
+							break;
+					}
+				}
+				else if ("/play" == window.location.pathname) {
+					switch (json.type) {
+						case "room-join":
+							navigate(window.location.href);
+							break;
+					}
+				}
 			}
 		};
 
@@ -49,45 +74,13 @@ export function initChatSocket(): Promise<void> {
 }
 
 /**
- * Send a chat message to a recipient.
+ * Send a message to a recipient.
  */
-export function sendChat(to: string, text: string) {
-	const s = getSocket();
-	if (!s) {
-		console.warn("❌ Cannot send message — WebSocket not initialized");
-		return;
-	}
-	console.log("📤 Sending chat message:", { to, text });
-	s.send(JSON.stringify({ type: 'chat', to, text }));
-}
-
-// /**
-//  * Send a game invite.
-//  */
-// export function inviteToGame() {
-// 	const s = getSocket();
-// 	if (!s) {
-// 		console.warn("❌ Cannot send invite — WebSocket not initialized");
-// 		return;
-// 	}
-// 	if (s.readyState !== WebSocket.OPEN) {
-// 		console.warn(`❌ Cannot send invite — WebSocket not open (state: ${s.readyState})`);
-// 		return;
-// 	}
-// 	console.log("📤 Sending Pong invite");
-// 	s.send(JSON.stringify({ type: 'invite' }));
-// }
-
-/**
- * Append a message to the chat box.
- */
-function displayMessage(from: string, text: string) {
-	const chatBox = document.getElementById("chats");
-	if (chatBox) {
-		const p = document.createElement("p");
-		p.textContent = `${from}: ${text}`;
-		p.classList = "text-white";
-		chatBox.appendChild(p);
-		chatBox.scrollTop = chatBox.scrollHeight;
-	}
+export function sendMessageToServer({ type, message }) {
+	const socket = getSocket();
+	if (socket)
+		socket.send(JSON.stringify({
+			type,
+			message
+		}));
 }

@@ -5,7 +5,6 @@ import { getUser, markUserOnline } from '../user/userDB.js';
 import { addHistory, getHistory } from './historyDB.js';
 import { historyHtml } from './historyHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
-import { leaveRoom } from '../play/playDB.js';
 
 export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/history', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -13,9 +12,6 @@ export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
-
-		markUserOnline(db, userResponse.user.id);
-		leaveRoom(db, userResponse);
 
 		const matchesResponse = getHistory(db, userResponse.user.id);
 		if (matchesResponse.error) {

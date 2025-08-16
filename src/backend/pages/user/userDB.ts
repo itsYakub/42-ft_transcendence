@@ -1,3 +1,4 @@
+
 import { DatabaseSync } from "node:sqlite";
 import { accessToken, hashPassword, refreshToken, validJWT } from "../../auth/jwt.js";
 import { compareSync } from "bcrypt-ts";
@@ -21,7 +22,7 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		RoomID TEXT,
 		Ready INTEGER NOT NULL DEFAULT 0,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
-		Online INTEGER NOT NULL DEFAULT 1,
+		Online INTEGER NOT NULL DEFAULT 0,
 		Avatar TEXT,
 		Password TEXT,
 		RefreshToken TEXT UNIQUE,
@@ -394,7 +395,7 @@ export function invalidateToken(db: DatabaseSync, { id }) {
 	}
 }
 
-export function markUserOnline(db: DatabaseSync, id: number) {
+export function markUserOnline(db: DatabaseSync, { id }) {
 	try {
 		const select = db.prepare("UPDATE Users SET Online = 1 WHERE UserID = ?");
 		select.run(id);
@@ -411,32 +412,12 @@ export function markUserOnline(db: DatabaseSync, id: number) {
 	}
 }
 
-export function markUserOffline(db: DatabaseSync, user: any) {
+export function markUserOffline(db: DatabaseSync, { id, type }) {
 	try {
 		const select = db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
-		select.run(user.id);
-		return {
-			code: 200,
-			message: "SUCCESS"
-		};
-	}
-	catch (e) {
-		return {
-			code: 500,
-			error: "ERR_DB"
-		};
-	}
-}
-
-
-
-export function markUserOffline2(db: DatabaseSync, user: any) {
-	try {
-		let select = db.prepare("UPDATE Rooms SET Players = Players - 1 WHERE RoomID = ?");
-		select.run(user.roomID);
-		console.log(`User ${user.nick} left ${user.roomID}`);
-		select = db.prepare("UPDATE Users SET RoomID = NULL WHERE UserID = ?");
-		select.run(user.id);
+		// const select = "guest" == type ? db.prepare("DELETE FROM Users WHERE UserID = ?") :
+		// 	db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
+		select.run(id);
 		return {
 			code: 200,
 			message: "SUCCESS"
