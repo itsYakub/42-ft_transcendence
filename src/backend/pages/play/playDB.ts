@@ -64,7 +64,7 @@ export function joinRoom(db: DatabaseSync, { roomID, user }) {
 				code: 404,
 				error: "ERR_NOT_FOUND"
 			};
-		
+
 		if (user.roomID != roomID && (2 == result.count && roomID.startsWith("m") || 4 == result.count && roomID.startsWith("t")))
 			return {
 				code: 423,
@@ -107,10 +107,46 @@ export function leaveRoom(db: DatabaseSync, { id, roomID }) {
 	}
 }
 
-export function makeReady(db: DatabaseSync, { id }) {
+export function markReady(db: DatabaseSync, { id }) {
 	try {
 		const select = db.prepare(`UPDATE Users SET Ready = 1 WHERE UserID = ?`);
 		select.run(id);
+		return {
+			code: 200,
+			message: "SUCCESS"
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+export function countReady(db: DatabaseSync, { roomID }) {
+	try {
+		const select = db.prepare(`SELECT COUNT(Ready) as Ready FROM Users WHERE RoomID = ? AND Ready = 1`);
+		const { Ready: ready } = select.get(roomID);
+		const roomCount = roomID.startsWith("t") ? 4 : 2
+		return {
+			code: 200,
+			message: "SUCCESS",
+			ready: roomCount == ready,
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+export function markPlaying(db: DatabaseSync, { roomID }) {
+	try {
+		const select = db.prepare(`UPDATE Users SET Playing = 1 WHERE RoomID = ?`);
+		select.run(roomID);
 		return {
 			code: 200,
 			message: "SUCCESS"

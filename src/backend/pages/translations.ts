@@ -79,6 +79,7 @@ function translateDutch(text: string): string {
 		case "PLAY_SINGLE_GAME_TEXT": return "";
 		case "PLAY_PLAYER_TEXT": return "";
 		case "PLAY_READY_TEXT": return "";
+		case "PLAY_LEAVE_TEXT": return "";
 		case "PLAY_MATCH_TEXT": return "";
 		case "PLAY_TOURNAMENT_TEXT": return "";
 		case "PLAY_SEND_TEXT": return "";
@@ -182,6 +183,7 @@ function translateEnglish(text: string): string {
 		case "PLAY_SINGLE_GAME_TEXT": return "Single game";
 		case "PLAY_PLAYER_TEXT": return "Player";
 		case "PLAY_READY_TEXT": return "Ready";
+		case "PLAY_LEAVE_TEXT": return "Leave";
 		case "PLAY_MATCH_TEXT": return "Match";
 		case "PLAY_TOURNAMENT_TEXT": return "Tournament";
 		case "PLAY_SEND_TEXT": return "Send";
@@ -285,6 +287,7 @@ function translatePolish(text: string): string {
 		case "PLAY_SINGLE_GAME_TEXT": return "";
 		case "PLAY_PLAYER_TEXT": return "";
 		case "PLAY_READY_TEXT": return "";
+		case "PLAY_LEAVE_TEXT": return "";
 		case "PLAY_MATCH_TEXT": return "";
 		case "PLAY_TOURNAMENT_TEXT": return "";
 		case "PLAY_SEND_TEXT": return "";

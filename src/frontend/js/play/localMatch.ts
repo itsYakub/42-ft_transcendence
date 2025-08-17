@@ -1,5 +1,5 @@
 import { startMatch } from "./game.js";
-import { showAlert } from "./index.js";
+import { showAlert } from "../index.js";
 
 export function localMatchFunctions() {
 	const form = <HTMLFormElement>document.querySelector("#singleGameForm");

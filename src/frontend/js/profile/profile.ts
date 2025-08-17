@@ -1,9 +1,9 @@
-import { navigate, showAlert } from "./index.js";
+import { navigate, showAlert } from "../index.js";
 
 /*
 	The buttons and events create by the /profile page
 */
-export function profileFunctions() {	
+export function profileFunctions() {
 	const profileButton = document.getElementById("profileButton");
 	if (profileButton) {
 		profileButton.addEventListener("click", () => {
@@ -61,6 +61,9 @@ export function profileFunctions() {
 					const avatar = reader.result as string;
 					const response = await fetch("/profile/avatar", {
 						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
 						body: JSON.stringify({
 							avatar
 						})
@@ -86,6 +89,9 @@ export function profileFunctions() {
 			const nick = changeNickForm.newNick.value;
 			const response = await fetch("/profile/nick", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({
 					nick
 				})
@@ -126,6 +132,9 @@ export function profileFunctions() {
 
 			const response = await fetch("/profile/password", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({
 					currentPassword,
 					newPassword
@@ -152,7 +161,10 @@ export function profileFunctions() {
 	if (enableTOTPButton) {
 		enableTOTPButton.addEventListener("click", async () => {
 			const response = await fetch("/profile/totp/enable", {
-				method: "POST"
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 			});
 
 			if (response.ok) {
@@ -178,9 +190,12 @@ export function profileFunctions() {
 		disableTOTPButton.addEventListener("click", async () => {
 			// password protect this!
 			const response = await fetch("/profile/totp/disable", {
-				method: "POST"
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 			});
-			
+
 			const json = await response.json();
 			if (!json.error) {
 				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
@@ -212,6 +227,9 @@ export function profileFunctions() {
 
 			const response = await fetch("/profile/totp/verify", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({
 					code
 				})
@@ -256,6 +274,9 @@ export function profileFunctions() {
 		invalidateTokenButton.addEventListener("click", async () => {
 			const response = await fetch("/user/invalidate-token", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 			});
 
 			const json = await response.json();

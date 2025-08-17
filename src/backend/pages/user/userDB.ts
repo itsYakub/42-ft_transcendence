@@ -12,7 +12,7 @@ const __dirname = import.meta.dirname;
 */
 export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 	if (dropUsers)
-		db.exec(`DROP TABLE IF EXISTS Users;`);
+		db.exec(`DROP TABLE IF EXISTS Users;`);	
 
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Users (
@@ -23,12 +23,15 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		Ready INTEGER NOT NULL DEFAULT 0,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
 		Online INTEGER NOT NULL DEFAULT 0,
+		Playing INTEGER NOT NULL DEFAULT 0,
 		Avatar TEXT,
 		Password TEXT,
 		RefreshToken TEXT UNIQUE,
 		TOTPSecret TEXT,
 		Type TEXT DEFAULT user
 		);`);
+
+	db.exec(`UPDATE Users SET Online = 0, RoomID = NULL, Ready = 0, Playing = 0`);
 }
 
 /*
@@ -65,6 +68,7 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): any {
 				password: user.Password,
 				refreshToken: user.RefreshToken,
 				online: user.Online,
+				ready: user.Ready,
 				totpSecret: user.TOTPSecret,
 				totpVerified: user.TOTPVerified,
 				totpEmail: user.TOTPEmail,
@@ -112,6 +116,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 					password: user.Password,
 					refreshToken: user.RefreshToken,
 					online: user.Online,
+					ready: user.Ready,
 					totpSecret: user.TOTPSecret,
 					totpVerified: user.TOTPVerified,
 					totpEmail: user.TOTPEmail,
@@ -487,7 +492,7 @@ export function allUsers(db: DatabaseSync) {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allOtherUsers(db: DatabaseSync, id: number) {
+export function allOtherUsers(db: DatabaseSync, { id }) {
 	try {
 		const select = db.prepare("SELECT UserID, Nick FROM Users WHERE ? != UserID");
 		const result = select.all(id);

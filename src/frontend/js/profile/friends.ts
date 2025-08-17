@@ -1,4 +1,4 @@
-import { navigate, showAlert } from "./index.js";
+import { navigate, showAlert } from "../index.js";
 
 export function friendsFunctions() {
 	const addFriendButton = document.querySelector("#addFriendButton");
@@ -22,6 +22,9 @@ export function friendsFunctions() {
 			const friendEmail = addFriendForm.email.value;
 			const response = await fetch("/friends/find", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({ email: friendEmail })
 			});
 
@@ -46,6 +49,9 @@ export function friendsFunctions() {
 		removeFriendButtons[i].addEventListener("click", async function () {
 			const response = await fetch("/friends/remove", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({
 					friendID: this.dataset.id
 				})

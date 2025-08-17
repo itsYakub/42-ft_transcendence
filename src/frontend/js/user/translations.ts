@@ -1,4 +1,4 @@
-import { navigate } from "./index.js";
+import { navigate } from "../index.js";
 
 export function translationFunctions() {
 	const languageSelect = <HTMLSelectElement>document.getElementById("languageSelect");

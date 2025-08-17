@@ -7,7 +7,7 @@ import { tournamentMatchHtml } from './tournamentMatchHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { localTournamentHtml } from './localTournamentHtml.js';
 import { joinRoom, roomPlayers } from '../play/playDB.js';
-import { getRoomMessages } from '../messages/messagesDB.js';
+import { roomMessages } from '../messages/messagesDB.js';
 import { tournamentHtml } from './tournamentHtml.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -58,43 +58,43 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		return reply.type("text/html").send(frame);
 	});
 
-	fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-		const language = request.cookies.language ?? "english";
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUserError(userResponse, language));
+	// fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+	// 	const language = request.cookies.language ?? "english";
+	// 	const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+	// 	if (200 != userResponse.code)
+	// 		return reply.type("text/html").send(noUserError(userResponse, language));
 
-		const { id } = request.params as any;
+	// 	const { id } = request.params as any;
 
-		const roomResponse = joinRoom(db, {
-			roomID: id,
-			user: userResponse.user
-		});
+	// 	const roomResponse = joinRoom(db, {
+	// 		roomID: id,
+	// 		user: userResponse.user
+	// 	});
 
-		if (200 != roomResponse.code) {
-			const params = {
-				language,
-				user: userResponse.user,
-				errorCode: roomResponse.code,
-				errorMessage: roomResponse.error
-			};
-			return reply.type("text/html").send(frameHtml(params));
-		}
+	// 	if (200 != roomResponse.code) {
+	// 		const params = {
+	// 			language,
+	// 			user: userResponse.user,
+	// 			errorCode: roomResponse.code,
+	// 			errorMessage: roomResponse.error
+	// 		};
+	// 		return reply.type("text/html").send(frameHtml(params));
+	// 	}
 
-		userResponse.user["roomID"] = id;
-		const playersResponse = roomPlayers(db, { roomID: id });
-		const messagesResponse = getRoomMessages(db, id);
+	// 	userResponse.user["roomID"] = id;
+	// 	const playersResponse = roomPlayers(db, { roomID: id });
+	// 	const messagesResponse = roomMessages(db, {roomID: id});
 
-		const params = {
-			players: playersResponse.players,
-			user: userResponse.user,
-			messages: messagesResponse.messages,
-			language
-		};
+	// 	const params = {
+	// 		players: playersResponse.players,
+	// 		user: userResponse.user,
+	// 		messages: messagesResponse.messages,
+	// 		language
+	// 	};
 
-		const frame = frameHtml(params, tournamentHtml(params));
-		return reply.type("text/html").send(frame);
-	});
+	// 	const frame = frameHtml(params, tournamentHtml(params));
+	// 	return reply.type("text/html").send(frame);
+	// });
 
 	fastify.post('/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = JSON.parse(request.body as string);

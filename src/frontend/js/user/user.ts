@@ -1,4 +1,4 @@
-import { navigate, showAlert } from "./index.js";
+import { navigate, showAlert } from "../index.js";
 
 export function userFunctions() {
 	const googleButton = document.querySelector("#googleButton");
@@ -33,6 +33,9 @@ export function userFunctions() {
 async function login(email: string, password: string) {
 	const response = await fetch("/user/login", {
 		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
 		body: JSON.stringify({
 			email, password
 		})
@@ -59,6 +62,9 @@ async function login(email: string, password: string) {
 				e.preventDefault();
 				const totpResponse = await fetch("/user/totp/check", {
 					method: "POST",
+					headers: {
+						"content-type": "application/json"
+					},
 					body: JSON.stringify({
 						email,
 						password,
@@ -94,6 +100,9 @@ async function login(email: string, password: string) {
 async function register(email: string, password: string) {
 	const response = await fetch("/user/register", {
 		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
 		body: JSON.stringify({
 			email,
 			password
@@ -127,7 +136,10 @@ function googleLogin() {
 
 async function guestLogin() {
 	const response = await fetch("/guest/register", {
-		method: "POST"
+		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
 	});
 
 	const json = await response.json();

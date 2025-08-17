@@ -1,7 +1,7 @@
 /*
 	Entry point for the game
 */
-export function startMatch(p1Name: string, p2Name: string, options: any = null) {
+export function startMatch(p1Name: string, p2Name: string) {
 
 	// This is a button in the dialog with simulates p1 winning a game. Call the endMatch function from within your code
 	const winMatchButton = document.querySelector("#winMatchButton");
@@ -25,6 +25,14 @@ export function startMatch(p1Name: string, p2Name: string, options: any = null) 
 
 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
 	const dialog = <HTMLDialogElement>document.querySelector("#gameDialog");
+	dialog.addEventListener("keydown", (e) => {
+		if ("Escape" == e.key) {
+			e.preventDefault();
+			alert("Quitter!");
+			// Report player lost
+		}
+	});
+
 	dialog.showModal();
 }
 

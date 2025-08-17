@@ -23,7 +23,8 @@ import { userRoutes } from "./backend/pages/user/userRoutes.js";
 import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
 import { initMessages } from "./backend/pages/messages/messagesDB.js";
 import { matchRoutes } from "./backend/pages/match/matchRoutes.js";
-import { socketRoutes } from "./backend/pages/socketRoutes.js";
+import { serverSockets } from "./backend/sockets/serverSockets.js";
+import { apiRoutes } from "./backend/api/apiRoutes.js";
 
 const __dirname = import.meta.dirname;
 
@@ -87,6 +88,7 @@ try {
 	initChats(db, dropTables.dropChats);
 	initMessages(db, dropTables.dropMessages);
 
+	apiRoutes(fastify, db);
 	homeRoutes(fastify, db);
 	userRoutes(fastify, db);
 	playRoutes(fastify, db);
@@ -100,7 +102,7 @@ try {
 
 	googleAuth(fastify, db);
 	userEndpoints(fastify, db);
-	socketRoutes(fastify, db);
+	serverSockets(fastify, db);
 
 	// Remove!
 	devEndpoints(fastify, db);

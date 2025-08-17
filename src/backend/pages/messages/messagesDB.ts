@@ -17,7 +17,7 @@ export function initMessages(db: DatabaseSync, dropMessages: boolean): void {
 /*
 	Gets a list of ids that are in a private chat with the user
 */
-export function getMessageSenders(db: DatabaseSync, id: number) {
+export function getMessageSenders(db: DatabaseSync, { id }) {
 	try {
 		const select = db.prepare("SELECT ToID, FromID FROM Messages WHERE ToID = ? OR FromID = ?");
 		const messages = select.all(id, id);
@@ -47,10 +47,10 @@ export function getMessageSenders(db: DatabaseSync, id: number) {
 /*
 	Gets all the user's messages
 */
-export function getMessages(db: DatabaseSync, toID: number, fromID: number): any {
+export function getMessages(db: DatabaseSync, userID: number, otherID: number): any {
 	try {
 		const select = db.prepare("SELECT * FROM Messages WHERE (ToID = ? AND FromID = ?) OR (FromID = ? AND ToID = ?) ORDER BY SentAt DESC");
-		const messages = select.all(toID, fromID, toID, fromID);
+		const messages = select.all(userID, otherID, userID, otherID);
 		return {
 			code: 200,
 			messages
@@ -67,7 +67,7 @@ export function getMessages(db: DatabaseSync, toID: number, fromID: number): any
 /*
 	Gets all the room's messages
 */
-export function getRoomMessages(db: DatabaseSync, roomID: number): any {
+export function roomMessages(db: DatabaseSync, { roomID }): any {
 	try {
 		const select = db.prepare("SELECT FromID, Message, Nick FROM Messages INNER JOIN Users ON Users.UserID = Messages.FromID WHERE ToID = ? ORDER BY SentAt DESC");
 		const messages = select.all(roomID);

@@ -1,10 +1,10 @@
 import { translateBackend } from "../translations.js";
 
-export function messagesHtml({ users, messages, senders, fromID }, { user, language }): string {
-	const userListHtml = userListString(users, senders, fromID);
-	const messageListHtml = messageListString(user.id, messages, fromID);
+export function messagesHtml({ users, messages, senders, otherID }, { user, language }): string {
+	const userListHtml = userListString(users, senders, otherID);
+	const messageListHtml = messageListString(user.id, messages, otherID);
 
-	let html = messagesString(user, userListHtml, messageListHtml, fromID);
+	let html = messagesString(user, userListHtml, messageListHtml, otherID);
 	html = translate(html, language);
 
 	return html;
@@ -23,7 +23,7 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function messagesString(user, users: any, messages: any, fromID: number): string {
+function messagesString(user: any, users: any, messages: any, otherID: number): string {
 	return `
 	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
@@ -54,8 +54,8 @@ function messagesString(user, users: any, messages: any, fromID: number): string
 									<form id="sendMessageForm">
 										<div class="flex flex-row gap-1">
 											<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-											<input type="submit" data-id="${fromID}" hidden>
-											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${fromID}">%%MESSAGES_SEND_TEXT%%</button>
+											<input type="submit" data-id="${otherID}" hidden>
+											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${otherID}">%%MESSAGES_SEND_TEXT%%</button>
 										</div>
 									</form>
 								</div>						
@@ -69,17 +69,18 @@ function messagesString(user, users: any, messages: any, fromID: number): string
 	`;
 }
 
-function userListString(users: any, senders: any, fromID: number) {
+function userListString(users: any, senders: any, otherID: number) {
 	let userList = "";
 	for (var key in users) {
-		userList += userString(users[key], senders, fromID);
+		userList += userString(users[key], senders, otherID);
 	}
 
 	return userList;
 }
 
-function userString(user: any, senders: any, fromID: number) {
-	const bgColour = user.id == fromID ? "bg-gray-800" : "hover:bg-gray-800";
+function userString(user: any, senders: any, otherID: number) {
+	console.log(otherID);
+	const bgColour = user.id == otherID ? "bg-gray-800" : "hover:bg-gray-800";
 	const textColour = senders.includes(user.id) ? "text-yellow-200" : "text-gray-600";
 
 	return `
@@ -87,7 +88,7 @@ function userString(user: any, senders: any, fromID: number) {
 	`;
 }
 
-function messageListString(id: number, messages: any, fromID: number) {
+function messageListString(id: number, messages: any, otherID: number) {
 	let messageList = "";
 	for (var key in messages) {
 		messageList += messageString(id, messages[key]);

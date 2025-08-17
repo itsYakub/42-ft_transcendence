@@ -16,6 +16,9 @@ export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		const response = await fetch("https://oauth2.googleapis.com/token", {
 			method: "POST",
+			headers: {
+				"content-type": "application/json"
+			},
 			body: JSON.stringify(params)
 		});
 

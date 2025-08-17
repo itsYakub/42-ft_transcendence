@@ -1,5 +1,5 @@
-import { navigate, showAlert } from "./index.js";
-import { getSocket } from "./socket.js";
+import { navigate, showAlert } from "../index.js";
+import { sendMessageToServer } from "../sockets/socket.js";
 
 export function tournamentFunctions() {
 	const playerTournamentReadyForm = <HTMLFormElement>document.querySelector("#playerTournamentReadyForm");
@@ -8,7 +8,10 @@ export function tournamentFunctions() {
 			e.preventDefault();
 
 			const response = await fetch("/play/ready", {
-				method: "POST"
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 			});
 
 			const json = await response.json();
@@ -17,11 +20,15 @@ export function tournamentFunctions() {
 				return;
 			}
 
-			const socket = getSocket();
-			if (socket)
-				socket.send(JSON.stringify({
-					type: "room-ready"
-				}));
+			sendMessageToServer({
+				type: "room-ready"
+			});
+
+			// const socket = getSocket();
+			// if (socket)
+			// 	socket.send(JSON.stringify({
+			// 		type: "room-ready"
+			// 	}));
 			navigate(window.location.href);
 		});
 	}
@@ -34,6 +41,9 @@ export function tournamentFunctions() {
 			if (sendTournamentMessageForm.message.value.length > 0) {
 				const response = await fetch("/messages/add", {
 					method: "POST",
+					headers: {
+						"content-type": "application/json"
+					},
 					body: JSON.stringify({
 						message: sendTournamentMessageForm.message.value
 					})
@@ -45,12 +55,17 @@ export function tournamentFunctions() {
 					return;
 				}
 
-				const socket = getSocket();
-				if (socket)
-					socket.send(JSON.stringify({
-						type: "room-message",
-						message: sendTournamentMessageForm.message.value
-					}));
+				sendMessageToServer({
+					type: "room-message",
+					message: sendTournamentMessageForm.message.value
+				});
+
+				// const socket = getSocket();
+				// if (socket)
+				// 	socket.send(JSON.stringify({
+				// 		type: "room-message",
+				// 		message: sendTournamentMessageForm.message.value
+				// 	}));
 				navigate(window.location.href);
 			}
 		});

@@ -1,5 +1,5 @@
-import { navigate } from "./index.js";
-import { getSocket } from "./socket.js";
+import { addFunctions, navigate, showAlert } from "./index.js";
+import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
 interface navigatedDetail {
 	page: string
@@ -17,50 +17,47 @@ export interface messageDetail {
 }
 
 export async function navigated(detail: navigatedDetail) {
+	//if (detail.page.includes("match"))
+	//	window.history.replaceState(null, null, detail.page + "/ttt");
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
 	if (200 == json.code) {
-		if (0 == json.online) {
-			const params: userLoggedInDetail = {
-				userID: json.id,
-				nick: json.nick
-			}
-
-			const event = new CustomEvent("onLoggedIn", {
-				detail: params
-			});
-			window.dispatchEvent(event);
-		}
-
-		const split = detail.page.split("/").filter(n => n);
-		if (2 == split.length && 4 == split[1].length) {
-			if (("match" == split[0] && split[1].startsWith("m")) || ("tournament" == split[0] && split[1].startsWith("t"))) {
-				const event = new CustomEvent("onRoomJoined", {
-					detail: {
-						userID: json.id,
-						roomID: split[1]
-					}
+		if (!isConnected()) {
+			try {
+				await initChatSocket();
+				sendMessageToServer({
+					type: "user-logged-in"
 				});
-				window.dispatchEvent(event);
-				const socket = getSocket();
-				if (socket)
-					socket.send(JSON.stringify({
-						type: "room-join",
-						userID: json.id,
-						roomID: split[1]
-					}));
-
-				return;
+			} catch (err) {
+				console.error("❌ WebSocket failed:", err);
 			}
 		}
-		// if (json.roomID)
-		// 	await fetch("/user/leave", {
-		// 		method: "POST"
-		// 	});
 	}
 }
 
 export function registerEvents() {
+	/* 
+		Changes page on back/forward buttons
+	*/
+	window.addEventListener('popstate', function (event) {
+		navigate(window.location.pathname, false);
+	});
+
+	/*
+		Registers the functions and also shows an error if Google sign-in/up was unsuccessful
+	*/
+	window.addEventListener("DOMContentLoaded", () => {
+		if (-1 != document.cookie.indexOf("googleautherror=true")) {
+			const date = new Date();
+			date.setDate(date.getDate() - 3);
+
+			showAlert("ERR_GOOGLE");
+			document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
+		}
+		addFunctions();
+		navigated({ page: window.location.pathname });
+	});
+
 	/*
 		A match has finished with a winner
 	*/
@@ -68,6 +65,9 @@ export function registerEvents() {
 		if (document.location.href.includes("tournament")) {
 			const response = await fetch("/tournament/update", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({
 					code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
 					p1Score: e.detail.p1Score,
@@ -81,6 +81,9 @@ export function registerEvents() {
 		else if (document.location.href.includes("3000/play")) {
 			const response = await fetch("/match/add", {
 				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
 				body: JSON.stringify({
 					score: e.detail.p1Score,
 					p2Score: e.detail.p2Score,

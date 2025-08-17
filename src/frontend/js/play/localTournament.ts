@@ -1,11 +1,14 @@
 import { startMatch } from "./game.js";
-import { navigate, showAlert } from "./index.js";
+import { navigate, showAlert } from "../index.js";
 
 async function generateTournament(names: string[]): Promise<string> {
 	const code = Date.now().toString(36).substring(4);
 	const shuffled = names.sort(() => Math.random() - 0.5);
 	const response = await fetch("/tournament/add", {
 		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
 		body: JSON.stringify({
 			code,
 			m1p1: shuffled[0],
@@ -42,11 +45,11 @@ export function localTournamentFunctions() {
 				newTournamentForm.p4Name.value
 			];
 
-			if(4 != names.filter((n, i) => names.indexOf(n) === i).length) {
+			if (4 != names.filter((n, i) => names.indexOf(n) === i).length) {
 				alert("Must be unique!");
 				return;
 			}
-	
+
 			const code = await generateTournament(names);
 			if ("ERR_BAD_TOURNAMENT" == code) {
 				showAlert("ERR_BAD_TOURNAMENT");
