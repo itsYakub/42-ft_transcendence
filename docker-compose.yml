@@ -19,7 +19,6 @@ services:
       HOST: "0.0.0.0"
       DB: "/data/transcendence.db"
     volumes:
-      - ./data:/data
       - vault-secrets:/secrets:ro
     expose:
       - "3000"
