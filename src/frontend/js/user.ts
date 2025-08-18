@@ -38,9 +38,9 @@ async function login(email: string, password: string) {
 		})
 	});
 
-	const payload = await response.json();
+	const payloadJson = await response.json();
 
-	if (payload.totpEnabled) {
+	if (payloadJson.totpEnabled) {
 		const totpCodeDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
 		if (totpCodeDialog)
 			totpCodeDialog.showModal();
@@ -57,7 +57,7 @@ async function login(email: string, password: string) {
 					return;
 
 				e.preventDefault();
-				const response = await fetch("/user/totp/check", {
+				const totpResponse = await fetch("/user/totp/check", {
 					method: "POST",
 					body: JSON.stringify({
 						email,
@@ -66,8 +66,8 @@ async function login(email: string, password: string) {
 					})
 				});
 
-				const totpResponse = await response.json();
-				if (totpResponse.error) {
+				const json = await totpResponse.json();
+				if (json.error) {
 					const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 					alertDialog.addEventListener("close", () => {
 						totpCodeForm.code.value = "";
@@ -77,12 +77,14 @@ async function login(email: string, password: string) {
 					return;
 				}
 
+				console.log("user totp", json);
+
 				navigate("/");
 			});
 		}
 	}
-	else if (payload.error) {
-		showAlert(payload.error);
+	else if (payloadJson.error) {
+		showAlert(payloadJson.error);
 		return;
 	}
 	else
@@ -111,17 +113,9 @@ async function register(email: string, password: string) {
 }
 
 function googleLogin() {
-	// 	const query = {
-	// 	client_id: "700864958995-a6qbsqc8t8pqub1cg06kai263h2b2dbj.apps.googleusercontent.com",
-	// 	redirect_uri: "https://10.11.7.3.nip.io:3000/auth/google",
-	//	redirect_uri: "https://172.17.0.1.nip.io:3000/auth/google",
-	//	redirect_uri: "https://localhost:3000/auth/google",
-	// 	response_type: "code",
-	// 	scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-	// };
 	const query = {
 		client_id: "700864958995-a6qbsqc8t8pqub1cg06kai263h2b2dbj.apps.googleusercontent.com",
-		redirect_uri: "https://172.17.0.1.nip.io:3000/auth/google",
+		redirect_uri: "https://transcendence.nip.io:3000/auth/google",
 		response_type: "code",
 		scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
 	};
@@ -132,7 +126,6 @@ function googleLogin() {
 }
 
 async function guestLogin() {
-	console.log("aaa");
 	const response = await fetch("/guest/register", {
 		method: "POST"
 	});
@@ -142,7 +135,5 @@ async function guestLogin() {
 		showAlert(json.error);
 		return;
 	}
-
 	navigate("/");
 }
-

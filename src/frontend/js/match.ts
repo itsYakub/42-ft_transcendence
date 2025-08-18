@@ -1,10 +1,10 @@
-import { startMatch } from "./game.js";
 import { navigate, showAlert } from "./index.js";
+import { getSocket } from "./socket.js";
 
 export function matchFunctions() {
-	const playerReadyForm = <HTMLFormElement>document.querySelector("#playerReadyForm");
-	if (playerReadyForm) {
-		playerReadyForm.addEventListener("submit", async function (e) {
+	const playerMatchReadyForm = <HTMLFormElement>document.querySelector("#playerMatchReadyForm");
+	if (playerMatchReadyForm) {
+		playerMatchReadyForm.addEventListener("submit", async function (e) {
 			e.preventDefault();
 
 			const response = await fetch("/play/ready", {
@@ -16,25 +16,26 @@ export function matchFunctions() {
 				showAlert(json.error);
 				return;
 			}
+
+			const socket = getSocket();
+			if (socket)
+				socket.send(JSON.stringify({
+					type: "room-ready"
+				}));
 			navigate(window.location.href);
 		});
 	}
 
-	const sendRoomMessageForm = <HTMLFormElement>document.querySelector("#sendRoomMessageForm");
-	if (sendRoomMessageForm) {
-		sendRoomMessageForm.addEventListener("submit", async function (e) {
+	const sendMatchMessageForm = <HTMLFormElement>document.querySelector("#sendMatchMessageForm");
+	if (sendMatchMessageForm) {
+		sendMatchMessageForm.addEventListener("submit", async function (e) {
 			e.preventDefault();
 
-			const roomID = e.submitter.dataset.id;
-			const userID = e.submitter.dataset.user;
-
-			if (sendRoomMessageForm.message.value.length > 0) {
+			if (sendMatchMessageForm.message.value.length > 0) {
 				const response = await fetch("/messages/add", {
 					method: "POST",
 					body: JSON.stringify({
-						toID: roomID,
-						fromID: userID,
-						message: sendRoomMessageForm.message.value
+						message: sendMatchMessageForm.message.value
 					})
 				});
 
@@ -44,6 +45,12 @@ export function matchFunctions() {
 					return;
 				}
 
+				const socket = getSocket();
+				if (socket)
+					socket.send(JSON.stringify({
+						type: "room-message",
+						message: sendMatchMessageForm.message.value
+					}));
 				navigate(window.location.href);
 			}
 		});

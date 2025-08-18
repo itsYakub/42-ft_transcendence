@@ -18,8 +18,6 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		if (200 != response.code)
 			return reply.type("text/html").send(noUserError(response, language));
 
-		markUserOnline(db, response.user.id);
-
 		const params = {
 			user: response.user,
 			language
@@ -31,16 +29,28 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 
 	fastify.get('/tournament/local/:id', async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
-		const response = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != response.code)
-			return reply.type("text/html").send(noUserError(response, language));
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const { id } = request.params as any;
 
-		markUserOnline(db, response.user.id);
+		const tournamentResponse = getTournamentByCode(db, userResponse.user.nick, id);
+		if (200 != tournamentResponse.code) {
+			const params = {
+				language,
+				user: userResponse.user,
+				errorCode: tournamentResponse.code,
+				errorMessage: tournamentResponse.error
+			};
+			return reply.type("text/html").send(frameHtml(params));
+		}
 
-		const tournament = getTournamentByCode(db, id);
-		const params = { user: response.user, tournament, page: "tournamentMatch", language: request.cookies.language ?? "english" };
+		const params = {
+			user: userResponse.user,
+			tournament: tournamentResponse.tournament,
+			language
+		};
 
 		const html = tournamentMatchHtml(params);
 
@@ -55,8 +65,6 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const { id } = request.params as any;
-
-		markUserOnline(db, userResponse.user.id);
 
 		const roomResponse = joinRoom(db, {
 			roomID: id,

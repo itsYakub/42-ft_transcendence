@@ -24,21 +24,6 @@ export function navbarHtml({ user, language }): string {
 	return html;
 }
 
-function alertString2(): string {
-	return `	
-	<div id="alertBanner" class="absolute mx-auto mt-20 rounded-lg shadow border w-120 bg-gray-900 border-gray-100 p-2">
-		<div>
-			<h1 class="text-xl font-bold text-white text-center">
-				Transcendence
-			</h1>
-			<p id="alertContent" class="text-gray-400 text-center text-wrap"></p>
-			<button id="closeAlertButton"
-				class="float-right cursor-pointer border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 font-medium rounded-lg px-4 py-2">OK</button>
-		</div>
-	</div>
-	`;
-}
-
 function translate(html: string, language: string): string {
 	const toBeTranslated = ["HOME", "PLAY", "TOURNAMENT", "LOGIN", "OR", "REGISTER", "REGISTER_TITLE",
 		"LOGIN_TITLE", "NICK", "EMAIL", "PASSWORD", "TOTP_CODE_TITLE", "TOTP_CODE", "TOTP_CODE_VERIFY",

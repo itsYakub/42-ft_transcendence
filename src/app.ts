@@ -3,8 +3,6 @@ import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import fastifyWebsocket from "@fastify/websocket";
 import { userEndpoints } from "./backend/pages/user/userEndpoints.js";
-import { readFileSync } from "fs";
-import { join } from "path";
 import { DatabaseSync } from "node:sqlite";
 import { googleAuth } from "./backend/auth/googleAuth.js";
 import { getUser, initUsers } from "./backend/pages/user/userDB.js";
@@ -21,20 +19,17 @@ import { profileRoutes } from "./backend/pages/profile/profileRoutes.js";
 import { playRoutes } from "./backend/pages/play/playRoutes.js";
 import { initChats } from "./backend/pages/chat/chatDB.js";
 import { chatRoutes } from "./backend/pages/chat/chatRoutes.js";
-import { networkInterfaces } from 'os';
 import { userRoutes } from "./backend/pages/user/userRoutes.js";
 import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
 import { initMessages } from "./backend/pages/messages/messagesDB.js";
 import { matchRoutes } from "./backend/pages/match/matchRoutes.js";
+import { socketRoutes } from "./backend/pages/socketRoutes.js";
 
 const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
 	ignoreTrailingSlash: true,
-	https: {
-		key: readFileSync(join(__dirname, 'transcendence.key')),
-		cert: readFileSync(join(__dirname, 'transcendence.crt'))
-	}
+	trustProxy: true
 });
 
 /*
@@ -62,10 +57,9 @@ await fastify.register(fastifyStatic, {
 fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) => {
 	const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 	const params = {
-		user,
+		user: user.user,
 		errorCode: 404,
 		errorMessage: "ERR_NOT_FOUND",
-		page: "home",
 		language: request.cookies.language ?? "english"
 	};
 
@@ -106,26 +100,11 @@ try {
 
 	googleAuth(fastify, db);
 	userEndpoints(fastify, db);
+	socketRoutes(fastify, db);
 
 	// Remove!
 	devEndpoints(fastify, db);
 
-	// const nets = networkInterfaces();
-	// const results = {};
-
-	// for (const name of Object.keys(nets)) {
-	// 	for (const net of nets[name]) {
-	// 		const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
-	// 		if (net.family === familyV4Value && !net.internal) {
-	// 			if (!results[name]) {
-	// 				results[name] = [];
-	// 			}
-	// 			results[name].push(net.address);
-	// 		}
-	// 	}
-	// }
-
-	// const ip = Object.keys(results)[0];
 	const port = parseInt(process.env.PORT ?? "3000");
 
 	// Start listening
@@ -137,11 +116,9 @@ try {
 			console.log(err);
 			process.exit(1);
 		}
-		//console.log(`Listening on https://${results[ip]}:${port}`);
-		console.log("Listening on https://172.17.0.1.nip.io:3000");
+		console.log(`Listening on https://transcendence.nip.io:${port}`);
 	});
 }
 catch (e) {
 	console.log("Fatal error - exiting!");
 }
-

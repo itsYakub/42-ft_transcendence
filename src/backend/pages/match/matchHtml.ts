@@ -34,11 +34,10 @@ function matchString(players: any, messages: any, user: any): string {
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%PLAY_SINGLE_GAME_TEXT%%</h1>
 		<div class="flex flex-row h-150">
 			<div class="flex flex-col">
-				<form id="playerReadyForm">
+				<form id="playerMatchReadyForm">
 					<div class="flex flex-col gap-8">
 						${playersString}
 					</div>
-					<p class="mt-2 mr-2 text-gray-300">Customisation goes here</p>
 					<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mr-auto cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%PLAY_READY_TEXT%%</button>
 				</form>
 			</div>
@@ -46,7 +45,7 @@ function matchString(players: any, messages: any, user: any): string {
 				<div class="flex flex-col h-full">
 					${messages}
 					<div class="mt-2">
-						<form id="sendRoomMessageForm">
+						<form id="sendMatchMessageForm">
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" data-id="${user.roomID}" data-user="${user.id}" hidden>

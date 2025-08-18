@@ -34,7 +34,7 @@ function tournamentString(players: any, messages: any, user: any): string {
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TOURNAMENT_TITLE_TEXT%%</h1>
 		<div class="flex flex-row h-150">
 			<div class="flex flex-col mr-2">
-				<form id="playerReadyForm">
+				<form id="playerTournamentReadyForm">
 					<div class="flex flex-col gap-8">
 						${playersString}
 					</div>
@@ -45,7 +45,7 @@ function tournamentString(players: any, messages: any, user: any): string {
 				<div class="flex flex-col h-full">
 					${messages}
 					<div class="mt-2">
-						<form id="sendRoomMessageForm">
+						<form id="sendTournamentMessageForm">
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" data-id="${user.roomID}" data-user="${user.id}" hidden>

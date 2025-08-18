@@ -1,0 +1,47 @@
+networks:
+  transcendence-net:
+    driver: bridge
+
+services:
+  app:
+    build: .
+    image: transcendence:latest
+    container_name: transcendence
+    # NO PORT MAPPING please DONT change this
+    # app shall be accessible ONLY through our WAF proxy
+    env_file:
+      - .env
+    environment:
+      PORT: "3000"
+      HOST: "0.0.0.0"
+      DB: "/data/transcendence.db"
+    volumes:
+      - ./data:/data
+    expose:
+      - "3000"
+    restart: unless-stopped
+    networks:
+      - transcendence-net
+
+  waf:
+    build: ./waf/
+    container_name: transcendence-waf
+    depends_on:
+      - app
+    environment:
+      BACKEND: "http://app:3000"
+      PORT: "8080"
+      SSL_PORT: "8443"
+      SERVER_NAME: "transcendence.nip.io"
+      NGINX_ALWAYS_TLS_REDIRECT: "on"
+      MODSEC_RULE_ENGINE: "on"
+      DETECTION_PARANOIA: "2"
+      BLOCKING_PARANOIA: "2"
+      ANOMALY_INBOUND: "6"
+      ANOMALY_OUTBOUND: "4"
+    ports:
+      - "3000:8443"
+    restart: unless-stopped
+    networks:
+      - transcendence-net
+

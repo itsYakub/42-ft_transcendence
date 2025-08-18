@@ -4,7 +4,7 @@ import { translateBackend } from "../translations.js";
 	The HTML returned to the browser. Replace any placeholders here
 */
 export function homeHtml({ user, language }): string {
-	let html = homeString();
+	let html = homeString(user);
 	html = translate(html, language);
 
 	return html;
@@ -26,8 +26,9 @@ function translate(html: string, language: string): string {
 /*
 	The HTML that represents the home page
 */
-function homeString(): string {
+function homeString(user: any): string {
 	return `
+	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
 		<div class="text-gray-300 pt-4 mb-4 text-4xl">%%HOME_TITLE_TEXT%%</div>
 		<div class="grid grid-cols-2 gap-5 mt-12">
