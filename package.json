@@ -5,8 +5,7 @@
 	"main": "dist/app.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc && cp -r src/frontend/images dist/frontend/images && cp src/backend/default.jpg ./dist/backend/default.jpg",
-		"start": "npm run build && node --env-file=.env dist/app.js"
+		"build": "npx tsc && cp -r src/frontend/images dist/frontend/images && cp src/backend/default.jpg ./dist/backend/default.jpg"
 	},
 	"keywords": [],
 	"author": "lwillis",
