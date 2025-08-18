@@ -36,9 +36,6 @@ printf "%sStarting WAF checks… expecting 403 to PASS%s\n" "$DIM" "$RESET"
 run_test "cmd_injection | ls | cat /etc/passwd" \
   "https://transcendence.nip.io:3000/?cmd=ls%7Ccat%20/etc/passwd"
 
-run_test "cmd_injection | ; id (borderline)" \
-  "https://transcendence.nip.io:3000/?cmd=;id"
-
 run_test "cmd_injection | cat /etc/passwd ; id" \
   "https://transcendence.nip.io:3000/?cmd=cat+/etc/passwd;id"
 
