@@ -50,7 +50,7 @@ export function profileFunctions() {
 		avatarUploadButton.addEventListener("change", () => {
 			const files = avatarUploadButton.files;
 			if (1 == files.length) {
-				if (files[0].size > 500 * 1024) {
+				if (files[0].size > 100 * 1024) {
 					showAlert("ERR_AVATAR_TOO_BIG");
 					return;
 				}
@@ -58,14 +58,22 @@ export function profileFunctions() {
 				const reader = new FileReader();
 				reader.readAsDataURL(files[0]);
 				reader.onloadend = async () => {
-					const avatar = reader.result as string;
+					let index = 23;
+					if (files[0].name.endsWith(".png"))
+						index = 22;
+					let avatar = reader.result as string;
+					avatar = avatar.substring(index);
+
+					avatar = replaceInvalidBase64Chars(avatar);
+
 					const response = await fetch("/profile/avatar", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
 						},
 						body: JSON.stringify({
-							avatar
+							avatar,
+							type: 23 == index ? "jpeg" : "png"
 						})
 					});
 
@@ -78,6 +86,19 @@ export function profileFunctions() {
 			}
 		});
 	}
+
+	function replaceInvalidBase64Chars(input: string) {
+	return input.replace(/[=+/]/g, charToBeReplaced => {
+		switch (charToBeReplaced) {
+			case '=':
+				return '';
+			case '+':
+				return '#';
+			case '/':
+				return '_';
+		}
+	});
+};
 
 	/*
 		Updates the user's nickname

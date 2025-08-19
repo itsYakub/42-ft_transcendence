@@ -18,6 +18,7 @@
 		"fastify": "^5.4.0",
 		"fastify-cookie": "^5.6.1",
 		"fastify-plugin": "^5.0.1",
+		"nodemailer": "^7.0.5",
 		"otpauth": "^9.4.0",
 		"qr": "^0.5.0",
 		"tailwindcss": "^4.1.10",

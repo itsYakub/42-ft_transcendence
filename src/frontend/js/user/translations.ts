@@ -46,7 +46,7 @@ function translateDutch(text: string): string {
 
 function translateEnglish(text: string): string {
 	switch (text) {
-		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 500KiB max!";
+		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 100KiB max!";
 		case "ERR_BAD_PASSWORD": return "Incorrect password!";
 		case "ERR_DB": return "Database error!";
 		case "ERR_EMAIL_IN_USE": return "Email already registered!";
