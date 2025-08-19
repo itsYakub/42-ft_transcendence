@@ -1,55 +1,75 @@
 import { gameHtmlString } from "../game/game.js";
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../../translations.js";
 
-export function matchHtml({ players, messages, language, user }): string {
-	const messageListHtml = messageListString(user.id, messages);
-
-	let html = matchString(players, messageListHtml, user);
+export function matchHtml({ gamers, messages, language, user }): string {
+	let html = matchString(gamers, messages, user, language);
 	html = translate(html, language);
 
 	return html + gameHtmlString();
 }
 
+export function gamersString(gamers: any, user: any, language: string): string {
+	let gamersString = "";
+	gamers.forEach(gamer => {
+		gamersString += gamerString(gamer);
+	});
+
+	const html = `
+	<div class="flex flex-col gap-8">
+		${gamersString}
+	</div>
+	<div class="flex flex-row justify-between mr-9">
+		${readyButtonString(user)}
+		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%GAME_LEAVE_TEXT%%</button>
+	</div>
+	`;
+
+	return translate(html, language);
+}
+
+export function messagesString(messages: any, user: any): string {
+	let messageList = "";
+	for (var key in messages) {
+		messageList += messageString(user.id, messages[key]);
+	}
+
+	return messageList;
+}
+
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "READY", "SEND"];
+	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "READY", "LEAVE", "SEND"];
 
 	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%PLAY_${text}_TEXT%%`, translateBackend({
+		html = html.replaceAll(`%%GAME_${text}_TEXT%%`, translateBackend({
 			language,
-			text: `PLAY_${text}_TEXT`
+			text: `GAME_${text}_TEXT`
 		}));
 	});
 
 	return html;
 }
 
-function matchString(players: any, messages: any, user: any): string {
-	let playersString = "";
-	players.forEach(player => {
-		playersString += playerString(player);
-	});
-
+function matchString(gamers: any, messages: any, user: any, language: string): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%PLAY_SINGLE_GAME_TEXT%%</h1>
+		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%GAME_SINGLE_GAME_TEXT%%</h1>
 		<div class="flex flex-row h-150">
 			<div class="flex flex-col">
-				<form id="playerMatchReadyForm">
-					<div class="flex flex-col gap-8">
-						${playersString}
-					</div>
-					<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mr-auto cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%PLAY_READY_TEXT%%</button>
+				<form id="gamerMatchReadyForm">
+					${gamersString(gamers, user, language)}
 				</form>
 			</div>
-			<div class="grow border border-gray-700 rounded-lg p-2">
+			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
-					${messages}
+					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
+						${messagesString(messages, user)}
+					</div>
 					<div class="mt-2">
 						<form id="sendMatchMessageForm">
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-								<input type="submit" data-id="${user.roomID}" data-user="${user.id}" hidden>
-								<button type="submit" data-id="${user.roomID}" data-user="${user.id}" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%PLAY_SEND_TEXT%%</button>
+								<input type="submit" hidden>
+								<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%GAME_SEND_TEXT%%</button>
 							</div>
 						</form>
 					</div>
@@ -60,7 +80,7 @@ function matchString(players: any, messages: any, user: any): string {
 	`;
 }
 
-function playerString({ Nick, Ready }) {
+function gamerString({ Nick, Ready }) {
 	const readyText = 0 == Ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
 
 	return `
@@ -71,16 +91,9 @@ function playerString({ Nick, Ready }) {
 	`;
 }
 
-function messageListString(userID: number, messages: any) {
-	let messageList = "";
-	for (var key in messages) {
-		messageList += messageString(userID, messages[key]);
-	}
-
-	return `
-	<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
-		${messageList}
-	</div>`;
+function readyButtonString({ ready }) {
+	return 0 == ready ? `<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%GAME_READY_TEXT%%</button>` :
+		`<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-2 px-4 rounded-lg">%%GAME_READY_TEXT%%</button>`;
 }
 
 function messageString(userID: number, message: any) {

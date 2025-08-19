@@ -1,10 +1,9 @@
-
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../user/userDB.js';
+import { getUser } from '../../user/userDB.js';
 import { homeHtml } from './homeHtml.js';
-import { userHtml } from '../user/userHtml.js';
+import { frameHtml } from '../../frame/frameHtml.js';
+import { userHtml } from '../../user/userHtml.js';
 
 /*
 	Handles the home page route
@@ -18,7 +17,7 @@ export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		const params = {
 			user: userResponse.user,
-			page: "home",
+			page: request.url,
 			language
 		};
 

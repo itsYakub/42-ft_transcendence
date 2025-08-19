@@ -1,14 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../user/userDB.js';
+import { frameHtml } from '../../frame/frameHtml.js';
+import { getUser, markUserOnline } from '../../user/userDB.js';
 import { addTournament, getTournamentByCode, updateTournament } from './tournamentDB.js';
 import { tournamentMatchHtml } from './tournamentMatchHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { localTournamentHtml } from './localTournamentHtml.js';
-import { joinRoom, roomPlayers } from '../play/playDB.js';
-import { getRoomMessages } from '../messages/messagesDB.js';
-import { tournamentHtml } from './tournamentHtml.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament/local', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -58,55 +55,53 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		return reply.type("text/html").send(frame);
 	});
 
-	fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
-		const language = request.cookies.language ?? "english";
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.type("text/html").send(noUserError(userResponse, language));
+	// fastify.get('/tournament/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+	// 	const language = request.cookies.language ?? "english";
+	// 	const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+	// 	if (200 != userResponse.code)
+	// 		return reply.type("text/html").send(noUserError(userResponse, language));
 
-		const { id } = request.params as any;
+	// 	const { id } = request.params as any;
 
-		const roomResponse = joinRoom(db, {
-			roomID: id,
-			user: userResponse.user
-		});
+	// 	const gameResponse = joinRoom(db, {
+	// 		gameID: id,
+	// 		user: userResponse.user
+	// 	});
 
-		if (200 != roomResponse.code) {
-			const params = {
-				language,
-				user: userResponse.user,
-				errorCode: roomResponse.code,
-				errorMessage: roomResponse.error
-			};
-			return reply.type("text/html").send(frameHtml(params));
-		}
+	// 	if (200 != gameResponse.code) {
+	// 		const params = {
+	// 			language,
+	// 			user: userResponse.user,
+	// 			errorCode: gameResponse.code,
+	// 			errorMessage: gameResponse.error
+	// 		};
+	// 		return reply.type("text/html").send(frameHtml(params));
+	// 	}
 
-		userResponse.user["roomID"] = id;
-		const playersResponse = roomPlayers(db, { roomID: id });
-		const messagesResponse = getRoomMessages(db, id);
+	// 	userResponse.user["gameID"] = id;
+	// 	const gamersResponse = gamePlayers(db, { gameID: id });
+	// 	const messagesResponse = gameMessages(db, {gameID: id});
 
-		const params = {
-			players: playersResponse.players,
-			user: userResponse.user,
-			messages: messagesResponse.messages,
-			language
-		};
+	// 	const params = {
+	// 		gamers: gamersResponse.gamers,
+	// 		user: userResponse.user,
+	// 		messages: messagesResponse.messages,
+	// 		language
+	// 	};
 
-		const frame = frameHtml(params, tournamentHtml(params));
-		return reply.type("text/html").send(frame);
-	});
+	// 	const frame = frameHtml(params, tournamentHtml(params));
+	// 	return reply.type("text/html").send(frame);
+	// });
 
 	fastify.post('/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {
-		const params = JSON.parse(request.body as string);
-
-		const response = addTournament(db, params);
+		const response = addTournament(db, request.body as any);
 		return reply.send(response);
 	});
 
 	fastify.post('/tournament/update', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		params["user"] = user;
 
 		const response = updateTournament(db, params);

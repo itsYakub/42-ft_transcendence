@@ -1,17 +1,16 @@
-import { friendsFunctions } from "./friends.js";
+import { friendsFunctions } from "./profile/friends.js";
 import { navbarFunctions } from "./navbar.js";
-import { profileFunctions } from "./profile.js";
+import { profileFunctions } from "./profile/profile.js";
 import { devButtons } from "./devButtons.js";
-import { translateFrontend, translationFunctions } from "./translations.js";
-import { localMatchFunctions } from "./localMatch.js";
-import { PlayFunctions } from "./play.js";
-import { userFunctions } from "./user.js";
-import { MessagesFunctions } from "./messages.js";
-import { matchFunctions } from "./match.js";
+import { translateFrontend, translationFunctions } from "./user/translations.js";
+import { localMatchFunctions } from "./game/localMatch.js";
+import { gameFunctions } from "./game/game.js";
+import { userFunctions } from "./user/user.js";
+import { messagesFunctions } from "./profile/messages.js";
+import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
-import { socketFunctions } from "./socket.js";
-import { localTournamentFunctions } from "./localTournament.js";
-import { tournamentFunctions } from "./tournament.js";
+import { localTournamentFunctions } from "./game/localTournament.js";
+import { tournamentFunctions } from "./game/tournament.js";
 
 /*
 	Simulates moving to a new page
@@ -26,36 +25,14 @@ export async function navigate(url: string, updateHistory: boolean = true): Prom
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
-	//raiseNavigationEvent();
 	addFunctions();
 	navigated({ page: url });
 }
 
-// function raiseNavigationEvent() {
-// 	const data = <HTMLElement>document.querySelector("#data");
-// 	if (data) {
-// 		const userID = parseInt(data.dataset.id);
-// 		const roomID = data.dataset.room;
-// 		if (window.location.pathname.includes("/tournament/") || window.location.pathname.includes("/match/")) {
-// 			userJoinedRoom({
-// 				userID,
-// 				roomID: "abc"
-// 			});
-// 		}
-// 		else
-// 			userLeftRoom({ userID });
-// 	}
-// }
-
-/* 
-	Changes page on back/forward buttons
+/*
+	Hooks up the window events
 */
-window.addEventListener('popstate', function (event) {
-	navigate(window.location.pathname, false);
-});
-
 registerEvents();
-socketFunctions();
 
 /*
 	Sets up all the listeners after navigating to a new page
@@ -67,35 +44,19 @@ export function addFunctions() {
 	translationFunctions();
 	profileFunctions();
 	friendsFunctions();
-	MessagesFunctions();
-	PlayFunctions();
+	messagesFunctions();
+	gameFunctions();
 	localMatchFunctions();
 	matchFunctions();
-
 	userFunctions();
-
-	// sockets
 
 	// remove!
 	devButtons();
 }
 
 /*
-	Registers the functions and also shows an error if Google sign-in/up was unsuccessful
+	Shows the (improved?) alert dialog
 */
-window.addEventListener("DOMContentLoaded", () => {
-	if (-1 != document.cookie.indexOf("googleautherror=true")) {
-		const date = new Date();
-		date.setDate(date.getDate() - 3);
-
-		showAlert("ERR_GOOGLE");
-		document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
-	}
-	//raiseNavigationEvent();
-	addFunctions();
-	navigated({ page: window.location.pathname });
-});
-
 export function showAlert(message: string) {
 	const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 	if (alertDialog) {
@@ -108,4 +69,3 @@ export function showAlert(message: string) {
 		alertDialog.showModal();
 	}
 }
-
