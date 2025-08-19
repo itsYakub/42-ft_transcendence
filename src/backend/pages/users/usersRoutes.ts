@@ -3,11 +3,14 @@ import { DatabaseSync } from "node:sqlite";
 import { frameHtml } from '../../frame/frameHtml.js';
 import { allOtherUsers, getUser } from '../../user/userDB.js';
 import { noUserError } from '../home/homeRoutes.js';
-import { messagesHtml } from './messagesHtml.js';
+import { usersHtml } from './usersHtml.js';
 import { privateMessages, getMessageSenders } from './messagesDB.js';
+import { translateBackend } from '../../translations.js';
+import { getFriends } from '../friends/friendsDB.js';
+import { blockedList } from '../blocked/blockedDB.js';
 
-export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get("/messages", async (request: FastifyRequest, reply: FastifyReply) => {
+export function usersRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+	fastify.get("/users", async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
@@ -15,9 +18,18 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const user = userResponse.user;
 
 		const usersResponse = allOtherUsers(db, user);
+		if (200 != usersResponse.code)
+			return reply.type("text/html").send(noUserError(usersResponse, language));
+
+		const friendsResponse = getFriends(db, user);
+		if (200 != friendsResponse.code)
+			return reply.type("text/html").send(noUserError(friendsResponse, language));
+
+		const blockedResponse = blockedList(db, user);
+		if (200 != blockedResponse.code)
+			return reply.type("text/html").send(noUserError(blockedResponse, language));
 
 		const messageSendersResponse = getMessageSenders(db, user);
-
 		if (200 != messageSendersResponse.code)
 			return reply.type("text/html").send(noUserError(messageSendersResponse, language));
 
@@ -28,16 +40,18 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		const messageparams = {
 			otherUsers: usersResponse.users,
-			messages: {},
+			friends: friendsResponse.friends,
+			blocked: blockedResponse.blocked,
 			senders: messageSendersResponse.ids,
+			messages: {},
 			otherUserID: 0
 		}
 
-		const frame = frameHtml(params, messagesHtml(messageparams, params));
+		const frame = frameHtml(params, usersHtml(messageparams, params));
 		return reply.type("text/html").send(frame);
 	});
 
-	fastify.post("/messages", async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.post("/users", async (request: FastifyRequest, reply: FastifyReply) => {
 		const language = request.cookies.language ?? "english";
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
@@ -47,8 +61,18 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const { otherUserID } = request.body as any;
 
 		const usersResponse = allOtherUsers(db, user);
-		const messagesResponse = privateMessages(db, user.id, otherUserID);
+		if (200 != usersResponse.code)
+			return reply.type("text/html").send(noUserError(usersResponse, language));
 
+		const friendsResponse = getFriends(db, user);
+		if (200 != friendsResponse.code)
+			return reply.type("text/html").send(noUserError(friendsResponse, language));
+
+		const blockedResponse = blockedList(db, user);
+		if (200 != blockedResponse.code)
+			return reply.type("text/html").send(noUserError(blockedResponse, language));
+
+		const messagesResponse = privateMessages(db, user.id, otherUserID);
 		if (200 != messagesResponse.code)
 			return reply.type("text/html").send(noUserError(messagesResponse, language));
 
@@ -64,11 +88,16 @@ export function messageRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		const messageparams = {
 			otherUsers: usersResponse.users,
+			friends: friendsResponse.friends,
+			blocked: blockedResponse.blocked,
 			messages: messagesResponse.messages,
 			senders: messageSendersResponse.ids,
 			otherUserID
 		}
 
-		return reply.type("text/html").send(messagesHtml(messageparams, params));
+		let html = usersHtml(messageparams, params);
+		html = translateBackend({ html, language });
+
+		return reply.type("text/html").send(html);
 	});
 }

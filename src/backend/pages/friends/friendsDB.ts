@@ -1,9 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initFriends(db: DatabaseSync, dropFriends: boolean): void {
-	if (dropFriends)
-		db.exec(`DROP TABLE IF EXISTS Friends;`);
-
+export function initFriends(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Friends (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -15,9 +12,9 @@ export function initFriends(db: DatabaseSync, dropFriends: boolean): void {
 /*
 	Gets all the user's friends
 */
-export function getFriends(db: DatabaseSync, id: number): any {
+export function getFriends(db: DatabaseSync, { id }): any {
 	try {
-		const select = db.prepare("SELECT * FROM Friends INNER JOIN Users ON Users.UserID = Friends.FriendID WHERE Friends.UserID = ? ORDER BY Online DESC, Nick");
+		const select = db.prepare("SELECT FriendID, Nick, GameID, Online, Playing FROM Friends INNER JOIN Users ON Users.UserID = Friends.FriendID WHERE Friends.UserID = ? ORDER BY Online DESC, Nick");
 		const friends = select.all(id);
 		return {
 			code: 200,
@@ -40,7 +37,7 @@ export function addFriend(db: DatabaseSync, { id, friendID }): any {
 		const select = db.prepare("INSERT INTO Friends (UserID, FriendID) VALUES (?, ?)");
 		select.run(id, friendID);
 		return {
-			code: 201,
+			code: 200,
 			message: "SUCCESS"
 		};
 	}
@@ -60,7 +57,7 @@ export function removeFriend(db: DatabaseSync, json: any): any {
 		const select = db.prepare("DELETE FROM Friends WHERE UserID = ? AND FriendID = ?");
 		select.run(json.id, json.friendID);
 		return {
-			code: 204,
+			code: 200,
 			message: "SUCCESS"
 		};
 	}

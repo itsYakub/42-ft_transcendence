@@ -1,28 +1,12 @@
-import { translateBackend } from "../translations.js";
-
-export function userHtml({ language }): string {
+export function userHtml(): string {
 	let html = userString();
-	html = translate(html, language);
-
-	return html;
-}
-
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["TITLE", "FORM_TITLE", "EMAIL", "PASSWORD", "LOGIN", "REGISTER", "GOOGLE_TITLE", "GUEST_TITLE"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%USER_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `USER_${text}_TEXT`
-		}));
-	});
 
 	return html;
 }
 
 function userString(): string {
 	return `
-	<h1 class="text-gray-300 mt-8 text-center text-3xl">%%USER_TITLE_TEXT%%</h1>
+	<h1 class="text-gray-300 mt-8 text-center text-3xl">%%TEXT_USER_DECISION%%</h1>
 	<div class="grid grid-cols-2 gap-5 mt-12">
 		${registerString()}
 		<div class="flex flex-col justify-between">
@@ -38,24 +22,24 @@ function registerString(): string {
 	<div class="content-center rounded-lg shadow border px-4 pt-2 bg-gray-900 border-gray-100 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-gray-300 mb-8">
-				%%USER_FORM_TITLE_TEXT%%
+				%%TEXT_LOG_IN_OR_REGISTER%%
 			</h1>
 			<form id="userForm">
 				<div>
-					<input type="email" name="email" placeholder="%%USER_EMAIL_TEXT%%" autocomplete="email"
+					<input type="email" name="email" placeholder="%%TEXT_EMAIL%%" autocomplete="email"
 						class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-gray-300"
 						required="true">
 				</div>
 				<div>
-					<input type="password" name="password" minlength="8" placeholder="%%USER_PASSWORD_TEXT%%" autocomplete="current-password"
+					<input type="password" name="password" minlength="8" placeholder="%%TEXT_PASSWORD%%" autocomplete="current-password"
 						class="border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-gray-300"
 						required="true">
 				</div>
 				<div class="grid grid-cols-2 justify-between my-4">
 					<button id="loginButton" type="submit" formmethod="post"
-						class="mr-auto cursor-pointer text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%USER_LOGIN_TEXT%%</button>
+						class="mr-auto cursor-pointer text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%BUTTON_LOGIN%%</button>
 					<button id="registerButton" type="submit" formmethod="post"
-						class="ml-auto cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%USER_REGISTER_TEXT%%</button>
+						class="ml-auto cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_REGISTER%%</button>
 				</div>
 				</form>
 		</div>
@@ -66,7 +50,7 @@ function registerString(): string {
 function googleString(): string {
 	return `	
 	<div class="rounded-lg shadow border py-8 bg-gray-900 border-gray-100 text-center">
-		<button id="googleButton" class="w-60 cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%USER_GOOGLE_TITLE_TEXT%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
+		<button id="googleButton" class="w-60 cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GOOGLE%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
 	</div>
 	`;
 }
@@ -74,7 +58,7 @@ function googleString(): string {
 function guestString(): string {
 	return `	
 	<div class="rounded-lg shadow border py-8 bg-gray-900 border-gray-100 text-center">
-		<button id="guestButton" class="w-60 cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%USER_GUEST_TITLE_TEXT%%</button>
+		<button id="guestButton" class="w-60 cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GUEST%%</button>
 	</div>
 	`;
 }

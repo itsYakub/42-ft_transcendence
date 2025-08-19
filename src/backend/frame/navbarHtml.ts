@@ -1,5 +1,4 @@
 import { alertString, totpString } from "./dialogsHtml.js";
-import { translateBackend } from "../translations.js";
 
 export function navbarHtml({ user, language, page }): string {
 	let languageSelect = englishString();
@@ -19,22 +18,6 @@ export function navbarHtml({ user, language, page }): string {
 		html += loggedOutString(languageSelect);
 	else
 		html += "guest" == user.type ? guestString(user, languageSelect, page) : loggedInString(user, languageSelect, page);
-
-	html = translate(html, language);
-	return html;
-}
-
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["HOME", "GAME", "TOURNAMENT", "LOGIN", "REGISTER", "REGISTER_TITLE",
-		"LOGIN_TITLE", "NICK", "EMAIL", "PASSWORD", "TOTP_CODE_TITLE", "TOTP_CODE", "TOTP_CODE_VERIFY",
-		"PLAYER_NAME_TITLE", "PLAYER_NAME", "PLAYER_NAME_SET"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%NAVBAR_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `NAVBAR_${text}_TEXT`
-		}));
-	});
 
 	return html;
 }
@@ -107,7 +90,7 @@ function homeButtonString(page: string) {
 	return `
 	<button id="homeButton"
 		class="cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
-		%%NAVBAR_HOME_TEXT%%
+		%%BUTTON_HOME%%
 	</button>
 	`;
 }
@@ -118,7 +101,7 @@ function gameButtonString(page: string) {
 	return `
 	<button id="gameButton"
 		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
-		%%NAVBAR_GAME_TEXT%%
+		%%BUTTON_GAME%%
 	</button>
 	`;
 }

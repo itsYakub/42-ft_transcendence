@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { markUserOnline } from '../user/userDB.js';
-import { addPrivateMessage } from '../pages/messages/messagesDB.js';
+import { addPrivateMessage } from '../pages/users/messagesDB.js';
 import { broadcastMessageToClients } from './serverSockets.js';
 
 export function handleUserMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
@@ -16,7 +16,6 @@ export function handleUserMessage(fastify: FastifyInstance, db: DatabaseSync, us
 }
 
 function userChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
-	console.log(message);
 	if (0 == message.toID)
 		return;
 

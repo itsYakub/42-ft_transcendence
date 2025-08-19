@@ -6,10 +6,7 @@ import { defaultImage } from "./defaultImage.js";
 /*
 	Sets up the Users table
 */
-export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
-	if (dropUsers)
-		db.exec(`DROP TABLE IF EXISTS Users;`);
-
+export function initUsers(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Users (
 		UserID INTEGER PRIMARY KEY AUTOINCREMENT,

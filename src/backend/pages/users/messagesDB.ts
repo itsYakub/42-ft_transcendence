@@ -1,9 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initPrivateMessages(db: DatabaseSync, dropMessages: boolean): void {
-	if (dropMessages)
-		db.exec(`DROP TABLE IF EXISTS PrivateMessages;`);
-
+export function initPrivateMessages(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS PrivateMessages (
 		MessageID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,7 +68,7 @@ export function privateMessages(db: DatabaseSync, userID: number, otherID: numbe
 */
 export function addPrivateMessage(db: DatabaseSync, { toID, fromID, message }): any {
 	try {
-		const select = db.prepare("INSERT INTO Messages (ToID, FromID, Message, SentAt) VALUES (?, ?, ?, ?)");
+		const select = db.prepare("INSERT INTO PrivateMessages (ToID, FromID, Message, SentAt) VALUES (?, ?, ?, ?)");
 		select.run(toID, fromID, message, new Date().toISOString());
 		return {
 			code: 200,

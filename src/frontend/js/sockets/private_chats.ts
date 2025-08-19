@@ -1,4 +1,4 @@
-import { messagesFunctions } from "../profile/messages.js";
+import { usersFunctions } from "../profile/users.js";
 import { profileFunctions } from "../profile/profile.js";
 import { currentPage } from "./socket.js";
 
@@ -11,9 +11,8 @@ export function handlePrivateChatMessage(user: any, message: any) {
 }
 
 async function userChat(user: any, message: any) {
-	if ("messages" != currentPage())
+	if ("users" != currentPage())
 		return;
-
 
 	let otherID: number = 0;
 	if (message.toID == user.id)
@@ -29,7 +28,7 @@ async function userChat(user: any, message: any) {
 			document.querySelector("#usersDiv").innerHTML = messages.usersHtml;
 			document.querySelector("#messagesDiv").innerHTML = messages.messagesHtml;
 			profileFunctions();
-			messagesFunctions();
+			usersFunctions();
 		}
 	}
 }

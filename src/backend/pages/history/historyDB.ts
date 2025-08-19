@@ -1,9 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initHistory(db: DatabaseSync, dropMatches: boolean): void {
-	if (dropMatches)
-		db.exec(`DROP TABLE IF EXISTS History;`);
-
+export function initHistory(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS History (
 		MatchID INTEGER PRIMARY KEY AUTOINCREMENT,

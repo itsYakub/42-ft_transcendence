@@ -111,8 +111,6 @@ async function register(email: string, password: string) {
 
 	const payload = await response.json();
 
-	console.log(payload);
-
 	if (payload.error) {
 		showAlert(payload.error);
 		return;

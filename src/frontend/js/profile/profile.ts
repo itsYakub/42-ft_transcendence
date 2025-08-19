@@ -18,6 +18,13 @@ export function profileFunctions() {
 		}, { once: true });
 	}
 
+	const messagesButton = document.getElementById("usersButton");
+	if (messagesButton) {
+		messagesButton.addEventListener("click", () => {
+			navigate("/users");
+		}, { once: true });
+	}
+
 	const friendsButton = document.getElementById("friendsButton");
 	if (friendsButton) {
 		friendsButton.addEventListener("click", () => {
@@ -25,10 +32,10 @@ export function profileFunctions() {
 		}, { once: true });
 	}
 
-	const messagesButton = document.getElementById("messagesButton");
-	if (messagesButton) {
-		messagesButton.addEventListener("click", () => {
-			navigate("/messages");
+	const blockedButton = document.getElementById("blockedButton");
+	if (blockedButton) {
+		blockedButton.addEventListener("click", () => {
+			navigate("/blocked");
 		}, { once: true });
 	}
 
@@ -88,17 +95,17 @@ export function profileFunctions() {
 	}
 
 	function replaceInvalidBase64Chars(input: string) {
-	return input.replace(/[=+/]/g, charToBeReplaced => {
-		switch (charToBeReplaced) {
-			case '=':
-				return '';
-			case '+':
-				return '#';
-			case '/':
-				return '_';
-		}
-	});
-};
+		return input.replace(/[=+/]/g, charToBeReplaced => {
+			switch (charToBeReplaced) {
+				case '=':
+					return '';
+				case '+':
+					return '#';
+				case '/':
+					return '_';
+			}
+		});
+	};
 
 	/*
 		Updates the user's nickname
@@ -107,27 +114,28 @@ export function profileFunctions() {
 	if (changeNickForm) {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const nick = changeNickForm.newNick.value;
+			const newNick = changeNickForm.newNick.value;
 			const response = await fetch("/profile/nick", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					nick
+					newNick
 				})
 			});
 
 			const message = await response.json();
-			if (!message.error) {
-				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-				alertDialog.addEventListener("close", () => {
-					navigate("/profile");
-				});
-				showAlert("done");
-			}
-			else
+			if (200 != message.code) {
 				showAlert(message.error);
+				return;
+			}
+
+			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+			alertDialog.addEventListener("close", () => {
+				navigate("/profile");
+			});
+			showAlert("done");
 		});
 	}
 
@@ -138,7 +146,7 @@ export function profileFunctions() {
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const currentPassword = changePasswordForm.currentPassword.value;
+			const checkPassword = changePasswordForm.currentPassword.value;
 			const newPassword = changePasswordForm.newPassword.value;
 			const repeatPassword = changePasswordForm.repeatPassword.value;
 			if (newPassword != repeatPassword) {
@@ -146,7 +154,7 @@ export function profileFunctions() {
 				return;
 			}
 
-			if (newPassword == currentPassword) {
+			if (newPassword == checkPassword) {
 				showAlert("ERR_NO_NEW_PASSWORD");
 				return;
 			}
@@ -157,7 +165,7 @@ export function profileFunctions() {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					currentPassword,
+					checkPassword,
 					newPassword
 				})
 			});

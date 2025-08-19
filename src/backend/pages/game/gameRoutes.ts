@@ -6,6 +6,7 @@ import { gameHtml } from './gameHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { getGames, gamePlayers, gameMessages } from './gameDB.js';
 import { matchHtml } from '../match/matchHtml.js';
+import { broadcastMessageToClients } from '../../sockets/serverSockets.js';
 
 export function gameRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -16,6 +17,7 @@ export function gameRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		const user = userResponse.user;
 
+		// user is already in a game
 		if (user.gameID) {
 			const gameID = user.gameID;
 
@@ -30,7 +32,6 @@ export function gameRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 				language
 			};
 
-			// determine if match or tournament from gameID
 			const frame = frameHtml(params, matchHtml(params));
 			return reply.type("text/html").send(frame);
 		}

@@ -26,6 +26,18 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.type("text/html").send(frame);
 	});
 
+	fastify.post('/profile/avatar', async (request: FastifyRequest, reply: FastifyReply) => {
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.send(userResponse);
+
+		const params = request.body as any;
+		params["id"] = userResponse.user.id;
+
+		const response = updateAvatar(db, params);
+		return reply.send(response);
+	});
+
 	fastify.post('/profile/nick', async (request: FastifyRequest, reply: FastifyReply) => {
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
@@ -69,18 +81,6 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.send(response);
 	});
 
-	fastify.post('/profile/avatar', async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.send(userResponse);
-
-		const params = request.body as any;
-		params["id"] = userResponse.user.id;
-
-		const response = updateAvatar(db, params);
-		return reply.send(response);
-	});
-
 	fastify.post('/profile/password', async (request: FastifyRequest, reply: FastifyReply) => {
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 != userResponse.code)
@@ -88,7 +88,7 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		const params = request.body as any;
 		params["id"] = userResponse.user.id;
-		params["password"] = userResponse.user.password;
+		params["currentPassword"] = userResponse.user.password;
 
 		const response = updatePassword(db, params);
 		return reply.send(response);

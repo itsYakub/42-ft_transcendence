@@ -1,11 +1,11 @@
-import { translateBackend } from "../../translations.js";
+export function usersHtml({ otherUsers, friends, blocked, messages, senders, otherUserID }, { user }): string {
+	if (0 == otherUserID && otherUsers.length > 0)
+		otherUserID = otherUsers[0].id;
 
-export function messagesHtml({ otherUsers, messages, senders, otherUserID }, { user, language }): string {
 	const userListHtml = userListString(otherUsers, senders, otherUserID);
 	const messageListHtml = privateMessageListString(user.id, messages, otherUserID);
 
-	let html = messagesString(user, userListHtml, messageListHtml, otherUserID);
-	html = translate(html, language);
+	let html = messagesString(user, friends, userListHtml, messageListHtml, otherUserID);
 
 	return html;
 }
@@ -34,34 +34,23 @@ export function privateMessageListString(id: number, messages: any, otherUserID:
 	return messageList;
 }
 
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "SEND"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%MESSAGES_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `MESSAGES_${text}_TEXT`
-		}));
-	});
-
-	return html;
-}
-
-function messagesString(user: any, users: any, messages: any, otherUserID: number): string {
+function messagesString(user: any, friends: any, users: any, messages: any, otherUserID: number): string {
 	return `
 	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">
-				<div class="flex flex-col items-end content-end mt-8">
+				<div class="flex flex-col items-end content-end mt-8 gap-4">
 					<button id="profileButton"
-						class="cursor-pointer text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%MESSAGES_PROFILE_TEXT%%</button>
+						class="cursor-pointer text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_PROFILE%%</button>
 					<button id="historyButton"
-						class="my-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%MESSAGES_HISTORY_TEXT%%</button>
+						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_HISTORY%%</button>
+					<button id="usersButton"
+						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg bg-gray-800">%%BUTTON_USERS%%</button>
 					<button id="friendsButton"
-						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%MESSAGES_FRIENDS_TEXT%%</button>
-					<button id="messagesButton"
-						class="mt-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg bg-gray-800">%%MESSAGES_MESSAGES_TEXT%%</button>
+						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_FRIENDS%%</button>
+					<button id="blockedButton"
+						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_BLOCKED%%</button>
 				</div>
 			</div>
 			<div class="grow bg-gray-900">
@@ -73,6 +62,7 @@ function messagesString(user: any, users: any, messages: any, otherUserID: numbe
 							</div>
 							<div class="bg-gray-700 w-0.5"></div>
 							<div class="flex flex-col grow pl-2">
+								${actionsDiv(otherUserID, friends)}
 								<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
 									${messages}
 								</div>
@@ -81,7 +71,7 @@ function messagesString(user: any, users: any, messages: any, otherUserID: numbe
 										<div class="flex flex-row gap-1">
 											<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 											<input type="submit" data-id="${otherUserID}" hidden>
-											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${otherUserID}"><i class="fa fa-paper-plane"></i></button>
+											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800" data-id="${otherUserID}"><i class="text-gray-300 fa-solid fa-play"></i></button>
 										</div>
 									</form>
 								</div>						
@@ -95,8 +85,27 @@ function messagesString(user: any, users: any, messages: any, otherUserID: numbe
 	`;
 }
 
+function actionsDiv(otherUserID: number, friends: any) {
+	if (0 == otherUserID)
+		return "";
+
+	let extraButtonsString = `<button id="addFriendButton"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
+		<button id="addBlockedButton"><i class="text-red-300 cursor-pointer fa solid fa-ban"></i></button>`;
+	friends.forEach(friend => {
+		if (friend.FriendID == otherUserID)
+			extraButtonsString = "";
+	});
+
+	return `
+	<div class="h-8 mt-1 grid grid-cols-4 justify-between">
+		<button id="viewProfileButton"><i class="text-white cursor-pointer fa solid fa-user"></i></button>
+		<button id="inviteButton"><i class="text-white cursor-pointer fa solid fa-table-tennis-paddle-ball"></i></button>
+		${extraButtonsString}
+	</div>
+	`;
+}
+
 function otherUserString(otherUser: any, senders: any, otherUserID: number) {
-	const bgColour = otherUser.id == otherUserID ? "bg-gray-800" : "hover:bg-gray-800";
 	const textColour = senders.includes(otherUser.id) ? "text-yellow-200" : "text-gray-600";
 
 	if (otherUser.id == otherUserID) {

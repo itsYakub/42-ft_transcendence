@@ -1,56 +1,13 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser, initUsers } from "./user/userDB.js";
-import { addFriend, initFriends } from './pages/friends/friendsDB.js';
-import { addHistory, initHistory } from './pages/history/historyDB.js';
-import { initTournaments } from './pages/tournament/tournamentDB.js';
-import { addPrivateMessage, initPrivateMessages } from './pages/messages/messagesDB.js';
-import { initGameMessages } from './pages/game/gameDB.js';
+import { addUser } from "./user/userDB.js";
+import { addFriend } from './pages/friends/friendsDB.js';
+import { addHistory } from './pages/history/historyDB.js';
+import { addPrivateMessage } from './pages/users/messagesDB.js';
 
 const __dirname = import.meta.dirname;
 
 export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get("/dev/wipe", async (request: FastifyRequest, reply: FastifyReply) => {
-		const dropTables = {
-			dropUsers: true,
-			dropFriends: true,
-			dropHistory: true,
-			dropTournaments: true,
-			dropPrivateMessages: true,
-			dropGameMessages: true,
-			dropChats: true
-		};
-		initUsers(db, dropTables.dropUsers);
-		initFriends(db, dropTables.dropFriends);
-		initHistory(db, dropTables.dropHistory);
-		initTournaments(db, dropTables.dropTournaments);
-		initPrivateMessages(db, dropTables.dropPrivateMessages);
-		initGameMessages(db, dropTables.dropGameMessages);
-		return reply.redirect("/user/logout");
-	});
-
-	fastify.get("/dev/wipe/users", async (request: FastifyRequest, reply: FastifyReply) => {
-		initUsers(db, true);
-		return reply.redirect("/user/logout");
-	});
-
-	fastify.get("/dev/wipe/history", async (request: FastifyRequest, reply: FastifyReply) => {
-		initHistory(db, true);
-	});
-
-	fastify.get("/dev/wipe/friends", async (request: FastifyRequest, reply: FastifyReply) => {
-		initFriends(db, true);
-	});
-
-	fastify.get("/dev/wipe/tournaments", async (request: FastifyRequest, reply: FastifyReply) => {
-		initTournaments(db, true);
-	});
-
-	fastify.get("/dev/wipe/messages", async (request: FastifyRequest, reply: FastifyReply) => {
-		initPrivateMessages(db, true);
-		initGameMessages(db, true);
-	});
-
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
 			addUser(db, {

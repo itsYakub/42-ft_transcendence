@@ -1,6 +1,4 @@
-import { translateBackend } from "../../translations.js";
-
-export function historyHtml(matches: any, { user, language }): string {
+export function historyHtml(matches: any, { user }): string {
 	let matchList = "";
 	for (var key in matches) {
 		matchList += historyString(matches[key]);
@@ -8,20 +6,6 @@ export function historyHtml(matches: any, { user, language }): string {
 
 	const statsString = stats(matches);
 	let html = matchesString(user, matchList, statsString);
-	html = translate(html, language);
-
-	return html;
-}
-
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "WON", "MATCH_SINGULAR", "MATCH_PLURAL", "TOURNAMENT_SINGULAR", "TOURNAMENT_PLURAL"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%HISTORY_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `HISTORY_${text}_TEXT`
-		}));
-	});
 
 	return html;
 }
@@ -57,10 +41,10 @@ function stats(matches: any): string {
 			tournamentsWon++
 	}
 
-	const matchesReplacement = 1 == matches.length ? "%%HISTORY_MATCH_SINGULAR_TEXT%%" : "%%HISTORY_MATCH_PLURAL_TEXT%%";
-	const tournamentsReplacement = 1 == tournamentsWon ? "%%HISTORY_TOURNAMENT_SINGULAR_TEXT%%" : "%%HISTORY_TOURNAMENT_PLURAL_TEXT%%";
+	const matchesReplacement = 1 == matches.length ? "%%TEXT_MATCH_SINGULAR%%" : "%%TEXT_MATCH_PLURAL%%";
+	const tournamentsReplacement = 1 == tournamentsWon ? "%%TEXT_TEXT_SINGULAR%%" : "%%TEXT_TEXT_PLURAL%%";
 
-	return `%%HISTORY_WON_TEXT%% ${won}/${matches.length} ${matchesReplacement} and ${tournamentsWon} ${tournamentsReplacement}!`;
+	return `%%TEXT_WON%% ${won}/${matches.length} ${matchesReplacement} and ${tournamentsWon} ${tournamentsReplacement}!`;
 }
 
 function matchesString(user: any, matchList: string, statsString: string): string {
@@ -69,15 +53,17 @@ function matchesString(user: any, matchList: string, statsString: string): strin
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">
-				<div class="flex flex-col items-end content-end mt-8">
+				<div class="flex flex-col items-end content-end mt-8 gap-4">
 					<button id="profileButton"
-						class="cursor-pointer text-right w-full text-gray-300 hover:bg-gray-800 p-2 rounded-lg">%%HISTORY_PROFILE_TEXT%%</button>
+						class="cursor-pointer text-right w-full text-gray-300 hover:bg-gray-800 p-2 rounded-lg">%%BUTTON_PROFILE%%</button>
 					<button id="historyButton"
-						class="my-4 text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%HISTORY_HISTORY_TEXT%%</button>
+						class="text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_HISTORY%%</button>
 					<button id="friendsButton"
-						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%HISTORY_FRIENDS_TEXT%%</button>
-					<button id="messagesButton"
-						class="mt-4 cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%HISTORY_MESSAGES_TEXT%%</button>
+						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_FRIENDS%%</button>
+					<button id="usersButton"
+						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_USERS%%</button>
+					<button id="blockedButton"
+						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_BLOCKED%%</button>
 				</div>
 			</div>
 			<div class="grow bg-gray-900">

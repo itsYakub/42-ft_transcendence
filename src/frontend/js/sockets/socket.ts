@@ -48,7 +48,7 @@ export function isConnected(): boolean {
 	Sends a message from a client to the server
 */
 export function sendMessageToServer(message: any) {
-	if (socket && 1 === socket.OPEN)
+	if (socket && socket.OPEN)
 		socket.send(JSON.stringify(message));
 }
 

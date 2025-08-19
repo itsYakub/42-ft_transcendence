@@ -3,8 +3,9 @@ import { DatabaseSync } from "node:sqlite";
 import { allNicknames, allOtherUsers, getUser } from '../user/userDB.js';
 import { gameMessages, gamePlayers } from '../pages/game/gameDB.js';
 import { messagesString, gamersString } from '../pages/match/matchHtml.js';
-import { privateMessages, getMessageSenders } from '../pages/messages/messagesDB.js';
-import { privateMessageListString, userListString } from '../pages/messages/messagesHtml.js';
+import { privateMessages, getMessageSenders } from '../pages/users/messagesDB.js';
+import { privateMessageListString, userListString } from '../pages/users/usersHtml.js';
+import { translateBackend } from '../translations.js';
 
 export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/api/nicknames', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -24,7 +25,8 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 
 		const gamersResponse = gamePlayers(db, { gameID: userResponse.user.gameID });
 		if (200 == gamersResponse.code) {
-			const html = gamersString(gamersResponse.gamers, userResponse.user, language);
+			let html = gamersString(gamersResponse.gamers, userResponse.user);
+			html = translateBackend({ html, language});
 
 			return reply.send({
 				code: 200,

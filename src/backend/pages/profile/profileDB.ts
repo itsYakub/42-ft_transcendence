@@ -5,12 +5,12 @@ import { hashPassword } from "../../user/jwt.js";
 /*
 	Replace a user's password with a new one
 */
-export function updatePassword(db: DatabaseSync, json: any): any {
-	if (compareSync(json.currentPassword, json.password)) {
-		const hashedPassword = hashPassword(json.newPassword);
+export function updatePassword(db: DatabaseSync, { id, checkPassword, currentPassword, newPassword }): any {
+	if (compareSync(checkPassword, currentPassword)) {
+		const hashedPassword = hashPassword(newPassword);
 		try {
 			const select = db.prepare("UPDATE Users SET Password = ? WHERE UserID = ?");
-			select.run(hashedPassword, json.id);
+			select.run(hashedPassword, id);
 			return {
 				code: 200,
 				message: "SUCCESS"
@@ -33,10 +33,10 @@ export function updatePassword(db: DatabaseSync, json: any): any {
 /*
 	Replaces the user's nickname with a new one - must be unique!
 */
-export function updateNick(db: DatabaseSync, user: any): any {
+export function updateNick(db: DatabaseSync, { id, newNick }): any {
 	try {
 		const select = db.prepare("UPDATE Users SET Nick = ? WHERE UserID = ?");
-		select.run(user.nick, user.id);
+		select.run(newNick, id);
 		return {
 			code: 200,
 			message: "SUCCESS"
