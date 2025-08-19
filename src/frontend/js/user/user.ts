@@ -110,6 +110,9 @@ async function register(email: string, password: string) {
 	});
 
 	const payload = await response.json();
+
+	console.log(payload);
+
 	if (payload.error) {
 		showAlert(payload.error);
 		return;
@@ -124,7 +127,7 @@ async function register(email: string, password: string) {
 function googleLogin() {
 	const query = {
 		client_id: "700864958995-a6qbsqc8t8pqub1cg06kai263h2b2dbj.apps.googleusercontent.com",
-		redirect_uri: "https://transcendence.nip.io:3000/auth/google",
+		redirect_uri: `${window.location.href}auth/google`,
 		response_type: "code",
 		scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
 	};
@@ -140,6 +143,7 @@ async function guestLogin() {
 		headers: {
 			"content-type": "application/json"
 		},
+		body: JSON.stringify({})
 	});
 
 	const json = await response.json();

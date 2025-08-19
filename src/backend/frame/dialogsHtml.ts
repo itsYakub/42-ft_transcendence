@@ -123,14 +123,14 @@ export function totpString(): string {
 	`;
 }
 
-export function playerNameString(): string {
+export function gamerNameString(): string {
 	return `
-	<dialog id="playerNameDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-120 bg-gray-900 border-gray-100 text-center items-center">
+	<dialog id="gamerNameDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-120 bg-gray-900 border-gray-100 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-white">
 				%%NAVBAR_PLAYER_NAME_TITLE_TEXT%%
 			</h1>
-			<form id="playerNameForm">
+			<form id="gamerNameForm">
 				<div>
 					<input type="text" placeholder="%%NAVBAR_PLAYER_NAME_TEXT%%" name="name" maxlength="20"
 						class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"

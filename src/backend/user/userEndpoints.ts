@@ -1,14 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOnline } from './userDB.js';
 import * as OTPAuth from "otpauth";
-import { leaveRoom } from '../play/playDB.js';
+import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOnline } from './userDB.js';
+import { leaveGame } from '../pages/game/gameDB.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
-		const json = JSON.parse(request.body as string);
-
-		const response = addUser(db, json);
+		const response = addUser(db, request.body as any);
 		if (response.error)
 			return reply.send(response);
 
@@ -37,7 +35,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = loginUser(db, JSON.parse(request.body as string));
+		const userResponse = loginUser(db, request.body as any);
 		if (200 != userResponse.code) {
 			const date = new Date();
 			date.setDate(date.getDate() - 3);
@@ -90,7 +88,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/user/totp/check", async (request: FastifyRequest, reply: FastifyReply) => {
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		const user = loginUser(db, params);
 		if (user.error)
 			return reply.send(user);
@@ -132,7 +130,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post("/user/leave", async (request: FastifyRequest, reply: FastifyReply) => {
 		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (200 == userResponse.code)
-			leaveRoom(db, userResponse.user);
+			leaveGame(db, userResponse.user);
 	});
 
 	fastify.get("/user/id", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -145,7 +143,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 			id: userResponse.user.id,
 			nick: userResponse.user.nick,
 			online: userResponse.user.online,
-			roomID: userResponse.user.roomID
+			gameID: userResponse.user.gameID
 		});
 	});
 }

@@ -3,14 +3,14 @@ import { navbarFunctions } from "./navbar.js";
 import { profileFunctions } from "./profile/profile.js";
 import { devButtons } from "./devButtons.js";
 import { translateFrontend, translationFunctions } from "./user/translations.js";
-import { localMatchFunctions } from "./play/localMatch.js";
-import { PlayFunctions } from "./play/play.js";
+import { localMatchFunctions } from "./game/localMatch.js";
+import { gameFunctions } from "./game/game.js";
 import { userFunctions } from "./user/user.js";
-import { MessagesFunctions } from "./profile/messages.js";
-import { matchFunctions } from "./play/match.js";
+import { messagesFunctions } from "./profile/messages.js";
+import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
-import { localTournamentFunctions } from "./play/localTournament.js";
-import { tournamentFunctions } from "./play/tournament.js";
+import { localTournamentFunctions } from "./game/localTournament.js";
+import { tournamentFunctions } from "./game/tournament.js";
 
 /*
 	Simulates moving to a new page
@@ -44,8 +44,8 @@ export function addFunctions() {
 	translationFunctions();
 	profileFunctions();
 	friendsFunctions();
-	MessagesFunctions();
-	PlayFunctions();
+	messagesFunctions();
+	gameFunctions();
 	localMatchFunctions();
 	matchFunctions();
 	userFunctions();

@@ -1,10 +1,10 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { markUserOnline } from '../pages/user/userDB.js';
-import { addMessage } from '../pages/messages/messagesDB.js';
+import { markUserOnline } from '../user/userDB.js';
+import { addPrivateMessage } from '../pages/messages/messagesDB.js';
 import { broadcastMessageToClients } from './serverSockets.js';
 
-export function handleServerUserMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
+export function handleUserMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
 	switch (message.type) {
 		case "user-logged-in": console.log(`${user.nick} logged in`);
 			markUserOnline(db, user);
@@ -16,7 +16,11 @@ export function handleServerUserMessage(fastify: FastifyInstance, db: DatabaseSy
 }
 
 function userChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
-	const response = addMessage(db, {
+	console.log(message);
+	if (0 == message.toID)
+		return;
+
+	const response = addPrivateMessage(db, {
 		toID: message.toID,
 		fromID: user.id,
 		message: message.chat
@@ -25,8 +29,12 @@ function userChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: any,
 	if (200 == response.code) {
 		broadcastMessageToClients(fastify, {
 			type: "user-chat",
-			roomID: user.roomID,
-			userID: user.id,
+			ids: [
+				message.toID as number,
+				user.id
+			],
+			fromID: user.id,
+			toID: message.toID as number,
 			chat: message.chat
 		});
 	}

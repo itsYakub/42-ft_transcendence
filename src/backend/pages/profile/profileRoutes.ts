@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frameHtml.js';
-import { getUser } from '../user/userDB.js';
-import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
 import * as OTPAuth from "otpauth";
 import encodeQR from 'qr';
+import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from './profileDB.js';
 import { profileHtml } from './profileHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
+import { getUser } from '../../user/userDB.js';
+import { frameHtml } from '../../frame/frameHtml.js';
 
 export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/profile', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -30,7 +30,7 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.send(user);
 
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		params["id"] = user.id;
 
 		const response = updateNick(db, params);
@@ -42,7 +42,7 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.send(user);
 
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		params["id"] = user.id;
 
 		const response = updateAvatar(db, params);
@@ -54,7 +54,7 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.send(user);
 
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		params["id"] = user.id;
 		params["password"] = user.password;
 
@@ -142,7 +142,7 @@ export function profileRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 			secret: user.totpSecret,
 		});
 
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		if (null != totp.validate({ token: params.code, window: 1 })) {
 			confirmTOTP(db, user.id);
 			return reply.send({

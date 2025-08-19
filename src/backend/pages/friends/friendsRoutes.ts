@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frameHtml.js';
-import { getUser, getUserByEmail, markUserOnline } from '../user/userDB.js';
 import { addFriend, getFriends, removeFriend } from './friendsDB.js';
 import { friendsHtml } from './friendsHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
+import { getUser, getUserByEmail } from '../../user/userDB.js';
+import { frameHtml } from '../../frame/frameHtml.js';
 
 export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -41,7 +41,7 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.send(user);
 
-		const json = JSON.parse(request.body as string);
+		const json = request.body as any;
 		json["id"] = user.id;
 
 		const response = addFriend(db, json);
@@ -53,7 +53,7 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.send(user);
 
-		const json = JSON.parse(request.body as string);
+		const json = request.body as any;
 		json["id"] = user.id;
 
 		const response = removeFriend(db, json);
@@ -65,7 +65,7 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.send(user);
 
-		const json = JSON.parse(request.body as string);
+		const json = request.body as any;
 		if (user.email == json.email) {
 			return reply.send({
 				code: 400,

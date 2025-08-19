@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { getUser, markUserOffline } from '../pages/user/userDB.js';
-import { handleServerRoomMessage } from './roomSockets.js';
-import { handleServerUserMessage } from './userSockets.js';
+import { getUser, markUserOffline } from '../user/userDB.js';
+import { handleGameMessage } from './gameSockets.js';
+import { handleUserMessage } from './userSockets.js';
 
 export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -25,7 +25,7 @@ export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void 
 
 				const user = userResponse.user;
 				markUserOffline(db, user);
-				//if (user.roomID)
+				//if (user.gameID)
 				//	leaveRoom(db, user);
 				// too sensitive
 			});
@@ -45,8 +45,8 @@ export function broadcastMessageToClients(fastify: FastifyInstance, message: any
 
 
 function handleMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
-	if (message.type.startsWith("room-"))
-		handleServerRoomMessage(fastify, db, user, message);
+	if (message.type.startsWith("game-"))
+		handleGameMessage(fastify, db, user, message);
 	if (message.type.startsWith("user-"))
-		handleServerUserMessage(fastify, db, user, message);
+		handleUserMessage(fastify, db, user, message);
 }

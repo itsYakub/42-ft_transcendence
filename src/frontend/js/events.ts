@@ -78,7 +78,7 @@ export function registerEvents() {
 			if (!json.error)
 				navigate(document.location.href);
 		}
-		else if (document.location.href.includes("3000/play")) {
+		else if (document.location.href.includes("3000/game")) {
 			const response = await fetch("/match/add", {
 				method: "POST",
 				headers: {

@@ -1,25 +1,21 @@
-
 import { DatabaseSync } from "node:sqlite";
-import { accessToken, hashPassword, refreshToken, validJWT } from "../../auth/jwt.js";
 import { compareSync } from "bcrypt-ts";
-import { readFileSync } from "fs";
-import { join } from "path";
-
-const __dirname = import.meta.dirname;
+import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
+import { defaultImage } from "./defaultImage.js";
 
 /*
 	Sets up the Users table
 */
 export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 	if (dropUsers)
-		db.exec(`DROP TABLE IF EXISTS Users;`);	
+		db.exec(`DROP TABLE IF EXISTS Users;`);
 
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Users (
 		UserID INTEGER PRIMARY KEY AUTOINCREMENT,
 		Nick TEXT UNIQUE NOT NULL,
 		Email TEXT,
-		RoomID TEXT,
+		GameID TEXT,
 		Ready INTEGER NOT NULL DEFAULT 0,
 		TOTPVerified INTEGER NOT NULL DEFAULT 0,
 		Online INTEGER NOT NULL DEFAULT 0,
@@ -31,7 +27,7 @@ export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
 		Type TEXT DEFAULT user
 		);`);
 
-	db.exec(`UPDATE Users SET Online = 0, RoomID = NULL, Ready = 0, Playing = 0`);
+	db.exec(`UPDATE Users SET Online = 0, GameID = NULL, Ready = 0, Playing = 0`);
 }
 
 /*
@@ -73,7 +69,7 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): any {
 				totpVerified: user.TOTPVerified,
 				totpEmail: user.TOTPEmail,
 				type: user.Type,
-				roomID: user.RoomID
+				gameID: user.GameID
 			}
 		};
 	}
@@ -121,7 +117,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 					totpVerified: user.TOTPVerified,
 					totpEmail: user.TOTPEmail,
 					type: user.Type,
-					roomID: user.RoomID
+					gameID: user.GameID
 				}
 			};
 		}
@@ -145,11 +141,10 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 		if (200 != response.code)
 			return response;
 
-		const avatar = "data:image/jpeg;base64," + readFileSync(join(__dirname, '../../default.jpg'), { encoding: 'base64' });
-
 		const pw = hashPassword(password);
 		const insert = db.prepare('INSERT INTO Users (Nick, Email, Password, Avatar) VALUES (?, ?, ?, ?)');
-		const statementSync = insert.run(response.nickname, email, pw, avatar);
+		const statementSync = insert.run(response.nickname, email, pw, defaultImage);
+
 		const id: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(id);
 		updateRefreshtoken(db, {
@@ -162,6 +157,7 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 		};
 	}
 	catch (e) {
+		console.log(e);
 		if ("constraint failed" == e.errstr) {
 			return {
 				code: 401,
@@ -461,6 +457,7 @@ export function allNicknames(db: DatabaseSync) {
 	}
 }
 
+
 /*
 	Returns a list of all nicknames currently in the DB
 */
@@ -494,7 +491,7 @@ export function allUsers(db: DatabaseSync) {
 */
 export function allOtherUsers(db: DatabaseSync, { id }) {
 	try {
-		const select = db.prepare("SELECT UserID, Nick FROM Users WHERE ? != UserID");
+		const select = db.prepare("SELECT UserID, Nick FROM Users WHERE ? != UserID AND Type != 'guest'");
 		const result = select.all(id);
 		let users = [];
 		result.forEach((user) => {

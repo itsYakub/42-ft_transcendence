@@ -1,13 +1,37 @@
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../../translations.js";
 
-export function messagesHtml({ users, messages, senders, otherID }, { user, language }): string {
-	const userListHtml = userListString(users, senders, otherID);
-	const messageListHtml = messageListString(user.id, messages, otherID);
+export function messagesHtml({ otherUsers, messages, senders, otherUserID }, { user, language }): string {
+	const userListHtml = userListString(otherUsers, senders, otherUserID);
+	const messageListHtml = privateMessageListString(user.id, messages, otherUserID);
 
-	let html = messagesString(user, userListHtml, messageListHtml, otherID);
+	let html = messagesString(user, userListHtml, messageListHtml, otherUserID);
 	html = translate(html, language);
 
 	return html;
+}
+
+/*
+	The list of other user buttons
+*/
+export function userListString(otherUsers: any, senders: any, otherUserID: number) {
+	let otherUserList = "";
+	for (var key in otherUsers) {
+		otherUserList += otherUserString(otherUsers[key], senders, otherUserID);
+	}
+
+	return otherUserList;
+}
+
+/*
+	The list of all messages from/to one user
+*/
+export function privateMessageListString(id: number, messages: any, otherUserID: number) {
+	let messageList = "";
+	for (var key in messages) {
+		messageList += messageString(id, messages[key]);
+	}
+
+	return messageList;
 }
 
 function translate(html: string, language: string): string {
@@ -23,7 +47,7 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function messagesString(user: any, users: any, messages: any, otherID: number): string {
+function messagesString(user: any, users: any, messages: any, otherUserID: number): string {
 	return `
 	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
@@ -44,18 +68,20 @@ function messagesString(user: any, users: any, messages: any, otherID: number): 
 				<div class="py-8 pl-8 text-left">
 					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 overflow-auto">
 						<div class="flex flex-row h-full">
-							<div class="w-60 flex flex-col pr-2 overscroll-contain overflow-auto">
+							<div id="usersDiv" class="w-60 flex flex-col pr-2 overscroll-contain overflow-auto">
 								${users}
 							</div>
 							<div class="bg-gray-700 w-0.5"></div>
 							<div class="flex flex-col grow pl-2">
-								${messages}
+								<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
+									${messages}
+								</div>
 								<div class="mt-2">
 									<form id="sendMessageForm">
 										<div class="flex flex-row gap-1">
 											<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-											<input type="submit" data-id="${otherID}" hidden>
-											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${otherID}">%%MESSAGES_SEND_TEXT%%</button>
+											<input type="submit" data-id="${otherUserID}" hidden>
+											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800" data-id="${otherUserID}"><i class="fa fa-paper-plane"></i></button>
 										</div>
 									</form>
 								</div>						
@@ -69,43 +95,28 @@ function messagesString(user: any, users: any, messages: any, otherID: number): 
 	`;
 }
 
-function userListString(users: any, senders: any, otherID: number) {
-	let userList = "";
-	for (var key in users) {
-		userList += userString(users[key], senders, otherID);
+function otherUserString(otherUser: any, senders: any, otherUserID: number) {
+	const bgColour = otherUser.id == otherUserID ? "bg-gray-800" : "hover:bg-gray-800";
+	const textColour = senders.includes(otherUser.id) ? "text-yellow-200" : "text-gray-600";
+
+	if (otherUser.id == otherUserID) {
+		return `
+		<button id="selectedUserButton" class="disabled text-right w-full p-2 rounded-lg ${textColour} bg-gray-800" data-id="${otherUser.id}">${otherUser.nick}</button>
+		`;
 	}
-
-	return userList;
-}
-
-function userString(user: any, senders: any, otherID: number) {
-	console.log(otherID);
-	const bgColour = user.id == otherID ? "bg-gray-800" : "hover:bg-gray-800";
-	const textColour = senders.includes(user.id) ? "text-yellow-200" : "text-gray-600";
-
-	return `
-	<button class="messageUserButton cursor-pointer text-right w-full p-2 rounded-lg ${textColour} ${bgColour}" data-id="${user.id}">${user.nick}</button>
-	`;
-}
-
-function messageListString(id: number, messages: any, otherID: number) {
-	let messageList = "";
-	for (var key in messages) {
-		messageList += messageString(id, messages[key]);
+	else {
+		return `
+		<button class="messageUserButton cursor-pointer text-right w-full p-2 rounded-lg ${textColour} hover:bg-gray-800" data-id="${otherUser.id}">${otherUser.nick}</button>
+		`;
 	}
-
-	return `
-	<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
-		${messageList}
-	</div>`;
 }
 
 function messageString(id: number, message: any) {
 	return id == message.ToID ?
-	`
+		`
 	<div class="text-gray-300 bg-blue-700 mr-auto px-4 py-2 rounded-lg">${message.Message}</div>
 	` :
-	`
+		`
 	<div class="text-gray-300 bg-green-700 ml-auto px-4 py-2 rounded-lg">${message.Message}</div>
 	`;
 }

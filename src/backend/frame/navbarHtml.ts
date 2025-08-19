@@ -1,7 +1,7 @@
 import { alertString, totpString } from "./dialogsHtml.js";
-import { translateBackend } from "./translations.js";
+import { translateBackend } from "../translations.js";
 
-export function navbarHtml({ user, language }): string {
+export function navbarHtml({ user, language, page }): string {
 	let languageSelect = englishString();
 
 	switch (language) {
@@ -18,14 +18,14 @@ export function navbarHtml({ user, language }): string {
 	if (!user)
 		html += loggedOutString(languageSelect);
 	else
-		html += "guest" == user.type ? guestString(user, languageSelect) : loggedInString(user, languageSelect);
+		html += "guest" == user.type ? guestString(user, languageSelect, page) : loggedInString(user, languageSelect, page);
 
 	html = translate(html, language);
 	return html;
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["HOME", "PLAY", "TOURNAMENT", "LOGIN", "OR", "REGISTER", "REGISTER_TITLE",
+	const toBeTranslated = ["HOME", "GAME", "TOURNAMENT", "LOGIN", "REGISTER", "REGISTER_TITLE",
 		"LOGIN_TITLE", "NICK", "EMAIL", "PASSWORD", "TOTP_CODE_TITLE", "TOTP_CODE", "TOTP_CODE_VERIFY",
 		"PLAYER_NAME_TITLE", "PLAYER_NAME", "PLAYER_NAME_SET"];
 
@@ -54,7 +54,7 @@ function loggedOutString(languageSelect: string): string {
 	`;
 }
 
-function loggedInString(user: any, languageSelect: string): string {
+function loggedInString(user: any, languageSelect: string, page: string): string {
 	return `
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">
@@ -64,15 +64,8 @@ function loggedInString(user: any, languageSelect: string): string {
 			</div>
 
 			<div class="mx-auto">
-				<button id="homeButton"
-					class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
-					%%NAVBAR_HOME_TEXT%%
-				</button>
-
-				<button id="playButton"
-					class="ml-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
-					%%NAVBAR_PLAY_TEXT%%
-				</button>
+				${homeButtonString(page)}
+				${gameButtonString(page)}	
 			</div>
 
 			<div class="ml-auto text-gray-300">
@@ -85,7 +78,7 @@ function loggedInString(user: any, languageSelect: string): string {
 	`;
 }
 
-function guestString(user: any, languageSelect: string): string {
+function guestString(user: any, languageSelect: string, page: string): string {
 	return `
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">
@@ -94,15 +87,8 @@ function guestString(user: any, languageSelect: string): string {
 			</div>
 
 			<div class="mx-auto">
-				<button id="homeButton"
-					class="cursor-pointer text-left bg-%%HOME_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
-					%%NAVBAR_HOME_TEXT%%
-				</button>
-
-				<button id="playButton"
-					class="ml-2 cursor-pointer text-left bg-%%PLAY_COLOUR%% text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
-					%%NAVBAR_PLAY_TEXT%%
-				</button>
+				${homeButtonString(page)}
+				${gameButtonString(page)}				
 			</div>
 
 			<div class="ml-auto text-gray-300">
@@ -112,6 +98,28 @@ function guestString(user: any, languageSelect: string): string {
 			</div>
 		</div>
 	</div>
+	`;
+}
+
+function homeButtonString(page: string) {
+	const bgColour = "/" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="homeButton"
+		class="cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%NAVBAR_HOME_TEXT%%
+	</button>
+	`;
+}
+
+function gameButtonString(page: string) {
+	const bgColour = "/game" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="gameButton"
+		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%NAVBAR_GAME_TEXT%%
+	</button>
 	`;
 }
 

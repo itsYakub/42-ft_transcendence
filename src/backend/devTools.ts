@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser, initUsers } from "./pages/user/userDB.js";
+import { addUser, initUsers } from "./user/userDB.js";
 import { addFriend, initFriends } from './pages/friends/friendsDB.js';
 import { addHistory, initHistory } from './pages/history/historyDB.js';
 import { initTournaments } from './pages/tournament/tournamentDB.js';
-import { addMessage, initMessages } from './pages/messages/messagesDB.js';
+import { addPrivateMessage, initPrivateMessages } from './pages/messages/messagesDB.js';
+import { initGameMessages } from './pages/game/gameDB.js';
 
 const __dirname = import.meta.dirname;
 
@@ -15,14 +16,16 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 			dropFriends: true,
 			dropHistory: true,
 			dropTournaments: true,
-			dropMessages: true,
+			dropPrivateMessages: true,
+			dropGameMessages: true,
 			dropChats: true
 		};
 		initUsers(db, dropTables.dropUsers);
 		initFriends(db, dropTables.dropFriends);
 		initHistory(db, dropTables.dropHistory);
 		initTournaments(db, dropTables.dropTournaments);
-		initMessages(db, dropTables.dropMessages);
+		initPrivateMessages(db, dropTables.dropPrivateMessages);
+		initGameMessages(db, dropTables.dropGameMessages);
 		return reply.redirect("/user/logout");
 	});
 
@@ -44,7 +47,8 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.get("/dev/wipe/messages", async (request: FastifyRequest, reply: FastifyReply) => {
-		initMessages(db, true);
+		initPrivateMessages(db, true);
+		initGameMessages(db, true);
 	});
 
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -157,22 +161,22 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
 	fastify.get("/dev/add/messages", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
-			addMessage(db, {
+			addPrivateMessage(db, {
 				toID: 1,
 				fromID: 2,
 				message: "Hello"
 			});
-			addMessage(db, {
+			addPrivateMessage(db, {
 				toID: 2,
 				fromID: 1,
 				message: "Hello back"
 			});
-			addMessage(db, {
+			addPrivateMessage(db, {
 				toID: 1,
 				fromID: 3,
 				message: "I'm John."
 			});
-			addMessage(db, {
+			addPrivateMessage(db, {
 				toID: 3,
 				fromID: 1,
 				message: "Pleased to meet you!"

@@ -1,17 +1,19 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addGoogleUser } from '../pages/user/userDB.js';
+import { addGoogleUser } from './userDB.js';
 
 export function googleAuth(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/auth/google", async (request: FastifyRequest, reply: FastifyReply) => {
 		const code: string = request.query["code"];
+
+		const redirectUrl = (`https://${request.host}:3000/auth/google`);
 
 		const params = {
 			client_id: process.env.GOOGLE_CLIENT,
 			client_secret: process.env.GOOGLE_SECRET,
 			code: code,
 			grant_type: "authorization_code",
-			redirect_uri: process.env.GOOGLE_REDIRECT
+			redirect_uri: redirectUrl
 		}
 
 		const response = await fetch("https://oauth2.googleapis.com/token", {

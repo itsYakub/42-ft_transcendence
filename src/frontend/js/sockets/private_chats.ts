@@ -1,3 +1,7 @@
+import { messagesFunctions } from "../profile/messages.js";
+import { profileFunctions } from "../profile/profile.js";
+import { currentPage } from "./socket.js";
+
 export function handlePrivateChatMessage(user: any, message: any) {
 	switch (message.type) {
 		case "user-chat":
@@ -6,6 +10,26 @@ export function handlePrivateChatMessage(user: any, message: any) {
 	}
 }
 
-function userChat(user: any, message: any) {
-	
+async function userChat(user: any, message: any) {
+	if ("messages" != currentPage())
+		return;
+
+
+	let otherID: number = 0;
+	if (message.toID == user.id)
+		otherID = message.fromID;
+	else if (message.fromID == user.id)
+		otherID = message.toID;
+
+	if (0 != otherID) {
+		const messagesResponse = await fetch(`/api/private-messages/${otherID}`);
+		const messages = await messagesResponse.json();
+		if (200 == messages.code) {
+			(document.querySelector("#sendMessageForm") as HTMLFormElement).message.value = "";
+			document.querySelector("#usersDiv").innerHTML = messages.usersHtml;
+			document.querySelector("#messagesDiv").innerHTML = messages.messagesHtml;
+			profileFunctions();
+			messagesFunctions();
+		}
+	}
 }

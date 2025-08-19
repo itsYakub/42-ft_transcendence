@@ -1,10 +1,10 @@
 import { gameHtmlString } from "../game/game.js";
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../../translations.js";
 
-export function tournamentHtml({ players, messages, language, user }): string {
+export function tournamentHtml({ gamers, messages, language, user }): string {
 	const messageListHtml = messageListString(user.id, messages);
 
-	let html = tournamentString(players, messageListHtml, user);
+	let html = tournamentString(gamers, messageListHtml, user);
 	html = translate(html, language);
 
 	return html + gameHtmlString();
@@ -23,10 +23,10 @@ function translate(html: string, language: string): string {
 	return html;
 }
 
-function tournamentString(players: any, messages: any, user: any): string {
-	let playersString = "";
-	players.forEach(player => {
-		playersString += playerString(player);
+function tournamentString(gamers: any, messages: any, user: any): string {
+	let gamersString = "";
+	gamers.forEach(gamer => {
+		gamersString += gamerString(gamer);
 	});
 
 	return `
@@ -34,9 +34,9 @@ function tournamentString(players: any, messages: any, user: any): string {
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TOURNAMENT_TITLE_TEXT%%</h1>
 		<div class="flex flex-row h-150">
 			<div class="flex flex-col mr-2">
-				<form id="playerTournamentReadyForm">
+				<form id="gamerTournamentReadyForm">
 					<div class="flex flex-col gap-8">
-						${playersString}
+						${gamersString}
 					</div>
 					<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mr-auto cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%TOURNAMENT_READY_TEXT%%</button>
 				</form>
@@ -48,8 +48,8 @@ function tournamentString(players: any, messages: any, user: any): string {
 						<form id="sendTournamentMessageForm">
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-								<input type="submit" data-id="${user.roomID}" data-user="${user.id}" hidden>
-								<button type="submit" data-id="${user.roomID}" data-user="${user.id}" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%TOURNAMENT_SEND_TEXT%%</button>
+								<input type="submit" data-id="${user.gameID}" data-user="${user.id}" hidden>
+								<button type="submit" data-id="${user.gameID}" data-user="${user.id}" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%TOURNAMENT_SEND_TEXT%%</button>
 							</div>
 						</form>
 					</div>
@@ -60,7 +60,7 @@ function tournamentString(players: any, messages: any, user: any): string {
 	`;
 }
 
-function playerString({ Nick, Ready }) {
+function gamerString({ Nick, Ready }) {
 	const readyText = 0 == Ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
 
 	return `

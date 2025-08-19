@@ -1,5 +1,5 @@
 import { navbarHtml } from "./navbarHtml.js";
-import { translateBackend } from "./translations.js";
+import { translateBackend } from "../translations.js";
 
 /*
 	Returns the whole page, or an error page
@@ -8,26 +8,8 @@ export function frameHtml(params: any, content: string = null): any {
 	if (!content)
 		content = errorString(params);
 
-	const navbar = navbarString(params);
+	const navbar = navbarHtml(params);
 	return frameString(navbar, content);
-}
-
-/*
-	Returns the navbar with the current "page" marked
-*/
-function navbarString(params: any) {
-	let navbar = navbarHtml(params);
-
-	const views = ["HOME", "PLAY", "CHAT"];
-
-	views.forEach((value) => {
-		if (value == params.page?.toUpperCase())
-			navbar = navbar.replace(`%%${value}_COLOUR%%`, "gray-700");
-		else
-			navbar = navbar.replace(`%%${value}_COLOUR%%`, "transparent");
-	});
-
-	return navbar;
 }
 
 function frameString(navbar: string, content: string): string {

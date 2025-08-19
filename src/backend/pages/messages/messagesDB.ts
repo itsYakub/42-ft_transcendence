@@ -1,14 +1,14 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initMessages(db: DatabaseSync, dropMessages: boolean): void {
+export function initPrivateMessages(db: DatabaseSync, dropMessages: boolean): void {
 	if (dropMessages)
-		db.exec(`DROP TABLE IF EXISTS Messages;`);
+		db.exec(`DROP TABLE IF EXISTS PrivateMessages;`);
 
 	db.exec(`
-		CREATE TABLE IF NOT EXISTS Messages (
+		CREATE TABLE IF NOT EXISTS PrivateMessages (
 		MessageID INTEGER PRIMARY KEY AUTOINCREMENT,
-		ToID TEXT NOT NULL,
 		FromID INTEGER NOT NULL,
+		ToID INTEGER NOT NULL,
 		Message TEXT NOT NULL,
 		SentAt TEXT NOT NULL
 		);`);
@@ -19,7 +19,7 @@ export function initMessages(db: DatabaseSync, dropMessages: boolean): void {
 */
 export function getMessageSenders(db: DatabaseSync, { id }) {
 	try {
-		const select = db.prepare("SELECT ToID, FromID FROM Messages WHERE ToID = ? OR FromID = ?");
+		const select = db.prepare("SELECT ToID, FromID FROM PrivateMessages WHERE ToID = ? OR FromID = ?");
 		const messages = select.all(id, id);
 
 		const ids = [];
@@ -27,8 +27,8 @@ export function getMessageSenders(db: DatabaseSync, { id }) {
 		messages.forEach((message) => {
 			if (id == message.ToID && !ids.includes(message.FromID))
 				ids.push(message.FromID);
-			if (id == message.FromID && !ids.includes(message.ToID))
-				ids.push(message.ToID);
+			if (id == message.FromID && !ids.includes(parseInt(message.ToID as string)) && !isNaN(parseInt(message.ToID as string)))
+				ids.push(parseInt(message.ToID as string));
 		});
 
 		return {
@@ -47,9 +47,9 @@ export function getMessageSenders(db: DatabaseSync, { id }) {
 /*
 	Gets all the user's messages
 */
-export function getMessages(db: DatabaseSync, userID: number, otherID: number): any {
+export function privateMessages(db: DatabaseSync, userID: number, otherID: number): any {
 	try {
-		const select = db.prepare("SELECT * FROM Messages WHERE (ToID = ? AND FromID = ?) OR (FromID = ? AND ToID = ?) ORDER BY SentAt DESC");
+		const select = db.prepare("SELECT * FROM PrivateMessages WHERE (ToID = ? AND FromID = ?) OR (FromID = ? AND ToID = ?) ORDER BY SentAt DESC");
 		const messages = select.all(userID, otherID, userID, otherID);
 		return {
 			code: 200,
@@ -64,30 +64,12 @@ export function getMessages(db: DatabaseSync, userID: number, otherID: number): 
 	}
 }
 
-/*
-	Gets all the room's messages
-*/
-export function roomMessages(db: DatabaseSync, { roomID }): any {
-	try {
-		const select = db.prepare("SELECT FromID, Message, Nick FROM Messages INNER JOIN Users ON Users.UserID = Messages.FromID WHERE ToID = ? ORDER BY SentAt DESC");
-		const messages = select.all(roomID);
-		return {
-			code: 200,
-			messages
-		};
-	}
-	catch (e) {
-		return {
-			code: 500,
-			error: "ERR_DB"
-		};
-	}
-}
+
 
 /*
 	Adds a private message (DM)
 */
-export function addMessage(db: DatabaseSync, { toID, fromID, message }): any {
+export function addPrivateMessage(db: DatabaseSync, { toID, fromID, message }): any {
 	try {
 		const select = db.prepare("INSERT INTO Messages (ToID, FromID, Message, SentAt) VALUES (?, ?, ?, ?)");
 		select.run(toID, fromID, message, new Date().toISOString());

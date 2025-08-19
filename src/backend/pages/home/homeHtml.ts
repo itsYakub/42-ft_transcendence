@@ -1,4 +1,4 @@
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../../translations.js";
 
 /*
 	The HTML returned to the browser. Replace any placeholders here

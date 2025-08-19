@@ -1,5 +1,5 @@
 import { gameHtmlString } from '../game/game.js';
-import { translateBackend } from '../translations.js';
+import { translateBackend } from '../../translations.js';
 
 export function tournamentMatchHtml({ user, language, tournament }): string {
 	if (tournament.error)
@@ -127,7 +127,7 @@ function nextMatchString(tournament: any) {
 
 function nextMatchButtonString(p1: string, p2: string) {
 	return `
-	<button id="nextMatchButton" data-p1="${p1}" data-p2="${p2}" class="text-gray-300 mt-4 bg-gray-800 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700">%%TOURNAMENT_PLAY_TEXT%%!</button>
+	<button id="nextMatchButton" data-p1="${p1}" data-p2="${p2}" class="text-gray-300 mt-4 bg-gray-800 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700">%%TOURNAMENT_GAME_TEXT%%!</button>
 	`;
 }
 

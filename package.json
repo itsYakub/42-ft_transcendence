@@ -5,8 +5,7 @@
 	"main": "dist/app.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc && cp -r src/frontend/images dist/frontend/images && cp src/backend/default.jpg ./dist/backend/default.jpg",
-		"start": "npm run build && node --env-file=.env dist/app.js"
+		"build": "tsc && cp -r src/frontend/images dist/frontend/images"
 	},
 	"keywords": [],
 	"author": "lwillis",
@@ -28,6 +27,6 @@
 		"@types/node": "^24.1.0",
 		"@types/ws": "^8.18.1",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.8.3"
+		"typescript": "^5.9.2"
 	}
 }

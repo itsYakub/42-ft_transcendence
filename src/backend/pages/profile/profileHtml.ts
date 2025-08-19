@@ -1,4 +1,4 @@
-import { translateBackend } from '../translations.js';
+import { translateBackend } from '../../translations.js';
 
 export function profileHtml({ user, language }): string {
 	let html = profileString(user);
@@ -11,8 +11,8 @@ export function profileHtml({ user, language }): string {
 function translate(html: string, language: string): string {
 	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "USER_PROFILE", "CHANGE_AVATAR", "CHANGE_NICK",
 		"CHANGE_PASSWORD", "NEW_NICK", "CURRENT_PASSWORD", "NEW_PASSWORD", "REPEAT_PASSWORD", "UPDATE", "TOKENS",
-		"ENABLE_TOTP", "DISABLE_TOTP", "LOGOUT", "INVALIDATE_TOKEN", "TOTP_TITLE", "TOTP_SCAN", "TOTP_INPUT", 
-		"TOTP_CODE", "TOTP_VERIFY", ];
+		"ENABLE_TOTP", "DISABLE_TOTP", "LOGOUT", "INVALIDATE_TOKEN", "TOTP_TITLE", "TOTP_SCAN", "TOTP_INPUT",
+		"TOTP_CODE", "TOTP_VERIFY",];
 
 	toBeTranslated.forEach((text) => {
 		html = html.replaceAll(`%%PROFILE_${text}_TEXT%%`, translateBackend({
@@ -137,7 +137,7 @@ function changePasswordString(user: any): string {
 
 function securityString(user: any): string {
 	return user.google ?
-	`
+		`
 	<div class="grid grid-cols-2 gap-3">
 		<button id="logoutButton"
 			class="cursor-pointer bg-red-500 text-gray-300 hover:bg-gray-800 font-medium rounded-lg p-2">%%PROFILE_LOGOUT_TEXT%%</button>		
@@ -145,8 +145,8 @@ function securityString(user: any): string {
 			class="cursor-pointer bg-red-500 text-gray-300 hover:bg-gray-800 font-medium rounded-lg p-2">%%PROFILE_INVALIDATE_TOKEN_TEXT%%</button>
 	</div>
 	`
-	:
-	`
+		:
+		`
 	<div class="grid grid-cols-3 gap-3">
 		${1 == user.totpVerified ? disableTOTPString() : enableTOTPString()}
 		<button id="logoutButton"

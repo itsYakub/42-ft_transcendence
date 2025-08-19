@@ -2,16 +2,17 @@ import { navigate, showAlert } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 
 export function tournamentFunctions() {
-	const playerTournamentReadyForm = <HTMLFormElement>document.querySelector("#playerTournamentReadyForm");
-	if (playerTournamentReadyForm) {
-		playerTournamentReadyForm.addEventListener("submit", async function (e) {
+	const gamerTournamentReadyForm = <HTMLFormElement>document.querySelector("#gamerTournamentReadyForm");
+	if (gamerTournamentReadyForm) {
+		gamerTournamentReadyForm.addEventListener("submit", async function (e) {
 			e.preventDefault();
 
-			const response = await fetch("/play/ready", {
+			const response = await fetch("/game/ready", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
 				},
+				body: JSON.stringify({})
 			});
 
 			const json = await response.json();
@@ -21,13 +22,13 @@ export function tournamentFunctions() {
 			}
 
 			sendMessageToServer({
-				type: "room-ready"
+				type: "game-ready"
 			});
 
 			// const socket = getSocket();
 			// if (socket)
 			// 	socket.send(JSON.stringify({
-			// 		type: "room-ready"
+			// 		type: "game-ready"
 			// 	}));
 			navigate(window.location.href);
 		});
@@ -56,14 +57,14 @@ export function tournamentFunctions() {
 				}
 
 				sendMessageToServer({
-					type: "room-message",
+					type: "game-message",
 					message: sendTournamentMessageForm.message.value
 				});
 
 				// const socket = getSocket();
 				// if (socket)
 				// 	socket.send(JSON.stringify({
-				// 		type: "room-message",
+				// 		type: "game-message",
 				// 		message: sendTournamentMessageForm.message.value
 				// 	}));
 				navigate(window.location.href);

@@ -6,7 +6,7 @@ function translateDutch(text: string): string {
 		case "ERR_NOT_FOUND": return "!";
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Start";
-		case "NAVBAR_PLAY_TEXT": return "Speel!";
+		case "NAVBAR_GAME_TEXT": return "Speel";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Toernooi";
 		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_TEXT": return "";
@@ -75,14 +75,14 @@ function translateDutch(text: string): string {
 		case "MESSAGES_FRIENDS_TEXT": return "";
 		case "MESSAGES_MESSAGES_TEXT": return "";
 		case "MESSAGES_SEND_TEXT": return "";
-		// play
-		case "PLAY_SINGLE_GAME_TEXT": return "";
-		case "PLAY_PLAYER_TEXT": return "";
-		case "PLAY_READY_TEXT": return "";
-		case "PLAY_LEAVE_TEXT": return "";
-		case "PLAY_MATCH_TEXT": return "";
-		case "PLAY_TOURNAMENT_TEXT": return "";
-		case "PLAY_SEND_TEXT": return "";
+		// game
+		case "GAME_SINGLE_GAME_TEXT": return "";
+		case "GAME_PLAYER_TEXT": return "";
+		case "GAME_READY_TEXT": return "";
+		case "GAME_LEAVE_TEXT": return "";
+		case "GAME_MATCH_TEXT": return "";
+		case "GAME_TOURNAMENT_TEXT": return "";
+		case "GAME_SEND_TEXT": return "";
 		// tournament
 		case "TOURNAMENT_NEW_TEXT": return "";
 		case "TOURNAMENT_PLAYER_TEXT": return "";
@@ -93,7 +93,7 @@ function translateDutch(text: string): string {
 		case "TOURNAMENT_FINAL_TEXT": return "";
 		case "TOURNAMENT_TBD_TEXT": return "";
 		case "TOURNAMENT_NEXT_MATCH_TEXT": return "";
-		case "TOURNAMENT_PLAY_TEXT": return "";
+		case "TOURNAMENT_GAME_TEXT": return "";
 		case "TOURNAMENT_CONGRATULATIONS_TEXT": return "";
 		case "TOURNAMENT_UNKNOWN_TEXT": return "";
 		case "TOURNAMENT_READY_TEXT": return "";
@@ -110,7 +110,7 @@ function translateEnglish(text: string): string {
 		case "ERR_NOT_FOUND": return "Not found!";
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Home";
-		case "NAVBAR_PLAY_TEXT": return "Play!";
+		case "NAVBAR_GAME_TEXT": return "Game";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Tournament";
 		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "Enter TOTP code";
 		case "NAVBAR_TOTP_CODE_TEXT": return "Code";
@@ -179,14 +179,14 @@ function translateEnglish(text: string): string {
 		case "MESSAGES_FRIENDS_TEXT": return "Friends";
 		case "MESSAGES_MESSAGES_TEXT": return "Messages";
 		case "MESSAGES_SEND_TEXT": return "Send";
-		// play
-		case "PLAY_SINGLE_GAME_TEXT": return "Single game";
-		case "PLAY_PLAYER_TEXT": return "Player";
-		case "PLAY_READY_TEXT": return "Ready";
-		case "PLAY_LEAVE_TEXT": return "Leave";
-		case "PLAY_MATCH_TEXT": return "Match";
-		case "PLAY_TOURNAMENT_TEXT": return "Tournament";
-		case "PLAY_SEND_TEXT": return "Send";
+		// game
+		case "GAME_SINGLE_GAME_TEXT": return "Single game";
+		case "GAME_PLAYER_TEXT": return "Player";
+		case "GAME_READY_TEXT": return "Ready";
+		case "GAME_LEAVE_TEXT": return "Leave";
+		case "GAME_MATCH_TEXT": return "Match";
+		case "GAME_TOURNAMENT_TEXT": return "Tournament";
+		case "GAME_SEND_TEXT": return "Send";
 		// tournament
 		case "TOURNAMENT_NEW_TEXT": return "New tournament";
 		case "TOURNAMENT_PLAYER_TEXT": return "Player";
@@ -197,7 +197,7 @@ function translateEnglish(text: string): string {
 		case "TOURNAMENT_FINAL_TEXT": return "Final";
 		case "TOURNAMENT_TBD_TEXT": return "TBD";
 		case "TOURNAMENT_NEXT_MATCH_TEXT": return "Next match";
-		case "TOURNAMENT_PLAY_TEXT": return "Play";
+		case "TOURNAMENT_GAME_TEXT": return "Play";
 		case "TOURNAMENT_CONGRATULATIONS_TEXT": return "Congratulations";
 		case "TOURNAMENT_UNKNOWN_TEXT": return "No tournament with that code exists";
 		case "TOURNAMENT_READY_TEXT": return "Ready";
@@ -214,7 +214,7 @@ function translatePolish(text: string): string {
 		case "ERR_NOT_FOUND": return "!";
 		// navbar, including register and log in dialogs
 		case "NAVBAR_HOME_TEXT": return "Strona Główna";
-		case "NAVBAR_PLAY_TEXT": return "Graj!";
+		case "NAVBAR_GAME_TEXT": return "Gra";
 		case "NAVBAR_TOURNAMENT_TEXT": return "Turniej";
 		case "NAVBAR_TOTP_CODE_TITLE_TEXT": return "";
 		case "NAVBAR_TOTP_CODE_TEXT": return "";
@@ -283,14 +283,14 @@ function translatePolish(text: string): string {
 		case "MESSAGES_FRIENDS_TEXT": return "";
 		case "MESSAGES_MESSAGES_TEXT": return "";
 		case "MESSAGES_SEND_TEXT": return "";
-		// play
-		case "PLAY_SINGLE_GAME_TEXT": return "";
-		case "PLAY_PLAYER_TEXT": return "";
-		case "PLAY_READY_TEXT": return "";
-		case "PLAY_LEAVE_TEXT": return "";
-		case "PLAY_MATCH_TEXT": return "";
-		case "PLAY_TOURNAMENT_TEXT": return "";
-		case "PLAY_SEND_TEXT": return "";
+		// game
+		case "GAME_SINGLE_GAME_TEXT": return "";
+		case "GAME_PLAYER_TEXT": return "";
+		case "GAME_READY_TEXT": return "";
+		case "GAME_LEAVE_TEXT": return "";
+		case "GAME_MATCH_TEXT": return "";
+		case "GAME_TOURNAMENT_TEXT": return "";
+		case "GAME_SEND_TEXT": return "";
 		// tournament
 		case "TOURNAMENT_NEW_TEXT": return "";
 		case "TOURNAMENT_PLAYER_TEXT": return "";
@@ -301,7 +301,7 @@ function translatePolish(text: string): string {
 		case "TOURNAMENT_FINAL_TEXT": return "";
 		case "TOURNAMENT_TBD_TEXT": return "";
 		case "TOURNAMENT_NEXT_MATCH_TEXT": return "";
-		case "TOURNAMENT_PLAY_TEXT": return "";
+		case "TOURNAMENT_GAME_TEXT": return "";
 		case "TOURNAMENT_CONGRATULATIONS_TEXT": return "";
 		case "TOURNAMENT_UNKNOWN_TEXT": return "";
 		case "TOURNAMENT_READY_TEXT": return "";

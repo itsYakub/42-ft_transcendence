@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frameHtml.js';
-import { getUser } from '../user/userDB.js';
 import { localMatchHtml } from '../match/localMatchHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
+import { getUser } from '../../user/userDB.js';
+import { frameHtml } from '../../frame/frameHtml.js';
 
 export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/match', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -13,7 +13,7 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		// 	return reply.type("text/html").send(noUserError(userResponse, language));
 		// const user = userResponse.user;
 
-		// if (!user.roomID) {
+		// if (!user.gameID) {
 		// 	const params = {
 		// 		user: user,
 		// 		errorCode: 404,
@@ -24,13 +24,13 @@ export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		// 	return reply.type("text/html").send(frame);
 		// }
 
-		// const roomID = user.roomID;
+		// const gameID = user.gameID;
 
-		// const playersResponse = roomPlayers(db, { roomID });
-		// const messagesResponse = roomMessages(db, { roomID });
+		// const gamersResponse = gamePlayers(db, { gameID });
+		// const messagesResponse = gameMessages(db, { gameID });
 
 		// const params = {
-		// 	players: playersResponse.players,
+		// 	gamers: gamersResponse.gamers,
 		// 	user,
 		// 	messages: messagesResponse.messages,
 		// 	language

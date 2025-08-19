@@ -1,5 +1,5 @@
 import { handlePrivateChatMessage } from "./private_chats.js";
-import { handleRoomMessage } from "./rooms.js";
+import { handleGameMessage } from "./games.js";
 
 let socket: WebSocket | null = null;
 
@@ -56,8 +56,8 @@ export function sendMessageToServer(message: any) {
 	Deals with the message
 */
 function handleMessage(user: any, message: any) {
-	if (message.type.startsWith("room-"))
-		handleRoomMessage(user, message);
+	if (message.type.startsWith("game-"))
+		handleGameMessage(user, message);
 
 	if (message.type.startsWith("user-"))
 		handlePrivateChatMessage(user, message);

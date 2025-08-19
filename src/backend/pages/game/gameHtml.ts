@@ -1,9 +1,9 @@
-import { gameHtmlString } from "../game/game.js";
-import { translateBackend } from "../translations.js";
+import { gameHtmlString } from "./game.js";
+import { translateBackend } from "../../translations.js";
 
-export function playHtml(rooms, { user, language }): string {
-	const roomsHtmlString = roomsString(rooms);
-	let html = playString(user, roomsHtmlString);
+export function gameHtml(games, { user, language }): string {
+	const gamesHtmlString = gamesString(games);
+	let html = gameString(user, gamesHtmlString);
 	html = translate(html, language);
 
 	return html + gameHtmlString();
@@ -13,16 +13,16 @@ function translate(html: string, language: string): string {
 	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "START", "MATCH", "TOURNAMENT"];
 
 	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%PLAY_${text}_TEXT%%`, translateBackend({
+		html = html.replaceAll(`%%GAME_${text}_TEXT%%`, translateBackend({
 			language,
-			text: `PLAY_${text}_TEXT`
+			text: `GAME_${text}_TEXT`
 		}));
 	});
 
 	return html;
 }
 
-function playString(user: any, roomsHtmlString: string): string {
+function gameString(user: any, gamesHtmlString: string): string {
 	return `
 	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
@@ -30,7 +30,7 @@ function playString(user: any, roomsHtmlString: string): string {
 			<div class="w-95 flex flex-col gap-8 px-8">
 				<p class="text-gray-300 text-2xl">Join...</p>
 				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
-					${roomsHtmlString}
+					${gamesHtmlString}
 				</div>
 			</div>
 			<div class="w-95 flex flex-col gap-8">
@@ -46,36 +46,36 @@ function playString(user: any, roomsHtmlString: string): string {
 	`;
 }
 
-function roomsString(rooms): string {
-	let roomStrings: string = "";
+function gamesString(games): string {
+	let gameStrings: string = "";
 
-	rooms.forEach(room => {
-		roomStrings += roomString(room);
+	games.forEach(game => {
+		gameStrings += gameButtonString(game);
 	});
 
-	return roomStrings;
+	return gameStrings;
 }
 
-function roomString(room: any): string {
-	const roomID: string = room.RoomID;
-	const players: string[] = room.Nicks.split(",");
-	if ((roomID.startsWith("t") && 4 == players.length) || (roomID.startsWith("m") && 2 == players.length))
+function gameButtonString(game: any): string {
+	const gameID: string = game.GameID;
+	const gamers: string[] = game.Nicks.split(",");
+	if ((gameID.startsWith("t") && 4 == gamers.length) || (gameID.startsWith("m") && 2 == gamers.length))
 		return "";
 
-	const type = roomID.startsWith("t") ? "tournament" : "match";
-	const title = roomID.startsWith("t") ? "%%PLAY_TOURNAMENT_TEXT%%" : "%%PLAY_MATCH_TEXT%%";
-	let playersString = "";
-	players.forEach((name) => {
-		playersString += nameString(name);
+	const type = gameID.startsWith("t") ? "tournament" : "match";
+	const title = gameID.startsWith("t") ? "%%GAME_TOURNAMENT_TEXT%%" : "%%GAME_MATCH_TEXT%%";
+	let gamersString = "";
+	gamers.forEach((name) => {
+		gamersString += nameString(name);
 	});
 
 	return `
-	<button class="joinRoomButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${roomID}"><span class="text-green-300">${title}</span>${playersString}</button>
+	<button class="joinGameButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${gameID}"><span class="text-green-300">${title}</span>${gamersString}</button>
 	`;
 }
 
-function nameString(player: string) {
+function nameString(gamer: string) {
 	return `
-	<div class="">${player}</div>
+	<div class="">${gamer}</div>
 	`;
 }

@@ -2,21 +2,21 @@ import { navigate } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 
 export function matchFunctions() {
-	const playerMatchReadyForm = <HTMLFormElement>document.querySelector("#playerMatchReadyForm");
-	if (playerMatchReadyForm) {
-		playerMatchReadyForm.addEventListener("submit", async function (e) {
+	const gamerMatchReadyForm = <HTMLFormElement>document.querySelector("#gamerMatchReadyForm");
+	if (gamerMatchReadyForm) {
+		gamerMatchReadyForm.addEventListener("submit", async function (e) {
 			e.preventDefault();
 
 			if ("leaveMatchButton" == e.submitter.id) {
 				sendMessageToServer({
-					type: "room-leave"
+					type: "game-leave"
 				});
-				navigate("/play");
+				navigate("/game");
 				return;
 			}
 
 			sendMessageToServer({
-				type: "room-player-ready"
+				type: "game-gamer-ready"
 			});
 		});
 	}
@@ -28,7 +28,7 @@ export function matchFunctions() {
 
 			if (sendMatchMessageForm.message.value.length > 0) {
 				sendMessageToServer({
-					type: "room-chat",
+					type: "game-chat",
 					chat: sendMatchMessageForm.message.value
 				});
 			}

@@ -165,6 +165,7 @@ export function profileFunctions() {
 				headers: {
 					"content-type": "application/json"
 				},
+				body: JSON.stringify({})
 			});
 
 			if (response.ok) {
@@ -194,6 +195,7 @@ export function profileFunctions() {
 				headers: {
 					"content-type": "application/json"
 				},
+				body: JSON.stringify({})
 			});
 
 			const json = await response.json();
@@ -277,6 +279,7 @@ export function profileFunctions() {
 				headers: {
 					"content-type": "application/json"
 				},
+				body: JSON.stringify({})
 			});
 
 			const json = await response.json();

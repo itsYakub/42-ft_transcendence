@@ -1,4 +1,4 @@
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../../translations.js";
 
 export function historyHtml(matches: any, { user, language }): string {
 	let matchList = "";
