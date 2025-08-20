@@ -1,10 +1,19 @@
 import * as BABYLON from 'babylonjs'
 
+import { Player } from './player.js';
 
 
-/* NOTE(joleksia):
- *  Game class
+
+/* SECTION:
+ *  Classes
  * */
+
+export enum	GameMode {
+	GAMEMODE_NONE = 0,
+	GAMEMODE_LOCAL_PVP,
+	GAMEMODE_LOCAL_AI,
+	GAMEMODE_COUNT
+}
 
 export class Game {
 	/* HTML DOM Elements
@@ -16,6 +25,11 @@ export class Game {
 	 * */
 	private	m_engine : BABYLON.Engine;
 	private	m_scene : BABYLON.Scene;
+
+	/* Game objects
+	 * */
+	private m_player0 : Player;
+	private	m_player1 : Player;
 
 	/* SECTION:
 	 *  Public Methods
@@ -49,7 +63,7 @@ export class Game {
 		 * */
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
-		
+
 		/* Run the render loop
 		 * */
 		console.log('[ INFO ] Preparing the game');
@@ -80,26 +94,47 @@ export class Game {
 		/* SECTION: Update
 		 * */
 
-		/* fill me */
+		this.m_player0.update();
+		this.m_player1.update();
 
 		/* SECTION: Render
 		 * */
+		
 		this.m_scene.render()
 	}
 
 	private	createScene() {
 		let	scene = new BABYLON.Scene(this.m_engine);
-		let	camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -5), scene);
-        camera.setTarget(BABYLON.Vector3.Zero());
+
+		let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 12, 10, new BABYLON.Vector3(0, 0, 0));
+		let	light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0));
 
 		scene.clearColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1.0);
+
+		let	mat_ground = new BABYLON.StandardMaterial('mat_ground', scene);
+		mat_ground.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+		
+		/* TODO(joleksia):
+		 *  Here we should set-up the game based on the gamemode.
+		 *  By setting-up I mean:
+		 *  - creating both players;
+		 *  - specifing if player is a human or AI;
+		 *  - specifing if the game is local or remote (which is important for the socket listening);
+		 * */
+		this.m_player0 = new Player(this.m_canvas, this.m_scene, 0, 1);
+		this.m_player1 = new Player(this.m_canvas, this.m_scene, 1, 1);
+		
+		let	ground = BABYLON.MeshBuilder.CreateGround('ground', { width:32, height:24 }, scene);
+		ground.material = mat_ground;
+
 		return (scene);
 	}
 }
 
 
 
-/* NOTE(joleksia):
+/* SECTION:
  *  Global game object
  * */
 export var	g_game : Game = new Game();
+export var	g_gameMode : GameMode = GameMode.GAMEMODE_NONE;
