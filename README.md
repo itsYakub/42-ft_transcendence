@@ -5,4 +5,5 @@ TODO (Luke):
 - clean up tailwind
 - delete tournaments when finished
 - timer for deleting matches, tournaments, guests. Or just ignore them
-- update DOM on socket message? Or just refresh page
+- tournament next-match gatekeeping
+- blocklist

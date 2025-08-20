@@ -1,4 +1,4 @@
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../../translations.js";
 
 export function friendsHtml(friends: any, { user, language }): string {
 	let friendList = "";
@@ -13,7 +13,7 @@ export function friendsHtml(friends: any, { user, language }): string {
 }
 
 function translate(html: string, language: string): string {
-	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "ONLINE", "OFFLINE", "REMOVE", "ADD_FRIEND", 
+	const toBeTranslated = ["PROFILE", "HISTORY", "FRIENDS", "MESSAGES", "ONLINE", "OFFLINE", "REMOVE", "ADD_FRIEND",
 		"ADD_TITLE", "ADD_EMAIL"];
 
 	toBeTranslated.forEach((text) => {

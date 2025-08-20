@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
-import { hashPassword } from "../../auth/jwt.js";
 import { compareSync } from "bcrypt-ts";
+import { hashPassword } from "../../user/jwt.js";
 
 /*
 	Replace a user's password with a new one
@@ -50,19 +50,32 @@ export function updateNick(db: DatabaseSync, user: any): any {
 	}
 }
 
+function replaceInvalidBase64Chars(input: string) {
+	return input.replace(/[#_]/g, charToBeReplaced => {
+		switch (charToBeReplaced) {
+			case '#':
+				return '+';
+			case '_':
+				return '/';
+		}
+	});
+}
+
 /*
 	Replaces a user's avatar with a new one
 */
-export function updateAvatar(db: DatabaseSync, json: any): any {
+export function updateAvatar(db: DatabaseSync, { avatar, id, type }): any {
 	try {
+		avatar = `data:image/${type};base64,${avatar}`;
+		avatar = replaceInvalidBase64Chars(avatar);
 		const select = db.prepare("UPDATE Users SET Avatar = ? WHERE UserID = ?");
-		select.run(json.avatar, json.id);
+		select.run(avatar, id);
 		return {
 			code: 200,
 			message: "SUCCESS"
 		};
 	}
-	catch (e) {
+	catch (e) {console.log(e);
 		return {
 			code: 500,
 			error: "ERR_DB"

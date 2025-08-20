@@ -5,7 +5,7 @@
 	"main": "dist/app.js",
 	"type": "module",
 	"scripts": {
-		"build": "npx tsc && cp -r src/frontend/images dist/frontend/images && cp src/backend/default.jpg ./dist/backend/default.jpg"
+		"build": "tsc && cp -r src/frontend/images dist/frontend/images"
 	},
 	"keywords": [],
 	"author": "lwillis",
@@ -19,6 +19,7 @@
 		"fastify": "^5.4.0",
 		"fastify-cookie": "^5.6.1",
 		"fastify-plugin": "^5.0.1",
+		"nodemailer": "^7.0.5",
 		"otpauth": "^9.4.0",
 		"qr": "^0.5.0",
 		"tailwindcss": "^4.1.10",
@@ -28,6 +29,6 @@
 		"@types/node": "^24.1.0",
 		"@types/ws": "^8.18.1",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.8.3"
+		"typescript": "^5.9.2"
 	}
 }

@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { frameHtml } from '../frameHtml.js';
-import { getUser, markUserOnline } from '../user/userDB.js';
 import { addHistory, getHistory } from './historyDB.js';
 import { historyHtml } from './historyHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
+import { getUser } from '../../user/userDB.js';
+import { frameHtml } from '../../frame/frameHtml.js';
 
 export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/history', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -38,7 +38,7 @@ export function historyRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (user.error)
 			return reply.code(user.code).send(user);
 
-		const params = JSON.parse(request.body as string);
+		const params = request.body as any;
 		params["id"] = user.id;
 
 		const response = addHistory(db, params);

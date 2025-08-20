@@ -11,10 +11,10 @@ export function navbarFunctions() {
 		}, { once: true });
 	}
 
-	const playButton = document.querySelector("#playButton");
-	if (playButton) {
-		playButton.addEventListener("click", async () => {
-			navigate("/play");
+	const gameButton = document.querySelector("#gameButton");
+	if (gameButton) {
+		gameButton.addEventListener("click", async () => {
+			navigate("/game");
 		}, { once: true });
 	}
 
