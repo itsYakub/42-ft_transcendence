@@ -6,7 +6,7 @@ TODO (Luke):
 - delete tournaments when finished
 - tournament next-match gatekeeping
 - check and protect all responses
-- move scrollbar hding to css file
+- move scrollbar hiding to css file
 
 Tests:
 - not logged in
