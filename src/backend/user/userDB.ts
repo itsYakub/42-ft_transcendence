@@ -359,6 +359,33 @@ export function getUserByEmail(db: DatabaseSync, email: string): any {
 	}
 }
 
+/*
+
+*/
+export function isUserOnline(db: DatabaseSync, id: number): any {
+	console.log(id);
+	try {
+		const select = db.prepare("SELECT Online FROM Users WHERE UserID = ?");
+		const user = select.get(id);
+		if (user) {
+			return {
+				code: 200,
+				online: user.Online
+			}
+		};
+		return {
+			code: 404,
+			error: "ERR_NO_USER"
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
 export function updateRefreshtoken(db: DatabaseSync, { id, refreshToken }) {
 	try {
 		const select = db.prepare("UPDATE Users SET RefreshToken = ? WHERE UserID = ?");

@@ -1,8 +1,27 @@
-import { navigate } from "../index.js";
+import { navigate, showAlert } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 import { profileFunctions } from "./profile.js";
 
 export function usersFunctions() {
+
+	const inviteButton = document.querySelector("#inviteButton");
+	if (inviteButton) {
+		inviteButton.addEventListener("click", async () => {
+			const toButton = <HTMLButtonElement>document.querySelector("#selectedUserButton");
+			if (toButton) {
+				const response = await fetch(`/api/is-online/${toButton.dataset.id}`);
+				const json = await response.json();
+				if (200 == json.code && 1 == json.online)
+					sendMessageToServer({
+						type: "user-invite",
+						toID: parseInt(toButton.dataset.id),
+					});
+				else
+					showAlert("ERR_USER_OFFLINE");
+			}
+		});
+	}
+
 	const addFriendButton = document.querySelector("#addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async () => {
@@ -14,13 +33,15 @@ export function usersFunctions() {
 						"content-type": "application/json"
 					},
 					body: JSON.stringify({
-						friendID: toButton.dataset.id
+						friendID: parseInt(toButton.dataset.id),
 					})
 				});
 
 				const json = await response.json();
-				if (200 == json.code)
-					navigate("/users");
+				if (200 == json.code) {
+					addFriendButton.classList += "hidden";
+					document.querySelector("#addBlockedButton").classList += "hidden";
+				}
 			}
 		});
 	}
@@ -36,7 +57,7 @@ export function usersFunctions() {
 						"content-type": "application/json"
 					},
 					body: JSON.stringify({
-						blockedID: toButton.dataset.id
+						blockedID: parseInt(toButton.dataset.id),
 					})
 				});
 
@@ -56,7 +77,7 @@ export function usersFunctions() {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					otherUserID: this.dataset.id
+					otherUserID: parseInt(this.dataset.id)
 				})
 			});
 
@@ -87,6 +108,6 @@ export function usersFunctions() {
 			}
 			else
 				(document.querySelector("#sendMessageForm") as HTMLFormElement).message.value = "";
-		});
+		}, { once: true });
 	}
 }

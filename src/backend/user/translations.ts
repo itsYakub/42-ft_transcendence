@@ -152,6 +152,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_NEW_PASSWORD": return "New password";
 		case "TEXT_PASSWORD": return "Password";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
+		case "TEXT_SINGLE_GAME": return "Single game";
 		case "TEXT_TOKENS": return "Tokens";
 		case "TEXT_TOTP_CODE": return "Code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
@@ -180,7 +181,6 @@ function translateEnglish(text: string): string {
 		case "TEXT_ADD_FRIEND": return "Add friend";
 
 		// game
-		case "TEXT_SINGLE_GAME": return "Single game";
 		case "TEXT_PLAYER": return "Player";
 		case "TEXT_MATCH": return "Match";
 		case "TEXT_TOURNAMENT": return "Tournament";
@@ -352,6 +352,7 @@ export function translateBackend({ language, html }): string {
 		"TEXT_NEW_PASSWORD",
 		"TEXT_PASSWORD",
 		"TEXT_REPEAT_PASSWORD",
+		"TEXT_SINGLE_GAME",
 		"TEXT_TOKENS",
 		"TEXT_TOTP_CODE",
 		"TEXT_TOTP_INPUT",

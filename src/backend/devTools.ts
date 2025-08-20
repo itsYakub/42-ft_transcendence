@@ -5,8 +5,6 @@ import { addFriend } from './pages/friends/friendsDB.js';
 import { addHistory } from './pages/history/historyDB.js';
 import { addPrivateMessage } from './pages/users/messagesDB.js';
 
-const __dirname = import.meta.dirname;
-
 export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {

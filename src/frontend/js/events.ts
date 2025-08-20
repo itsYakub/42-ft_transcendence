@@ -17,8 +17,6 @@ export interface messageDetail {
 }
 
 export async function navigated(detail: navigatedDetail) {
-	//if (detail.page.includes("match"))
-	//	window.history.replaceState(null, null, detail.page + "/ttt");
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
 	if (200 == json.code) {
@@ -26,7 +24,7 @@ export async function navigated(detail: navigatedDetail) {
 			try {
 				await initChatSocket();
 				sendMessageToServer({
-					type: "user-logged-in"
+					type: "user-log-in"
 				});
 			} catch (err) {
 				console.error("❌ WebSocket failed:", err);

@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addFriend, getFriends, removeFriend } from './friendsDB.js';
+import { addFriend, friendsList, removeFriend } from './friendsDB.js';
 import { friendsHtml } from './friendsHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { getUser, getUserByEmail } from '../../user/userDB.js';
@@ -13,7 +13,7 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
-		const friendsResponse = getFriends(db, userResponse.user);
+		const friendsResponse = friendsList(db, userResponse.user);
 		if (200 != friendsResponse.code) {
 			const params = {
 				user: userResponse.user,

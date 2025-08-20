@@ -1,11 +1,18 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import * as OTPAuth from "otpauth";
-import { addGuest, addUser, getUser, invalidateToken, loginUser, markUserOffline, markUserOnline } from './userDB.js';
+import { addGuest, addUser, getUser, getUserByEmail, invalidateToken, loginUser, markUserOnline } from './userDB.js';
 import { leaveGame } from '../pages/game/gameDB.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
+		const checkResponse = getUserByEmail(db, (request.body as any).email);
+		if (404 != checkResponse.code)
+			return reply.send({
+				code: 401,
+				error: "ERR_EMAIL_IN_USE"
+			});
+
 		const response = addUser(db, request.body as any);
 		if (response.error)
 			return reply.send(response);

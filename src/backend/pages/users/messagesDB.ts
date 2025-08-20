@@ -44,10 +44,10 @@ export function getMessageSenders(db: DatabaseSync, { id }) {
 /*
 	Gets all the user's messages
 */
-export function privateMessages(db: DatabaseSync, userID: number, otherID: number): any {
+export function privateMessages(db: DatabaseSync, { userID, otherUserID }): any {
 	try {
 		const select = db.prepare("SELECT * FROM PrivateMessages WHERE (ToID = ? AND FromID = ?) OR (FromID = ? AND ToID = ?) ORDER BY SentAt DESC");
-		const messages = select.all(userID, otherID, userID, otherID);
+		const messages = select.all(userID, otherUserID, userID, otherUserID);
 		return {
 			code: 200,
 			messages
@@ -60,8 +60,6 @@ export function privateMessages(db: DatabaseSync, userID: number, otherID: numbe
 		};
 	}
 }
-
-
 
 /*
 	Adds a private message (DM)

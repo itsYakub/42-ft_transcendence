@@ -4,7 +4,7 @@ export function initBlocked(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Blocked (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		UserID INTEGER NOT NULL,
+		BlockerID INTEGER NOT NULL,
 		BlockedID INTEGER NOT NULL
 		);`);
 }
@@ -14,7 +14,7 @@ export function initBlocked(db: DatabaseSync): void {
 */
 export function blockedList(db: DatabaseSync, { id }): any {
 	try {
-		const select = db.prepare("SELECT * FROM Blocked INNER JOIN Users ON Users.UserID = Blocked.BlockedID WHERE BLOCKED.UserID = ? ORDER BY Online DESC, Nick");
+		const select = db.prepare("SELECT BlockedID, Nick FROM Blocked INNER JOIN Users ON Users.UserID = Blocked.BlockedID WHERE BLOCKED.BlockerID = ? ORDER BY Online DESC, Nick");
 		const blocked = select.all(id);
 		return {
 			code: 200,
@@ -34,7 +34,7 @@ export function blockedList(db: DatabaseSync, { id }): any {
 */
 export function addBlocked(db: DatabaseSync, { id, blockedID }): any {
 	try {
-		const select = db.prepare("INSERT INTO Blocked (UserID, BlockedID) VALUES (?, ?)");
+		const select = db.prepare("INSERT INTO Blocked (BlockerID, BlockedID) VALUES (?, ?)");
 		select.run(id, blockedID);
 		return {
 			code: 200,
@@ -54,7 +54,7 @@ export function addBlocked(db: DatabaseSync, { id, blockedID }): any {
 */
 export function removeBlocked(db: DatabaseSync, { id, blockedID }): any {
 	try {
-		const select = db.prepare("DELETE FROM Blocked WHERE UserID = ? AND BlockedID = ?");
+		const select = db.prepare("DELETE FROM Blocked WHERE BlockerID = ? AND BlockedID = ?");
 		select.run(id, blockedID);
 		return {
 			code: 200,

@@ -6,7 +6,6 @@ import { gameHtml } from './gameHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { getGames, gamePlayers, gameMessages } from './gameDB.js';
 import { matchHtml } from '../match/matchHtml.js';
-import { broadcastMessageToClients } from '../../sockets/serverSockets.js';
 
 export function gameRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {

@@ -6,13 +6,29 @@ import { broadcastMessageToClients } from './serverSockets.js';
 
 export function handleUserMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
 	switch (message.type) {
-		case "user-logged-in": console.log(`${user.nick} logged in`);
-			markUserOnline(db, user);
+		case "user-log-in":
+			useLoginReceived(fastify, db, user, message);
 			break;
 		case "user-chat":
 			userChatReceived(fastify, db, user, message);
 			break;
+		case "user-invite":
+			userInviteReceived(fastify, db, user, message);
+			break;
+		case "user-change-status":
+			userChangeStatusReceived(fastify, db, user, message);
+			break;
 	}
+}
+
+function useLoginReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
+	console.log(`${user.nick} logged in`);
+	markUserOnline(db, user);
+	broadcastMessageToClients(fastify, {
+		type: "user-change-status",
+		fromID: user.id,
+		online: 1
+	});
 }
 
 function userChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
@@ -37,4 +53,16 @@ function userChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: any,
 			chat: message.chat
 		});
 	}
+}
+
+function userInviteReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
+	broadcastMessageToClients(fastify, {
+		type: "user-invite",
+		toID: message.toID,
+		gameID: user.gameID
+	});
+}
+
+function userChangeStatusReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
+	console.log(message);
 }

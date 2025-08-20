@@ -46,7 +46,7 @@ function matchString(gamers: any, messages: any, user: any): string {
 			</div>
 			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
-					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
+					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 						${messagesString(messages, user)}
 					</div>
 					<div class="mt-2">

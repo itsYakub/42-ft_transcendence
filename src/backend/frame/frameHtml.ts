@@ -1,5 +1,5 @@
 import { navbarHtml } from "./navbarHtml.js";
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../user/translations.js";
 
 /*
 	Returns the whole page, or an error page
@@ -23,6 +23,7 @@ function frameString(navbar: string, content: string): string {
 			<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 			<script type="module" src="/js/index.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+			<!--link rel="stylesheet" href="/css/styles.css"-->
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 			<title>Transcendence</title>
 		</head>

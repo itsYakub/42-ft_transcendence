@@ -12,7 +12,7 @@ export function initFriends(db: DatabaseSync): void {
 /*
 	Gets all the user's friends
 */
-export function getFriends(db: DatabaseSync, { id }): any {
+export function friendsList(db: DatabaseSync, { id }): any {
 	try {
 		const select = db.prepare("SELECT FriendID, Nick, GameID, Online, Playing FROM Friends INNER JOIN Users ON Users.UserID = Friends.FriendID WHERE Friends.UserID = ? ORDER BY Online DESC, Nick");
 		const friends = select.all(id);

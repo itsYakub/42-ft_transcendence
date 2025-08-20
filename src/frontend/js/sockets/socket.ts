@@ -1,5 +1,5 @@
-import { handlePrivateChatMessage } from "./private_chats.js";
-import { handleGameMessage } from "./games.js";
+import { handleIncomingUserMessage } from "./userSockets.js";
+import { handleIncomingGameMessage } from "./gamesSockets.js";
 
 let socket: WebSocket | null = null;
 
@@ -52,18 +52,21 @@ export function sendMessageToServer(message: any) {
 		socket.send(JSON.stringify(message));
 }
 
+export function currentPage(): string {
+	const split = window.location.pathname.split("/").filter(n => n);
+	return split[0];
+}
+
 /*
 	Deals with the message
 */
 function handleMessage(user: any, message: any) {
+	//if (message.type.startsWith("error-"))
+	//	handleIncomingErrorMessage(user, message);
+
 	if (message.type.startsWith("game-"))
-		handleGameMessage(user, message);
+		handleIncomingGameMessage(user, message);
 
 	if (message.type.startsWith("user-"))
-		handlePrivateChatMessage(user, message);
-}
-
-export function currentPage(): string {
-	const split = window.location.pathname.split("/").filter(n => n);
-	return split[0];
+		handleIncomingUserMessage(user, message);
 }

@@ -1,21 +1,22 @@
-export function usersHtml({ otherUsers, friends, blocked, messages, senders, otherUserID }, { user }): string {
-	if (0 == otherUserID && otherUsers.length > 0)
-		otherUserID = otherUsers[0].id;
-
-	const userListHtml = userListString(otherUsers, senders, otherUserID);
+export function usersHtml({ otherUsers, friends, blockedIDs, messages, senders, otherUserID, user }): string {
+	const userListHtml = userListString(otherUsers, blockedIDs, senders, otherUserID);
 	const messageListHtml = privateMessageListString(user.id, messages, otherUserID);
 
-	let html = messagesString(user, friends, userListHtml, messageListHtml, otherUserID);
+	const friendsIDs: number[] = friends.map(friend => friend.FriendID);
+	const isFriend: boolean = friendsIDs.includes(parseInt(otherUserID));
+	const isInGame: boolean = user.gameID;
 
-	return html;
+	return messagesString(user, isFriend, isInGame, userListHtml, messageListHtml, otherUserID);
 }
 
 /*
 	The list of other user buttons
 */
-export function userListString(otherUsers: any, senders: any, otherUserID: number) {
+export function userListString(otherUsers: any, blockedIDs: any, senders: any, otherUserID: number) {
 	let otherUserList = "";
 	for (var key in otherUsers) {
+		if (blockedIDs.includes(otherUsers[key].id))
+			continue;
 		otherUserList += otherUserString(otherUsers[key], senders, otherUserID);
 	}
 
@@ -34,7 +35,7 @@ export function privateMessageListString(id: number, messages: any, otherUserID:
 	return messageList;
 }
 
-function messagesString(user: any, friends: any, users: any, messages: any, otherUserID: number): string {
+function messagesString(user: any, isFriend: boolean, isInGame: boolean, users: any, messages: any, otherUserID: number): string {
 	return `
 	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
@@ -57,13 +58,13 @@ function messagesString(user: any, friends: any, users: any, messages: any, othe
 				<div class="py-8 pl-8 text-left">
 					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 overflow-auto">
 						<div class="flex flex-row h-full">
-							<div id="usersDiv" class="w-60 flex flex-col pr-2 overscroll-contain overflow-auto">
+							<div id="usersDiv" class="w-60 flex flex-col pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 								${users}
 							</div>
 							<div class="bg-gray-700 w-0.5"></div>
 							<div class="flex flex-col grow pl-2">
-								${actionsDiv(otherUserID, friends)}
-								<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
+								${actionsDiv(otherUserID, isFriend, isInGame)}
+								<div id="messagesDiv" class="flex flex-col-reverse grow mt-2 gap-2 pt-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 									${messages}
 								</div>
 								<div class="mt-2">
@@ -85,22 +86,20 @@ function messagesString(user: any, friends: any, users: any, messages: any, othe
 	`;
 }
 
-function actionsDiv(otherUserID: number, friends: any) {
+function actionsDiv(otherUserID: number, isFriend: boolean, isInGame: boolean) {
 	if (0 == otherUserID)
 		return "";
 
-	let extraButtonsString = `<button id="addFriendButton"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
+	const friendButtonsString = isFriend ? "" : `<button id="addFriendButton"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
 		<button id="addBlockedButton"><i class="text-red-300 cursor-pointer fa solid fa-ban"></i></button>`;
-	friends.forEach(friend => {
-		if (friend.FriendID == otherUserID)
-			extraButtonsString = "";
-	});
+
+	const inviteButtonString = isInGame ? `<button id="inviteButton"><i class="text-white cursor-pointer fa solid fa-table-tennis-paddle-ball"></i></button>` : "";
 
 	return `
-	<div class="h-8 mt-1 grid grid-cols-4 justify-between">
-		<button id="viewProfileButton"><i class="text-white cursor-pointer fa solid fa-user"></i></button>
-		<button id="inviteButton"><i class="text-white cursor-pointer fa solid fa-table-tennis-paddle-ball"></i></button>
-		${extraButtonsString}
+	<div class="h-8 min-h-8 mt-1 grid grid-cols-4 justify-between ">
+		<button id="viewProfileButton"><i class="text-white cursor-pointer fa solid fa-user"></i></button>	
+		${inviteButtonString}
+		${friendButtonsString}
 	</div>
 	`;
 }

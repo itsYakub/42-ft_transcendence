@@ -28,7 +28,7 @@ function friendsString(user: any, friendlist: string): string {
 			</div>
 			<div class="grow bg-gray-900">
 				<div class="py-8 pl-8 text-left">
-					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 overflow-auto">
+					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 						${friendlist}
 					</div>
 				</div>
@@ -47,7 +47,9 @@ function friendString(friend: any): string {
 				${onlineString}
 			</div>
 			<div>${friend.Nick}</div>
-			<div class="text-right my-auto grow">
+			<div class="grid grid-cols-3 ml-auto my-auto grow">
+				<button class="viewProfileButton cursor-pointer" data-id="${friend.FriendID}"></data><div><i class="text-white fa-solid fa-user"></i></div></button>
+				<button class="inviteButton cursor-pointer" data-id="${friend.FriendID}"></data><div><i class="text-white fa-solid fa-table-tennis-paddle-ball"></i></div></button>
 				<button class="removeFriendButton cursor-pointer" data-id="${friend.FriendID}"></data><div><i class="text-red-300 fa-solid fa-minus"></i></div></button>
 			</div>
 		</div>

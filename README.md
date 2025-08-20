@@ -4,11 +4,9 @@ TODO (Luke):
 - sanitise git repo
 - clean up tailwind
 - delete tournaments when finished
-- timer for deleting matches, tournaments, guests. Or just ignore them
 - tournament next-match gatekeeping
-- blocklist
-- refresh friends/blocked/users
-
+- check and protect all responses
+- move scrollbar hding to css file
 
 Tests:
 - not logged in

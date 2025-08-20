@@ -1,13 +1,13 @@
-export function blockedHtml(friends: any, { user }): string {
-	let friendList = "";
-	for (var key in friends) {
-		friendList += blockedUserString(friends[key]);
+export function blockedHtml(blocked: any, { user }): string {
+	let blockedList = "";
+	for (var key in blocked) {
+		blockedList += blockedUserString(blocked[key]);
 	}
 
-	return blockedString(user, friendList);
+	return blockedString(user, blockedList);
 }
 
-function blockedString(user: any, friendlist: string): string {
+function blockedString(user: any, blockedList: string): string {
 	return `
 	<span id="data" data-id="${user.id}"></span>
 	<div class="w-full h-full bg-gray-900">
@@ -28,8 +28,8 @@ function blockedString(user: any, friendlist: string): string {
 			</div>
 			<div class="grow bg-gray-900">
 				<div class="py-8 pl-8 text-left">
-					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 overflow-auto">
-						${friendlist}
+					<div class="border my-3 h-150 p-2 rounded-lg border-gray-700 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
+						${blockedList}
 					</div>
 				</div>
 			</div>
@@ -38,14 +38,13 @@ function blockedString(user: any, friendlist: string): string {
 	`;
 }
 
-function blockedUserString(friend: any): string {
-	const onlineString: string = 1 == friend.Online ? `<div><i class="text-green-300 fa-solid fa-circle"></i></div>` : `<div><i class="text-red-300 fa-solid fa-circle"></i></div>`;
+function blockedUserString(blocked: any): string {
 	return `
 	<div class="border p-2.5 rounded-lg border-gray-700 m-3 bg-gray-800 text-gray-300">
 		<div class="flex flex-row gap-4">
-			<div>${friend.Nick}</div>
+			<div>${blocked.Nick}</div>
 			<div class="text-right my-auto grow">
-				<button class="removeBlockedButton cursor-pointer" data-id="${friend.FriendID}"></data><div><i class="text-red-300 fa-solid fa-minus"></i></div></button>
+				<button class="removeBlockedButton cursor-pointer" data-id="${blocked.BlockedID}"></data><div><i class="text-red-300 fa-solid fa-minus"></i></div></button>
 			</div>
 		</div>
 	</div>
