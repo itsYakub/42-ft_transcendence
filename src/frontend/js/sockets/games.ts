@@ -1,5 +1,5 @@
-import { startMatch } from "../game/game.js";
-import { navigate } from "../index.js";
+import { startMatch } from "./../game/game.js";
+import { navigate } from "./../index.js";
 import { currentPage } from "./socket.js";
 
 /*
