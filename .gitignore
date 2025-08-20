@@ -130,8 +130,15 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-db.AppImage
+# editor files
+.vscode/
+*.swp
+*.swo
+
+# javascript
+*.js.map
 *.js
+db.AppImage
 dist
 
 ./data/transcendence.db

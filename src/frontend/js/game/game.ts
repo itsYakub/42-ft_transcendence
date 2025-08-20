@@ -1,5 +1,7 @@
-import { navigate } from "../index.js";
-import { sendMessageToServer } from "../sockets/socket.js";
+import { navigate } from "./../index.js";
+import { sendMessageToServer } from "./../sockets/socket.js";
+import { g_game, Game } from './../class/game.js';
+
 
 export function gameFunctions() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -81,7 +83,7 @@ export function startMatch(p1Name: string, p2Name: string) {
 		winMatchButton.textContent = `${p1Name} 10 : ${losingScore} ${p2Name}`;
 		winMatchButton.addEventListener("click", () => {
 			endMatch(10, losingScore, p2Name);
-		});
+		}, { once: true } );
 	}
 
 	// This is a button in the dialog with simulates p1 losing a game. Call the endMatch function from within your code
@@ -91,7 +93,7 @@ export function startMatch(p1Name: string, p2Name: string) {
 		loseMatchButton.textContent = `${p1Name} ${losingScore} : 10 ${p2Name}`;
 		loseMatchButton.addEventListener("click", () => {
 			endMatch(losingScore, 10, p2Name);
-		});
+		}, { once: true } );
 	}
 
 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
@@ -104,7 +106,7 @@ export function startMatch(p1Name: string, p2Name: string) {
 		}
 	});
 
-	dialog.showModal();
+	g_game.setupElements();
 }
 
 /*
@@ -118,4 +120,6 @@ function endMatch(p1Score: number, p2Score: number, p2Name: string) {
 			p2Name
 		}
 	}));
+	
+	g_game.dispose();
 }

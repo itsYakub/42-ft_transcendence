@@ -1,5 +1,5 @@
 import { startMatch } from "./game.js";
-import { navigate, showAlert } from "../index.js";
+import { navigate, showAlert } from "./../index.js";
 
 async function generateTournament(names: string[]): Promise<string> {
 	const code = Date.now().toString(36).substring(4);
