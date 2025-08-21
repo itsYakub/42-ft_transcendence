@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSockets.js';
-import { addGameMessage, addToGame, countReady, leaveGame, markPlaying, markReady } from '../pages/game/gameDB.js';
+import { addGameMessage, addToGame, countReady, leaveGame, markPlaying, markReady } from '../db/gameDB.js';
 
 export function handleGameMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
 	switch (message.type) {

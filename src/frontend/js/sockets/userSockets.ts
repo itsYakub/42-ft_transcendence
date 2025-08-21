@@ -1,5 +1,5 @@
-import { usersFunctions } from "../profile/users.js";
-import { profileFunctions } from "../profile/profile.js";
+import { usersFunctions } from "../account/users.js";
+import { accountFunctions } from "../account/account.js";
 import { currentPage, sendMessageToServer } from "./socket.js";
 import { navigate } from "../index.js";
 
@@ -34,7 +34,7 @@ async function userChat(user: any, message: any) {
 			(document.querySelector("#sendMessageForm") as HTMLFormElement).message.value = "";
 			document.querySelector("#usersDiv").innerHTML = messages.usersHtml;
 			document.querySelector("#messagesDiv").innerHTML = messages.messagesHtml;
-			profileFunctions();
+			accountFunctions();
 			usersFunctions();
 		}
 	}

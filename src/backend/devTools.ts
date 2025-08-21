@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser } from "./user/userDB.js";
-import { addFriend } from './pages/friends/friendsDB.js';
-import { addHistory } from './pages/history/historyDB.js';
-import { addPrivateMessage } from './pages/users/messagesDB.js';
+import { addFriend } from './db/friendsDB.js';
+import { addHistory } from './db/historyDB.js';
+import { addPrivateMessage } from './db/messagesDB.js';
+import { addUser } from './db/userDB.js';
 
 export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -86,24 +86,24 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/dev/add/friends", async (request: FastifyRequest, reply: FastifyReply) => {
 		try {
 			addFriend(db, {
-				id: 1,
-				friendID: 3
+				userId: 1,
+				friendId: 3
 			});
 			addFriend(db, {
-				id: 1,
-				friendID: 2
+				userId: 1,
+				friendId: 2
 			});
 			addFriend(db, {
-				id: 1,
-				friendID: 7
+				userId: 1,
+				friendId: 7
 			});
 			addFriend(db, {
-				id: 2,
-				friendID: 3
+				userId: 2,
+				friendId: 3
 			});
 			addFriend(db, {
-				id: 2,
-				friendID: 1
+				userId: 2,
+				friendId: 1
 			});
 		}
 		catch (e) {

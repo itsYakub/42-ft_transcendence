@@ -1,17 +1,18 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { getUser, markUserOffline } from '../user/userDB.js';
 import { handleGameMessage } from './gameSockets.js';
 import { handleUserMessage } from './userSockets.js';
 import { handleIncomingErrorMessage } from './errorsSockets.js';
+import { getUser, markUserOffline } from '../db/userDB.js';
+import { result } from '../../common/interfaces.js';
 
 export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
 		if (socket) {
 			socket.on("message", (data: string | Buffer) => {
 				const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-				if (200 != userResponse.code)
+				if (result.SUCCESS != userResponse.result)
 					return;
 
 				const user = userResponse.user;
@@ -21,14 +22,14 @@ export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void 
 
 			socket.on("close", () => {
 				const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-				if (200 != userResponse.code)
+				if (result.SUCCESS != userResponse.result)
 					return;
 
 				const user = userResponse.user;
 				markUserOffline(db, user);
 				broadcastMessageToClients(fastify, {
 					type: "user-change-status",
-					fromID: user.id,
+					fromID: user.userId,
 					online: 0
 				});
 				//if (user.gameID)

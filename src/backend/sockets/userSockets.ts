@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { markUserOnline } from '../user/userDB.js';
-import { addPrivateMessage } from '../pages/users/messagesDB.js';
+import { addPrivateMessage } from '../db/messagesDB.js';
 import { broadcastMessageToClients } from './serverSockets.js';
+import { markUserOnline } from '../db/userDB.js';
 
 export function handleUserMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
 	switch (message.type) {

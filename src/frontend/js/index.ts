@@ -1,17 +1,17 @@
-import { friendsFunctions } from "./profile/friends.js";
+import { friendsFunctions } from "./account/friends.js";
 import { navbarFunctions } from "./navbar.js";
-import { profileFunctions } from "./profile/profile.js";
+import { accountFunctions } from "./account/account.js";
 import { devButtons } from "./devButtons.js";
 import { translateFrontend, translationFunctions } from "./user/translations.js";
 import { localMatchFunctions } from "./game/localMatch.js";
 import { gameFunctions } from "./game/game.js";
-import { userFunctions } from "./user/user.js";
-import { usersFunctions } from "./profile/users.js";
+import { authFunctions } from "./user/auth.js";
+import { usersFunctions } from "./account/users.js";
 import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
 import { tournamentFunctions } from "./game/tournament.js";
-import { blockedFunctions } from "./profile/blocked.js";
+import { blockedFunctions } from "./account/blocked.js";
 
 /*
 	Simulates moving to a new page
@@ -43,14 +43,14 @@ export function addFunctions() {
 	tournamentFunctions();
 	localTournamentFunctions();
 	translationFunctions();
-	profileFunctions();
+	accountFunctions();
 	usersFunctions();
 	friendsFunctions();
 	blockedFunctions();
 	gameFunctions();
 	localMatchFunctions();
 	matchFunctions();
-	userFunctions();
+	authFunctions();
 
 	// remove!
 	devButtons();

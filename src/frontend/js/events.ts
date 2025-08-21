@@ -1,3 +1,4 @@
+import { result } from "../../common/interfaces.js";
 import { addFunctions, navigate, showAlert } from "./index.js";
 import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
@@ -19,7 +20,7 @@ export interface messageDetail {
 export async function navigated(detail: navigatedDetail) {
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
-	if (200 == json.code) {
+	if (result.SUCCESS == json.result) {
 		if (!isConnected()) {
 			try {
 				await initChatSocket();

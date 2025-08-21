@@ -1,33 +1,23 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { allNicknames, allOtherUsers, getUser, isUserOnline } from '../user/userDB.js';
-import { gameMessages, gamePlayers } from '../pages/game/gameDB.js';
-import { messagesString, gamersString } from '../pages/match/matchHtml.js';
-import { privateMessages, getMessageSenders } from '../pages/users/messagesDB.js';
-import { privateMessageListString, userListString } from '../pages/users/usersHtml.js';
-import { translateBackend } from '../user/translations.js';
-import { blockedList } from '../pages/blocked/blockedDB.js';
+import { allNicknames, allOtherUsers, isUserOnline } from '../db/userDB.js';
+import { gameMessages, gamePlayers } from '../db/gameDB.js';
+import { messagesString, gamersString } from '../views/matchHtml.js';
+import { privateMessages, getMessageSenders } from '../db/messagesDB.js';
+import { privateMessageListString, userListString } from '../views/usersView.js';
+import { translateBackend } from '../../common/translations.js';
 
 export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/api/nicknames', async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.send(userResponse);
-
 		const users = allNicknames(db);
 		return reply.send(users);
 	});
 
 	fastify.get('/api/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
-		const language = request.cookies.language ?? "english";
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.send(userResponse);
-
-		const gamersResponse = gamePlayers(db, { gameID: userResponse.user.gameID });
+		const gamersResponse = gamePlayers(db, { gameID: request.user.gameId });
 		if (200 == gamersResponse.code) {
-			let html = gamersString(gamersResponse.gamers, userResponse.user);
-			html = translateBackend({ html, language });
+			let html = gamersString(gamersResponse.gamers, request.user);
+			html = translateBackend({ html, language: request.language });
 
 			return reply.send({
 				code: 200,
@@ -41,13 +31,9 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.get('/api/game-messages', async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.send(userResponse);
-
-		const messagesResponse = gameMessages(db, { gameID: userResponse.user.gameID });
+		const messagesResponse = gameMessages(db, { gameID: request.user.gameId });
 		if (200 == messagesResponse.code) {
-			const html = messagesString(messagesResponse.messages, userResponse.user);
+			const html = messagesString(messagesResponse.messages, request.user);
 			return reply.send({
 				code: 200,
 				html
@@ -59,24 +45,20 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			});
 	});
 
-	fastify.get('/api/private-messages/:otherUserID', async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.send(userResponse);
-
-		const user = userResponse.user;
-		const { otherUserID } = request.params as any;
+	fastify.get('/api/private-messages/:otherUserId', async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = request.user;
+		const { otherUserId } = request.params as any;
 
 		const usersResponse = allOtherUsers(db, user);
 		const messagesResponse = privateMessages(db, {
-			userID: user.id,
-			otherUserID
+			userId: user.userId,
+			otherUserId
 		});
 
 		const messageSendersResponse = getMessageSenders(db, user);
 		if (200 == messagesResponse.code) {
-			const usersHtml = userListString(usersResponse.users, [], messageSendersResponse.ids, otherUserID);
-			const messagesHtml = privateMessageListString(user.id, messagesResponse.messages, userResponse.user);
+			const usersHtml = userListString(usersResponse.users, [], messageSendersResponse.ids, otherUserId);
+			const messagesHtml = privateMessageListString(user.userId, messagesResponse.messages, otherUserId);
 
 			return reply.send({
 				code: 200,
@@ -90,14 +72,10 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			});
 	});
 
-	fastify.get('/api/is-online/:userID', async (request: FastifyRequest, reply: FastifyReply) => {
-		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (200 != userResponse.code)
-			return reply.send(userResponse);
+	fastify.get('/api/is-online/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
+		const { userId } = request.params as any;
 
-		const { userID: id } = request.params as any;
-
-		const onlineResponse = isUserOnline(db, id);
+		const onlineResponse = isUserOnline(db, userId);
 		return onlineResponse;
 	});
 }

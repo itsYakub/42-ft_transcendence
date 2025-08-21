@@ -18,10 +18,10 @@ export function navbarFunctions() {
 		}, { once: true });
 	}
 
-	const profileAvatar = document.querySelector("#profileAvatar");
+	const profileAvatar = document.querySelector("#accountAvatar");
 	if (profileAvatar) {
 		profileAvatar.addEventListener("click", async () => {
-			await navigate("/profile");
+			await navigate("/account");
 		}, { once: true });
 	}
 }
