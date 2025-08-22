@@ -1,5 +1,6 @@
-import * as BABYLON from 'babylonjs'
+import * as BABYLON from 'babylonjs';
 
+import { Shape } from './shape.js';
 
 
 /* SECTION:
@@ -13,18 +14,10 @@ export enum PlayerMode {
 	PLAYERMODE_COUNT,
 }
 
-export class Player {
+export class Player extends Shape {
 	/* HTML DOM Elements
 	 * */
 	private	m_canvas : HTMLCanvasElement;
-
-	/* babylonjs elements
-	 * */
-	private	m_scene : BABYLON.Scene;
-	private	m_position : BABYLON.Vector3 = new BABYLON.Vector3(g_playerCenterOffset, 1.0, 0.0);
-	private	m_size : BABYLON.Vector3 = new BABYLON.Vector3(1.0, 1.0, 2.0);
-	private	m_mat : BABYLON.StandardMaterial;
-	private	m_box : BABYLON.Mesh;
 
 	/* Game objects
 	 * */
@@ -35,40 +28,40 @@ export class Player {
 	 * */
 
 	public constructor(canvas : HTMLCanvasElement, scene : BABYLON.Scene, side : number, mode : number) {
+		/* Base constructor
+		 * */
+		super(
+			scene,
+			new BABYLON.Vector2(g_playerCenterOffset, 0.0),
+			new BABYLON.Vector3(0.2, 0.2, 2.0)
+		);
+
 		/* Assign the references
 		 * */
 		this.m_canvas = canvas;
-		this.m_scene = scene;
 
 		/* Decide if player is HUMAN (PLAYERMODE_HUMAN / 1.0) or AI (PLAYERMODE_AI / 2.0)
 		 * */
 		this.m_mode = mode;
 
-		/* Decide if player is on the LEFT (-1.0) or RIGHT (1.0)
+		/* Decide if player is on the left or right of the map
 		 * */
-		this.m_mat = new BABYLON.StandardMaterial('mat', scene);
 		switch (side) {
 			case (0): {
-				this.m_position._x *= -1.0;
-				this.m_mat.diffuseColor = new BABYLON.Color3(0.8, 0.2, 0.2);
+				/* Move the player to the left
+				 * */
+				this.m_pos.x = -g_playerCenterOffset;
+				this.createMaterial(new BABYLON.Color3(0.48, 0.04, 0.98));
 			} break;
 			case (1): {
-				this.m_mat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.2);
+				this.createMaterial(new BABYLON.Color3(1.0, 0.92, 0.34));
 			} break;
 			default: { } break;
 		}
 
-		/* Create the mesh
+		/* Finalize the player creation
 		 * */
-		this.m_box = BABYLON.MeshBuilder.CreateBox('box', { }, scene);
-		this.m_box.position = this.m_position;
-		this.m_box.material = this.m_mat;
-
-		/* TODO(joleksia):
-		 *  Finish creating the object
-		 * */
-
-		console.log('[ INFO ] Player created | Position: ' + this.m_position + ' | Type: ' + (mode == PlayerMode.PLAYERMODE_HUMAN ? 'HUMAN' : 'AI'));
+		this.createMesh();
 	}	
 
 	/* SECTION:
@@ -79,6 +72,10 @@ export class Player {
 		/* TODO(joleksia):
 		 *  Create a basic player/ai behaviour
 		 * */
+
+		/* Update the base 'Shape' class
+		 * */
+		super.update();
 	}
 }
 
@@ -87,4 +84,4 @@ export class Player {
 /* SECTION:
  *  Global game object
  * */
-export var	g_playerCenterOffset : number = 2.0;
+export var	g_playerCenterOffset : number = 6.0;

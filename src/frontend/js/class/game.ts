@@ -1,6 +1,8 @@
 import * as BABYLON from 'babylonjs'
 
 import { Player } from './player.js';
+import { Ball }  from './ball.js';
+import { Ground }  from './ground.js';
 
 
 
@@ -30,6 +32,8 @@ export class Game {
 	 * */
 	private m_player0 : Player;
 	private	m_player1 : Player;
+	private	m_ball : Ball;
+	private	m_ground : Ground;
 
 	/* SECTION:
 	 *  Public Methods
@@ -63,10 +67,7 @@ export class Game {
 		 * */
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
-
-		/* Run the render loop
-		 * */
-		console.log('[ INFO ] Preparing the game');
+		
 		this.m_engine.runRenderLoop(() => this.updateRenderLoop());
 
 		console.log('[ INFO ] Game is running...');
@@ -94,8 +95,16 @@ export class Game {
 		/* SECTION: Update
 		 * */
 
+		/* Update game time
+		 * */
+		g_gameTime += this.m_scene.deltaTime;
+
+		/* Update game components
+		 * */
 		this.m_player0.update();
 		this.m_player1.update();
+		this.m_ball.update();
+		this.m_ground.update();
 
 		/* SECTION: Render
 		 * */
@@ -106,14 +115,26 @@ export class Game {
 	private	createScene() {
 		let	scene = new BABYLON.Scene(this.m_engine);
 
-		let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 12, 10, new BABYLON.Vector3(0, 0, 0));
-		let	light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0));
+		/* SECTION:
+		 *  Camera Setup
+		 * */
+		let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 10, new BABYLON.Vector3(0, 0, 0));
+
+		/* SECTION:
+		 *  Lighting
+		 * */
+		let	light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(0, -1, 0), scene);
+		light.diffuse = new BABYLON.Color3(0.07, 0.02, 0.1);
+		light.specular= new BABYLON.Color3(0.3, 0.1, 0.7);
+
+		/* SECTION:
+		 *  Glow Effect
+		 * */
+		let glow = new BABYLON.GlowLayer('glow0', scene);
+		glow.intensity = 0.8;
 
 		scene.clearColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1.0);
 
-		let	mat_ground = new BABYLON.StandardMaterial('mat_ground', scene);
-		mat_ground.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
-		
 		/* TODO(joleksia):
 		 *  Here we should set-up the game based on the gamemode.
 		 *  By setting-up I mean:
@@ -123,10 +144,8 @@ export class Game {
 		 * */
 		this.m_player0 = new Player(this.m_canvas, this.m_scene, 0, 1);
 		this.m_player1 = new Player(this.m_canvas, this.m_scene, 1, 1);
-		
-		let	ground = BABYLON.MeshBuilder.CreateGround('ground', { width:32, height:24 }, scene);
-		ground.material = mat_ground;
-
+		this.m_ball = new Ball(this.m_canvas, this.m_scene);
+		this.m_ground = new Ground(this.m_scene, new BABYLON.Vector2(32.0, 24.0));
 		return (scene);
 	}
 }
@@ -136,5 +155,8 @@ export class Game {
 /* SECTION:
  *  Global game object
  * */
+export var	g_gamePlayableArea : BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
+export var	g_gameTime : number = 0.0;
+
 export var	g_game : Game = new Game();
 export var	g_gameMode : GameMode = GameMode.GAMEMODE_NONE;
