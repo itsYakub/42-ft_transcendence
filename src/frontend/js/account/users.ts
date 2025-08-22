@@ -1,3 +1,4 @@
+import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 import { accountFunctions } from "./account.js";
@@ -11,10 +12,11 @@ export function usersFunctions() {
 			if (toButton) {
 				const response = await fetch(`/api/is-online/${toButton.dataset.id}`);
 				const json = await response.json();
-				if (200 == json.code && 1 == json.online)
+				if (Result.SUCCESS == json.result && 1 == json.online)
 					sendMessageToServer({
-						type: "user-invite",
-						toID: parseInt(toButton.dataset.id),
+						group: WebsocketMessageGroup.USER,
+						type: WebsocketMessageType.INVITE,
+						toId: parseInt(toButton.dataset.id),
 					});
 				else
 					showAlert("ERR_USER_OFFLINE");
@@ -38,7 +40,7 @@ export function usersFunctions() {
 				});
 
 				const json = await response.json();
-				if (200 == json.code) {
+				if (Result.SUCCESS == json.result) {
 					addFriendButton.classList += "hidden";
 					document.querySelector("#addBlockedButton").classList += "hidden";
 				}
@@ -62,7 +64,7 @@ export function usersFunctions() {
 				});
 
 				const json = await response.json();
-				if (200 == json.code)
+				if (Result.SUCCESS == json.result)
 					navigate("/users");
 			}
 		});
@@ -100,8 +102,9 @@ export function usersFunctions() {
 
 				if (message.length > 0) {
 					sendMessageToServer({
-						type: "user-chat",
-						toID: parseInt(toButton.dataset.id),
+						group: WebsocketMessageGroup.USER,
+						type: WebsocketMessageType.CHAT,
+						toId: parseInt(toButton.dataset.id),
 						chat: message
 					});
 				}

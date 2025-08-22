@@ -1,3 +1,4 @@
+import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
 import { navigate } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 
@@ -9,14 +10,16 @@ export function matchFunctions() {
 
 			if ("leaveMatchButton" == e.submitter.id) {
 				sendMessageToServer({
-					type: "game-leave"
+					group: WebsocketMessageGroup.GAME,
+					type: WebsocketMessageType.LEAVE
 				});
 				navigate("/game");
 				return;
 			}
 
 			sendMessageToServer({
-				type: "game-gamer-ready"
+				group: WebsocketMessageGroup.USER,
+				type: WebsocketMessageType.READY
 			});
 		});
 	}
@@ -28,7 +31,8 @@ export function matchFunctions() {
 
 			if (sendMatchMessageForm.message.value.length > 0) {
 				sendMessageToServer({
-					type: "game-chat",
+					group: WebsocketMessageGroup.GAME,
+					type: WebsocketMessageType.CHAT,
 					chat: sendMatchMessageForm.message.value
 				});
 			}

@@ -1,25 +1,6 @@
 import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { createHmac } from 'crypto';
 
-function createHMAC(message: string, secret: string) {
-	return createHmac('sha256', secret)
-		.update(message)
-		.digest("base64");
-}
-
-function replaceInvalidBase64Chars(input: string) {
-	return input.replace(/[=+/]/g, charToBeReplaced => {
-		switch (charToBeReplaced) {
-			case '=':
-				return '';
-			case '+':
-				return '-';
-			case '/':
-				return '_';
-		}
-	});
-};
-
 export function accessToken(id: number): string {
 	const date = new Date();
 	date.setSeconds(date.getSeconds() + 5);
@@ -30,6 +11,25 @@ export function refreshToken(id: number): string {
 	const date = new Date();
 	date.setFullYear(date.getFullYear() + 1);
 	return createJWT(id, date);
+}
+
+export function validJWT(jwt: string): boolean {
+	if (!jwt)
+		return false;
+	const splitJWT = jwt.split(".");
+	if (3 != splitJWT.length)
+		return false;
+	const header = splitJWT[0];
+	const payload = splitJWT[1];
+	const signature = splitJWT[2];
+	let hash = createHMAC(header + "." + payload, process.env.JWT_SECRET);
+	hash = replaceInvalidBase64Chars(hash);
+	return hash == signature;
+}
+
+export function hashPassword(password: string): string {
+	const salt = genSaltSync(13);
+	return hashSync(password, salt);
 }
 
 function createJWT(id: number, date: Date): string {
@@ -53,21 +53,21 @@ function createJWT(id: number, date: Date): string {
 	return header + "." + payload + "." + hash;
 }
 
-export function validJWT(jwt: string): boolean {
-	if (!jwt)
-		return false;
-	const splitJWT = jwt.split(".");
-	if (3 != splitJWT.length)
-		return false;
-	const header = splitJWT[0];
-	const payload = splitJWT[1];
-	const signature = splitJWT[2];
-	let hash = createHMAC(header + "." + payload, process.env.JWT_SECRET);
-	hash = replaceInvalidBase64Chars(hash);
-	return hash == signature;
+function createHMAC(message: string, secret: string) {
+	return createHmac('sha256', secret)
+		.update(message)
+		.digest("base64");
 }
 
-export function hashPassword(password: string): string {
-	const salt = genSaltSync(13);
-	return hashSync(password, salt);
-}
+function replaceInvalidBase64Chars(input: string) {
+	return input.replace(/[=+/]/g, charToBeReplaced => {
+		switch (charToBeReplaced) {
+			case '=':
+				return '';
+			case '+':
+				return '-';
+			case '/':
+				return '_';
+		}
+	});
+};

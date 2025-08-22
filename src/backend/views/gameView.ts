@@ -1,15 +1,16 @@
+import { Game, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function gameView(games, { user }): string {
+export function gameView(games: Game[], user: User): string {
 	const gamesHtmlString = gamesString(games);
 	let html = gameString(user, gamesHtmlString);
 
 	return html + gameHtmlString();
 }
 
-function gameString(user: any, gamesHtmlString: string): string {
+function gameString(user: User, gamesHtmlString: string): string {
 	return `
-	<span id="data" data-id="${user.id}"></span>
+	<span id="data" data-id="${user.userId}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
 		<div class="flex flex-row h-150 mx-auto justify-center pt-8">
 			<div class="w-95 flex flex-col gap-8 px-8">
@@ -41,9 +42,9 @@ function gamesString(games): string {
 	return gameStrings;
 }
 
-function gameButtonString(game: any): string {
-	const gameID: string = game.GameID;
-	const gamers: string[] = game.Nicks.split(",");
+function gameButtonString(game: Game): string {
+	const gameID: string = game.gameId;
+	const gamers: string[] = game.nicks.split(",");
 	if ((gameID.startsWith("t") && 4 == gamers.length) || (gameID.startsWith("m") && 2 == gamers.length))
 		return "";
 

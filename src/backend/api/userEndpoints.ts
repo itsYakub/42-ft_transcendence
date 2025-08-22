@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { result } from '../../common/interfaces.js';
+import { Result } from '../../common/interfaces.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
@@ -13,11 +13,11 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.get("/user/id", async (request: FastifyRequest, reply: FastifyReply) => {
 		if (!request.user)
 			return reply.send({
-				result: result.ERR_NO_USER
+				result: Result.ERR_NO_USER
 			});
 
 		return reply.send({
-			result: result.SUCCESS,
+			result: Result.SUCCESS,
 			id: request.user.userId,
 			nick: request.user.nick,
 			online: request.user.online,

@@ -1,15 +1,16 @@
 import { DatabaseSync } from "node:sqlite";
+import { Result } from "../../common/interfaces.js";
 
-export function initHistory(db: DatabaseSync): void {
+export function initHistoryDb(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS history (
-		HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,
-		UserID INTEGER NOT NULL,
-		P2Name TEXT NOT NULL,
-		Score INTEGER NOT NULL,
-		P2Score INTEGER NOT NULL,
-		TournamentWin INTEGER NOT NULL,
-		PlayedAt TEXT NOT NULL
+		history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER NOT NULL,
+		p2_name TEXT NOT NULL,
+		score INTEGER NOT NULL,
+		p2_score INTEGER NOT NULL,
+		tournament_win INTEGER NOT NULL,
+		played_at TEXT NOT NULL
 		);`);
 }
 
@@ -18,34 +19,31 @@ export function initHistory(db: DatabaseSync): void {
 */
 export function getHistory(db: DatabaseSync, id: number): any {
 	try {
-		const select = db.prepare("SELECT * FROM history WHERE UserID = ? ORDER BY PlayedAt DESC");
+		const select = db.prepare("SELECT * FROM history WHERE user_id = ? ORDER BY played_at DESC");
 		const matches = select.all(id);
 		return {
-			code: 200,
+			result: Result.SUCCESS,
 			matches
 		};
 	}
 	catch (e) {
 		return {
-			code: 500,
-			error: "ERR_DB"
+			result: Result.ERR_DB
 		};
 	}
 }
 
-export function addHistory(db: DatabaseSync, { id, p2Name, score, p2Score, tournamentWin}, date: Date = new Date()): any {
+export function addHistory(db: DatabaseSync, { id, p2Name, score, p2Score, tournamentWin }, date: Date = new Date()): any {
 	try {
-		const select = db.prepare("INSERT INTO history (UserID, P2Name, Score, P2Score, TournamentWin, PlayedAt) VALUES (?, ?, ?, ?, ?, ?)");
+		const select = db.prepare("INSERT INTO history (user_id, p2_name, score, p2_score, tournament_win, played_at) VALUES (?, ?, ?, ?, ?, ?)");
 		select.run(id, p2Name, score, p2Score, tournamentWin ? 1 : 0, date.toISOString());
 		return {
-			code: 200,
-			message: "SUCCESS"
+			result: Result.SUCCESS
 		};
 	}
 	catch (e) {
 		return {
-			code: 500,
-			error: "ERR_DB"
+			result: Result.ERR_DB
 		};
 	}
 }

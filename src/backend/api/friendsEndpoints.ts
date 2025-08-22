@@ -1,8 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addFriend, removeFriend } from '../db/friendsDB.js';
+import { addFriend, removeFriend } from '../db/friendsDb.js';
 import { getUserByEmail } from '../db/userDB.js';
-import { result } from '../../common/interfaces.js';
+import { Result } from '../../common/interfaces.js';
 
 export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/friends/add", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -31,12 +31,12 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		const json = request.body as any;
 		if (user.email == json.email) {
 			return reply.send({
-				result: result.ERR_SAME_EMAIL
+				result: Result.ERR_SAME_EMAIL
 			});
 		}
 
 		const userBox = getUserByEmail(db, json.email);
-		if (result.SUCCESS != userBox.result)
+		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
 		addFriend(db, {

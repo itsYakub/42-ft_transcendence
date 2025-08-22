@@ -4,31 +4,31 @@ import fastifyCookie from "fastify-cookie";
 import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { userEndpoints } from "./backend/api/userEndpoints.js";
-import { initFriends } from "./backend/db/friendsDB.js";
-import { initHistory } from "./backend/db/historyDB.js";
+import { initFriendsDb } from "./backend/db/friendsDb.js";
+import { initHistoryDb } from "./backend/db/historyDB.js";
 import { devEndpoints } from "./backend/devTools.js";
-import { initTournaments } from "./backend/db/tournamentDB.js";
+import { initTournaments } from "./backend/db/tournamentDb.js";
 import { historyRoutes } from "./backend/routes/historyRoutes.js";
 import { friendsRoutes } from "./backend/routes/friendsRoutes.js";
 import { homeRoutes } from "./backend/routes/homeRoutes.js";
 import { tournamentRoutes } from "./backend/routes/tournamentRoutes.js";
 import { usersRoutes } from "./backend/routes/usersRoutes.js";
-import { initPrivateMessages } from "./backend/db/messagesDB.js";
+import { initUserChatsDb } from "./backend/db/userChatsDb.js";
 import { matchRoutes } from "./backend/routes/matchRoutes.js";
 import { serverSockets } from "./backend/sockets/serverSockets.js";
 import { apiRoutes } from "./backend/api/apiRoutes.js";
-import { initGameMessages } from "./backend/db/gameDB.js";
 import { gameRoutes } from "./backend/routes/gameRoutes.js";
-import { initFoes } from "./backend/db/foesDB.js";
+import { initFoesDb } from "./backend/db/foesDb.js";
 import { foesRoutes } from "./backend/routes/foesRoutes.js";
-import { getUser, initUsers } from "./backend/db/userDB.js";
+import { getUser, initUsersDb } from "./backend/db/userDB.js";
 import { frameView } from "./backend/views/frameView.js";
 import { accountRoutes } from "./backend/routes/accountRoutes.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { authEndpoints } from "./backend/api/authEndpoints.js";
 import { accountEndpoints } from "./backend/api/accountEndpoints.js";
 import { translateBackend } from "./common/translations.js";
-import { User } from "./common/interfaces.js";
+import { Result, User } from "./common/interfaces.js";
+import { initGameChatsDb } from "./backend/db/gameChatsDb.js";
 
 const __dirname = import.meta.dirname;
 
@@ -71,42 +71,42 @@ declare module 'fastify' {
 	Checks for a logged in user before every request, adding it if found
 */
 fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, done) => {
+	const publicApiEndpoints = [
+		"/api/guest/register",
+		"/api/user/login",
+		"/api/user/register"
+	];
+
 	// 	// if (request.url.includes(".") || request.url.startsWith("/auth/google"))
 	// 	// 	return done();
 
 	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 	request.isPage = ["/", "/game", "/account", "/history", "/users", "/friends", "/foes", "/profile"].includes(request.url);
 	const language = request.cookies.language ?? "english";
-	//request.user = userBox.user;
-	// console.log("hook");
-	// 	// if ("ERR_DB" == userBox.result) {
-	// 	// 	if (request.isPage) {
-	// 	// 		const params = {
-	// 	// 			page: request.url,
-	// 	// 			language,
-	// 	// 			result: userBox.result
-	// 	// 		};
-	// 	// 		return reply.type("text/html").send(frameView(params));
-	// 	// 	}
-	// 	// 	else
-	// 	// 		return reply.send({
-	// 	// 			result: userBox.code
-	// 	// 		});
-	// 	// }
 
-	// 	// if ("ERR_NO_USER" == userBox.result) {
-	// 	// 	if (request.isPage)
-	// 	// 		return reply.type("text/html").send(frameView({ language }, loggedOutView()));
-	// 	// 	else if (request.url.startsWith("/api/"))
-	// 	// 		return reply.send({
-	// 	// 			result: translateBackend({
-	// 	// 				language,
-	// 	// 				html: "%%ERR_FORBIDDEN%%"
-	// 	// 			})
-	// 	// 		});
-	// 	// 	else
-	// 	// 		return done();
-	// 	// }
+	if (Result.ERR_DB == userBox.result) {
+		if (request.isPage) {
+			const params = {
+				page: request.url,
+				language,
+				result: userBox.result
+			};
+			return reply.type("text/html").send(frameView(params));
+		}
+		else
+			return reply.send({
+				result: userBox.result
+			});
+	}
+
+	if (Result.ERR_NO_USER == userBox.result) {
+		if (request.isPage)
+			return reply.type("text/html").send(frameView({ language }, loggedOutView()));
+		else if (request.url.startsWith("/api/") && !publicApiEndpoints.includes(request.url))
+			return reply.send({
+				result: translateBackend(language, "%%ERR_FORBIDDEN%%")
+			});
+	}
 
 	request.user = userBox.user;
 	request.language = language;
@@ -116,27 +116,27 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 /*
 	Handles all incorrect URLs
 */
-// fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) => {
-// 	const params = {
-// 		user: request.user,
-// 		result: "ERR_NOT_FOUND",
-// 		language: request.cookies.language ?? "english"
-// 	};
+fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+	const params = {
+		user: request.user,
+		result: Result.ERR_NOT_FOUND,
+		language: request.cookies.language ?? "english"
+	};
 
-// 	const frame = frameView(params);
-// 	return reply.type("text/html").send(frame);
-// });
+	const frame = frameView(params);
+	return reply.type("text/html").send(frame);
+});
 
 const db = new DatabaseSync("../data/transcendence.db");
 
 try {
-	initUsers(db);
-	initFoes(db);
-	initFriends(db);
-	//initHistory(db);
+	initUsersDb(db);
+	initFoesDb(db);
+	initFriendsDb(db);
+	initHistoryDb(db);
 	//initTournaments(db);
-	initPrivateMessages(db);
-	initGameMessages(db);
+	initUserChatsDb(db);
+	initGameChatsDb(db);
 
 	apiRoutes(fastify, db);
 	homeRoutes(fastify, db);

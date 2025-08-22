@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
-import { hashPassword } from "../common/jwt.js";
+import { hashPassword } from "./jwt.js";
 
 /*
 	Replace a user's password with a new one

@@ -1,3 +1,4 @@
+import { Result } from "../../../common/interfaces.js";
 import { navigate } from "../index.js";
 
 export function friendsFunctions() {
@@ -16,7 +17,7 @@ export function friendsFunctions() {
 
 			const json = await response.json();
 
-			if (200 == json.code)
+			if (Result.SUCCESS == json.result)
 				navigate("/friends");
 		}, { once: true });
 	}

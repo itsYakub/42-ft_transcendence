@@ -2,9 +2,10 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import * as OTPAuth from "otpauth";
 //import nodemailer from 'nodemailer';
-import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from '../db/accountDB.js';
+import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from '../db/accountDb.js';
 import encodeQR from 'qr';
 import { invalidateToken } from '../db/userDB.js';
+import { Result } from '../../common/interfaces.js';
 
 export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
@@ -67,7 +68,7 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 
 		if (!user)
 			return reply.send({
-				code: 403
+				result: Result.ERR_FORBIDDEN
 			});
 
 		const params = request.body as any;
@@ -149,14 +150,12 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		if (null != totp.validate({ token: params.code, window: 1 })) {
 			confirmTOTP(db, user.userId);
 			return reply.send({
-				code: 200,
-				message: "SUCCESS"
+				result: Result.SUCCESS
 			});
 		}
 
 		return reply.send({
-			code: 403,
-			error: "ERR_BAD_TOTP"
+			result: Result.ERR_BAD_TOTP
 		});
 	});
 

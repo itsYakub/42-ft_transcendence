@@ -1,15 +1,16 @@
 import { navbarView } from "./navbarView.js";
 import { translateBackend } from "../../common/translations.js";
+import { FrameParams } from "../../common/interfaces.js";
 
 /*
 	Returns the whole page, or an error page
 */
-export function frameView(params: any, content: string = null): any {
+export function frameView(params: FrameParams, content: string = null): any {
 	if (!content)
 		content = errorString(params);
 
-	const html = frameString(navbarView(params), content);
-	return translateBackend({ html, language: params.language })
+	const text = frameString(navbarView(params), content);
+	return translateBackend(params.language, text)
 }
 
 function frameString(navbar: string, content: string): string {
@@ -44,7 +45,7 @@ function frameString(navbar: string, content: string): string {
 /*
 	A frame with an error message body
 */
-function errorString(params: any) {
+function errorString(params: FrameParams) {
 	return `
 	<div class="h-full bg-gray-900 content-center text-center">
 		<div class="text-white">%%${params.result}%%</div>

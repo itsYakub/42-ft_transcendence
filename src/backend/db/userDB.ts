@@ -1,13 +1,13 @@
-import { DatabaseSync } from "node:sqlite";
+import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
-import { accessToken, hashPassword, refreshToken, validJWT } from "../common/jwt.js";
-import { defaultImage } from "../common/defaultImage.js";
-import { StringlistBox, result, UserBox, StringBox, User } from "../../common/interfaces.js";
+import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
+import { defaultImage } from "./defaultImage.js";
+import { StringlistBox, Result, UserBox, StringBox, User } from "../../common/interfaces.js";
 
 /*
 	Sets up the Users table
 */
-export function initUsers(db: DatabaseSync): void {
+export function initUsersDb(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS users (
 		user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,23 +39,23 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): UserBox 
 		const date = new Date(exp);
 		if (date < new Date())
 			return {
-				result: result.ERR_EXPIRED_TOKEN
+				result: Result.ERR_EXPIRED_TOKEN
 			};
 
 		const select = db.prepare("SELECT * FROM users WHERE refresh_token = ?");
 		const user = select.get(refreshToken);
 		if (!user) {
 			return {
-				result: result.ERR_NO_USER
+				result: Result.ERR_NO_USER
 			}
 		}
 		return {
-			result: result.SUCCESS,
+			result: Result.SUCCESS,
 			user: sqlToUser(user)
 		};
 	}
 	return {
-		result: result.ERR_NO_USER
+		result: Result.ERR_NO_USER
 	}
 }
 
@@ -78,11 +78,11 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 			const user = select.get(sub);
 			if (!user) {
 				return {
-					result: result.ERR_NO_USER
+					result: Result.ERR_NO_USER
 				};
 			}
 			return {
-				result: result.SUCCESS,
+				result: Result.SUCCESS,
 				user: sqlToUser(user)
 			};
 		}
@@ -91,7 +91,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		}
 	}
 }
@@ -102,7 +102,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 export function addUser(db: DatabaseSync, { email, password }): any {
 	try {
 		const stringBox = getNickname(db);
-		if (result.SUCCESS != stringBox.result)
+		if (Result.SUCCESS != stringBox.result)
 			return stringBox;
 
 		const pw = hashPassword(password);
@@ -115,20 +115,19 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 			userId, refreshToken: token
 		});
 		return {
-			code: 200,
+			result: Result.SUCCESS,
 			accessToken: accessToken(userId),
 			refreshToken: token
 		};
 	}
 	catch (e) {
-		console.log(e);
 		if ("constraint failed" == e.errstr) {
 			return {
-				result: result.ERR_EMAIL_IN_USE
+				result: Result.ERR_EMAIL_IN_USE
 			}
 		}
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -136,23 +135,23 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 /*
 	Adds a guest to the DB
 */
-export function addGuest(db: DatabaseSync): any {
+export function addGuest(db: DatabaseSync): StringBox {
 	try {
 		const stringBox = getNickname(db);
-		if (result.SUCCESS != stringBox.result)
+		if (Result.SUCCESS != stringBox.result)
 			return stringBox;
 
 		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
 		const statementSync = insert.run(stringBox.value, "guest");
 		const id: number = statementSync.lastInsertRowid as number;
 		return {
-			result: result.SUCCESS,
-			accessToken: refreshToken(id)
+			result: Result.SUCCESS,
+			value: refreshToken(id)
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -163,20 +162,21 @@ export function addGuest(db: DatabaseSync): any {
 export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 	try {
 		let userBox = getUserByEmail(db, email);
-		if (result.SUCCESS == userBox.result) {
+		if (Result.SUCCESS == userBox.result) {
 			const token = refreshToken(userBox.user.userId);
 			updateRefreshtoken(db, {
 				userId: userBox.user.userId,
 				refreshToken: token
 			});
 			return {
+				result: Result.SUCCESS,
 				accessToken: accessToken(userBox.user.userId),
 				refreshToken: token
 			};
 		}
 
 		const stringBox = getNickname(db);
-		if (result.SUCCESS != stringBox.result)
+		if (Result.SUCCESS != stringBox.result)
 			return stringBox;
 
 		const insert = db.prepare('INSERT INTO users (nick, email, avatar, type) VALUES (?, ?, ?, ?)');
@@ -188,14 +188,14 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 			refreshToken: token
 		});
 		return {
-			result: result.SUCCESS,
+			result: Result.SUCCESS,
 			accessToken: accessToken(userId),
 			refreshToken: token
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -206,7 +206,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 export function loginUser(db: DatabaseSync, { email, password }) {
 	try {
 		const userBox = getUserByEmail(db, email);
-		if (result.SUCCESS != userBox.result)
+		if (Result.SUCCESS != userBox.result)
 			return userBox;
 
 		const user = userBox.user;
@@ -217,19 +217,19 @@ export function loginUser(db: DatabaseSync, { email, password }) {
 				userId: user.userId, refreshToken: token
 			});
 			return {
-				result: result.SUCCESS,
-				user: sqlToUser(user),
+				result: Result.SUCCESS,
+				user,
 				accessToken: accessToken(user.userId),
 				refreshToken: token
 			}
 		}
 		return {
-			result: result.ERR_NO_USER
+			result: Result.ERR_NO_USER
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -240,7 +240,7 @@ export function loginUser(db: DatabaseSync, { email, password }) {
 export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 	try {
 		const userBox = getUserByEmail(db, email);
-		if (result.SUCCESS != userBox.result) {
+		if (Result.SUCCESS != userBox.result) {
 			return userBox;
 		}
 
@@ -274,13 +274,13 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 			}
 		}
 		return {
-			result: result.ERR_NO_USER
+			result: Result.ERR_NO_USER
 		};
 	}
 	catch (e) {
 		return {
 			code: 500,
-			error: result.ERR_DB
+			error: Result.ERR_DB
 		};
 	}
 }
@@ -292,17 +292,17 @@ export function getUserByEmail(db: DatabaseSync, email: string): UserBox {
 		const user = select.get(email);
 		if (user) {
 			return {
-				result: result.SUCCESS,
+				result: Result.SUCCESS,
 				user: sqlToUser(user)
 			}
 		}
 		return {
-			result: result.ERR_NO_USER
+			result: Result.ERR_NO_USER
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -316,47 +316,47 @@ export function isUserOnline(db: DatabaseSync, userId: number): any {
 		const user = select.get(userId);
 		if (user) {
 			return {
-				result: result.SUCCESS,
+				result: Result.SUCCESS,
 				online: user.Online
 			}
 		};
 		return {
-			result: result.ERR_NO_USER
+			result: Result.ERR_NO_USER
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
 
 export function updateRefreshtoken(db: DatabaseSync, { userId, refreshToken }) {
 	try {
-		const select = db.prepare("UPDATE users SET RefreshToken = ? WHERE user_id = ?");
+		const select = db.prepare("UPDATE users SET refresh_token = ? WHERE user_id = ?");
 		select.run(refreshToken, userId);
 		return {
-			result: result.SUCCESS
+			result: Result.SUCCESS
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
 
 export function invalidateToken(db: DatabaseSync, { userId }) {
 	try {
-		const select = db.prepare("UPDATE users SET RefreshToken = NULL WHERE user_id = ?");
+		const select = db.prepare("UPDATE users SET refresh_token = NULL WHERE user_id = ?");
 		select.run(userId);
 		return {
-			result: result.SUCCESS
+			result: Result.SUCCESS
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -366,12 +366,12 @@ export function markUserOnline(db: DatabaseSync, { userId }) {
 		const select = db.prepare("UPDATE Users SET online = 1 WHERE user_id = ?");
 		select.run(userId);
 		return {
-			result: result.SUCCESS
+			result: Result.SUCCESS
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -383,12 +383,12 @@ export function markUserOffline(db: DatabaseSync, { userId, type }) {
 		// 	db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
 		select.run(userId);
 		return {
-			result: result.SUCCESS
+			result: Result.SUCCESS
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -407,13 +407,13 @@ export function allNicknames(db: DatabaseSync): StringlistBox {
 		});
 
 		return {
-			result: result.SUCCESS,
+			result: Result.SUCCESS,
 			values: nicknames
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -436,13 +436,13 @@ export function allUsers(db: DatabaseSync): StringlistBox {
 		});
 
 		return {
-			result: result.SUCCESS,
+			result: Result.SUCCESS,
 			values: users
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -450,34 +450,29 @@ export function allUsers(db: DatabaseSync): StringlistBox {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allOtherUsers(db: DatabaseSync, { userId }) {
+export function allOtherUsers(db: DatabaseSync, userId: number) {
 	try {
-		const select = db.prepare("SELECT user_id, nick FROM users WHERE ? != user_id AND type != 'guest'");
+		const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'guest'");
 		const list = select.all(userId);
 
-		let users = [];
-		list.forEach((user) => {
-			users.push({
-				id: user.UserID,
-				nick: user.Nick
-			});
-		});
+		let users: User[];
+		list.forEach((user) => users.push(sqlToUser(user)));
 
 		return {
-			result: result.SUCCESS,
+			result: Result.SUCCESS,
 			users
 		};
 	}
 	catch (e) {
 		return {
-			result: result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
 
 function getNickname(db: DatabaseSync): StringBox {
 	const response = allNicknames(db);
-	if (result.SUCCESS != response.result)
+	if (Result.SUCCESS != response.result)
 		return {
 			result: response.result
 		};
@@ -487,7 +482,7 @@ function getNickname(db: DatabaseSync): StringBox {
 		nickname = generateNickname();
 
 	return {
-		result: result.SUCCESS,
+		result: Result.SUCCESS,
 		value: nickname
 	};
 }
@@ -499,7 +494,7 @@ function generateNickname(): string {
 	return `${adjective} ${animal}`;
 }
 
-function sqlToUser(sqlUser): User {
+function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 	return {
 		userId: sqlUser.user_id as number,
 		nick: sqlUser.nick as string,

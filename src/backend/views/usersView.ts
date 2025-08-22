@@ -1,10 +1,10 @@
-export function usersView({ otherUsers, friends, foeIDs, messages, senders, otherUserId, user }): string {
-	const userListHtml = userListString(otherUsers, foeIDs, senders, otherUserId);
+export function usersView({ otherUsers, friends, foeIds, messages, senders, otherUserId, user }): string {
+	const userListHtml = userListString(otherUsers, foeIds, senders, otherUserId);
 	const messageListHtml = privateMessageListString(user.id, messages, otherUserId);
 
-	const friendsIDs: number[] = friends.map(friend => friend.FriendID);
+	const friendsIDs: number[] = friends.map(friend => friend.friend_id);
 	const isFriend: boolean = friendsIDs.includes(parseInt(otherUserId));
-	const isInGame: boolean = user.gameID;
+	const isInGame: boolean = user.gameId;
 
 	return messagesString(user, isFriend, isInGame, userListHtml, messageListHtml, otherUserId);
 }
@@ -42,7 +42,7 @@ function messagesString(user: any, isFriend: boolean, isInGame: boolean, users: 
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">
 				<div class="flex flex-col items-end content-end mt-8 gap-4">
-					<button id="profileButton"
+					<button id="accountButton"
 						class="cursor-pointer text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_ACCOUNT%%</button>
 					<button id="historyButton"
 						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_HISTORY%%</button>

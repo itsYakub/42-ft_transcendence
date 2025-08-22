@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import { Result } from "../../common/interfaces.js";
 
 export function initTournaments(db: DatabaseSync): void {
 	db.exec(`
@@ -34,7 +35,7 @@ export function getTournamentByCode(db: DatabaseSync, userNick: string, code: st
 			];
 			if (nicks.includes(userNick))
 				return {
-					code: 200,
+					result: Result.SUCCESS,
 					tournament: {
 						id: tournament.TournamentID,
 						code,
@@ -55,19 +56,16 @@ export function getTournamentByCode(db: DatabaseSync, userNick: string, code: st
 				}
 
 			return {
-				code: 403,
-				error: "ERR_FORBIDDEN"
+				result: Result.ERR_FORBIDDEN,
 			};
 		}
 		return {
-			code: 404,
-			error: "ERR_UNKNOWN_TOURNAMENT"
+			result: Result.ERR_NOT_FOUND,
 		};
 	}
 	catch (e) {
 		return {
-			code: 500,
-			error: "ERR_DB"
+			result: Result.ERR_DB,
 		};
 	}
 }
@@ -123,8 +121,7 @@ export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Scor
 			// }
 
 			return {
-				code: 200,
-				message: "SUCCESS"
+				result: Result.SUCCESS,
 			};
 		}
 		else {
@@ -139,15 +136,13 @@ export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Scor
 			// 	});
 			// }
 			return {
-				code: 200,
-				message: "SUCCESS"
+				result: Result.SUCCESS,
 			};
 		}
 	}
 	catch (e) {
 		return {
-			code: 500,
-			error: "ERR_DB"
+			result: Result.ERR_DB,
 		};
 	}
 }

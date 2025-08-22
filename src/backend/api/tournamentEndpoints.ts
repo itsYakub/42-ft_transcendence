@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addTournament, updateTournament } from '../db/tournamentDB.js';
+import { addTournament, updateTournament } from '../db/tournamentDb.js';
 
 export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post('/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {

@@ -1,3 +1,4 @@
+import { Result } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
 
 export function authFunctions() {
@@ -111,8 +112,8 @@ async function register(email: string, password: string) {
 
 	const payload = await response.json();
 
-	if (payload.error) {
-		showAlert(payload.error);
+	if (Result.SUCCESS != payload.result) {
+		showAlert(payload.result);
 		return;
 	}
 	const date = new Date();

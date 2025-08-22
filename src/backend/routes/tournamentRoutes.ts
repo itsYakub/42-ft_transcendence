@@ -1,9 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
-import { getTournamentByCode } from '../db/tournamentDB.js';
+import { getTournamentByCode } from '../db/tournamentDb.js';
 import { tournamentMatchHtml } from '../views/tournamentMatchHtml.js';
 import { localTournamentHtml } from '../views/localTournamentHtml.js';
+import { Result } from '../../common/interfaces.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/tournament/local', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -26,12 +27,11 @@ export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): vo
 		const { id } = request.params as any;
 
 		const tournamentResponse = getTournamentByCode(db, user.nick, id);
-		if (200 != tournamentResponse.code) {
+		if (Result.SUCCESS != tournamentResponse.result) {
 			const params = {
 				language,
 				user,
-				errorCode: tournamentResponse.code,
-				errorMessage: tournamentResponse.error
+				result: tournamentResponse.result
 			};
 			return reply.type("text/html").send(frameView(params));
 		}

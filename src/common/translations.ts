@@ -1,4 +1,90 @@
-function translateDutch(text: string): string {
+export function translateBackend(language: string, text: string): string {
+	const items = [
+		"BUTTON_ACCOUNT",
+		"BUTTON_AI_GAME",
+		"BUTTON_ADD_FRIEND",
+		"BUTTON_BLOCK_USER",
+		"BUTTON_DISABLE_TOTP",
+		"BUTTON_ENABLE_TOTP",
+		"BUTTON_FOES",
+		"BUTTON_FRIENDS",
+		"BUTTON_GAME",
+		"BUTTON_GOOGLE",
+		"BUTTON_GUEST",
+		"BUTTON_HISTORY",
+		"BUTTON_HOME",
+		"BUTTON_INVALIDATE_TOKEN",
+		"BUTTON_LEAVE",
+		"BUTTON_LOCAL_GAME",
+		"BUTTON_LOCAL_TOURNAMENT",
+		"BUTTON_LOGIN",
+		"BUTTON_LOGOUT",
+		"BUTTON_MATCH",
+		"BUTTON_READY",
+		"BUTTON_REGISTER",
+		"BUTTON_REMOTE_GAME",
+		"BUTTON_REMOTE_TOURNAMENT",
+		"BUTTON_TOTP_VERIFY",
+		"BUTTON_TOURNAMENT",
+		"BUTTON_UPDATE",
+		"BUTTON_USERS",
+		"ERR_DB",
+		"ERR_FORBIDDEN",
+		"ERR_NOT_FOUND",
+		"TEXT_CHANGE_AVATAR",
+		"TEXT_CHANGE_NICK",
+		"TEXT_CHANGE_PASSWORD",
+		"TEXT_CREATE",
+		"TEXT_CURRENT_PASSWORD",
+		"TEXT_EMAIL",
+		"TEXT_JOIN",
+		"TEXT_LOG_IN_OR_REGISTER",
+		"TEXT_MATCH",
+		"TEXT_MATCH_SINGLE",
+		"TEXT_MATCH_PLURAL",
+		"TEXT_NEW_NICK",
+		"TEXT_NEW_PASSWORD",
+		"TEXT_PASSWORD",
+		"TEXT_REPEAT_PASSWORD",
+		"TEXT_SINGLE_GAME",
+		"TEXT_TOKENS",
+		"TEXT_TOTP_CODE",
+		"TEXT_TOTP_INPUT",
+		"TEXT_TOTP_SCAN",
+		"TEXT_TOTP_TITLE",
+		"TEXT_TOURNAMENT",
+		"TEXT_TOURNAMENT_SINGLE",
+		"TEXT_TOURNAMENT_PLURAL",
+		"TEXT_USER_DECISION",
+		"TEXT_WELCOME",
+		"TEXT_WON"
+	];
+
+
+	switch (language) {
+		case "dutch":
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, dutchBackend(item)));
+			break;
+		case "english":
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, englishBackend(item)));
+			break;
+		case "polish":
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, polishBackend(item)));
+			break;
+	}
+
+	return text;
+}
+
+export function translateAlert(language: string, text: string): string {
+	switch (language) {
+		case "dutch": return dutchAlert(text);
+		case "english": return englishAlert(text);
+		case "polish": return polishAlert(text);
+	}
+}
+
+function dutchBackend(text: string): string {
 	switch (text) {
 		// errors
 		case "ERR_FORBIDDEN": return "!";
@@ -105,7 +191,11 @@ function translateDutch(text: string): string {
 	}
 }
 
-function translateEnglish(text: string): string {
+function dutchAlert(text: string): string {
+	return "";
+}
+
+function englishBackend(text: string): string {
 	switch (text) {
 		case "BUTTON_ACCOUNT": return "Account";
 		case "BUTTON_AI_GAME": return "AI game";
@@ -149,6 +239,9 @@ function translateEnglish(text: string): string {
 		case "TEXT_EMAIL": return "Email";
 		case "TEXT_JOIN": return "Join...";
 		case "TEXT_LOG_IN_OR_REGISTER": return "Log in or register";
+		case "TEXT_MATCH": return "Match";
+		case "TEXT_MATCH_SINGULAR": return "match";
+		case "TEXT_MATCH_PLURAL": return "matches";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
 		case "TEXT_PASSWORD": return "Password";
@@ -159,8 +252,16 @@ function translateEnglish(text: string): string {
 		case "TEXT_TOTP_INPUT": return "And input the code below";
 		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";
 		case "TEXT_TOTP_TITLE": return "TOTP";
+		case "TEXT_TOURNAMENT": return "Tournament";
+		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
+		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
 		case "TEXT_USER_DECISION": return "Please choose an option to continue";
 		case "TEXT_WELCOME": return "Welcome to Transcendence!";
+		case "TEXT_WON": return "Won";
+
+
+
+
 
 		case "TEXT_TOTP_CODE_TITLE": return "Enter TOTP code";
 		case "TEXT_PLAYER_NAME_TITLE": return "Choose a name";
@@ -168,14 +269,8 @@ function translateEnglish(text: string): string {
 		case "TEXT_PLAYER_NAME_SET": return "Set";
 
 
-		case "TEXT_WON": return "Won";
-		case "TEXT_MATCH_SINGULAR": return "match";
-		case "TEXT_MATCH_PLURAL": return "matches";
-		case "TEXT_TEXT_SINGULAR": return "tournament";
-		case "TEXT_TEXT_PLURAL": return "tournaments";
 
-		case "TEXT_ONLINE": return "Online";
-		case "TEXT_OFFLINE": return "Offline";
+
 		case "TEXT_REMOVE": return "Remove";
 		case "TEXT_ADD_TITLE": return "Friend's email address";
 		case "TEXT_ADD_EMAIL": return "Email";
@@ -183,8 +278,6 @@ function translateEnglish(text: string): string {
 
 		// game
 		case "TEXT_PLAYER": return "Player";
-		case "TEXT_MATCH": return "Match";
-		case "TEXT_TOURNAMENT": return "Tournament";
 
 		// tournament
 		case "TEXT_NEW": return "New tournament";
@@ -204,7 +297,33 @@ function translateEnglish(text: string): string {
 	}
 }
 
-function translatePolish(text: string): string {
+function englishAlert(text: string): string {
+	console.log(text);
+	switch (text) {
+		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 100KiB max!";
+		case "ERR_BAD_PASSWORD": return "Incorrect password!";
+		case "ERR_DB": return "Database error!";
+		case "ERR_EMAIL_IN_USE": return "Email already registered!";
+		case "ERR_GOOGLE": return "Couldn't sign in/up with Google!";
+		case "ERR_NO_NEW_PASSWORD": return "New password can't be the same as old password!";
+		case "ERR_NO_USER": return "User not found!";
+		case "ERR_PASSWORDS_DONT_MATCH": return "Please repeat the password!";
+		case "ERR_SAME_EMAIL": return "You can't add yourself!";
+		case "ERR_SAME_NAME": return "Names must be unique!";
+		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
+		case "ERR_USER_OFFLINE": return "User offline!";
+		case "PROMPT_TEXT_EMAIL": return "Friend's email";
+		case "PROMPT_TOTP_CODE": return "TOTP code";
+		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
+		case "SUCCESS_DISABLED_TOTP": return "Disabled TOTP!";
+		case "SUCCESS_ENABLED_TOTP": return "Enabled TOTP - please log in again!";
+		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
+		case "SUCCESS_PASSWORD_CHANGED": return "Password changed!";
+		default: return "ENUnknown frontend text";
+	}
+}
+
+function polishBackend(text: string): string {
 	switch (text) {
 		// errors
 		case "ERR_FORBIDDEN": return "!";
@@ -311,73 +430,6 @@ function translatePolish(text: string): string {
 	}
 }
 
-export function translateBackend({ language, html }): string {
-	const items = [
-		"BUTTON_ACCOUNT",
-		"BUTTON_AI_GAME",
-		"BUTTON_ADD_FRIEND",
-		"BUTTON_BLOCK_USER",
-		"BUTTON_DISABLE_TOTP",
-		"BUTTON_ENABLE_TOTP",
-		"BUTTON_FOES",
-		"BUTTON_FRIENDS",
-		"BUTTON_GAME",
-		"BUTTON_GOOGLE",
-		"BUTTON_GUEST",
-		"BUTTON_HISTORY",
-		"BUTTON_HOME",
-		"BUTTON_INVALIDATE_TOKEN",
-		"BUTTON_LEAVE",
-		"BUTTON_LOCAL_GAME",
-		"BUTTON_LOCAL_TOURNAMENT",
-		"BUTTON_LOGIN",
-		"BUTTON_LOGOUT",
-		"BUTTON_MATCH",
-		"BUTTON_READY",
-		"BUTTON_REGISTER",
-		"BUTTON_REMOTE_GAME",
-		"BUTTON_REMOTE_TOURNAMENT",
-		"BUTTON_TOTP_VERIFY",
-		"BUTTON_TOURNAMENT",
-		"BUTTON_UPDATE",
-		"BUTTON_USERS",
-		"ERR_DB",
-		"ERR_FORBIDDEN",
-		"ERR_NOT_FOUND",
-		"TEXT_CHANGE_AVATAR",
-		"TEXT_CHANGE_NICK",
-		"TEXT_CHANGE_PASSWORD",
-		"TEXT_CREATE",
-		"TEXT_CURRENT_PASSWORD",
-		"TEXT_EMAIL",
-		"TEXT_JOIN",
-		"TEXT_LOG_IN_OR_REGISTER",
-		"TEXT_NEW_NICK",
-		"TEXT_NEW_PASSWORD",
-		"TEXT_PASSWORD",
-		"TEXT_REPEAT_PASSWORD",
-		"TEXT_SINGLE_GAME",
-		"TEXT_TOKENS",
-		"TEXT_TOTP_CODE",
-		"TEXT_TOTP_INPUT",
-		"TEXT_TOTP_SCAN",
-		"TEXT_TOTP_TITLE",
-		"TEXT_USER_DECISION",
-		"TEXT_WELCOME"
-	];
-
-
-	switch (language) {
-		case "dutch":
-			items.forEach(item => html = html.replaceAll(`%%${item}%%`, translateDutch(item)));
-			break;
-		case "english":
-			items.forEach(item => html = html.replaceAll(`%%${item}%%`, translateEnglish(item)));
-			break;
-		case "polish":
-			items.forEach(item => html = html.replaceAll(`%%${item}%%`, translatePolish(item)));
-			break;
-	}
-
-	return html;
+function polishAlert(text: string): string {
+	return "";
 }

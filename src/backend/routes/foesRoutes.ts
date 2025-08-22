@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
-import { getFoes } from '../db/foesDB.js';
+import { getFoes } from '../db/foesDb.js';
 import { foesView } from '../views/foesView.js';
-import { result } from '../../common/interfaces.js';
+import { Result } from '../../common/interfaces.js';
 
 export function foesRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/foes', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -11,7 +11,7 @@ export function foesRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const language = request.language;
 
 		const foesBox = getFoes(db, user);
-		if (result.SUCCESS != foesBox.result) {
+		if (Result.SUCCESS != foesBox.result) {
 			const params = {
 				user,
 				language,

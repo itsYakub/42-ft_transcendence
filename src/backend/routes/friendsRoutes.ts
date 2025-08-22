@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { friendsList } from '../db/friendsDB.js';
+import { friendsList } from '../db/friendsDb.js';
 import { friendsView } from '../views/friendsView.js';
 import { frameView } from '../views/frameView.js';
-import { result } from '../../common/interfaces.js';
+import { Result } from '../../common/interfaces.js';
 
 export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/friends', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -11,7 +11,8 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const language = request.language;
 
 		const friendsBox = friendsList(db, user);
-		if (result.SUCCESS != friendsBox.result) {
+		console.log("friends:", friendsBox);
+		if (Result.SUCCESS != friendsBox.result) {
 			const params = {
 				user,
 				language,

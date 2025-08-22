@@ -2,18 +2,18 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import * as OTPAuth from "otpauth";
 import { addGoogleUser, addGuest, addUser, getUserByEmail, loginUser } from '../db/userDB.js';
-import { result } from '../../common/interfaces.js';
+import { Result } from '../../common/interfaces.js';
 
 export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/api/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
 		const checkResponse = getUserByEmail(db, (request.body as any).email);
-		if (result.ERR_NO_USER != checkResponse.result)
+		if (Result.ERR_NO_USER != checkResponse.result)
 			return reply.send({
-				result: result.ERR_EMAIL_IN_USE
+				result: Result.ERR_EMAIL_IN_USE
 			});
 
 		const response = addUser(db, request.body as any);
-		if (response.error)
+		if (Result.SUCCESS != response.result)
 			return reply.send(response);
 
 		const accessTokenDate = new Date();
@@ -23,13 +23,13 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=${response.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${response.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
-					result: result.SUCCESS
+					result: Result.SUCCESS
 				});
 	});
 
 	fastify.post("/api/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
 		const userBox = loginUser(db, request.body as any);
-		if (result.SUCCESS != userBox.result) {
+		if (Result.SUCCESS != userBox.result) {
 			const date = new Date();
 			date.setDate(date.getDate() - 3);
 			return reply.header(
@@ -39,7 +39,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		if (userBox.user.totpEnabled) {
 			return reply.send({
-				result: result.SUCCESS,
+				result: Result.SUCCESS,
 				totpEnabled: true
 			});
 		}
@@ -51,7 +51,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=${userBox.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${userBox.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
-					result: result.SUCCESS,
+					result: Result.SUCCESS,
 					totpEnabled: false
 				});
 	});
@@ -59,7 +59,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post("/api/auth/check-totp", async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = request.body as any;
 		const userBox = loginUser(db, params);
-		if (result.SUCCESS != userBox.result)
+		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
 		const user = userBox.user;
@@ -86,19 +86,18 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.header(
 			"Set-Cookie", `accessToken=${userBox.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${userBox.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
-					code: 200,
-					message: "SUCCESS"
+					result: Result.SUCCESS
 				});
 	});
 
 	fastify.post("/api/guest/register", async (request: FastifyRequest, reply: FastifyReply) => {
-		const response = addGuest(db);
-		if (response.error)
-			return reply.send(response);
+		const guestBox = addGuest(db);
+		if (Result.SUCCESS != guestBox.result)
+			return reply.send(guestBox);
 
 		return reply.header(
-			"Set-Cookie", `accessToken=${response.accessToken}; Path=/; Secure; HttpOnly;`).send({
-				result: result.SUCCESS
+			"Set-Cookie", `accessToken=${guestBox.value}; Path=/; Secure; HttpOnly;`).send({
+				result: Result.SUCCESS
 			});
 	});
 
@@ -140,8 +139,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		}
 
 		const payload = addGoogleUser(db, userJSON);
-		console.log("payload", payload);
-		if ("SUCCESS" != payload.result)
+		if (Result.SUCCESS != payload.result)
 			return reply.header("Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
 
 		const accessTokenDate = new Date();

@@ -14,7 +14,7 @@ function blockedString(user: any, blockedList: string): string {
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">
 				<div class="flex flex-col items-end content-end mt-8 gap-4">
-					<button id="profileButton"
+					<button id="accountButton"
 						class="cursor-pointer text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_ACCOUNT%%</button>
 					<button id="historyButton"
 						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_HISTORY%%</button>

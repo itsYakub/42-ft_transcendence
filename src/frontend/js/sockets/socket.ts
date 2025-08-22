@@ -1,5 +1,6 @@
 import { handleIncomingUserMessage } from "./userSockets.js";
 import { handleIncomingGameMessage } from "./gamesSockets.js";
+import { Result, User, WebsocketMessage, WebsocketMessageGroup } from "../../../common/interfaces.js";
 
 let socket: WebSocket | null = null;
 
@@ -18,7 +19,7 @@ export function initChatSocket(): Promise<void> {
 		socket!.onmessage = async (event) => {
 			const userResponse = await fetch("/user/id");
 			const user = await userResponse.json();
-			if (200 != user.code)
+			if (Result.SUCCESS != user.result)
 				return;
 
 			const message = JSON.parse(event.data);
@@ -47,8 +48,8 @@ export function isConnected(): boolean {
 /*
 	Sends a message from a client to the server
 */
-export function sendMessageToServer(message: any) {
-	if (socket && socket.OPEN)
+export function sendMessageToServer(message: WebsocketMessage) {
+	if (1 === socket?.OPEN)
 		socket.send(JSON.stringify(message));
 }
 
@@ -60,13 +61,13 @@ export function currentPage(): string {
 /*
 	Deals with the message
 */
-function handleMessage(user: any, message: any) {
-	//if (message.type.startsWith("error-"))
+function handleMessage(user: User, message: WebsocketMessage) {
+	//if (WebsocketMessageGroup.ERROR == message.group)
 	//	handleIncomingErrorMessage(user, message);
 
-	if (message.type.startsWith("game-"))
+	if (WebsocketMessageGroup.GAME == message.group)
 		handleIncomingGameMessage(user, message);
 
-	if (message.type.startsWith("user-"))
+	if (WebsocketMessageGroup.USER == message.group)
 		handleIncomingUserMessage(user, message);
 }

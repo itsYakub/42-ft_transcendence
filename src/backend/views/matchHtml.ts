@@ -1,12 +1,14 @@
+import { Gamer, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function matchHtml({ gamers, messages, user }): string {
+export function matchHtml(gamers: Gamer[], messages, user: User): string {
+	console.log(gamers);
 	let html = matchString(gamers, messages, user);
 
 	return html + gameHtmlString();
 }
 
-export function gamersString(gamers: any, user: any): string {
+export function gamersString(gamers: Gamer[], user: User): string {
 	let gamersString = "";
 	gamers.forEach(gamer => {
 		gamersString += gamerString(gamer);
@@ -25,16 +27,16 @@ export function gamersString(gamers: any, user: any): string {
 	return html;
 }
 
-export function messagesString(messages: any, user: any): string {
+export function messagesString(messages: any, user: User): string {
 	let messageList = "";
 	for (var key in messages) {
-		messageList += messageString(user.id, messages[key]);
+		messageList += messageString(user.userId, messages[key]);
 	}
 
 	return messageList;
 }
 
-function matchString(gamers: any, messages: any, user: any): string {
+function matchString(gamers: Gamer[], messages: any, user: User): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_SINGLE_GAME%%</h1>
@@ -65,12 +67,12 @@ function matchString(gamers: any, messages: any, user: any): string {
 	`;
 }
 
-function gamerString({ Nick, Ready }) {
-	const readyText = 0 == Ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
+function gamerString(gamer: Gamer) {
+	const readyText = 0 == gamer.ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
 
 	return `
 	<div class="flex flex-row mr-2">
-		<div class="w-60 py-2 mr-2 border border-gray-700 rounded-lg text-gray-400 text-center">${Nick}</div>
+		<div class="w-60 py-2 mr-2 border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
 		${readyText}
 	</div>
 	`;
@@ -81,13 +83,13 @@ function readyButtonString({ ready }) {
 		`<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>`;
 }
 
-function messageString(userID: number, message: any) {
-	const diff = userID == message.FromID ? "green-700 ml" : "blue-700 mr";
+function messageString(userId: number, message: any) {
+	const diff = userId == message.fromId ? "green-700 ml" : "blue-700 mr";
 
 	return `
 	<div class="bg-${diff}-auto px-4 py-2 rounded-lg">
-		<div class="text-white font-bold">${message.Nick}</div>
-		<div class="text-gray-300">${message.Message}</div>
+		<div class="text-white font-bold">${message.nick}</div>
+		<div class="text-gray-300">${message.message}</div>
 	</div>
 	`;
 }

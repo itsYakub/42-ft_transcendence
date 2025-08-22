@@ -1,9 +1,10 @@
+import { FrameParams, User } from "../../common/interfaces.js";
 import { alertString, totpString } from "./dialogsView.js";
 
-export function navbarView({ user, language, page }): string {
+export function navbarView(params: FrameParams): string {
 	let languageSelect = englishString();
 
-	switch (language) {
+	switch (params.language) {
 		case "dutch":
 			languageSelect = dutchString();
 			break;
@@ -14,10 +15,10 @@ export function navbarView({ user, language, page }): string {
 
 	let html: string = alertString();
 
-	if (!user)
+	if (!params.user)
 		html += loggedOutString(languageSelect);
 	else
-		html += "guest" == user.type ? guestString(user, languageSelect, page) : loggedInString(user, languageSelect, page);
+		html += "guest" == params.user.type ? guestString(params.user, languageSelect, params.page) : loggedInString(params.user, languageSelect, params.page);
 
 	return html;
 }
@@ -37,7 +38,7 @@ function loggedOutString(languageSelect: string): string {
 	`;
 }
 
-function loggedInString(user: any, languageSelect: string, page: string): string {
+function loggedInString(user: User, languageSelect: string, page: string): string {
 	return `
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">
@@ -61,7 +62,7 @@ function loggedInString(user: any, languageSelect: string, page: string): string
 	`;
 }
 
-function guestString(user: any, languageSelect: string, page: string): string {
+function guestString(user: User, languageSelect: string, page: string): string {
 	return `
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">

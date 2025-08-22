@@ -1,9 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addFriend } from './db/friendsDB.js';
 import { addHistory } from './db/historyDB.js';
-import { addPrivateMessage } from './db/messagesDB.js';
 import { addUser } from './db/userDB.js';
+import { Result } from '../common/interfaces.js';
 
 export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/dev/add/users", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -31,8 +30,7 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 		catch (e) {
 			return {
-				code: 500,
-				error: "ERR_DB"
+				result: Result.ERR_DB
 			};
 		}
 	});
@@ -77,70 +75,7 @@ export function devEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 		}
 		catch (e) {
 			return {
-				code: 500,
-				error: "ERR_DB"
-			};
-		}
-	});
-
-	fastify.get("/dev/add/friends", async (request: FastifyRequest, reply: FastifyReply) => {
-		try {
-			addFriend(db, {
-				userId: 1,
-				friendId: 3
-			});
-			addFriend(db, {
-				userId: 1,
-				friendId: 2
-			});
-			addFriend(db, {
-				userId: 1,
-				friendId: 7
-			});
-			addFriend(db, {
-				userId: 2,
-				friendId: 3
-			});
-			addFriend(db, {
-				userId: 2,
-				friendId: 1
-			});
-		}
-		catch (e) {
-			return {
-				code: 500,
-				error: "ERR_DB"
-			};
-		}
-	});
-
-	fastify.get("/dev/add/messages", async (request: FastifyRequest, reply: FastifyReply) => {
-		try {
-			addPrivateMessage(db, {
-				toID: 1,
-				fromID: 2,
-				message: "Hello"
-			});
-			addPrivateMessage(db, {
-				toID: 2,
-				fromID: 1,
-				message: "Hello back"
-			});
-			addPrivateMessage(db, {
-				toID: 1,
-				fromID: 3,
-				message: "I'm John."
-			});
-			addPrivateMessage(db, {
-				toID: 3,
-				fromID: 1,
-				message: "Pleased to meet you!"
-			});
-		}
-		catch (e) {
-			return {
-				code: 500,
-				error: "ERR_DB"
+				result: Result.ERR_DB
 			};
 		}
 	});

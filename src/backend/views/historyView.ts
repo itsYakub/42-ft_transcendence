@@ -42,7 +42,7 @@ function stats(matches: any): string {
 	}
 
 	const matchesReplacement = 1 == matches.length ? "%%TEXT_MATCH_SINGULAR%%" : "%%TEXT_MATCH_PLURAL%%";
-	const tournamentsReplacement = 1 == tournamentsWon ? "%%TEXT_TEXT_SINGULAR%%" : "%%TEXT_TEXT_PLURAL%%";
+	const tournamentsReplacement = 1 == tournamentsWon ? "%%TEXT_TOURNAMENT_SINGULAR%%" : "%%TEXT_TOURNAMENT_PLURAL%%";
 
 	return `%%TEXT_WON%% ${won}/${matches.length} ${matchesReplacement} and ${tournamentsWon} ${tournamentsReplacement}!`;
 }
@@ -54,14 +54,14 @@ function matchesString(user: any, matchList: string, statsString: string): strin
 		<div class="h-full m-auto text-center flex flex-row">
 			<div class="w-30">
 				<div class="flex flex-col items-end content-end mt-8 gap-4">
-					<button id="profileButton"
+					<button id="accountButton"
 						class="cursor-pointer text-right w-full text-gray-300 hover:bg-gray-800 p-2 rounded-lg">%%BUTTON_ACCOUNT%%</button>
 					<button id="historyButton"
 						class="text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_HISTORY%%</button>
-					<button id="friendsButton"
-						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_FRIENDS%%</button>
 					<button id="usersButton"
 						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_USERS%%</button>
+					<button id="friendsButton"
+						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_FRIENDS%%</button>
 					<button id="foesButton"
 						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_FOES%%</button>
 				</div>

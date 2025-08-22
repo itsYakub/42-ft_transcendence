@@ -2,7 +2,6 @@ import { friendsFunctions } from "./account/friends.js";
 import { navbarFunctions } from "./navbar.js";
 import { accountFunctions } from "./account/account.js";
 import { devButtons } from "./devButtons.js";
-import { translateFrontend, translationFunctions } from "./user/translations.js";
 import { localMatchFunctions } from "./game/localMatch.js";
 import { gameFunctions } from "./game/game.js";
 import { authFunctions } from "./user/auth.js";
@@ -11,7 +10,8 @@ import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
 import { tournamentFunctions } from "./game/tournament.js";
-import { blockedFunctions } from "./account/blocked.js";
+import { foesFunctions } from "./account/foes.js";
+import { translateAlert } from "../../common/translations.js";
 
 /*
 	Simulates moving to a new page
@@ -42,11 +42,10 @@ export function addFunctions() {
 	navbarFunctions();
 	tournamentFunctions();
 	localTournamentFunctions();
-	translationFunctions();
 	accountFunctions();
 	usersFunctions();
 	friendsFunctions();
-	blockedFunctions();
+	foesFunctions();
 	gameFunctions();
 	localMatchFunctions();
 	matchFunctions();
@@ -59,15 +58,25 @@ export function addFunctions() {
 /*
 	Shows the (improved?) alert dialog
 */
-export function showAlert(message: string) {
+export function showAlert(text: string) {
 	const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 	if (alertDialog) {
 		const closeAlertButton = document.querySelector("#closeAlertButton");
 		closeAlertButton.addEventListener("click", () => {
 			alertDialog.close();
 		});
-		const content = translateFrontend(message);
+		const content = translateAlert(getLanguage(), text);
 		document.querySelector("#alertContent").textContent = content;
 		alertDialog.showModal();
 	}
+}
+
+function getLanguage(): string {
+	let language = document.cookie
+		.split("; ")
+		.find((row) => row.startsWith("language="))
+		?.split("=")[1];
+	if (!language)
+		language = "english";
+	return language;
 }

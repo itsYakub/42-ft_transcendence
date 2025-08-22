@@ -1,4 +1,4 @@
-import { addFoe, removeFoe } from 'backend/db/foesDB';
+import { addFoe, removeFoe } from 'backend/db/foesDb';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 

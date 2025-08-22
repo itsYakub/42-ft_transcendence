@@ -1,4 +1,4 @@
-import { result } from "../../common/interfaces.js";
+import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../common/interfaces.js";
 import { addFunctions, navigate, showAlert } from "./index.js";
 import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
@@ -20,12 +20,13 @@ export interface messageDetail {
 export async function navigated(detail: navigatedDetail) {
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
-	if (result.SUCCESS == json.result) {
+	if (Result.SUCCESS == json.result) {
 		if (!isConnected()) {
 			try {
 				await initChatSocket();
 				sendMessageToServer({
-					type: "user-log-in"
+					group: WebsocketMessageGroup.USER,
+					type: WebsocketMessageType.JOIN,
 				});
 			} catch (err) {
 				console.error("❌ WebSocket failed:", err);

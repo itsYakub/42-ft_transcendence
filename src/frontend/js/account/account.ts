@@ -1,10 +1,11 @@
+import { Result } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
 
 /*
 	The buttons and events create by the /profile page
 */
 export function accountFunctions() {
-	const profileButton = document.getElementById("profileButton");
+	const profileButton = document.getElementById("accountButton");
 	if (profileButton) {
 		profileButton.addEventListener("click", () => {
 			navigate("/account");
@@ -126,7 +127,7 @@ export function accountFunctions() {
 			});
 
 			const message = await response.json();
-			if (200 != message.code) {
+			if (Result.SUCCESS != message.result) {
 				showAlert(message.error);
 				return;
 			}
@@ -170,19 +171,19 @@ export function accountFunctions() {
 				})
 			});
 
-			const code = await response.text();
-			switch (code) {
-				case "200":
+			const code = await response.json();
+			switch (code.result) {
+				case Result.SUCCESS:
 					const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 					alertDialog.addEventListener("close", () => {
 						navigate("/account");
 					});
 					showAlert("SUCCESS_PASSWORD_CHANGED");
 					break;
-				case "403":
+				case Result.ERR_FORBIDDEN:
 					showAlert("ERR_BAD_PASSWORD");
 					break;
-				case "500":
+				case Result.ERR_DB:
 					showAlert("ERR_DB");
 			}
 		});

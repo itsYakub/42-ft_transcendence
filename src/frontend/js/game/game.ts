@@ -1,6 +1,7 @@
 import { navigate } from "./../index.js";
 import { sendMessageToServer } from "./../sockets/socket.js";
-import { g_game, Game } from './../class/game.js';
+import { g_game } from './../class/game.js';
+import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
 
 
 export function gameFunctions() {
@@ -21,11 +22,12 @@ export function gameFunctions() {
 	const remoteMatchButton = document.querySelector("#remoteMatchButton");
 	if (remoteMatchButton) {
 		remoteMatchButton.addEventListener("click", async () => {
-			const gameID = `m${Date.now().toString(36).substring(5)}`;
+			const gameId = `m${Date.now().toString(36).substring(5)}`;
 
 			sendMessageToServer({
-				type: "game-join",
-				gameID
+				group: WebsocketMessageGroup.GAME,
+				type: WebsocketMessageType.JOIN,
+				gameId
 			});
 
 			navigate(`/game`);
@@ -50,7 +52,7 @@ export function gameFunctions() {
 			// 		})
 			// 	});
 			// 	const json = await response.json();
-			// 	if (200 == json.code)
+			// 	if (Result.SUCCESS == json.result)
 			// 		navigate(`/tournament/${gameID}`);
 			// 	else
 			// 		showAlert("ERR_DB");
@@ -62,8 +64,9 @@ export function gameFunctions() {
 		joinGameButtons[i].addEventListener("click", async function () {
 			// user must be in game, other not in game and online
 			sendMessageToServer({
-				type: "game-join",
-				gameID: this.dataset.id
+				group: WebsocketMessageGroup.GAME,
+				type: WebsocketMessageType.JOIN,
+				gameId: this.dataset.id
 			});
 
 			navigate(`/game`);
@@ -83,7 +86,7 @@ export function startMatch(p1Name: string, p2Name: string) {
 		winMatchButton.textContent = `${p1Name} 10 : ${losingScore} ${p2Name}`;
 		winMatchButton.addEventListener("click", () => {
 			endMatch(10, losingScore, p2Name);
-		}, { once: true } );
+		}, { once: true });
 	}
 
 	// This is a button in the dialog with simulates p1 losing a game. Call the endMatch function from within your code
@@ -93,7 +96,7 @@ export function startMatch(p1Name: string, p2Name: string) {
 		loseMatchButton.textContent = `${p1Name} ${losingScore} : 10 ${p2Name}`;
 		loseMatchButton.addEventListener("click", () => {
 			endMatch(losingScore, 10, p2Name);
-		}, { once: true } );
+		}, { once: true });
 	}
 
 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
@@ -120,6 +123,6 @@ function endMatch(p1Score: number, p2Score: number, p2Name: string) {
 			p2Name
 		}
 	}));
-	
+
 	g_game.dispose();
 }
