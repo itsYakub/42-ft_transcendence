@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs'
+import * as SIMPLEX from 'simplex-noise';
 
-import { g_gamePlayableArea } from './game.js';
+import { g_gameTime, g_gamePlayableArea } from './game.js';
 
 
 
@@ -16,7 +17,7 @@ export class Ground {
 	/* Game objects
 	 * */
 	private	m_mesh_arr : BABYLON.Mesh[];
-	private	m_perlin : BABYLON.SimplexPerlin3DBlock;
+	private	m_perlin : SIMPLEX.NoiseFunction2D;
 	
 	/* SECTION:
 	 *  Constructor
@@ -25,15 +26,16 @@ export class Ground {
 	public constructor(scene : BABYLON.Scene, size : BABYLON.Vector2) {
 		this.m_scene = scene;
 		this.m_mesh_arr = [ ];
+		this.m_perlin = SIMPLEX.createNoise2D();
 		
 		let	map_mat0 = new BABYLON.StandardMaterial('map_mat0', scene);
-		map_mat0.roughness = 0.1;
+		map_mat0.roughness = 0.9;
 		
 		let	ground = BABYLON.MeshBuilder.CreateGround('ground0', { width: size.x, height: size.y }, scene);
 		ground.material = map_mat0;
 	
 		let	bound_cell_index : number = 0.0;
-		let	bound_cell_size : number = 0.4;
+		let	bound_cell_size : number = 0.45;
 		for (let x = size.x / -2.0; x < size.x / 2.0; x += bound_cell_size + 0.05) {
             for (let y = size.y / -2.0; y < size.y / 2.0; y+= bound_cell_size + 0.05) {
 				/* Don't create any boxes in the gameplay area
@@ -59,11 +61,16 @@ export class Ground {
 	 * */
 
 	public update() {
-		for (let mesh in this.m_mesh_arr) {
-			/* TODO(joleksia):
-			 *  Update the position of each mesh based on perlin-noise
-			 * */
+		/* NOTE(joleksia):
+		 *  We can mess around with those values to get even better noise effects
+		 * */
+		for (let i = 0; i < this.m_mesh_arr.length; i++) {
+			let mesh = this.m_mesh_arr[i];
+			let	x : number = (mesh.position.x * 0.1) + g_gameTime * 0.0001;
+			let	y : number = (mesh.position.z * 0.1) + g_gameTime * 0.0001;
+			let	val : number = this.m_perlin(x, y);
 
+			mesh.position.y = val / 2.0;
 		}
 	}
 }

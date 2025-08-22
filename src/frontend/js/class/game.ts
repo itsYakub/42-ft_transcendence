@@ -97,7 +97,7 @@ export class Game {
 
 		/* Update game time
 		 * */
-		g_gameTime += this.m_scene.deltaTime;
+		g_gameTime += this.m_engine.getDeltaTime();
 
 		/* Update game components
 		 * */
@@ -124,8 +124,9 @@ export class Game {
 		 *  Lighting
 		 * */
 		let	light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(0, -1, 0), scene);
+		light.intensity = 2.0;
 		light.diffuse = new BABYLON.Color3(0.07, 0.02, 0.1);
-		light.specular= new BABYLON.Color3(0.3, 0.1, 0.7);
+		light.specular = new BABYLON.Color3(0.3, 0.1, 0.7);
 
 		/* SECTION:
 		 *  Glow Effect
