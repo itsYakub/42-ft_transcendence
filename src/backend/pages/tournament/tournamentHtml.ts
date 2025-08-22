@@ -1,26 +1,11 @@
 import { gameHtmlString } from "../game/game.js";
-import { translateBackend } from "../../translations.js";
 
-export function tournamentHtml({ gamers, messages, language, user }): string {
+export function tournamentHtml({ gamers, messages, user }): string {
 	const messageListHtml = messageListString(user.id, messages);
 
 	let html = tournamentString(gamers, messageListHtml, user);
-	html = translate(html, language);
 
 	return html + gameHtmlString();
-}
-
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["TITLE", "PLAYER", "READY", "SEND"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%TOURNAMENT_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `TOURNAMENT_${text}_TEXT`
-		}));
-	});
-
-	return html;
 }
 
 function tournamentString(gamers: any, messages: any, user: any): string {
@@ -31,14 +16,14 @@ function tournamentString(gamers: any, messages: any, user: any): string {
 
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TOURNAMENT_TITLE_TEXT%%</h1>
+		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_TITLE%%</h1>
 		<div class="flex flex-row h-150">
 			<div class="flex flex-col mr-2">
 				<form id="gamerTournamentReadyForm">
 					<div class="flex flex-col gap-8">
 						${gamersString}
 					</div>
-					<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mr-auto cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%TOURNAMENT_READY_TEXT%%</button>
+					<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mr-auto cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%TEXT_READY%%</button>
 				</form>
 			</div>
 			<div class="grow border border-gray-700 rounded-lg p-2">
@@ -49,7 +34,7 @@ function tournamentString(gamers: any, messages: any, user: any): string {
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" data-id="${user.gameID}" data-user="${user.id}" hidden>
-								<button type="submit" data-id="${user.gameID}" data-user="${user.id}" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%TOURNAMENT_SEND_TEXT%%</button>
+								<button type="submit" data-id="${user.gameID}" data-user="${user.id}" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%TEXT_SEND%%</button>
 							</div>
 						</form>
 					</div>

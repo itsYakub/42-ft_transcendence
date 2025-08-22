@@ -1,9 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initGameMessages(db: DatabaseSync, dropMessages: boolean): void {
-	if (dropMessages)
-		db.exec(`DROP TABLE IF EXISTS GameMessages;`);
-
+export function initGameMessages(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS GameMessages (
 		MessageID INTEGER PRIMARY KEY AUTOINCREMENT,

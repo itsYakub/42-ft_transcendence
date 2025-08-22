@@ -1,25 +1,10 @@
 import { gameHtmlString } from "./game.js";
-import { translateBackend } from "../../translations.js";
 
-export function gameHtml(games, { user, language }): string {
+export function gameHtml(games, { user }): string {
 	const gamesHtmlString = gamesString(games);
 	let html = gameString(user, gamesHtmlString);
-	html = translate(html, language);
 
 	return html + gameHtmlString();
-}
-
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "START", "MATCH", "TOURNAMENT"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%GAME_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `GAME_${text}_TEXT`
-		}));
-	});
-
-	return html;
 }
 
 function gameString(user: any, gamesHtmlString: string): string {
@@ -28,18 +13,18 @@ function gameString(user: any, gamesHtmlString: string): string {
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
 		<div class="flex flex-row h-150 mx-auto justify-center pt-8">
 			<div class="w-95 flex flex-col gap-8 px-8">
-				<p class="text-gray-300 text-2xl">Join...</p>
+				<p class="text-gray-300 text-2xl">%%TEXT_JOIN%%</p>
 				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
 					${gamesHtmlString}
 				</div>
 			</div>
 			<div class="w-95 flex flex-col gap-8">
-				<p class="text-gray-300 text-2xl">Or create a new...</p>
-				<button id="localMatchButton" class="w-50 text-white bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">Local game</button>
-				<button id="aiMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">AI game</button>
-				<button id="remoteMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">Remote game</button>
-				<button id="localTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">Local tournament</button>
-				<button id="remoteTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">Remote tournament</button>
+				<p class="text-gray-300 text-2xl">%%TEXT_CREATE%%</p>
+				<button id="localMatchButton" class="w-50 text-white bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LOCAL_GAME%%</button>
+				<button id="aiMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_AI_GAME%%</button>
+				<button id="remoteMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_GAME%%</button>
+				<button id="localTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LOCAL_TOURNAMENT%%</button>
+				<button id="remoteTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_TOURNAMENT%%</button>
 			</div>
 		</div>
 	</div>
@@ -63,7 +48,7 @@ function gameButtonString(game: any): string {
 		return "";
 
 	const type = gameID.startsWith("t") ? "tournament" : "match";
-	const title = gameID.startsWith("t") ? "%%GAME_TOURNAMENT_TEXT%%" : "%%GAME_MATCH_TEXT%%";
+	const title = gameID.startsWith("t") ? "%%TEXT_TOURNAMENT%%" : "%%TEXT_MATCH%%";
 	let gamersString = "";
 	gamers.forEach((name) => {
 		gamersString += nameString(name);

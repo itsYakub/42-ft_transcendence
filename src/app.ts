@@ -14,8 +14,8 @@ import { friendsRoutes } from "./backend/pages/friends/friendsRoutes.js";
 import { homeRoutes } from "./backend/pages/home/homeRoutes.js";
 import { tournamentRoutes } from "./backend/pages/tournament/tournamentRoutes.js";
 import { profileRoutes } from "./backend/pages/profile/profileRoutes.js";
-import { messageRoutes } from "./backend/pages/messages/messagesRoutes.js";
-import { initPrivateMessages } from "./backend/pages/messages/messagesDB.js";
+import { usersRoutes } from "./backend/pages/users/usersRoutes.js";
+import { initPrivateMessages } from "./backend/pages/users/messagesDB.js";
 import { matchRoutes } from "./backend/pages/match/matchRoutes.js";
 import { serverSockets } from "./backend/sockets/serverSockets.js";
 import { apiRoutes } from "./backend/api/apiRoutes.js";
@@ -23,6 +23,8 @@ import { initGameMessages } from "./backend/pages/game/gameDB.js";
 import { gameRoutes } from "./backend/pages/game/gameRoutes.js";
 import { getUser, initUsers } from "./backend/user/userDB.js";
 import { frameHtml } from "./backend/frame/frameHtml.js";
+import { initBlocked } from "./backend/pages/blocked/blockedDB.js";
+import { blockedRoutes } from "./backend/pages/blocked/blockedRoutes.js";
 
 const __dirname = import.meta.dirname;
 
@@ -66,27 +68,16 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 	return reply.type("text/html").send(frame);
 });
 
-// Turn these on to wipe and re-create specific tables on startup
-const dropTables = {
-	dropUsers: false,
-	dropFriends: false,
-	dropHistory: false,
-	dropTournaments: false,
-	dropChats: false,
-	dropPrivateMessages: false,
-	dropRoomMessages: false
-};
-
 const db = new DatabaseSync("../data/transcendence.db");
 
 try {
-	initUsers(db, dropTables.dropUsers);
-	//initFriends(db, dropTables.dropFriends);
-	//initHistory(db, dropTables.dropHistory);
-	//initTournaments(db, dropTables.dropTournaments);
-	//initChats(db, dropTables.dropChats);
-	initPrivateMessages(db, dropTables.dropPrivateMessages);
-	initGameMessages(db, dropTables.dropRoomMessages);
+	initUsers(db);
+	initBlocked(db);
+	initFriends(db);
+	//initHistory(db);
+	//initTournaments(db);
+	initPrivateMessages(db);
+	initGameMessages(db);
 
 	apiRoutes(fastify, db);
 	homeRoutes(fastify, db);
@@ -95,8 +86,9 @@ try {
 	tournamentRoutes(fastify, db);
 	profileRoutes(fastify, db);
 	historyRoutes(fastify, db);
+	usersRoutes(fastify, db);
 	friendsRoutes(fastify, db);
-	messageRoutes(fastify, db);
+	blockedRoutes(fastify, db);
 
 	googleAuth(fastify, db);
 	userEndpoints(fastify, db);

@@ -5,7 +5,7 @@ import { currentPage } from "./socket.js";
 /*
 	A socket message corcerning the game page
 */
-export function handleGameMessage(user: any, message: any) {
+export function handleIncomingGameMessage(user: any, message: any) {
 	switch (message.type) {
 		case "game-join":
 		case "game-leave":

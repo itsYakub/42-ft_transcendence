@@ -18,16 +18,16 @@ export function loginString(): string {
 	<dialog id="loginDialog" class="backdrop:bg-black backdrop:opacity-70 m-auto content-center rounded-lg shadow border w-100 bg-gray-900 border-gray-100 text-center items-center">
 		<div class="p-6 space-y-4">
 			<h1 class="text-xl font-bold text-white">
-				%%NAVBAR_LOGIN_TITLE_TEXT%%
+				%%TEXT_LOGIN_TITLE%%
 			</h1>
 			<form id="loginForm">
 				<div>
-					<input type="email" placeholder="%%NAVBAR_EMAIL_TEXT%%" name="email"
+					<input type="email" placeholder="%%TEXT_EMAIL%%" name="email"
 						class="border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
 				<div>
-					<input type="password" name="password" placeholder="%%NAVBAR_PASSWORD_TEXT%%"
+					<input type="password" name="password" placeholder="%%TEXT_PASSWORD%%"
 						class="mt-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
@@ -39,7 +39,7 @@ export function loginString(): string {
 						<i class="fa-solid fa-arrow-left "></i>
 					</button>
 					<button id="loginButton" type="submit" formmethod="post"
-						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%NAVBAR_LOGIN_TEXT%%</button>
+						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%TEXT_LOGIN%%</button>
 				</div>
 			</form>
 
@@ -57,21 +57,21 @@ export function registerString(): string {
 	<dialog id="registerDialog" class="backdrop:bg-black backdrop:opacity-70 m-auto content-center rounded-lg shadow border w-100 bg-gray-900 border-gray-100 text-center items-center">
 		<div class="p-6 space-y-4">
 			<h1 class="text-xl font-bold text-white">
-				%%NAVBAR_REGISTER_TITLE_TEXT%%
+				%%TEXT_REGISTER_TITLE%%
 			</h1>
 			<form id="registerForm">
 				<div>
-					<input type="text" name="nick" placeholder="%%NAVBAR_NICK_TEXT%%"
+					<input type="text" name="nick" placeholder="%%TEXT_NICK%%"
 						class="border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
 				<div>
-					<input type="email" name="email" placeholder="%%NAVBAR_EMAIL_TEXT%%"
+					<input type="email" name="email" placeholder="%%TEXT_EMAIL%%"
 						class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
 				<div>
-					<input type="password" name="password" minlength="8" placeholder="%%NAVBAR_PASSWORD_TEXT%%"
+					<input type="password" name="password" minlength="8" placeholder="%%TEXT_PASSWORD%%"
 						class="border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
@@ -82,7 +82,7 @@ export function registerString(): string {
 						<i class="fa-solid fa-arrow-left "></i>
 					</button>
 					<button id="signupButton" type="submit" formmethod="post"
-						class="ml-auto cursor-pointer border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%NAVBAR_REGISTER_TEXT%%</button>
+						class="ml-auto cursor-pointer border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%TEXT_REGISTER%%</button>
 				</div>
 			</form>
 			<div class="pt-2">
@@ -99,11 +99,11 @@ export function totpString(): string {
 	<dialog id="totpCodeDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-120 bg-gray-900 border-gray-100 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-white">
-				%%NAVBAR_TOTP_CODE_TITLE_TEXT%%
+				%%TEXT_TOTP_CODE_TITLE%%
 			</h1>
 			<form id="totpCodeForm">
 				<div>
-					<input type="text" placeholder="%%NAVBAR_TOTP_CODE_TEXT%%" name="code" minlength="6" maxlength="6"
+					<input type="text" placeholder="%%TEXT_TOTP_CODE%%" name="code" minlength="6" maxlength="6"
 						class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
@@ -115,7 +115,7 @@ export function totpString(): string {
 						<i class="fa-solid fa-arrow-left "></i>
 					</button>
 					<button type="submit" formmethod="post"
-						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%NAVBAR_TOTP_CODE_VERIFY_TEXT%%</button>
+						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%TEXT_TOTP_CODE_VERIFY%%</button>
 				</div>
 			</form>
 		</div>
@@ -128,11 +128,11 @@ export function gamerNameString(): string {
 	<dialog id="gamerNameDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-120 bg-gray-900 border-gray-100 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-white">
-				%%NAVBAR_PLAYER_NAME_TITLE_TEXT%%
+				%%TEXT_PLAYER_NAME_TITLE%%
 			</h1>
 			<form id="gamerNameForm">
 				<div>
-					<input type="text" placeholder="%%NAVBAR_PLAYER_NAME_TEXT%%" name="name" maxlength="20"
+					<input type="text" placeholder="%%TEXT_PLAYER_NAME%%" name="name" maxlength="20"
 						class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
@@ -144,7 +144,7 @@ export function gamerNameString(): string {
 						<i class="fa-solid fa-arrow-left "></i>
 					</button>
 					<button type="submit" formmethod="post"
-						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%NAVBAR_PLAYER_NAME_SET_TEXT%%</button>
+						class="ml-auto cursor-pointer text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%TEXT_PLAYER_NAME_SET%%</button>
 				</div>
 			</form>
 		</div>

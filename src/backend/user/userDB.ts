@@ -6,10 +6,7 @@ import { defaultImage } from "./defaultImage.js";
 /*
 	Sets up the Users table
 */
-export function initUsers(db: DatabaseSync, dropUsers: boolean): void {
-	if (dropUsers)
-		db.exec(`DROP TABLE IF EXISTS Users;`);
-
+export function initUsers(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Users (
 		UserID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -349,6 +346,33 @@ export function getUserByEmail(db: DatabaseSync, email: string): any {
 				}
 			}
 		}
+		return {
+			code: 404,
+			error: "ERR_NO_USER"
+		};
+	}
+	catch (e) {
+		return {
+			code: 500,
+			error: "ERR_DB"
+		};
+	}
+}
+
+/*
+
+*/
+export function isUserOnline(db: DatabaseSync, id: number): any {
+	console.log(id);
+	try {
+		const select = db.prepare("SELECT Online FROM Users WHERE UserID = ?");
+		const user = select.get(id);
+		if (user) {
+			return {
+				code: 200,
+				online: user.Online
+			}
+		};
 		return {
 			code: 404,
 			error: "ERR_NO_USER"

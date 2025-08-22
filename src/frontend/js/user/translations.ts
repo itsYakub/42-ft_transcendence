@@ -33,8 +33,9 @@ function translateDutch(text: string): string {
 		case "ERR_SAME_EMAIL": return "!";
 		case "ERR_SAME_NAME": return "!";
 		case "ERR_TOTP_CODE": return "!";
-		case "PROMPT_FRIENDS_EMAIL": return "";
+		case "PROMPT_TEXT_EMAIL": return "";
 		case "PROMPT_TOTP_CODE": return "";
+		case "ERR_USER_OFFLINE": return "!";
 		case "SUCCESS_ADDED_FRIEND": return "!";
 		case "SUCCESS_DISABLED_TOTP": return "!";
 		case "SUCCESS_ENABLED_TOTP": return "!";
@@ -57,7 +58,8 @@ function translateEnglish(text: string): string {
 		case "ERR_SAME_EMAIL": return "You can't add yourself!";
 		case "ERR_SAME_NAME": return "Names must be unique!";
 		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
-		case "PROMPT_FRIENDS_EMAIL": return "Friend's email";
+		case "ERR_USER_OFFLINE": return "User offline!";
+		case "PROMPT_TEXT_EMAIL": return "Friend's email";
 		case "PROMPT_TOTP_CODE": return "TOTP code";
 		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
 		case "SUCCESS_DISABLED_TOTP": return "Disabled TOTP!";
@@ -81,7 +83,8 @@ function translatePolish(text: string): string {
 		case "ERR_SAME_EMAIL": return "!";
 		case "ERR_SAME_NAME": return "!";
 		case "ERR_TOTP_CODE": return "!";
-		case "PROMPT_FRIENDS_EMAIL": return "";
+		case "ERR_USER_OFFLINE": return "!";
+		case "PROMPT_TEXT_EMAIL": return "";
 		case "PROMPT_TOTP_CODE": return "";
 		case "SUCCESS_ADDED_FRIEND": return "!";
 		case "SUCCESS_DISABLED_TOTP": return "!";

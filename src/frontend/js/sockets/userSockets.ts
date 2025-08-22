@@ -1,19 +1,25 @@
-import { messagesFunctions } from "../profile/messages.js";
+import { usersFunctions } from "../profile/users.js";
 import { profileFunctions } from "../profile/profile.js";
-import { currentPage } from "./socket.js";
+import { currentPage, sendMessageToServer } from "./socket.js";
+import { navigate } from "../index.js";
 
-export function handlePrivateChatMessage(user: any, message: any) {
+export function handleIncomingUserMessage(user: any, message: any) {
 	switch (message.type) {
 		case "user-chat":
 			userChat(user, message);
+			break;
+		case "user-invite":
+			userInvite(user, message);
+			break;
+		case "user-change-status":
+			userChangeStatus(user, message);
 			break;
 	}
 }
 
 async function userChat(user: any, message: any) {
-	if ("messages" != currentPage())
+	if ("users" != currentPage())
 		return;
-
 
 	let otherID: number = 0;
 	if (message.toID == user.id)
@@ -29,7 +35,24 @@ async function userChat(user: any, message: any) {
 			document.querySelector("#usersDiv").innerHTML = messages.usersHtml;
 			document.querySelector("#messagesDiv").innerHTML = messages.messagesHtml;
 			profileFunctions();
-			messagesFunctions();
+			usersFunctions();
 		}
+	}
+}
+
+async function userInvite(user: any, message: any) {
+	if (user.id == message.toID) {
+		sendMessageToServer({
+			type: "game-join",
+			gameID: message.gameID
+		});
+
+		navigate(`/game`);
+	}
+}
+
+async function userChangeStatus(user: any, message: any) {
+	if ("friends" == currentPage()) {
+		navigate("/friends");
 	}
 }

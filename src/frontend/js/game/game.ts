@@ -60,6 +60,7 @@ export function gameFunctions() {
 	const joinGameButtons = document.getElementsByClassName("joinGameButton");
 	for (var i = 0; i < joinGameButtons.length; i++) {
 		joinGameButtons[i].addEventListener("click", async function () {
+			// user must be in game, other not in game and online
 			sendMessageToServer({
 				type: "game-join",
 				gameID: this.dataset.id

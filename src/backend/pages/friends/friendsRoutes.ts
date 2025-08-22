@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addFriend, getFriends, removeFriend } from './friendsDB.js';
+import { addFriend, friendsList, removeFriend } from './friendsDB.js';
 import { friendsHtml } from './friendsHtml.js';
 import { noUserError } from '../home/homeRoutes.js';
 import { getUser, getUserByEmail } from '../../user/userDB.js';
@@ -13,8 +13,8 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (200 != userResponse.code)
 			return reply.type("text/html").send(noUserError(userResponse, language));
 
-		const friendsResponse = getFriends(db, userResponse.user.id);
-		if (friendsResponse.error) {
+		const friendsResponse = friendsList(db, userResponse.user);
+		if (200 != friendsResponse.code) {
 			const params = {
 				user: userResponse.user,
 				language,
@@ -34,39 +34,40 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		return reply.type("text/html").send(frame);
 	});
 
-
-	// todo
 	fastify.post("/friends/add", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error)
-			return reply.send(user);
+		const language = request.cookies.language ?? "english";
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const json = request.body as any;
-		json["id"] = user.id;
+		json["id"] = userResponse.user.id;
 
 		const response = addFriend(db, json);
 		return reply.send(response);
 	});
 
 	fastify.post("/friends/remove", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error)
-			return reply.send(user);
+		const language = request.cookies.language ?? "english";
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const json = request.body as any;
-		json["id"] = user.id;
+		json["id"] = userResponse.user.id;
 
 		const response = removeFriend(db, json);
 		return reply.send(response);
 	});
 
 	fastify.post("/friends/find", async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (user.error)
-			return reply.send(user);
+		const language = request.cookies.language ?? "english";
+		const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (200 != userResponse.code)
+			return reply.type("text/html").send(noUserError(userResponse, language));
 
 		const json = request.body as any;
-		if (user.email == json.email) {
+		if (userResponse.user.email == json.email) {
 			return reply.send({
 				code: 400,
 				error: "ERR_SAME_EMAIL"
@@ -78,7 +79,7 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 			return reply.send(response);
 
 		addFriend(db, {
-			"id": user.id,
+			"id": userResponse.user.id,
 			"friendID": response.id
 		});
 		return reply.send(response);

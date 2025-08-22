@@ -1,5 +1,5 @@
 import { navbarHtml } from "./navbarHtml.js";
-import { translateBackend } from "../translations.js";
+import { translateBackend } from "../user/translations.js";
 
 /*
 	Returns the whole page, or an error page
@@ -8,8 +8,8 @@ export function frameHtml(params: any, content: string = null): any {
 	if (!content)
 		content = errorString(params);
 
-	const navbar = navbarHtml(params);
-	return frameString(navbar, content);
+	const html = frameString(navbarHtml(params), content);
+	return translateBackend({ html, language: params.language })
 }
 
 function frameString(navbar: string, content: string): string {
@@ -49,14 +49,9 @@ function frameString(navbar: string, content: string): string {
 	A frame with an error message body
 */
 function errorString(params: any) {
-	const message = translateBackend({
-		language: params.language,
-		text: params.errorMessage
-	});
-
 	return `
 	<div class="h-full bg-gray-900 content-center text-center">
-		<div class="text-white">${params.errorCode} - ${message}</div>
+		<div class="text-white">${params.errorCode} - ${params.errorMessage}</div>
 	</div>
 	`;
 }

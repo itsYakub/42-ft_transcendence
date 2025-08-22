@@ -1,14 +1,12 @@
 import { gameHtmlString } from "../game/game.js";
-import { translateBackend } from "../../translations.js";
 
-export function matchHtml({ gamers, messages, language, user }): string {
-	let html = matchString(gamers, messages, user, language);
-	html = translate(html, language);
+export function matchHtml({ gamers, messages, user }): string {
+	let html = matchString(gamers, messages, user);
 
 	return html + gameHtmlString();
 }
 
-export function gamersString(gamers: any, user: any, language: string): string {
+export function gamersString(gamers: any, user: any): string {
 	let gamersString = "";
 	gamers.forEach(gamer => {
 		gamersString += gamerString(gamer);
@@ -20,11 +18,11 @@ export function gamersString(gamers: any, user: any, language: string): string {
 	</div>
 	<div class="flex flex-row justify-between mr-9">
 		${readyButtonString(user)}
-		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%GAME_LEAVE_TEXT%%</button>
+		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 	</div>
 	`;
 
-	return translate(html, language);
+	return html;
 }
 
 export function messagesString(messages: any, user: any): string {
@@ -36,32 +34,19 @@ export function messagesString(messages: any, user: any): string {
 	return messageList;
 }
 
-function translate(html: string, language: string): string {
-	const toBeTranslated = ["SINGLE_GAME", "PLAYER", "READY", "LEAVE", "SEND"];
-
-	toBeTranslated.forEach((text) => {
-		html = html.replaceAll(`%%GAME_${text}_TEXT%%`, translateBackend({
-			language,
-			text: `GAME_${text}_TEXT`
-		}));
-	});
-
-	return html;
-}
-
-function matchString(gamers: any, messages: any, user: any, language: string): string {
+function matchString(gamers: any, messages: any, user: any): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%GAME_SINGLE_GAME_TEXT%%</h1>
+		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_SINGLE_GAME%%</h1>
 		<div class="flex flex-row h-150">
 			<div class="flex flex-col">
 				<form id="gamerMatchReadyForm">
-					${gamersString(gamers, user, language)}
+					${gamersString(gamers, user)}
 				</form>
 			</div>
 			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
-					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 overscroll-contain overflow-auto">
+					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 						${messagesString(messages, user)}
 					</div>
 					<div class="mt-2">
@@ -69,7 +54,7 @@ function matchString(gamers: any, messages: any, user: any, language: string): s
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" hidden>
-								<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg text-gray-300 bg-gray-800">%%GAME_SEND_TEXT%%</button>
+								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
 							</div>
 						</form>
 					</div>
@@ -92,8 +77,8 @@ function gamerString({ Nick, Ready }) {
 }
 
 function readyButtonString({ ready }) {
-	return 0 == ready ? `<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-2 px-4 rounded-lg hover:bg-gray-700">%%GAME_READY_TEXT%%</button>` :
-		`<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-2 px-4 rounded-lg">%%GAME_READY_TEXT%%</button>`;
+	return 0 == ready ? `<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>` :
+		`<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>`;
 }
 
 function messageString(userID: number, message: any) {

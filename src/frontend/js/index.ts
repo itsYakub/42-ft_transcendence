@@ -6,11 +6,12 @@ import { translateFrontend, translationFunctions } from "./user/translations.js"
 import { localMatchFunctions } from "./game/localMatch.js";
 import { gameFunctions } from "./game/game.js";
 import { userFunctions } from "./user/user.js";
-import { messagesFunctions } from "./profile/messages.js";
+import { usersFunctions } from "./profile/users.js";
 import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
 import { tournamentFunctions } from "./game/tournament.js";
+import { blockedFunctions } from "./profile/blocked.js";
 
 /*
 	Simulates moving to a new page
@@ -43,8 +44,9 @@ export function addFunctions() {
 	localTournamentFunctions();
 	translationFunctions();
 	profileFunctions();
+	usersFunctions();
 	friendsFunctions();
-	messagesFunctions();
+	blockedFunctions();
 	gameFunctions();
 	localMatchFunctions();
 	matchFunctions();

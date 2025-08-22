@@ -1,9 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 
-export function initTournaments(db: DatabaseSync, dropTournaments: boolean): void {
-	if (dropTournaments)
-		db.exec(`DROP TABLE IF EXISTS Tournaments;`);
-
+export function initTournaments(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS Tournaments (
 		TournamentID INTEGER PRIMARY KEY AUTOINCREMENT,

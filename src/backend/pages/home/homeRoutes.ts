@@ -35,7 +35,7 @@ export function noUserError(response: any, language: string, page: string = null
 			language
 		};
 
-		return frameHtml(params, userHtml(params));
+		return frameHtml(params, userHtml());
 	}
 
 	const params = {
@@ -56,7 +56,7 @@ export function userError(response: any, language: string, page: string = null) 
 			language
 		};
 
-		return frameHtml(params, userHtml(params));
+		return frameHtml(params, userHtml());
 	}
 
 	const params = {
