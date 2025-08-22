@@ -16,14 +16,14 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.get('/api/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
-		const gamersResponse = gamePlayers(db, request.user.gameId);
-		if (Result.SUCCESS == gamersResponse.result) {
-			let text = gamersString(gamersResponse.gamers, request.user);
+		const gamersBox = gamePlayers(db, request.user.gameId);
+		if (Result.SUCCESS == gamersBox.result) {
+			let text = gamersString(gamersBox.gamers, request.user);
 			text = translateBackend(request.language, text);
 
 			return reply.send({
 				result: Result.SUCCESS,
-				text
+				value: text
 			});
 		}
 		else
@@ -32,13 +32,13 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			});
 	});
 
-	fastify.get('/api/game-messages', async (request: FastifyRequest, reply: FastifyReply) => {
-		const messagesResponse = gameChats(db, request.user.gameId);
-		if (Result.SUCCESS == messagesResponse.result) {
-			const html = messagesString(messagesResponse.messages, request.user);
+	fastify.get('/api/game-chats', async (request: FastifyRequest, reply: FastifyReply) => {
+		const messagesBox = gameChats(db, request.user.gameId);
+		if (Result.SUCCESS == messagesBox.result) {
+			const html = messagesString(messagesBox.chats, request.user);
 			return reply.send({
 				result: Result.SUCCESS,
-				html
+				value: html
 			});
 		}
 		else

@@ -18,12 +18,12 @@ export function initChatSocket(): Promise<void> {
 
 		socket!.onmessage = async (event) => {
 			const userResponse = await fetch("/user/id");
-			const user = await userResponse.json();
-			if (Result.SUCCESS != user.result)
+			const userBox = await userResponse.json();
+			if (Result.SUCCESS != userBox.result)
 				return;
 
 			const message = JSON.parse(event.data);
-			handleMessage(user, message);
+			handleMessage(userBox.user, message);
 		};
 
 		socket!.onerror = (err) => {

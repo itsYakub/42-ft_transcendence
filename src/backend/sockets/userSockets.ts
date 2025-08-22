@@ -3,7 +3,8 @@ import { DatabaseSync } from "node:sqlite";
 import { addUserChat } from '../db/userChatsDb.js';
 import { broadcastMessageToClients } from './serverSockets.js';
 import { markUserOnline } from '../db/userDB.js';
-import { Result, User, WebsocketMessage, WebsocketMessageType } from '../../common/interfaces.js';
+import { Result, User, WebsocketMessage, WebsocketMessageGroup, WebsocketMessageType } from '../../common/interfaces.js';
+import { countReady, markPlaying, markReady } from '../db/gameDb.js';
 
 export function handleIncomingUserMessage(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
 	switch (message.type) {
@@ -16,6 +17,10 @@ export function handleIncomingUserMessage(fastify: FastifyInstance, db: Database
 		case WebsocketMessageType.INVITE:
 			userInviteReceived(fastify, db, user, message);
 			break;
+		case WebsocketMessageType.READY:
+			userReadyReceived(fastify, db, user, message);
+			break;
+
 		// case WebsocketMessageType.JOIN:
 		// 	userJoinReceived(fastify, db, user, message);
 		// 	break;
@@ -47,6 +52,23 @@ function userChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: User
 function userInviteReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
 	message.gameId = user.gameId;
 	broadcastMessageToClients(fastify, message);
+}
+
+function userReadyReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
+	const response = markReady(db, user.userId);
+
+	if (Result.SUCCESS == response.result) {
+		message.gameId = user.gameId;
+		message.fromId = user.userId;
+		broadcastMessageToClients(fastify, message);
+
+		const readyResponse = countReady(db, user);
+		if (Result.SUCCESS == readyResponse.result && readyResponse.ready) {
+			markPlaying(db, user);
+			message.group = WebsocketMessageGroup.GAME;
+			broadcastMessageToClients(fastify, message);
+		}
+	}
 }
 
 // function userJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {

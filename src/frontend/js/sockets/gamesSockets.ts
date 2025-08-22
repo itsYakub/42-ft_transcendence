@@ -1,4 +1,5 @@
-import { Result, User, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
+import { leaveGame } from "../../../backend/db/gameDb.js";
+import { Result, StringBox, User, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
 import { startMatch } from "./../game/game.js";
 import { navigate } from "./../index.js";
 import { currentPage } from "./socket.js";
@@ -7,7 +8,6 @@ import { currentPage } from "./socket.js";
 	A socket message concerning the game page
 */
 export function handleIncomingGameMessage(user: User, message: WebsocketMessage) {
-	console.log("incoming game message", message);
 	switch (message.type) {
 		case WebsocketMessageType.JOIN:
 		case WebsocketMessageType.LEAVE:
@@ -30,17 +30,15 @@ async function gameChange(user: User, message: WebsocketMessage) {
 		return;
 
 	if (!user.gameId) {
-		console.log("in lobby");
 		navigate("/game");
 		return;
 	}
 
 	if (user.gameId == message.gameId && user.userId != message.fromId) {
-		console.log("changing", user);
-		const gamerResponse = await fetch("/api/gamers");
-		const gamers = await gamerResponse.json();
+		const gamerBox = await fetch("/api/gamers");
+		const gamers: StringBox = await gamerBox.json();
 		if (Result.SUCCESS == gamers.result)
-			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.html;
+			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
 	}
 }
 
@@ -51,12 +49,15 @@ async function gameChat(user: User, message: WebsocketMessage) {
 	if ("game" != currentPage())
 		return;
 
+	console.log("incoming chat", message);
+
 	if (user.gameId == message.gameId) {
-		const messagesResponse = await fetch("/api/game-messages");
-		const messages = await messagesResponse.json();
+		const messagesBox = await fetch("/api/game-chats");
+		const messages: StringBox = await messagesBox.json();
+		console.log(messages);
 		if (Result.SUCCESS == messages.result) {
 			(document.querySelector("#sendMatchMessageForm") as HTMLFormElement).message.value = "";
-			document.querySelector("#messagesDiv").innerHTML = messages.html;
+			document.querySelector("#messagesDiv").innerHTML = messages.value;
 		}
 	}
 }

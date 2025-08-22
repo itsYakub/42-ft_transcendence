@@ -1,9 +1,9 @@
-import { Gamer, User } from "../../common/interfaces.js";
+import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function matchHtml(gamers: Gamer[], messages, user: User): string {
+export function matchHtml(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	console.log(gamers);
-	let html = matchString(gamers, messages, user);
+	let html = matchString(gamers, chats, user);
 
 	return html + gameHtmlString();
 }
@@ -27,16 +27,17 @@ export function gamersString(gamers: Gamer[], user: User): string {
 	return html;
 }
 
-export function messagesString(messages: any, user: User): string {
+export function messagesString(chats: GameChatMessage[], user: User): string {
+	console.log(chats);
 	let messageList = "";
-	for (var key in messages) {
-		messageList += messageString(user.userId, messages[key]);
+	for (var key in chats) {
+		messageList += messageString(user.userId, chats[key]);
 	}
 
 	return messageList;
 }
 
-function matchString(gamers: Gamer[], messages: any, user: User): string {
+function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_SINGLE_GAME%%</h1>
@@ -49,7 +50,7 @@ function matchString(gamers: Gamer[], messages: any, user: User): string {
 			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
 					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-						${messagesString(messages, user)}
+						${messagesString(chats, user)}
 					</div>
 					<div class="mt-2">
 						<form id="sendMatchMessageForm">
@@ -83,13 +84,13 @@ function readyButtonString({ ready }) {
 		`<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>`;
 }
 
-function messageString(userId: number, message: any) {
-	const diff = userId == message.fromId ? "green-700 ml" : "blue-700 mr";
+function messageString(userId: number, chat: GameChatMessage) {
+	const diff = userId == chat.fromId ? "green-700 ml" : "blue-700 mr";
 
 	return `
 	<div class="bg-${diff}-auto px-4 py-2 rounded-lg">
-		<div class="text-white font-bold">${message.nick}</div>
-		<div class="text-gray-300">${message.message}</div>
+		<div class="text-white font-bold">${chat.nick}</div>
+		<div class="text-gray-300">${chat.chat}</div>
 	</div>
 	`;
 }

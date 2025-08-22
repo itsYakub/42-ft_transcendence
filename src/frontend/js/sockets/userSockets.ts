@@ -2,7 +2,7 @@ import { usersFunctions } from "../account/users.js";
 import { accountFunctions } from "../account/account.js";
 import { currentPage, sendMessageToServer } from "./socket.js";
 import { navigate } from "../index.js";
-import { Result, User, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
+import { Result, StringBox, User, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
 
 export function handleIncomingUserMessage(user: User, message: WebsocketMessage) {
 	switch (message.type) {
@@ -33,7 +33,7 @@ async function userChat(user: User, message: WebsocketMessage) {
 		otherId = message.toId;
 
 	if (0 != otherId) {
-		const messagesResponse = await fetch(`/api/private-messages/${otherId}`);
+		const messagesResponse = await fetch(`/api/user-chats/${otherId}`);
 		const messages = await messagesResponse.json();
 		if (Result.SUCCESS == messages.result) {
 			(document.querySelector("#sendMessageForm") as HTMLFormElement).message.value = "";
@@ -52,12 +52,15 @@ async function userReady(user: User, message: WebsocketMessage) {
 	if ("game" != currentPage())
 		return;
 
-	if (user.gameId == message.gameId) {
-		const gamerResponse = await fetch("/api/gamers");
-		const gamers = await gamerResponse.json();
+	console.log(message);
+
+	//if (user.gameId == message.gameId) {
+		const gamersBox = await fetch("/api/gamers");
+		const gamers: StringBox = await gamersBox.json();
+		console.log(gamers);
 		if (Result.SUCCESS == gamers.result)
-			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.html;
-	}
+			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
+	//}
 }
 
 async function userInvite(user: User, message: WebsocketMessage) {

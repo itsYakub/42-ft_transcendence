@@ -13,7 +13,6 @@ export function matchFunctions() {
 					group: WebsocketMessageGroup.GAME,
 					type: WebsocketMessageType.LEAVE
 				});
-				navigate("/game");
 				return;
 			}
 

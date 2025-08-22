@@ -88,12 +88,17 @@ export interface Foe {
 	foeId: number
 }
 
-export interface GameMessage {
-	messageId: number,
+export interface GameChat {
 	fromId: number,
 	gameId: string,
-	message: string,
+	chat: string,
 	sent_at: string
+}
+
+export interface GameChatMessage {
+	chat: string,
+	fromId: number,
+	nick: string
 }
 
 export interface UserBox {

@@ -33,7 +33,7 @@ export function gamePlayers(db: DatabaseSync, gameId: string) {
 	}
 }
 
-export function addToGame(db: DatabaseSync, user: User) {
+function addToGame(db: DatabaseSync, user: User) {
 	try {
 		const select = db.prepare(`UPDATE users SET game_id = ? WHERE user_id = ?;`);
 		select.run(user.gameId, user.userId);
@@ -48,33 +48,30 @@ export function addToGame(db: DatabaseSync, user: User) {
 	}
 }
 
-// export function joinGame(db: DatabaseSync, gameId: string, user: User) {
-// 	try {
-// 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
-// 		const game = select.get(gameId);
-// 		if (0 == game.count)
-// 			return {
-// 				result: Result.ERR_NOT_FOUND
-// 			};
-
-// 		if (user.gameId != gameId && (2 == game.count && gameId.startsWith("m") || 4 == game.count && gameId.startsWith("t")))
-// 			return {
-// 				result: Result.ERR_GAME_FULL
-// 			};
-
-// 		return addToGame(db, gameId, user);
-// 	}
-// 	catch (e) {
-// 		return {
-// 			result: Result.ERR_DB
-// 		};
-// 	}
-// }
-
-export function leaveGame(db: DatabaseSync, user: User) {
+export function joinGame(db: DatabaseSync, gameId: string, user: User) {
 	try {
-		let select = db.prepare(`UPDATE users SET game_id = NULL, Ready = 0 WHERE user_id = ?`);
-		select.run(user.userId);
+		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
+		const game = select.get(gameId);
+
+		if (user.gameId != gameId && (2 == game.count && gameId.startsWith("m") || 4 == game.count && gameId.startsWith("t")))
+			return {
+				result: Result.ERR_GAME_FULL
+			};
+
+		user.gameId = gameId;
+		return addToGame(db, user);
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB
+		};
+	}
+}
+
+export function leaveGame(db: DatabaseSync, userId: number) {
+	try {
+		let select = db.prepare(`UPDATE users SET game_id = NULL, ready = 0 WHERE user_id = ?`);
+		select.run(userId);
 		//select = db.prepare("SELECT COUNT(game_id) as gameCount FROM Users WHERE game_id = ?");
 		//const { gameCount } = select.get(gameID);
 		// if (0 == gameCount) {
@@ -92,7 +89,7 @@ export function leaveGame(db: DatabaseSync, user: User) {
 	}
 }
 
-export function markReady(db: DatabaseSync, { userId }) {
+export function markReady(db: DatabaseSync, userId: number) {
 	try {
 		const select = db.prepare(`UPDATE users SET ready = 1 WHERE user_id = ?`);
 		select.run(userId);
