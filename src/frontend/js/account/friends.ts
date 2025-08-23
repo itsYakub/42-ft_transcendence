@@ -11,13 +11,11 @@ export function friendsFunctions() {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					friendID: this.dataset.id
+					friendId: this.dataset.id
 				})
 			});
 
-			const json = await response.json();
-
-			if (Result.SUCCESS == json.result)
+			if (Result.SUCCESS == await response.text())
 				navigate("/friends");
 		}, { once: true });
 	}

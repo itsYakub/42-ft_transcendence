@@ -26,7 +26,7 @@ export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void 
 				return;
 
 			const user = userResponse.user;
-			markUserOffline(db, user);
+			markUserOffline(db, user.userId);
 			broadcastMessageToClients(fastify, {
 				group: WebsocketMessageGroup.USER,
 				type: WebsocketMessageType.JOIN,
@@ -49,7 +49,6 @@ export function broadcastMessageToClients(fastify: FastifyInstance, message: Web
 			client.send(JSON.stringify(message));
 	});
 }
-
 
 function handleMessage(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
 	if (WebsocketMessageGroup.ERROR == message.group)

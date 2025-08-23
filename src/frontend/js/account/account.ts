@@ -26,19 +26,19 @@ export function accountFunctions() {
 		}, { once: true });
 	}
 
-	const friendsButton = document.getElementById("friendsButton");
-	if (friendsButton) {
-		friendsButton.addEventListener("click", () => {
-			navigate("/friends");
-		}, { once: true });
-	}
+	// const friendsButton = document.getElementById("friendsButton");
+	// if (friendsButton) {
+	// 	friendsButton.addEventListener("click", () => {
+	// 		navigate("/friends");
+	// 	}, { once: true });
+	// }
 
-	const blockedButton = document.getElementById("foesButton");
-	if (blockedButton) {
-		blockedButton.addEventListener("click", () => {
-			navigate("/foes");
-		}, { once: true });
-	}
+	// const blockedButton = document.getElementById("foesButton");
+	// if (blockedButton) {
+	// 	blockedButton.addEventListener("click", () => {
+	// 		navigate("/foes");
+	// 	}, { once: true });
+	// }
 
 	/*
 		Shows the dialog to choose a file

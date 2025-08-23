@@ -11,7 +11,6 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 		const language = request.language;
 
 		const friendsBox = friendsList(db, user);
-		console.log("friends:", friendsBox);
 		if (Result.SUCCESS != friendsBox.result) {
 			const params = {
 				user,
@@ -21,13 +20,27 @@ export function friendsRoutes(fastify: FastifyInstance, db: DatabaseSync): void 
 			return reply.type("text/html").send(frameView(params));
 		}
 
-		const params = {
-			user,
-			language
-		};
-		const html = friendsView(friendsBox.friends, params);
-
-		const frame = frameView(params, html);
+		const frame = frameView({ user, language }, friendsView(friendsBox.friends, user));
 		return reply.type("text/html").send(frame);
+	});
+
+	fastify.post("/friends", async (request: FastifyRequest, reply: FastifyReply) => {
+		const user = request.user;
+		const language = request.language;
+		const { selectedUserId: selectedFriendId } = request.body as any;
+		const friendsBox = friendsList(db, user);
+		if (Result.SUCCESS != friendsBox.result) {
+			const params = {
+				user,
+				language,
+				result: friendsBox.result,
+			};
+			return reply.type("text/html").send(frameView(params));
+		}
+
+		const selectedFriend = friendsBox.friends.find(friend => friend.friendId == selectedFriendId);
+		return reply.type("text/html").send(JSON.stringify({
+			result: Result.SUCCESS,
+			value: friendsView(friendsBox.friends, user, selectedFriend)}));
 	});
 }

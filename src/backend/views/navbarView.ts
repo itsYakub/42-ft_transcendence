@@ -1,4 +1,4 @@
-import { FrameParams, User } from "../../common/interfaces.js";
+import { FrameParams, User, UserType } from "../../common/interfaces.js";
 import { alertString, totpString } from "./dialogsView.js";
 
 export function navbarView(params: FrameParams): string {
@@ -18,7 +18,7 @@ export function navbarView(params: FrameParams): string {
 	if (!params.user)
 		html += loggedOutString(languageSelect);
 	else
-		html += "guest" == params.user.type ? guestString(params.user, languageSelect, params.page) : loggedInString(params.user, languageSelect, params.page);
+		html += UserType.GUEST == params.user.userType ? guestString(params.user, languageSelect, params.page) : loggedInString(params.user, languageSelect, params.page);
 
 	return html;
 }
@@ -49,7 +49,8 @@ function loggedInString(user: User, languageSelect: string, page: string): strin
 
 			<div class="mx-auto">
 				${homeButtonString(page)}
-				${gameButtonString(page)}	
+				${gameButtonString(page)}
+				${usersButtonString(page)}
 			</div>
 
 			<div class="ml-auto text-gray-300">
@@ -72,7 +73,8 @@ function guestString(user: User, languageSelect: string, page: string): string {
 
 			<div class="mx-auto">
 				${homeButtonString(page)}
-				${gameButtonString(page)}				
+				${gameButtonString(page)}
+				${usersButtonString(page)}
 			</div>
 
 			<div class="ml-auto text-gray-300">
@@ -103,6 +105,17 @@ function gameButtonString(page: string) {
 	<button id="gameButton"
 		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 		%%BUTTON_GAME%%
+	</button>
+	`;
+}
+
+function usersButtonString(page: string) {
+	const bgColour = "/users" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="usersButton"
+		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%BUTTON_USERS%%
 	</button>
 	`;
 }

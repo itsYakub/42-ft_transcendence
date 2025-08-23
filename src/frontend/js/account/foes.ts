@@ -5,19 +5,18 @@ export function foesFunctions() {
 	const removeFoeButtons = document.getElementsByClassName("removeFoeButton");
 	for (let i = 0; i < removeFoeButtons.length; i++) {
 		removeFoeButtons[i].addEventListener("click", async function () {
+			console.log("clicked");
 			const response = await fetch("/foes/remove", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					blockedID: this.dataset.id
+					foeId: this.dataset.id
 				})
 			});
 
-			const json = await response.json();
-
-			if (Result.SUCCESS == json.result)
+			if (Result.SUCCESS == await response.text())
 				navigate("/foes");
 		}, { once: true });
 	}

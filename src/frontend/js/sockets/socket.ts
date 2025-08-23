@@ -9,7 +9,6 @@ let socket: WebSocket | null = null;
  */
 export function initChatSocket(): Promise<void> {
 	const socketUrl = `wss://${window.location.host}/ws`;
-
 	if (!socket)
 		socket = new WebSocket(socketUrl);
 
@@ -32,8 +31,8 @@ export function initChatSocket(): Promise<void> {
 		};
 
 		socket!.onclose = (event) => {
-			console.warn(`🔌 WebSocket connection closed (code: ${event.code})`);
-			setTimeout(initChatSocket, 1000);
+			console.warn(`🔌 WebSocket connection closed ${event}`);
+			//setTimeout(initChatSocket, 1000);
 		};
 	});
 }
@@ -49,7 +48,7 @@ export function isConnected(): boolean {
 	Sends a message from a client to the server
 */
 export function sendMessageToServer(message: WebsocketMessage) {
-	if (1 === socket?.OPEN)
+	if (1 == socket?.OPEN)
 		socket.send(JSON.stringify(message));
 }
 

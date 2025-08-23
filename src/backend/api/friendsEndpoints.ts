@@ -8,21 +8,15 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 	fastify.post("/friends/add", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 
-		const json = request.body as any;
-		json["id"] = user.userId;
-
-		const response = addFriend(db, json);
-		return reply.send(response);
+		const { friendId } = request.body as any;
+		return reply.send(addFriend(db, user.userId, friendId));
 	});
 
 	fastify.post("/friends/remove", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 
-		const json = request.body as any;
-		json["id"] = user.userId;
-
-		const response = removeFriend(db, json);
-		return reply.send(response);
+		const { friendId } = request.body as any;
+		return reply.send(removeFriend(db, user.userId, friendId));
 	});
 
 	fastify.post("/friends/find", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -39,10 +33,7 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
-		addFriend(db, {
-			userId: user.userId,
-			friendId: userBox.user.userId
-		});
+		addFriend(db, user.userId, userBox.user.userId);
 		return reply.send(userBox);
 	});
 }

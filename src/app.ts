@@ -29,6 +29,8 @@ import { accountEndpoints } from "./backend/api/accountEndpoints.js";
 import { translateBackend } from "./common/translations.js";
 import { Result, User } from "./common/interfaces.js";
 import { initGameChatsDb } from "./backend/db/gameChatsDb.js";
+import { foesEndpoints } from "./backend/api/foesEndpoints.js";
+import { friendsEndpoints } from "./backend/api/friendsEndpoints.js";
 
 const __dirname = import.meta.dirname;
 
@@ -130,29 +132,32 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 const db = new DatabaseSync("../data/transcendence.db");
 
 try {
-	initUsersDb(db);
 	initFoesDb(db);
 	initFriendsDb(db);
+	initGameChatsDb(db);
 	initHistoryDb(db);
 	//initTournaments(db);
 	initUserChatsDb(db);
-	initGameChatsDb(db);
+	initUsersDb(db);
 
-	apiRoutes(fastify, db);
-	homeRoutes(fastify, db);
-	gameRoutes(fastify, db);
 	accountRoutes(fastify, db);
-	historyRoutes(fastify, db);
-	usersRoutes(fastify, db);
+	apiRoutes(fastify, db);
 	friendsRoutes(fastify, db);
 	foesRoutes(fastify, db);
+	gameRoutes(fastify, db);
+	historyRoutes(fastify, db);
+	homeRoutes(fastify, db);
+	usersRoutes(fastify, db);
 
 	matchRoutes(fastify, db);
 	tournamentRoutes(fastify, db);
 
-	authEndpoints(fastify, db);
 	accountEndpoints(fastify, db);
+	authEndpoints(fastify, db);
+	foesEndpoints(fastify, db);
+	friendsEndpoints(fastify, db);
 	userEndpoints(fastify, db);
+
 	serverSockets(fastify, db);
 
 	// Remove!

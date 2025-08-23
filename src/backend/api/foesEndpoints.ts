@@ -1,25 +1,19 @@
-import { addFoe, removeFoe } from 'backend/db/foesDb';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
+import { addFoe, removeFoe } from '../db/foesDb.js';
 
 export function foesEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.post("/foes/add", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 
-		const json = request.body as any;
-		json["id"] = user.userId;
-
-		const response = addFoe(db, json);
-		return reply.send(response);
+		const { foeId } = request.body as any;
+		return reply.send(addFoe(db, user.userId, foeId));
 	});
 
 	fastify.post("/foes/remove", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 
-		const json = request.body as any;
-		json["id"] = user.userId;
-
-		const response = removeFoe(db, json);
-		return reply.send(response);
+		const { foeId } = request.body as any;
+		return reply.send(removeFoe(db, user.userId, foeId));
 	});
 }

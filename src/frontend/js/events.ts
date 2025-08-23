@@ -2,22 +2,7 @@ import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../commo
 import { addFunctions, navigate, showAlert } from "./index.js";
 import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
-interface navigatedDetail {
-	page: string
-}
-
-interface userLoggedInDetail {
-	userID: number,
-	nick: string
-}
-
-export interface messageDetail {
-	toID: string,
-	fromID: number,
-	message: string
-}
-
-export async function navigated(detail: navigatedDetail) {
+export async function navigated() {
 	const userResponse = await fetch("/user/id");
 	const json = await userResponse.json();
 	if (Result.SUCCESS == json.result) {
@@ -55,7 +40,7 @@ export function registerEvents() {
 			document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 		}
 		addFunctions();
-		navigated({ page: window.location.pathname });
+		navigated();
 	});
 
 	/*

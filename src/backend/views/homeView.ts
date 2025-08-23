@@ -11,7 +11,7 @@ function homeString(user: any): string {
 	return `
 	<span id="data" data-id="${user.userId}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
-		<div class="text-gray-300 pt-4 mb-4 text-4xl">%%TEXT_WELCOME%%</div>
+		<div class="text-gray-300 pt-8 mb-4 text-4xl">%%TEXT_WELCOME%%</div>
 		<div class="grid grid-cols-1 mt-16">
 			<div class="flex flex-col justify-between">
 				<button id="addMockUsersButton"

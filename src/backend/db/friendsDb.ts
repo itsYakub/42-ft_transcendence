@@ -1,7 +1,7 @@
-import { DatabaseSync } from "node:sqlite";
-import { Result, User } from "../../common/interfaces.js";
+import { DatabaseSync, SQLOutputValue } from "node:sqlite";
+import { Friend, FriendsBox, Result, User } from "../../common/interfaces.js";
 
-export function initFriendsDb(db: DatabaseSync): void {
+export function initFriendsDb(db: DatabaseSync) {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS friends (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,10 +13,10 @@ export function initFriendsDb(db: DatabaseSync): void {
 /*
 	Gets all the user's friends
 */
-export function friendsList(db: DatabaseSync, user: User): any {
+export function friendsList(db: DatabaseSync, user: User): FriendsBox {
 	try {
 		const select = db.prepare("SELECT friend_id, nick, game_id, online, playing FROM friends INNER JOIN users ON users.user_id = friends.friend_id WHERE friends.user_id = ? ORDER BY online DESC, nick");
-		const friends = select.all(user.userId);
+		const friends = select.all(user.userId).map(friend => sqlToFriend(friend));
 		return {
 			result: Result.SUCCESS,
 			friends
@@ -32,35 +32,36 @@ export function friendsList(db: DatabaseSync, user: User): any {
 /*
 	Adds a friend to a user's list
 */
-export function addFriend(db: DatabaseSync, { userId, friendId }): any {
+export function addFriend(db: DatabaseSync, userId: number, friendId: number): Result {
 	try {
 		const select = db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)");
 		select.run(userId, friendId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
 /*
 	Removes a friend from a user's list
 */
-export function removeFriend(db: DatabaseSync, { userId, friendId }): any {
+export function removeFriend(db: DatabaseSync, userId: number, friendId: number): Result {
 	try {
 		const select = db.prepare("DELETE FROM friends WHERE user_id = ? AND friend_id = ?");
 		select.run(userId, friendId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
+}
+
+function sqlToFriend(friend: Record<string, SQLOutputValue>): Friend {
+	return {
+		friendId: friend.friend_id as number,
+		nick: friend.nick as string,
+		online: friend.online as number,
+		userId: friend.user_id as number
+	};
 }

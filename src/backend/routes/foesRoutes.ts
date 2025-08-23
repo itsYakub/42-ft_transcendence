@@ -10,7 +10,7 @@ export function foesRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 		const user = request.user;
 		const language = request.language;
 
-		const foesBox = getFoes(db, user);
+		const foesBox = getFoes(db, user.userId);
 		if (Result.SUCCESS != foesBox.result) {
 			const params = {
 				user,
@@ -20,13 +20,7 @@ export function foesRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 			return reply.type("text/html").send(frameView(params));
 		}
 
-		const params = {
-			user,
-			language
-		};
-		const html = foesView(foesBox.foes, params);
-
-		const frame = frameView(params, html);
+		const frame = frameView({ user, language }, foesView(foesBox.foes, user));
 		return reply.type("text/html").send(frame);
 	});
 }

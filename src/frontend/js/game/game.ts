@@ -30,7 +30,7 @@ export function gameFunctions() {
 				gameId
 			});
 
-			navigate(`/game`);
+			navigate(`/game`, false);
 		});
 	}
 

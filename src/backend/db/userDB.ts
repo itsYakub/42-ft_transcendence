@@ -1,8 +1,8 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
-import { defaultImage } from "./defaultImage.js";
-import { StringlistBox, Result, UserBox, StringBox, User } from "../../common/interfaces.js";
+import { defaultAvatar } from "./defaultAvatar.js";
+import { StringlistBox, Result, UserBox, StringBox, User, UsersBox, UserType } from "../../common/interfaces.js";
 
 /*
 	Sets up the Users table
@@ -23,8 +23,14 @@ export function initUsersDb(db: DatabaseSync): void {
 		password TEXT,
 		refresh_token TEXT UNIQUE,
 		totp_secret TEXT,
-		type TEXT DEFAULT user
+		type TEXT DEFAULT USER
 		);`);
+
+	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test1@test.com', '12345678', '${defaultAvatar}');`);
+	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test2@test.com', '12345678', '${defaultAvatar}');`);
+	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test3@test.com', '12345678', '${defaultAvatar}');`);
+	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test4@test.com', '12345678', '${defaultAvatar}');`);
+	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test5@test.com', '12345678', '${defaultAvatar}');`);
 }
 
 /*
@@ -107,7 +113,7 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 
 		const pw = hashPassword(password);
 		const insert = db.prepare('INSERT INTO users (nick, email, password, avatar) VALUES (?, ?, ?, ?)');
-		const statementSync = insert.run(stringBox.value, email, pw, defaultImage);
+		const statementSync = insert.run(stringBox.value, email, pw, defaultAvatar);
 
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
@@ -376,7 +382,7 @@ export function markUserOnline(db: DatabaseSync, { userId }) {
 	}
 }
 
-export function markUserOffline(db: DatabaseSync, { userId, type }) {
+export function markUserOffline(db: DatabaseSync, userId: number) {
 	try {
 		const select = db.prepare("UPDATE users SET online = 0 WHERE user_id = ?");
 		// const select = "guest" == type ? db.prepare("DELETE FROM Users WHERE UserID = ?") :
@@ -450,13 +456,11 @@ export function allUsers(db: DatabaseSync): StringlistBox {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allOtherUsers(db: DatabaseSync, userId: number) {
+export function allOtherUsers(db: DatabaseSync, userId: number): UsersBox {
 	try {
-		const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'guest'");
-		const list = select.all(userId);
-
-		let users: User[];
-		list.forEach((user) => users.push(sqlToUser(user)));
+		//const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'guest'");
+		const select = db.prepare("SELECT * FROM users WHERE ? != user_id ORDER BY nick");
+		const users = select.all(userId).map(user => sqlToUser(user));
 
 		return {
 			result: Result.SUCCESS,
@@ -496,21 +500,21 @@ function generateNickname(): string {
 
 function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 	return {
-		userId: sqlUser.user_id as number,
-		nick: sqlUser.nick as string,
-		email: sqlUser.email as string,
 		avatar: sqlUser.avatar as string,
-		password: sqlUser.password as string,
-		refreshToken: sqlUser.refresh_token as string,
+		email: sqlUser.email as string,
+		gameId: sqlUser.game_id as string,
+		nick: sqlUser.nick as string,
 		online: sqlUser.online as number,
-		ready: sqlUser.ready as number,
+		password: sqlUser.password as string,
 		playing: sqlUser.playing as number,
+		ready: sqlUser.ready as number,
+		refreshToken: sqlUser.refresh_token as string,
+		totpEmail: sqlUser.totp_email as number,
 		totpEnabled: sqlUser.totp_enabled as number,
 		totpSecret: sqlUser.totp_secret as string,
 		totpVerified: sqlUser.totp_verified as number,
-		totpEmail: sqlUser.totp_email as number,
-		type: sqlUser.type as string,
-		gameId: sqlUser.game_id as string
+		userType: UserType[sqlUser.type as string],
+		userId: sqlUser.user_id as number
 	};
 }
 

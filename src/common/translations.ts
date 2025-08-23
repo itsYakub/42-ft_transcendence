@@ -44,7 +44,9 @@ export function translateBackend(language: string, text: string): string {
 		"TEXT_MATCH_PLURAL",
 		"TEXT_NEW_NICK",
 		"TEXT_NEW_PASSWORD",
+		"TEXT_NO_USERS",
 		"TEXT_PASSWORD",
+		"TEXT_REMOVE_FOE",
 		"TEXT_REPEAT_PASSWORD",
 		"TEXT_SINGLE_GAME",
 		"TEXT_TOKENS",
@@ -244,7 +246,9 @@ function englishBackend(text: string): string {
 		case "TEXT_MATCH_PLURAL": return "matches";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
+		case "TEXT_NO_USERS": return "No other users!";
 		case "TEXT_PASSWORD": return "Password";
+		case "TEXT_REMOVE_FOE": return "Remove from foe list";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
 		case "TEXT_SINGLE_GAME": return "Single game";
 		case "TEXT_TOKENS": return "Tokens";

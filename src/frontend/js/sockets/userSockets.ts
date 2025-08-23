@@ -1,4 +1,3 @@
-import { usersFunctions } from "../account/users.js";
 import { accountFunctions } from "../account/account.js";
 import { currentPage, sendMessageToServer } from "./socket.js";
 import { navigate } from "../index.js";
@@ -40,7 +39,7 @@ async function userChat(user: User, message: WebsocketMessage) {
 			document.querySelector("#usersDiv").innerHTML = messages.usersHtml;
 			document.querySelector("#messagesDiv").innerHTML = messages.messagesHtml;
 			accountFunctions();
-			usersFunctions();
+			//usersFunctions();
 		}
 	}
 }
@@ -55,11 +54,11 @@ async function userReady(user: User, message: WebsocketMessage) {
 	console.log(message);
 
 	//if (user.gameId == message.gameId) {
-		const gamersBox = await fetch("/api/gamers");
-		const gamers: StringBox = await gamersBox.json();
-		console.log(gamers);
-		if (Result.SUCCESS == gamers.result)
-			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
+	const gamersBox = await fetch("/api/gamers");
+	const gamers: StringBox = await gamersBox.json();
+	console.log(gamers);
+	if (Result.SUCCESS == gamers.result)
+		document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
 	//}
 }
 

@@ -28,6 +28,13 @@ export function navbarFunctions() {
 		}, { once: true });
 	}
 
+	const usersButton = document.querySelector("#usersButton");
+	if (usersButton) {
+		usersButton.addEventListener("click", async () => {
+			navigate("/users");
+		}, { once: true });
+	}
+
 	const profileAvatar = document.querySelector("#accountAvatar");
 	if (profileAvatar) {
 		profileAvatar.addEventListener("click", async () => {

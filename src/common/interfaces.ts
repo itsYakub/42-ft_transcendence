@@ -19,44 +19,50 @@ export enum WebsocketMessageGroup {
 
 export enum WebsocketMessageType {
 	CHAT = "CHAT",
-	JOIN = "JOIN",
 	INVITE = "INVITE",
+	JOIN = "JOIN",
 	LEAVE = "LEAVE",
 	READY = "READY"
 }
 
 export interface WebsocketMessage {
-	group: WebsocketMessageGroup,
-	type: WebsocketMessageType,
+	chat?: string,
 	fromId?: number,
 	gameId?: string,
+	group: WebsocketMessageGroup,
 	toId?: number,
-	chat?: string
+	type: WebsocketMessageType
 }
 
 export interface FrameParams {
-	language: string, 
+	language: string,
 	page?: string,
 	result?: Result,
 	user?: User
 }
 
+export enum UserType {
+	GOOGLE = "GOOGLE",
+	GUEST = "GUEST",
+	USER = "USER"
+}
+
 export interface User {
-	userId: number,
-	nick: string,
-	email: string,
 	avatar: string,
-	password: string,
-	refreshToken: string,
+	email: string,
+	gameId: string,
+	nick: string,
 	online: number,
-	ready: number,
+	password: string,
 	playing: number,
+	ready: number,
+	refreshToken: string,
+	totpEmail: number,
 	totpEnabled: number,
 	totpSecret: string,
 	totpVerified: number,
-	totpEmail: number,
-	type: string,
-	gameId: string
+	userId: number,
+	userType: UserType
 }
 
 export interface Gamer {
@@ -71,27 +77,29 @@ export interface Game {
 }
 
 export interface UserMessage {
-	messageId: number,
 	fromId: number,
-	toId: number,
 	message: string,
-	sent_at: string
+	sent_at: string,
+	toId: number
 }
 
 export interface Friend {
-	userId: number,
-	friendId: number
+	friendId: number,
+	nick: string,
+	online: number,
+	userId: number
 }
 
 export interface Foe {
-	userId: number,
-	foeId: number
+	foeId: number,
+	nick: string,
+	userId: number
 }
 
 export interface GameChat {
+	chat: string,
 	fromId: number,
 	gameId: string,
-	chat: string,
 	sent_at: string
 }
 
@@ -102,10 +110,25 @@ export interface GameChatMessage {
 }
 
 export interface UserBox {
-	result: Result,
-	user?: User,
 	accessToken?: string,
-	refreshToken?: string
+	refreshToken?: string,
+	result: Result,
+	user?: User
+}
+
+export interface UsersBox {
+	result: Result,
+	users?: User[]
+}
+
+export interface FriendsBox {
+	friends?: Friend[],
+	result: Result
+}
+
+export interface FoesBox {
+	foes?: Foe[],
+	result: Result
 }
 
 export interface StringBox {

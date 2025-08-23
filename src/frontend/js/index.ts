@@ -5,7 +5,7 @@ import { devButtons } from "./devButtons.js";
 import { localMatchFunctions } from "./game/localMatch.js";
 import { gameFunctions } from "./game/game.js";
 import { authFunctions } from "./user/auth.js";
-import { usersFunctions } from "./account/users.js";
+import { usersFunctions } from "./users/users.js";
 import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
@@ -16,18 +16,18 @@ import { translateAlert } from "../../common/translations.js";
 /*
 	Simulates moving to a new page
 */
-export async function navigate(url: string, updateHistory: boolean = true): Promise<void> {
+export async function navigate(page: string, updateHistory: boolean = true): Promise<void> {
 	if (updateHistory)
-		history.pushState(null, null, url);
+		history.pushState(null, null, page);
 
-	const response = await fetch(url);
+	const response = await fetch(page);
 	const body = await response.text();
 	const start = body.indexOf("<body>");
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
 	addFunctions();
-	navigated({ page: url });
+	navigated();
 }
 
 /*
@@ -39,17 +39,17 @@ registerEvents();
 	Sets up all the listeners after navigating to a new page
 */
 export function addFunctions() {
-	navbarFunctions();
-	tournamentFunctions();
-	localTournamentFunctions();
 	accountFunctions();
-	usersFunctions();
-	friendsFunctions();
-	foesFunctions();
-	gameFunctions();
-	localMatchFunctions();
-	matchFunctions();
 	authFunctions();
+	foesFunctions();
+	friendsFunctions();
+	gameFunctions();
+	matchFunctions();
+	navbarFunctions();
+	localMatchFunctions();
+	localTournamentFunctions();
+	tournamentFunctions();
+	usersFunctions();
 
 	// remove!
 	devButtons();

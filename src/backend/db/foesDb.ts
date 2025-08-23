@@ -1,5 +1,5 @@
-import { DatabaseSync } from "node:sqlite";
-import { Result } from "../../common/interfaces.js";
+import { DatabaseSync, SQLOutputValue } from "node:sqlite";
+import { Foe, FoesBox, Result } from "../../common/interfaces.js";
 
 export function initFoesDb(db: DatabaseSync): void {
 	db.exec(`
@@ -13,10 +13,11 @@ export function initFoesDb(db: DatabaseSync): void {
 /*
 	Gets all the user's blocked ids
 */
-export function getFoes(db: DatabaseSync, { userId }) {
+export function getFoes(db: DatabaseSync, userId: number): FoesBox {
 	try {
-		const select = db.prepare("SELECT foe_id, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE fOES.user_id = ? ORDER BY online DESC, nick");
-		const foes = select.all(userId);
+		//const select = db.prepare("SELECT foes.user_id, foe_id, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY online DESC, nick");
+		const select = db.prepare("SELECT *, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY online DESC, nick");
+		const foes = select.all(userId).map(foe => sqlToFoe(foe));
 		return {
 			result: Result.SUCCESS,
 			foes
@@ -30,37 +31,37 @@ export function getFoes(db: DatabaseSync, { userId }) {
 }
 
 /*
-	Adds somebody to the block list
+	Adds somebody to the foe list
 */
-export function addFoe(db: DatabaseSync, { userId, foeId }): any {
+export function addFoe(db: DatabaseSync, userId: number, foeId: number): Result {
 	try {
 		const select = db.prepare("INSERT INTO foes (user_id, foe_id) VALUES (?, ?)");
 		select.run(userId, foeId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
 /*
 	Unblocks someone from a user's list
 */
-export function removeFoe(db: DatabaseSync, { userId, foeId }): any {
+export function removeFoe(db: DatabaseSync, userId: number, foeId: number): Result {
 	try {
 		const select = db.prepare("DELETE FROM foes WHERE user_id = ? AND foe_id = ?");
 		select.run(userId, foeId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
+}
+
+function sqlToFoe(foe: Record<string, SQLOutputValue>): Foe {
+	return {
+		foeId: foe.foe_id as number,
+		nick: foe.nick as string,
+		userId: foe.user_id as number
+	};
 }
