@@ -96,9 +96,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 			return reply.send(guestBox);
 
 		return reply.header(
-			"Set-Cookie", `accessToken=${guestBox.value}; Path=/; Secure; HttpOnly;`).send({
-				result: Result.SUCCESS
-			});
+			"Set-Cookie", `accessToken=${guestBox.value}; Path=/; Secure; HttpOnly;`).send(Result.SUCCESS);
 	});
 
 	fastify.get("/auth/google", async (request: FastifyRequest, reply: FastifyReply) => {

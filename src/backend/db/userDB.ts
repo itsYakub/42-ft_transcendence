@@ -26,11 +26,8 @@ export function initUsersDb(db: DatabaseSync): void {
 		type TEXT DEFAULT USER
 		);`);
 
-	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test1@test.com', '12345678', '${defaultAvatar}');`);
-	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test2@test.com', '12345678', '${defaultAvatar}');`);
-	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test3@test.com', '12345678', '${defaultAvatar}');`);
-	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test4@test.com', '12345678', '${defaultAvatar}');`);
-	db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test5@test.com', '12345678', '${defaultAvatar}');`);
+	for (var i = 1; i < 20; i++)
+		db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test${i}@test.com', '12345678', '${defaultAvatar}');`);
 }
 
 /*
@@ -148,7 +145,7 @@ export function addGuest(db: DatabaseSync): StringBox {
 			return stringBox;
 
 		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
-		const statementSync = insert.run(stringBox.value, "guest");
+		const statementSync = insert.run(stringBox.value, UserType[UserType.GUEST]);
 		const id: number = statementSync.lastInsertRowid as number;
 		return {
 			result: Result.SUCCESS,
@@ -186,7 +183,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 			return stringBox;
 
 		const insert = db.prepare('INSERT INTO users (nick, email, avatar, type) VALUES (?, ?, ?, ?)');
-		const statementSync = insert.run(stringBox.value, email, avatar, "google");
+		const statementSync = insert.run(stringBox.value, email, avatar, UserType[UserType.GOOGLE]);
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
 		updateRefreshtoken(db, {

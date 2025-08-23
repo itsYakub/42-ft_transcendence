@@ -145,9 +145,9 @@ async function guestLogin() {
 		body: JSON.stringify({})
 	});
 
-	const json = await response.json();
-	if (json.error) {
-		showAlert(json.error);
+	const result = await response.text();
+	if (Result.SUCCESS != result) {
+		showAlert(result);
 		return;
 	}
 	navigate("/");

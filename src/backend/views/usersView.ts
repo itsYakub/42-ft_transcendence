@@ -1,6 +1,6 @@
 import { Foe, Friend, User, UserType } from "../../common/interfaces.js";
 
-export function usersView(users: User[], friends: Friend[], foes: Foe[], selectedUser: User, user: User): string {
+export function usersView(users: User[], friends: Friend[], foes: Foe[], user: User): string {
 	if (0 == users.length) {
 		return `
 		<div class="w-full h-full bg-gray-900">
@@ -9,43 +9,35 @@ export function usersView(users: User[], friends: Friend[], foes: Foe[], selecte
 		`;
 	}
 
-	const friendsIDs = friends.map(friend => friend.friendId);
-	const foeIDs = foes.map(foe => foe.foeId);
-	const isFriend = friendsIDs.includes(selectedUser.userId);
-	const isFoe = foeIDs.includes(selectedUser.userId);
-
-	return usersViewHtml(users, isFriend, isFoe, selectedUser, user);
+	const friendsIds = friends.map(friend => friend.friendId);
+	const foeIds = foes.map(foe => foe.foeId);
+	return usersViewHtml(users, friendsIds, foeIds, user);
 }
 
 /*
 	The list of user buttons
 */
-export function usersHtml(users: User[], selectedUser: User) {
+export function usersHtml(users: User[], friendsIds: number[], foesIds: number[], user: User) {
 	let userList = "";
 	for (var key in users) {
-		userList += userButtonHtml(users[key], selectedUser);
+		var userId = users[key].userId;
+		userList += userHtml(users[key], friendsIds.includes(userId), foesIds.includes(userId), UserType.GUEST == user.userType);
 	}
 
 	return userList;
 }
 
 
-function usersViewHtml(users: User[], isFriend: boolean, isFoe: boolean, selectedUser: User, user: User): string {
+function usersViewHtml(users: User[], friendsIds: number[], foesIds: number[], user: User): string {
 	return `
 	<span id="data" data-id="${user.userId}"></span>
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">
-			<div id="usersDiv" class="w-60 pt-8 flex flex-col pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-				${switcherHtml(user)}	
-				${usersHtml(users, selectedUser)}
-			</div>
 			<div class="grow bg-gray-900">
-				<div class="flex flex-row h-full py-8 pl-8 text-left">
-					<div class="h-150 p-2">
-						${userHtml(selectedUser)}
-						${friendHtml(isFriend)}
-						${foeHtml(isFoe)}
-						${neitherFriendNorFoeHtml(isFoe || isFriend)}
+				<div class="flex flex-col h-full py-8 pl-8 text-center">
+					${switcherHtml(user)}
+					<div class="h-150 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
+						${usersHtml(users, friendsIds, foesIds, user)}
 					</div>					
 				</div>
 			</div>
@@ -59,7 +51,7 @@ function switcherHtml(user: User): string {
 		return "";
 
 	return `
-		<div class="flex flex-row justify-end mb-2 gap-2">
+		<div class="flex flex-row justify-center mb-2 gap-2">
 			<div class="disabled p-2 rounded-lg text-gray-600 bg-gray-800">All</div>
 			<div id="friendsButton" class="cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-800">Friends</div>
 			<div id="foesButton" class="cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-800">Foes</div>
@@ -67,93 +59,34 @@ function switcherHtml(user: User): string {
 	`;
 }
 
-function userButtonHtml(user: User, selectedUser: User) {
-	if (user.userId == selectedUser.userId) {
-		return `
-		<button id="selectedUserButton" class="disabled text-right w-full p-2 rounded-lg text-gray-600 bg-gray-800" data-id="${user.userId}">${user.nick}</button>
-		`;
-	}
-	else {
-		return `
-		<button class="userButton cursor-pointer text-right w-full p-2 rounded-lg text-gray-600 hover:bg-gray-800" data-id="${user.userId}">${user.nick}</button>
-		`;
-	}
-}
-
-function userHtml(user: User) {
+function userHtml(user: User, isFriend: boolean, isFoe: boolean, isGuest: boolean) {
 	return `
-		<p class="text-gray-300 mb-8">${user.userType}</p>
-	`;
-}
-
-function friendHtml(isFriend: boolean): string {
-	if (!isFriend)
-		return "";
-
-	return `
-		<div class="flex flex-row">
-			<span class="text-white">In friends list - </span>
-			<span id="removeFriendButton" class="cursor-pointer text-white">Remove</span>
+		<div class="w-8/10 border border-gray-600 rounded-lg flex flex-row bg-gray-700 mx-auto p-2">
+			<div class="text-white w-60 text-end">${user.nick}</div>
+			<button class="viewProfileButton" data-id="${user.userId}"><i class="text-white cursor-pointer fa solid fa-user"></i></button>
+			<button class="inviteButton" data-id="${user.userId}"><i class="text-white cursor-pointer fa-solid fa-table-tennis-paddle-ball"></i></button>
+			${guestHtml(isGuest || UserType.GUEST == user.userType, user)}
+			${neitherFriendNorFoeHtml(isFriend || isFoe, user)}
 		</div>
 	`;
 }
 
-function foeHtml(isFoe: boolean): string {
-	if (!isFoe)
+function guestHtml(isGuest: boolean, user: User): string {
+	if (isGuest)
 		return "";
 
 	return `
-		<div class="flex flex-row">
-			<span class="text-white">In foes list - </span>
-			<span id="removeFoeButton" class="cursor-pointer text-white">Remove</span>
-		</div>
+		<button class="chatButton" data-id="${user.userId}"><i class="text-white cursor-pointer fa solid fa-comment"></i></button>
 	`;
 }
 
-function neitherFriendNorFoeHtml(isFriendOrFoe: boolean) {
+function neitherFriendNorFoeHtml(isFriendOrFoe: boolean, user: User): string {
 	if (isFriendOrFoe)
 		return "";
 
 	return `
-		<div class="flex flex-row">
-			<span class="text-white">In neither list - </span>
-			<button id="addFriendButton" class="cursor-pointer text-white">Add friend</button>
-			<button id="addFoeButton" class="cursor-pointer text-white">Add foe</button>
-		</div>
+		<button class="addFriendButton" data-id="${user.userId}"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
+		<button class="addFoeButton" data-id="${user.userId}"><i class="text-red-300 cursor-pointer fa solid fa-ban"></i></button>
 	`;
-}
-
-function friendOrFoeButtons(isFriendOrFoe: boolean) {
-	if (isFriendOrFoe) {
-		return `
-		<button id="chatButton" class="visible"><i class="text-white cursor-pointer fa solid fa-comment"></i></button>
-		<button id="addFriendButton" class="collapse"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
-		<button id="addFoeButton" class="collapse"><i class="text-red-300 cursor-pointer fa solid fa-ban"></i></button>
-		`;
-	}
-
-	return `
-		<button id="chatButton" class="collapse"><i class="text-white cursor-pointer fa solid fa-comment"></i></button>
-		<button id="addFriendButton" class="visible"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
-		<button id="addFoeButton" class="visible"><i class="text-red-300 cursor-pointer fa solid fa-ban"></i></button>
-	`;
-}
-
-function chatButtonHtml(isGuest): string {
-	return isGuest ? "" : `
-		<button id="chatButton"><i class="text-white cursor-pointer fa solid fa-comment"></i></button>
-	`;
-}
-
-function friendButtonHtml(isFriend: boolean): string {
-	return isFriend ? "" : `
-		<button id="addFriendButton"><i class="text-green-300 cursor-pointer fa solid fa-plus"></i></button>
-		`;
-}
-
-function foeButtonHtml(isFoe: boolean): string {
-	return isFoe ? "" : `
-		<button id="addFoeButton"><i class="text-red-300 cursor-pointer fa solid fa-ban"></i></button>
-		`;
 }
 
