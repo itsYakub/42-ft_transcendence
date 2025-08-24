@@ -2,8 +2,10 @@ export function translateBackend(language: string, text: string): string {
 	const items = [
 		"BUTTON_ACCOUNT",
 		"BUTTON_AI_GAME",
+		"BUTTON_ADD_FOE",
 		"BUTTON_ADD_FRIEND",
 		"BUTTON_BLOCK_USER",
+		"BUTTON_CHAT",
 		"BUTTON_DISABLE_TOTP",
 		"BUTTON_ENABLE_TOTP",
 		"BUTTON_FOES",
@@ -24,6 +26,8 @@ export function translateBackend(language: string, text: string): string {
 		"BUTTON_REGISTER",
 		"BUTTON_REMOTE_GAME",
 		"BUTTON_REMOTE_TOURNAMENT",
+		"BUTTON_REMOVE_FOE",
+		"BUTTON_REMOVE_FRIEND",
 		"BUTTON_TOTP_VERIFY",
 		"BUTTON_TOURNAMENT",
 		"BUTTON_UPDATE",
@@ -44,9 +48,12 @@ export function translateBackend(language: string, text: string): string {
 		"TEXT_MATCH_PLURAL",
 		"TEXT_NEW_NICK",
 		"TEXT_NEW_PASSWORD",
+		"TEXT_NO_FRIENDS",
+		"TEXT_NO_FOES",
 		"TEXT_NO_USERS",
 		"TEXT_PASSWORD",
 		"TEXT_REMOVE_FOE",
+		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
 		"TEXT_SINGLE_GAME",
 		"TEXT_TOKENS",
@@ -200,9 +207,11 @@ function dutchAlert(text: string): string {
 function englishBackend(text: string): string {
 	switch (text) {
 		case "BUTTON_ACCOUNT": return "Account";
-		case "BUTTON_AI_GAME": return "AI game";
+		case "BUTTON_ADD_FOE": return "Add foe";
 		case "BUTTON_ADD_FRIEND": return "Add friend";
+		case "BUTTON_AI_GAME": return "AI game";
 		case "BUTTON_BLOCK_USER": return "Block";
+		case "BUTTON_CHAT": return "Chat";
 		case "BUTTON_DISABLE_TOTP": return "Disable TOTP";
 		case "BUTTON_ENABLE_TOTP": return "Enable TOTP";
 		case "BUTTON_FOES": return "Foes";
@@ -223,6 +232,8 @@ function englishBackend(text: string): string {
 		case "BUTTON_REGISTER": return "Register";
 		case "BUTTON_REMOTE_GAME": return "Remote game";
 		case "BUTTON_REMOTE_TOURNAMENT": return "Remote tournament";
+		case "BUTTON_REMOVE_FOE": return "Remove foe";
+		case "BUTTON_REMOVE_FRIEND": return "Remove friend";
 		case "BUTTON_TOTP_VERIFY": return "Verify";
 		case "BUTTON_TOURNAMENT": return "Tournament";
 		case "BUTTON_UPDATE": return "Update";
@@ -246,9 +257,12 @@ function englishBackend(text: string): string {
 		case "TEXT_MATCH_PLURAL": return "matches";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
+		case "TEXT_NO_FRIENDS": return "No friends!";
+		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_USERS": return "No other users!";
 		case "TEXT_PASSWORD": return "Password";
-		case "TEXT_REMOVE_FOE": return "Remove from foe list";
+		case "TEXT_REMOVE_FOE": return "Remove from foes";
+		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
 		case "TEXT_SINGLE_GAME": return "Single game";
 		case "TEXT_TOKENS": return "Tokens";
@@ -274,11 +288,8 @@ function englishBackend(text: string): string {
 
 
 
-
-		case "TEXT_REMOVE": return "Remove";
 		case "TEXT_ADD_TITLE": return "Friend's email address";
 		case "TEXT_ADD_EMAIL": return "Email";
-		case "TEXT_ADD_FRIEND": return "Add friend";
 
 		// game
 		case "TEXT_PLAYER": return "Player";

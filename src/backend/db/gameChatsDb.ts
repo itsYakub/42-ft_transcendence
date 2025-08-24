@@ -5,9 +5,9 @@ export function initGameChatsDb(db: DatabaseSync): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS game_chats (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		game_id TEXT NOT NULL,
-		from_id INTEGER NOT NULL,
 		chat TEXT NOT NULL,
+		from_id INTEGER NOT NULL,
+		game_id TEXT NOT NULL,
 		sent_at TEXT NOT NULL
 		);`);
 }
@@ -15,10 +15,10 @@ export function initGameChatsDb(db: DatabaseSync): void {
 /*
 	Gets all the game's messages
 */
-export function gameChats(db: DatabaseSync, gameId: string): any {
+export function gameChatsList(db: DatabaseSync, gameId: string): any {
 	try {
 		const select = db.prepare("SELECT from_id, chat, nick FROM game_chats INNER JOIN users ON users.user_id = game_chats.from_id WHERE game_chats.game_id = ? ORDER BY sent_at DESC");
-		const chats: GameChatMessage[] = select.all(gameId).map(sqlChat => sqlToChat(sqlChat));
+		const chats: GameChatMessage[] = select.all(gameId).map(sqlChat => sqlToGameChatMessage(sqlChat));
 		console.log("db", chats);
 		return {
 			result: Result.SUCCESS,
@@ -50,7 +50,7 @@ export function addGameChat(db: DatabaseSync, message: WebsocketMessage): any {
 	}
 }
 
-function sqlToChat(sqlChat: Record<string, SQLOutputValue>): GameChatMessage {
+function sqlToGameChatMessage(sqlChat: Record<string, SQLOutputValue>): GameChatMessage {
 	return {
 		chat: sqlChat.chat as string,
 		fromId: sqlChat.from_id as number,

@@ -1,17 +1,6 @@
 import { navigate } from "./index.js";
 
 export function devButtons() {
-	const addMockUsersButton = document.querySelector("#addMockUsersButton")
-	if (addMockUsersButton) {
-		addMockUsersButton.addEventListener("click", async () => {
-			const response = await fetch("/dev/add/users");
-			if (response.ok)
-				alert("Added mock users!");
-			else
-				alert("Something went wrong!");
-		});
-	}
-
 	const addMockHistoryButton = document.querySelector("#addMockHistoryButton")
 	if (addMockHistoryButton) {
 		addMockHistoryButton.addEventListener("click", async () => {

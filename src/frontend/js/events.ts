@@ -3,7 +3,7 @@ import { addFunctions, navigate, showAlert } from "./index.js";
 import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
 export async function navigated() {
-	const userResponse = await fetch("/user/id");
+	const userResponse = await fetch("/api/user");
 	const json = await userResponse.json();
 	if (Result.SUCCESS == json.result) {
 		if (!isConnected()) {

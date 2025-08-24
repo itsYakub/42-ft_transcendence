@@ -1,10 +1,4 @@
 export function loggedOutView(): string {
-	let html = userString();
-
-	return html;
-}
-
-function userString(): string {
 	return `
 	<h1 class="text-gray-300 mt-8 text-center text-3xl">%%TEXT_USER_DECISION%%</h1>
 	<div class="grid grid-cols-2 gap-5 mt-12">

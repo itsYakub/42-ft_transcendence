@@ -7,27 +7,31 @@ import { StringlistBox, Result, UserBox, StringBox, User, UsersBox, UserType } f
 /*
 	Sets up the Users table
 */
-export function initUsersDb(db: DatabaseSync): void {
+export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS users (
-		user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		nick TEXT UNIQUE NOT NULL,
+		avatar TEXT,
 		email TEXT,
 		game_id TEXT,
-		ready INTEGER NOT NULL DEFAULT 0,
-		totp_enabled INTEGER NOT NULL DEFAULT 0,
-		totp_verified INTEGER NOT NULL DEFAULT 0,
+		nick TEXT UNIQUE NOT NULL,
 		online INTEGER NOT NULL DEFAULT 0,
-		playing INTEGER NOT NULL DEFAULT 0,
-		avatar TEXT,
 		password TEXT,
+		playing INTEGER NOT NULL DEFAULT 0,
+		ready INTEGER NOT NULL DEFAULT 0,
 		refresh_token TEXT UNIQUE,
+		totp_email INTEGER NOT NULL DEFAULT 0,
+		totp_enabled INTEGER NOT NULL DEFAULT 0,
 		totp_secret TEXT,
-		type TEXT DEFAULT USER
+		totp_verified INTEGER NOT NULL DEFAULT 0,
+		type TEXT DEFAULT USER,
+		user_id INTEGER PRIMARY KEY AUTOINCREMENT
 		);`);
 
-	for (var i = 1; i < 20; i++)
-		db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test${i}@test.com', '12345678', '${defaultAvatar}');`);
+	if (addUsers > 0) {
+		const pw = hashPassword("12345678");
+		for (var i = 1; i <= addUsers; i++)
+			db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test${i}@test.com', '${pw}', '${defaultAvatar}');`);
+	}
 }
 
 /*
@@ -289,6 +293,28 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 }
 
 // Finds the user in the DB by email
+export function getUserById(db: DatabaseSync, userId: number): UserBox {
+	try {
+		const select = db.prepare("SELECT * FROM users WHERE user_id = ?");
+		const user = select.get(userId);
+		if (user) {
+			return {
+				result: Result.SUCCESS,
+				user: sqlToUser(user)
+			}
+		}
+		return {
+			result: Result.ERR_NO_USER
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB
+		};
+	}
+}
+
+// Finds the user in the DB by email
 export function getUserByEmail(db: DatabaseSync, email: string): UserBox {
 	try {
 		const select = db.prepare("SELECT * FROM users WHERE email = ?");
@@ -453,11 +479,15 @@ export function allUsers(db: DatabaseSync): StringlistBox {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allOtherUsers(db: DatabaseSync, userId: number): UsersBox {
+export function allOtherUsers(db: DatabaseSync, user: User): UsersBox {
+	if (UserType.GUEST == user.userType) {
+		return {
+			result: Result.ERR_FORBIDDEN
+		};
+	}
 	try {
-		//const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'guest'");
 		const select = db.prepare("SELECT * FROM users WHERE ? != user_id ORDER BY nick");
-		const users = select.all(userId).map(user => sqlToUser(user));
+		const users = select.all(user.userId).map(user => sqlToUser(user));
 
 		return {
 			result: Result.SUCCESS,
@@ -501,15 +531,15 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 		email: sqlUser.email as string,
 		gameId: sqlUser.game_id as string,
 		nick: sqlUser.nick as string,
-		online: sqlUser.online as number,
+		online: Boolean(sqlUser.online as number),
 		password: sqlUser.password as string,
-		playing: sqlUser.playing as number,
-		ready: sqlUser.ready as number,
+		playing: Boolean(sqlUser.playing as number),
+		ready: Boolean(sqlUser.ready as number),
 		refreshToken: sqlUser.refresh_token as string,
-		totpEmail: sqlUser.totp_email as number,
-		totpEnabled: sqlUser.totp_enabled as number,
+		totpEmail: Boolean(sqlUser.totp_email as number),
+		totpEnabled: Boolean(sqlUser.totp_enabled as number),
 		totpSecret: sqlUser.totp_secret as string,
-		totpVerified: sqlUser.totp_verified as number,
+		totpVerified: Boolean(sqlUser.totp_verified as number),
 		userType: UserType[sqlUser.type as string],
 		userId: sqlUser.user_id as number
 	};

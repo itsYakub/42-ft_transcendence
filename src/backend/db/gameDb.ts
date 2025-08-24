@@ -152,7 +152,7 @@ function sqlToGame(game: Record<string, SQLOutputValue>): Game {
 function sqlToGamer(gamer: Record<string, SQLOutputValue>): Gamer {
 	return {
 		nick: gamer.nick as string,
-		ready: gamer.ready as number,
+		ready: Boolean(gamer.ready as number),
 		userId: gamer.user_id as number
 	};
 }

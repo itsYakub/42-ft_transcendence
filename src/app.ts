@@ -3,26 +3,22 @@ import fastifyStatic from "@fastify/static";
 import fastifyCookie from "fastify-cookie";
 import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { userEndpoints } from "./backend/api/userEndpoints.js";
 import { initFriendsDb } from "./backend/db/friendsDb.js";
-import { initHistoryDb } from "./backend/db/historyDB.js";
+import { initMatchResultsDb } from "./backend/db/matchResultsDb.js";
 import { devEndpoints } from "./backend/devTools.js";
-import { initTournaments } from "./backend/db/tournamentDb.js";
-import { historyRoutes } from "./backend/routes/historyRoutes.js";
-import { friendsRoutes } from "./backend/routes/friendsRoutes.js";
-import { homeRoutes } from "./backend/routes/homeRoutes.js";
-import { tournamentRoutes } from "./backend/routes/tournamentRoutes.js";
-import { usersRoutes } from "./backend/routes/usersRoutes.js";
+import { initTournaments } from "./backend/old/tournamentDb.js";
+import { homePage } from "./backend/pages/homePage.js";
+import { tournamentRoutes } from "./backend/old/tournamentRoutes.js";
+import { usersPage } from "./backend/pages/usersPage.js";
 import { initUserChatsDb } from "./backend/db/userChatsDb.js";
-import { matchRoutes } from "./backend/routes/matchRoutes.js";
+import { matchRoutes } from "./backend/old/matchRoutes.js";
 import { serverSockets } from "./backend/sockets/serverSockets.js";
-import { apiRoutes } from "./backend/api/apiRoutes.js";
-import { gameRoutes } from "./backend/routes/gameRoutes.js";
+import { apiEndpoints } from "./backend/api/apiEndpoints.js";
+import { gamePage } from "./backend/pages/gamePage.js";
 import { initFoesDb } from "./backend/db/foesDb.js";
-import { foesRoutes } from "./backend/routes/foesRoutes.js";
 import { getUser, initUsersDb } from "./backend/db/userDB.js";
 import { frameView } from "./backend/views/frameView.js";
-import { accountRoutes } from "./backend/routes/accountRoutes.js";
+import { accountPage } from "./backend/pages/accountPage.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { authEndpoints } from "./backend/api/authEndpoints.js";
 import { accountEndpoints } from "./backend/api/accountEndpoints.js";
@@ -31,6 +27,10 @@ import { Result, User } from "./common/interfaces.js";
 import { initGameChatsDb } from "./backend/db/gameChatsDb.js";
 import { foesEndpoints } from "./backend/api/foesEndpoints.js";
 import { friendsEndpoints } from "./backend/api/friendsEndpoints.js";
+import { userEndpoints } from "./backend/api/userEndpoints.js";
+import { userChatsPage } from "./backend/pages/userChatsPage.js";
+import { matchResultsEndpoints } from "./backend/api/matchResultsEndpoints.js";
+import { profileEndpoints } from "./backend/api/profileEndpoints.js";
 
 const __dirname = import.meta.dirname;
 
@@ -131,31 +131,60 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 
 const db = new DatabaseSync("../data/transcendence.db");
 
-try {
-	initFoesDb(db);
-	initFriendsDb(db);
-	initGameChatsDb(db);
-	initHistoryDb(db);
-	//initTournaments(db);
-	initUserChatsDb(db);
-	initUsersDb(db);
+const mockData = {
+	mockUsers: 5,
+	mockMessages: {
+		number: 5,
+		start: 1,
+		end: 6
+	},
+	mockMatchResults: {
+		number: 10,
+		start: 1,
+		end: 6
+	},
+	mockFriends: {
+		number: 3,
+		id: 6
+	},
+	mockFoes: {
+		number: 3,
+		id: 6
+	},
+	mockUserChats: {
+		number: 2,
+		start: 1,
+		end: 2,
+		id: 6
+	}
 
-	accountRoutes(fastify, db);
-	apiRoutes(fastify, db);
-	friendsRoutes(fastify, db);
-	foesRoutes(fastify, db);
-	gameRoutes(fastify, db);
-	historyRoutes(fastify, db);
-	homeRoutes(fastify, db);
-	usersRoutes(fastify, db);
+}
+
+try {
+	initFoesDb(db, mockData.mockFoes);
+	initFriendsDb(db, mockData.mockFriends);
+	initGameChatsDb(db);
+	initMatchResultsDb(db, mockData.mockMatchResults);
+	//initTournaments(db);
+	initUserChatsDb(db, mockData.mockUserChats);
+	initUsersDb(db, mockData.mockUsers);
+
+	accountPage(fastify, db);
+	gamePage(fastify, db);
+	homePage(fastify, db);
+	userChatsPage(fastify, db);
+	usersPage(fastify, db);
 
 	matchRoutes(fastify, db);
 	tournamentRoutes(fastify, db);
 
 	accountEndpoints(fastify, db);
+	apiEndpoints(fastify, db);
 	authEndpoints(fastify, db);
 	foesEndpoints(fastify, db);
 	friendsEndpoints(fastify, db);
+	matchResultsEndpoints(fastify, db);
+	profileEndpoints(fastify, db);
 	userEndpoints(fastify, db);
 
 	serverSockets(fastify, db);
@@ -163,7 +192,6 @@ try {
 	// Remove!
 	devEndpoints(fastify, db);
 
-	// Start listening
 	fastify.listen({
 		host: "0.0.0.0",
 		port: 3000

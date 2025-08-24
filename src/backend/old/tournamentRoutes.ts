@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
-import { getTournamentByCode } from '../db/tournamentDb.js';
-import { tournamentMatchHtml } from '../views/tournamentMatchHtml.js';
-import { localTournamentHtml } from '../views/localTournamentHtml.js';
+import { getTournamentByCode } from './tournamentDb.js';
+import { tournamentMatchHtml } from './tournamentMatchHtml.js';
+import { localTournamentHtml } from './localTournamentHtml.js';
 import { Result } from '../../common/interfaces.js';
 
 export function tournamentRoutes(fastify: FastifyInstance, db: DatabaseSync): void {

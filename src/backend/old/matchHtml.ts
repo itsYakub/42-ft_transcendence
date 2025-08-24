@@ -69,7 +69,7 @@ function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): str
 }
 
 function gamerString(gamer: Gamer) {
-	const readyText = 0 == gamer.ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
+	const readyText = gamer.ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
 
 	return `
 	<div class="flex flex-row mr-2">

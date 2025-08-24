@@ -16,7 +16,7 @@ export function initChatSocket(): Promise<void> {
 		socket!.onopen = () => resolve();
 
 		socket!.onmessage = async (event) => {
-			const userResponse = await fetch("/user/id");
+			const userResponse = await fetch("/api/user");
 			const userBox = await userResponse.json();
 			if (Result.SUCCESS != userBox.result)
 				return;

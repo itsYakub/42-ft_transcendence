@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { localMatchHtml } from '../views/localMatchHtml.js';
+import { localMatchHtml } from './localMatchHtml.js';
 import { frameView } from '../views/frameView.js';
 
 export function matchRoutes(fastify: FastifyInstance, db: DatabaseSync): void {

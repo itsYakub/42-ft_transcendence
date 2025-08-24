@@ -52,22 +52,22 @@ export interface User {
 	email: string,
 	gameId: string,
 	nick: string,
-	online: number,
+	online: boolean,
 	password: string,
-	playing: number,
-	ready: number,
+	playing: boolean,
+	ready: boolean,
 	refreshToken: string,
-	totpEmail: number,
-	totpEnabled: number,
+	totpEmail: boolean,
+	totpEnabled: boolean,
 	totpSecret: string,
-	totpVerified: number,
+	totpVerified: boolean,
 	userId: number,
 	userType: UserType
 }
 
 export interface Gamer {
 	nick: string,
-	ready: number,
+	ready: boolean,
 	userId: number
 }
 
@@ -76,17 +76,31 @@ export interface Game {
 	nicks: string
 }
 
-export interface UserMessage {
-	fromId: number,
+export interface MatchResult {
+	opponent: string,
+	opponentScore: number,
+	playedAt: Date,
+	score: number,
+	tournamentWin: boolean,
+	userId: number
+}
+
+export interface UserChatMessage {
+	partnerId: number,
+	partnerNick: string,
 	message: string,
-	sent_at: string,
-	toId: number
+	sentAt: Date,
+}
+
+export interface UserChatPartner {
+	partnerId: number,
+	partnerNick: string
 }
 
 export interface Friend {
 	friendId: number,
 	nick: string,
-	online: number,
+	online: boolean,
 	userId: number
 }
 
@@ -100,7 +114,7 @@ export interface GameChat {
 	chat: string,
 	fromId: number,
 	gameId: string,
-	sent_at: string
+	sentAt: Date
 }
 
 export interface GameChatMessage {
@@ -123,6 +137,21 @@ export interface UsersBox {
 
 export interface FriendsBox {
 	friends?: Friend[],
+	result: Result
+}
+
+export interface MatchResultBox {
+	matchResults?: MatchResult[],
+	result: Result
+}
+
+export interface UserChatMessagesBox {
+	messages?: UserChatMessage[],
+	result: Result
+}
+
+export interface UserChatPartnersBox {
+	partners?: UserChatPartner[],
 	result: Result
 }
 

@@ -51,6 +51,7 @@ function loggedInString(user: User, languageSelect: string, page: string): strin
 				${homeButtonString(page)}
 				${gameButtonString(page)}
 				${usersButtonString(page)}
+				${chatButtonString(page)}
 			</div>
 
 			<div class="ml-auto text-gray-300">
@@ -74,7 +75,6 @@ function guestString(user: User, languageSelect: string, page: string): string {
 			<div class="mx-auto">
 				${homeButtonString(page)}
 				${gameButtonString(page)}
-				${usersButtonString(page)}
 			</div>
 
 			<div class="ml-auto text-gray-300">
@@ -116,6 +116,17 @@ function usersButtonString(page: string) {
 	<button id="usersButton"
 		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 		%%BUTTON_USERS%%
+	</button>
+	`;
+}
+
+function chatButtonString(page: string) {
+	const bgColour = "/chat" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="chatButton"
+		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%BUTTON_CHAT%%
 	</button>
 	`;
 }

@@ -2,12 +2,12 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
-import { matchHtml } from '../views/matchHtml.js';
+import { matchHtml } from '../old/matchHtml.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, Result } from '../../common/interfaces.js';
-import { gameChats } from '../db/gameChatsDb.js';
+import { gameChatsList } from '../db/gameChatsDb.js';
 
-export function gameRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 		const language = request.language;
@@ -28,7 +28,7 @@ export function gameRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 				return reply.type("text/html").send(frameView(params));
 			}
 
-			const chatsBox = gameChats(db, gameId);
+			const chatsBox = gameChatsList(db, gameId);
 			if (Result.SUCCESS != chatsBox.result) {
 				params.result = chatsBox.result;
 				return reply.type("text/html").send(frameView(params));

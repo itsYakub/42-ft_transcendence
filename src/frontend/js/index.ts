@@ -1,4 +1,3 @@
-import { friendsFunctions } from "./account/friends.js";
 import { navbarFunctions } from "./navbar.js";
 import { accountFunctions } from "./account/account.js";
 import { devButtons } from "./devButtons.js";
@@ -10,8 +9,8 @@ import { matchFunctions } from "./game/match.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
 import { tournamentFunctions } from "./game/tournament.js";
-import { foesFunctions } from "./account/foes.js";
 import { translateAlert } from "../../common/translations.js";
+import { userChatsFunctions } from "./userChats.js";
 
 /*
 	Simulates moving to a new page
@@ -41,14 +40,14 @@ registerEvents();
 export function addFunctions() {
 	accountFunctions();
 	authFunctions();
-	foesFunctions();
-	friendsFunctions();
 	gameFunctions();
 	matchFunctions();
 	navbarFunctions();
 	localMatchFunctions();
 	localTournamentFunctions();
+	//profileFunctions();
 	tournamentFunctions();
+	userChatsFunctions();
 	usersFunctions();
 
 	// remove!
@@ -71,7 +70,7 @@ export function showAlert(text: string) {
 	}
 }
 
-function getLanguage(): string {
+export function getLanguage(): string {
 	let language = document.cookie
 		.split("; ")
 		.find((row) => row.startsWith("language="))

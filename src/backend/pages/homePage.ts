@@ -6,13 +6,13 @@ import { frameView } from '../views/frameView.js';
 /*
 	Handles the home page route
 */
-export function homeRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = {
 			user: request.user,
 			page: request.url,
 			language: request.language
 		};
-		return reply.type("text/html").send(frameView(params, homeView(params)));
+		return reply.type("text/html").send(frameView(params, homeView(request.user)));
 	});
 }

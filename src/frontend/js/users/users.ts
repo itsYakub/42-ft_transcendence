@@ -1,147 +1,108 @@
-import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
-import { showAlert } from "../index.js";
-import { sendMessageToServer } from "../sockets/socket.js";
+import { profileView } from "../../../backend/views/profileView.js";
+import { Result } from "../../../common/interfaces.js";
+import { navigate } from "../index.js";
+import { profileFunctions } from "./profile.js";
 
 export function usersFunctions() {
-	const friendsButton = document.getElementById("friendsButton");
+	const allButton = document.querySelector("#allButton");
+	if (allButton) {
+		allButton.addEventListener("click", async () => {
+			navigate("/users", false);
+		});
+	}
+
+	const friendsButton = document.querySelector("#friendsButton");
 	if (friendsButton) {
 		friendsButton.addEventListener("click", async () => {
-			const response = await fetch("/friends");
+			const response = await fetch("/api/friends");
+			const text = await response.text();
+			console.log(text);
+			const json = JSON.parse(text);
+			if (Result.SUCCESS == json.result) {
+				document.querySelector("#content").innerHTML = json.value;
+				usersFunctions();
+			}
+		});
+	}
 
+	const foesButton = document.querySelector("#foesButton");
+	if (foesButton) {
+		foesButton.addEventListener("click", async () => {
+			const response = await fetch("/api/foes");
 			const text = await response.text();
 			const json = JSON.parse(text);
 			if (Result.SUCCESS == json.result) {
 				document.querySelector("#content").innerHTML = json.value;
-			}
-		}, { once: true });
-	}
-
-	const inviteButton = document.querySelector("#inviteButton");
-	if (inviteButton) {
-		inviteButton.addEventListener("click", async () => {
-			const toButton = <HTMLButtonElement>document.querySelector("#selectedUserButton");
-			if (toButton) {
-				const response = await fetch(`/api/is-online/${toButton.dataset.id}`);
-				const json = await response.json();
-				if (Result.SUCCESS == json.result && 1 == json.online)
-					sendMessageToServer({
-						group: WebsocketMessageGroup.USER,
-						type: WebsocketMessageType.INVITE,
-						toId: parseInt(toButton.dataset.id),
-					});
-				else
-					showAlert("ERR_USER_OFFLINE");
+				usersFunctions();
 			}
 		});
 	}
 
-	const chatButton = document.querySelector("#chatButton");
-	if (chatButton) {
-		chatButton.addEventListener("click", async () => {
-			const selectedUserButton = <HTMLButtonElement>document.querySelector("#selectedUserButton");
-			if (selectedUserButton) {
-				// const response = await fetch("/friends/add", {
-				// 	method: "POST",
-				// 	headers: {
-				// 		"content-type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		friendId: parseInt(selectedUserButton.dataset.id),
-				// 	})
-				// });
-
-				// if (Result.SUCCESS == await response.text()) {
-				// 	console.log("added friend!");
-				// 	addFriendButton.classList += "hidden";
-				// 	addFoeButton.classList += "hidden";
-				// }
-			}
-		});
-	}
-
-	const addFriendButtons = document.getElementsByClassName("addFriendButton");
-	for (var i = 0; i < addFriendButtons.length; i++) {
-		addFriendButtons[i].addEventListener("click", async function () {
-			const response = await fetch("/friends/add", {
+	const userButtons = document.getElementsByClassName("userButton");
+	for (var i = 0; i < userButtons.length; i++) {
+		userButtons[i].addEventListener("click", async function () {
+			const profileBox = await fetch("/api/profile", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					friendId: parseInt(this.dataset.id)
+					userId: this.dataset.id
 				})
 			});
 
-			if (Result.SUCCESS == await response.text()) {
-				this.classList += " hidden";
-				const buttons = document.getElementsByClassName("addFoeButton");
-				for (var j = 0; j < buttons.length; j++) {
-					if ((buttons[j] as HTMLButtonElement).dataset.id == this.dataset.id)
-						buttons[j].classList += " hidden";
-				}
-			}
+			const json = await profileBox.json();
+			if (Result.SUCCESS != json.result)
+				return;
+
+			const dialog = <HTMLDialogElement>document.querySelector("#profileDialog");
+			dialog.innerHTML = json.value;
+			profileFunctions();
+			if (document.activeElement instanceof HTMLElement)
+				document.activeElement.blur();
+			dialog.showModal();
+		});
+	}
+	
+	const removeFriendButtons = document.getElementsByClassName("removeFriendButton");
+	for (var i = 0; i < removeFriendButtons.length; i++) {
+		removeFriendButtons[i].addEventListener("click", async function () {
+			const response = await fetch("/api/friends/remove", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					friendId: parseInt(this.dataset.id),
+				})
+			});
+
+			const text = await response.text();
+			if (Result.SUCCESS != text)
+				return;
+
+			((this as HTMLElement).closest(".friendButton") as HTMLElement).style = "display: none;";
 		});
 	}
 
-	const removeFriendButton = document.querySelector("#removeFriendButton");
-	if (removeFriendButton) {
-		removeFriendButton.addEventListener("click", async function () {
-			const selectedUserButton = <HTMLButtonElement>document.querySelector("#selectedUserButton");
-			const response = await fetch("/friends/remove", {
+	const removeFoeButtons = document.getElementsByClassName("removeFoeButton");
+	for (var i = 0; i < removeFoeButtons.length; i++) {
+		removeFoeButtons[i].addEventListener("click", async function () {
+			const response = await fetch("/api/foes/remove", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
 				},
 				body: JSON.stringify({
-					friendId: parseInt(selectedUserButton.dataset.id)
+					foeId: parseInt(this.dataset.id),
 				})
 			});
 
-			if (Result.SUCCESS == await response.text())
-				console.log("removed friend");
-		}, { once: true });
-	}
+			const text = await response.text();
+			if (Result.SUCCESS != text)
+				return;
 
-	const addFoeButtons = document.getElementsByClassName("addFoeButton");
-	for (var i = 0; i < addFoeButtons.length; i++) {
-		addFoeButtons[i].addEventListener("click", async function () {
-			const response = await fetch("/foes/add", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					foeId: parseInt(this.dataset.id)
-				})
-			});
-
-			if (Result.SUCCESS == await response.text()) {
-				this.classList += " hidden";
-				const buttons = document.getElementsByClassName("addFriendButton");
-				for (var j = 0; j < buttons.length; j++) {
-					if ((buttons[j] as HTMLButtonElement).dataset.id == this.dataset.id)
-						buttons[j].classList += " hidden";
-				}
-			}
+			((this as HTMLElement).closest(".foeButton") as HTMLElement).style = "display: none;";
 		});
-	}
-
-	const removeFoeButton = document.querySelector("#removeFoeButton");
-	if (removeFoeButton) {
-		removeFoeButton.addEventListener("click", async function () {
-			const selectedUserButton = <HTMLButtonElement>document.querySelector("#selectedUserButton");
-			const response = await fetch("/foes/remove", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					foeId: parseInt(selectedUserButton.dataset.id),
-				})
-			});
-
-			if (Result.SUCCESS == await response.text())
-				console.log("removed foe");
-		}, { once: true });
 	}
 }

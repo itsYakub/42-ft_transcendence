@@ -2,14 +2,13 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { allNicknames, allOtherUsers, isUserOnline } from '../db/userDB.js';
 import { gamePlayers } from '../db/gameDb.js';
-import { messagesString, gamersString } from '../views/matchHtml.js';
-import { userMessages, getMessageSenders } from '../db/userChatsDb.js';
-import { usersHtml } from '../views/usersView.js';
+import { messagesString, gamersString } from '../old/matchHtml.js';
 import { translateBackend } from '../../common/translations.js';
 import { Result } from '../../common/interfaces.js';
-import { gameChats } from '../db/gameChatsDb.js';
+import { gameChatsList } from '../db/gameChatsDb.js';
 
-export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
+export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+
 	fastify.get('/api/nicknames', async (request: FastifyRequest, reply: FastifyReply) => {
 		const users = allNicknames(db);
 		return reply.send(users);
@@ -33,7 +32,7 @@ export function apiRoutes(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 
 	fastify.get('/api/game-chats', async (request: FastifyRequest, reply: FastifyReply) => {
-		const messagesBox = gameChats(db, request.user.gameId);
+		const messagesBox = gameChatsList(db, request.user.gameId);
 		if (Result.SUCCESS == messagesBox.result) {
 			const html = messagesString(messagesBox.chats, request.user);
 			return reply.send({

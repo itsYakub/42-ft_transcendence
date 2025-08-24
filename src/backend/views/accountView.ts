@@ -1,60 +1,43 @@
-export function accountView({ user }): string {
+import { User } from "../../common/interfaces.js";
+
+export function accountView(user: User): string {
 	let html = accountString(user);
 	html += totpString();
 
 	return html;
 }
 
-function accountString(user: any): string {
+function accountString(user: User): string {
 	return `
-	<span id="data" data-id="${user.id}"></span>
-	<div class="w-full h-full bg-gray-900">
-		<div class="h-full m-auto text-center flex flex-row">
-			<div class="w-30">
-				<div class="flex flex-col items-end content-end mt-8 gap-4">
-					<button id="profileButton"
-						class="text-right w-full bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_ACCOUNT%%</button>
-					<button id="historyButton"
-						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_HISTORY%%</button>
-					<button id="usersButton"
-						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_USERS%%</button>
-					<button id="friendsButton"
-						class="cursor-pointer text-right w-full text-gray-300 p-2 rounded-lg hover:bg-gray-800">%%BUTTON_FRIENDS%%</button>
-					<button id="foesButton"
-						class="text-right w-full hover:bg-gray-800 text-gray-300 p-2 rounded-lg">%%BUTTON_FOES%%</button>
+	<div class="w-8/10 m-auto h-full bg-gray-900">
+		<div class="py-8 pl-8 m-auto text-left">
+			<div class="text-gray-300 text-left text-xl mt-1">${user.nick}</div>					
+			<div class="flex flex-row my-4">
+				<div class="p-3 border border-gray-700 rounded-lg">
+					<div class="text-gray-300 font-medium">%%TEXT_CHANGE_AVATAR%%</div>
+					<div>
+						<img class="mt-2 w-20 h-20 mx-auto cursor-pointer rounded-lg" src="${user.avatar}" id="avatarImage" />
+						<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
+					</div>
+				</div>
+				<div class="grow ml-2 p-3 border border-gray-700 rounded-lg ">
+					<span class="text-gray-300 font-medium">%%TEXT_CHANGE_NICK%%</span>
+					<form id="changeNickForm">
+						<div>
+							<input type="text" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
+								class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
+						</div>
+						<div>
+							<button type="submit" formmethod="post"
+								class="ml-auto cursor-pointer block text-right mt-2 text-gray-300 hover:bg-gray-800 font-medium rounded-lg p-2">%%BUTTON_UPDATE%%</button>
+						</div>
+					</form>
 				</div>
 			</div>
-			<div class="grow bg-gray-900">
-				<div class="py-8 pl-8 m-auto text-left">
-					<div class="text-gray-300 text-left text-xl mt-1">${user.nick}</div>					
-					<div class="flex flex-row my-4">
-						<div class="p-3 border border-gray-700 rounded-lg">
-							<div class="text-gray-300 font-medium">%%TEXT_CHANGE_AVATAR%%</div>
-							<div>
-								<img class="mt-2 w-20 h-20 mx-auto cursor-pointer rounded-lg" src="${user.avatar}" id="avatarImage" />
-								<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
-							</div>
-						</div>
-						<div class="grow ml-2 p-3 border border-gray-700 rounded-lg ">
-							<span class="text-gray-300 font-medium">%%TEXT_CHANGE_NICK%%</span>
-							<form id="changeNickForm">
-								<div>
-									<input type="text" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
-										class="my-1 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
-								</div>
-								<div>
-									<button type="submit" formmethod="post"
-										class="ml-auto cursor-pointer block text-right mt-2 text-gray-300 hover:bg-gray-800 font-medium rounded-lg p-2">%%BUTTON_UPDATE%%</button>
-								</div>
-							</form>
-						</div>
-					</div>
-					${changePasswordString(user)}
-					<div class="my-3 p-3 border border-gray-700 rounded-lg">
-						<div class="text-gray-300 font-medium mb-2">%%TEXT_TOKENS%%</div>
-						${securityString(user)}
-					</div>
-				</div>
+			${changePasswordString(user)}
+			<div class="my-3 p-3 border border-gray-700 rounded-lg">
+				<div class="text-gray-300 font-medium mb-2">%%TEXT_TOKENS%%</div>
+				${securityString(user)}
 			</div>
 		</div>
 	</div>
