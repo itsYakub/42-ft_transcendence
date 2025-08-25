@@ -69,8 +69,8 @@ export class Shape {
 
 	/* SECTION: Methods
 	 * */
-	public	setPos(vec : BABYLON.Vector2) { this.m_pos = vec; }
-	public	setSiz(vec : BABYLON.Vector2) { this.m_pos = vec; }
+	public get	pos() { return (this.m_pos); }
+	public get	siz() { return (this.m_pos); }
 
 	public	createMesh() {
 		let light0 = new BABYLON.PointLight(this.m_name+'light0', new BABYLON.Vector3(0, this.m_siz.y, 0), this.m_scene)

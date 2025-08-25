@@ -55,6 +55,11 @@ export class Ball extends Shape {
 
 	public update() {
 		this.wallBounceCheck();
+		/* TODO(joleksia):
+		 *  Fix this function:
+		 *
+		 *	this.playerBounceCheck();
+		 * */
 
 		/* Update the base 'Shape' class
 		 * */
@@ -79,6 +84,25 @@ export class Ball extends Shape {
 			/* Bounce: BOTTOM */ (this.m_pos.y + this.m_siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
 		) {
 			this.m_vel.y *= -1.0;
+		}
+	}
+
+	private playerBounceCheck() {
+		let	p0 = this.m_scene.getMeshByName('player0');
+		let	p1 = this.m_scene.getMeshByName('player1');
+		let tolerance = p0.scaling.x;
+		
+		/* TODO(joleksia):
+		 *  Paste the previous implementation of the ball bouncing
+		 *  SOURCE:
+		 *	- https://github.com/coldandtired/ft_transcendence/blob/a19c083a77dd46ab9a900f0b97a5211eef3f9922/src/frontend/public/js/game/ball.ts#L68
+		 * */
+		if (this.m_box.intersectsMesh(p0)) {
+		
+		}
+		
+		if (this.m_box.intersectsMesh(p1)) {
+			
 		}
 	}
 }
