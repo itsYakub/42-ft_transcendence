@@ -33,7 +33,8 @@ export class Player extends Shape {
 		super(
 			scene,
 			new BABYLON.Vector2(g_playerCenterOffset, 0.0),
-			new BABYLON.Vector3(0.2, 0.2, 2.0)
+			new BABYLON.Vector3(0.2, 0.2, 2.0),
+			BABYLON.Color3.White()
 		);
 
 		/* Assign the references
@@ -50,11 +51,11 @@ export class Player extends Shape {
 			case (0): {
 				/* Move the player to the left
 				 * */
+				this.m_col = new BABYLON.Color3(0.74, 0.17, 0.83);
 				this.m_pos.x = -g_playerCenterOffset;
-				this.createMaterial(new BABYLON.Color3(0.48, 0.04, 0.98));
 			} break;
 			case (1): {
-				this.createMaterial(new BABYLON.Color3(1.0, 0.92, 0.34));
+				this.m_col = new BABYLON.Color3(0.98, 0.8, 0.36);
 			} break;
 			default: { } break;
 		}

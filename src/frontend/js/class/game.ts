@@ -119,22 +119,11 @@ export class Game {
 		 *  Camera Setup
 		 * */
 		let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 10, new BABYLON.Vector3(0, 0, 0));
-
-		/* SECTION:
-		 *  Lighting
-		 * */
-		let	light = new BABYLON.DirectionalLight('light', new BABYLON.Vector3(0, -1, 0), scene);
-		light.intensity = 2.0;
-		light.diffuse = new BABYLON.Color3(0.07, 0.02, 0.1);
-		light.specular = new BABYLON.Color3(0.3, 0.1, 0.7);
-
-		/* SECTION:
-		 *  Glow Effect
-		 * */
-		let glow = new BABYLON.GlowLayer('glow0', scene);
-		glow.intensity = 0.8;
-
-		scene.clearColor = new BABYLON.Color4(0.2, 0.2, 0.2, 1.0);
+		
+		const light = new BABYLON.PointLight("light0", new BABYLON.Vector3(0, 5, 0), scene);	light.intensity = 2.0;
+		light.diffuse = new BABYLON.Color3(0.15, 0, 0.4);
+		light.specular = new BABYLON.Color3(0, 0, 0);
+		light.intensity = 1;
 
 		/* TODO(joleksia):
 		 *  Here we should set-up the game based on the gamemode.

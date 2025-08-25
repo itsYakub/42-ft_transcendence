@@ -22,7 +22,8 @@ export class Ball extends Shape {
 		super(
 			scene,
 			BABYLON.Vector2.Zero(),
-			new BABYLON.Vector3(0.2, 0.2, 0.2)
+			new BABYLON.Vector3(0.2, 0.2, 0.2),
+			new BABYLON.Color3(0.28, 0.62, 0.84)
 		);
 
 		/* Assign the references
@@ -31,9 +32,6 @@ export class Ball extends Shape {
 
 		/* Create the ball itself
 		 * */
-		this.createMaterial(
-			new BABYLON.Color3(0.58, 0.99, 1.0)
-		);
 		this.createMesh();
 	}	
 

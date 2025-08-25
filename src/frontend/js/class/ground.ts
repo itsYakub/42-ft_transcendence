@@ -28,16 +28,12 @@ export class Ground {
 		this.m_mesh_arr = [ ];
 		this.m_perlin = SIMPLEX.createNoise2D();
 		
-		let	map_mat0 = new BABYLON.StandardMaterial('map_mat0', scene);
-		map_mat0.roughness = 0.9;
-		
 		let	ground = BABYLON.MeshBuilder.CreateGround('ground0', { width: size.x, height: size.y }, scene);
-		ground.material = map_mat0;
 	
 		let	bound_cell_index : number = 0.0;
-		let	bound_cell_size : number = 0.45;
-		for (let x = size.x / -2.0; x < size.x / 2.0; x += bound_cell_size + 0.05) {
-            for (let y = size.y / -2.0; y < size.y / 2.0; y+= bound_cell_size + 0.05) {
+		let	bound_cell_size : number = 0.5;
+		for (let x = size.x / -2.0; x < size.x / 2.0; x += bound_cell_size) {
+            for (let y = size.y / -2.0; y < size.y / 2.0; y+= bound_cell_size) {
 				/* Don't create any boxes in the gameplay area
 				 * */
                 if (x > -g_gamePlayableArea.x && x < g_gamePlayableArea.x &&
@@ -49,7 +45,6 @@ export class Ground {
                 let box = BABYLON.MeshBuilder.CreateBox('cell0', { }, scene);
 				box.scaling = new BABYLON.Vector3(bound_cell_size, bound_cell_size * 2.0, bound_cell_size);
 				box.position = new BABYLON.Vector3(x, 0.0, y);
-				box.material = map_mat0;
 
 				this.m_mesh_arr.push(box);
             }
@@ -61,16 +56,20 @@ export class Ground {
 	 * */
 
 	public update() {
+		const	_position_scale : number = 0.1;
+		const	_time_scale : number = 0.0001;
+		const	_value_offset : number = 0.2;
+
 		/* NOTE(joleksia):
 		 *  We can mess around with those values to get even better noise effects
 		 * */
 		for (let i = 0; i < this.m_mesh_arr.length; i++) {
 			let mesh = this.m_mesh_arr[i];
-			let	x : number = (mesh.position.x * 0.1) + g_gameTime * 0.0001;
-			let	y : number = (mesh.position.z * 0.1) + g_gameTime * 0.0001;
+			let	x : number = (mesh.position.x * _position_scale) + g_gameTime * _time_scale;
+			let	y : number = (mesh.position.z * _position_scale) + g_gameTime * _time_scale;
 			let	val : number = this.m_perlin(x, y);
 
-			mesh.position.y = val / 2.0;
+			mesh.position.y = _value_offset + val / 3.0;
 		}
 	}
 }

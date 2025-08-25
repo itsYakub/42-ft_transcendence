@@ -11,7 +11,6 @@ export class Shape {
 	/* babylonjs elements
 	 * */
 	public	m_scene : BABYLON.Scene;
-	public	m_mat : BABYLON.StandardMaterial;
 	public	m_box : BABYLON.Mesh;
 
 	/* NOTE(joleksia):
@@ -22,13 +21,15 @@ export class Shape {
 	public	m_pos : BABYLON.Vector2;
 	public	m_vel : BABYLON.Vector2;
 	public	m_siz : BABYLON.Vector3;
+	public	m_col : BABYLON.Color3;
 
 	/* SECTION: Constructor
 	 * */
-	public	constructor(scene : BABYLON.Scene, pos : BABYLON.Vector2, siz : BABYLON.Vector3) {
+	public	constructor(scene : BABYLON.Scene, pos : BABYLON.Vector2, siz : BABYLON.Vector3, col : BABYLON.Color3) {
 		this.m_scene = scene;
 		this.m_pos = pos;
 		this.m_siz = siz;
+		this.m_col = col;
 
 		this.m_vel = BABYLON.Vector2.Zero();
 	}
@@ -47,21 +48,24 @@ export class Shape {
 	public	setPos(vec : BABYLON.Vector2) { this.m_pos = vec; }
 	public	setSiz(vec : BABYLON.Vector2) { this.m_pos = vec; }
 
-	public	createMaterial(color : BABYLON.Color3) {
-		this.m_mat = new BABYLON.StandardMaterial('mat0', this.m_scene);
-		this.m_mat.disableLighting = true;
-		this.m_mat.emissiveColor = color;
-
-		console.log('[ INFO ] Material created | Color: ' + color); 
-	}
-
 	public	createMesh() {
+		let light0 = new BABYLON.PointLight('light0', new BABYLON.Vector3(0, this.m_siz.y, 0), this.m_scene)
+		light0.diffuse = this.m_col;
+		light0.specular = new BABYLON.Color3(0, 0, 0);
+		light0.intensity = 0.2;
+
+	    let glow = new BABYLON.GlowLayer('glow0', this.m_scene);
+		glow.intensity = 0.8;
+
+		let mat0 = new BABYLON.StandardMaterial('mat0', this.m_scene);
+		mat0.emissiveColor = this.m_col;
+		mat0.disableLighting = true;
+
 		this.m_box = BABYLON.MeshBuilder.CreateBox('box0', { }, this.m_scene);
+		this.m_box.material = mat0;
 		this.m_box.position = new BABYLON.Vector3(this.m_pos.x, this.m_siz.y, this.m_pos.y);
 		this.m_box.scaling = this.m_siz;
-		this.m_box.material = this.m_mat;
-
-		console.log('[ INFO ] Mesh created successfully | Position: ' + this.m_pos + ' | Size: ' + this.m_siz);
+		light0.parent = this.m_box;
 	}
 	
 	public	aabb(other : Shape) : boolean {
