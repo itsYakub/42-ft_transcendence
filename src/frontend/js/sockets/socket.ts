@@ -1,5 +1,6 @@
 import { handleIncomingUserMessage } from "./userSockets.js";
 import { handleIncomingGameMessage } from "./gamesSockets.js";
+import { Result, User, WebsocketMessage, WebsocketMessageGroup } from "../../../common/interfaces.js";
 
 let socket: WebSocket | null = null;
 
@@ -8,7 +9,6 @@ let socket: WebSocket | null = null;
  */
 export function initChatSocket(): Promise<void> {
 	const socketUrl = `wss://${window.location.host}/ws`;
-
 	if (!socket)
 		socket = new WebSocket(socketUrl);
 
@@ -16,13 +16,13 @@ export function initChatSocket(): Promise<void> {
 		socket!.onopen = () => resolve();
 
 		socket!.onmessage = async (event) => {
-			const userResponse = await fetch("/user/id");
-			const user = await userResponse.json();
-			if (200 != user.code)
+			const userResponse = await fetch("/api/user");
+			const userBox = await userResponse.json();
+			if (Result.SUCCESS != userBox.result)
 				return;
 
 			const message = JSON.parse(event.data);
-			handleMessage(user, message);
+			handleMessage(userBox.user, message);
 		};
 
 		socket!.onerror = (err) => {
@@ -31,8 +31,8 @@ export function initChatSocket(): Promise<void> {
 		};
 
 		socket!.onclose = (event) => {
-			console.warn(`🔌 WebSocket connection closed (code: ${event.code})`);
-			setTimeout(initChatSocket, 1000);
+			console.warn(`🔌 WebSocket connection closed ${event}`);
+			//setTimeout(initChatSocket, 1000);
 		};
 	});
 }
@@ -47,8 +47,8 @@ export function isConnected(): boolean {
 /*
 	Sends a message from a client to the server
 */
-export function sendMessageToServer(message: any) {
-	if (socket && socket.OPEN)
+export function sendMessageToServer(message: WebsocketMessage) {
+	if (1 == socket?.OPEN)
 		socket.send(JSON.stringify(message));
 }
 
@@ -60,13 +60,13 @@ export function currentPage(): string {
 /*
 	Deals with the message
 */
-function handleMessage(user: any, message: any) {
-	//if (message.type.startsWith("error-"))
+function handleMessage(user: User, message: WebsocketMessage) {
+	//if (WebsocketMessageGroup.ERROR == message.group)
 	//	handleIncomingErrorMessage(user, message);
 
-	if (message.type.startsWith("game-"))
+	if (WebsocketMessageGroup.GAME == message.group)
 		handleIncomingGameMessage(user, message);
 
-	if (message.type.startsWith("user-"))
+	if (WebsocketMessageGroup.USER == message.group)
 		handleIncomingUserMessage(user, message);
 }

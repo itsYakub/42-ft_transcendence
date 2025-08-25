@@ -1,3 +1,4 @@
+import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 
@@ -16,13 +17,14 @@ export function tournamentFunctions() {
 			});
 
 			const json = await response.json();
-			if (json.code != 200) {
+			if (Result.SUCCESS != json.result) {
 				showAlert(json.error);
 				return;
 			}
 
 			sendMessageToServer({
-				type: "game-ready"
+				group: WebsocketMessageGroup.GAME,
+				type: WebsocketMessageType.READY
 			});
 
 			// const socket = getSocket();
@@ -51,14 +53,15 @@ export function tournamentFunctions() {
 				});
 
 				const json = await response.json();
-				if (json.code != 200) {
+				if (Result.SUCCESS != json.result) {
 					showAlert(json.error);
 					return;
 				}
 
 				sendMessageToServer({
-					type: "game-message",
-					message: sendTournamentMessageForm.message.value
+					group: WebsocketMessageGroup.GAME,
+					type: WebsocketMessageType.CHAT,
+					chat: sendTournamentMessageForm.message.value
 				});
 
 				// const socket = getSocket();

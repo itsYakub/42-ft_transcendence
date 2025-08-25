@@ -1,30 +1,17 @@
+import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../common/interfaces.js";
 import { addFunctions, navigate, showAlert } from "./index.js";
 import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
-interface navigatedDetail {
-	page: string
-}
-
-interface userLoggedInDetail {
-	userID: number,
-	nick: string
-}
-
-export interface messageDetail {
-	toID: string,
-	fromID: number,
-	message: string
-}
-
-export async function navigated(detail: navigatedDetail) {
-	const userResponse = await fetch("/user/id");
+export async function navigated() {
+	const userResponse = await fetch("/api/user");
 	const json = await userResponse.json();
-	if (200 == json.code) {
+	if (Result.SUCCESS == json.result) {
 		if (!isConnected()) {
 			try {
 				await initChatSocket();
 				sendMessageToServer({
-					type: "user-log-in"
+					group: WebsocketMessageGroup.USER,
+					type: WebsocketMessageType.JOIN,
 				});
 			} catch (err) {
 				console.error("❌ WebSocket failed:", err);
@@ -53,7 +40,7 @@ export function registerEvents() {
 			document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 		}
 		addFunctions();
-		navigated({ page: window.location.pathname });
+		navigated();
 	});
 
 	/*

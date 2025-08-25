@@ -1,23 +1,22 @@
+import { leaveGame } from "../../../backend/db/gameDb.js";
+import { Result, StringBox, User, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
 import { startMatch } from "./../game/game.js";
 import { navigate } from "./../index.js";
 import { currentPage } from "./socket.js";
 
 /*
-	A socket message corcerning the game page
+	A socket message concerning the game page
 */
-export function handleIncomingGameMessage(user: any, message: any) {
+export function handleIncomingGameMessage(user: User, message: WebsocketMessage) {
 	switch (message.type) {
-		case "game-join":
-		case "game-leave":
+		case WebsocketMessageType.JOIN:
+		case WebsocketMessageType.LEAVE:
 			gameChange(user, message);
 			break;
-		case "game-gamer-ready":
-			gamePlayerReady(user, message);
-			break;
-		case "game-chat":
+		case WebsocketMessageType.CHAT:
 			gameChat(user, message);
 			break;
-		case "game-ready":
+		case WebsocketMessageType.READY:
 			gameReady(user, message);
 			break;
 	}
@@ -26,60 +25,47 @@ export function handleIncomingGameMessage(user: any, message: any) {
 /*
 	A user has entered or left a game (match/tournament)
 */
-async function gameChange(user: any, message: any) {
+async function gameChange(user: User, message: WebsocketMessage) {
 	if ("game" != currentPage())
 		return;
 
-	if (!user.gameID) {
+	if (!user.gameId) {
 		navigate("/game");
 		return;
 	}
 
-	if (user.gameID == message.gameID) {
-		const gamerResponse = await fetch("/api/gamers");
-		const gamers = await gamerResponse.json();
-		if (200 == gamers.code)
-			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.html;
-	}
-}
-
-/*
-	A user has clicked the Ready button
-*/
-async function gamePlayerReady(user: any, message: any) {
-	if ("game" != currentPage())
-		return;
-
-	if (user.gameID == message.gameID) {
-		const gamerResponse = await fetch("/api/gamers");
-		const gamers = await gamerResponse.json();
-		if (200 == gamers.code)
-			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.html;
+	if (user.gameId == message.gameId && user.userId != message.fromId) {
+		const gamerBox = await fetch("/api/gamers");
+		const gamers: StringBox = await gamerBox.json();
+		if (Result.SUCCESS == gamers.result)
+			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
 	}
 }
 
 /*
 	A chat message has been sent to a game (match/tournament)
 */
-async function gameChat(user: any, message: any) {
+async function gameChat(user: User, message: WebsocketMessage) {
 	if ("game" != currentPage())
 		return;
 
-	if (user.gameID == message.gameID) {
-		const messagesResponse = await fetch("/api/game-messages");
-		const messages = await messagesResponse.json();
+	console.log("incoming chat", message);
+
+	if (user.gameId == message.gameId) {
+		const messagesBox = await fetch("/api/game-chats");
+		const messages: StringBox = await messagesBox.json();
 		console.log(messages);
-		if (200 == messages.code) {
+		if (Result.SUCCESS == messages.result) {
 			(document.querySelector("#sendMatchMessageForm") as HTMLFormElement).message.value = "";
-			document.querySelector("#messagesDiv").innerHTML = messages.html;
+			document.querySelector("#messagesDiv").innerHTML = messages.value;
 		}
 	}
 }
 
-async function gameReady(user: any, message: any) {
+async function gameReady(user: User, message: WebsocketMessage) {
 	if ("game" != currentPage())
 		return;
 
-	if (user.gameID == message.gameID)
+	if (user.gameId == message.gameId)
 		startMatch("John", "Ed");
 }

@@ -1,0 +1,156 @@
+import { FrameParams, User, UserType } from "../../common/interfaces.js";
+import { alertString, totpString } from "./dialogsView.js";
+
+export function navbarView(params: FrameParams): string {
+	let languageSelect = englishString();
+
+	switch (params.language) {
+		case "dutch":
+			languageSelect = dutchString();
+			break;
+		case "polish":
+			languageSelect = polishString();
+			break;
+	}
+
+	let html: string = alertString();
+
+	if (!params.user)
+		html += loggedOutString(languageSelect);
+	else
+		html += UserType.GUEST == params.user.userType ? guestString(params.user, languageSelect, params.page) : loggedInString(params.user, languageSelect, params.page);
+
+	return html;
+}
+
+function loggedOutString(languageSelect: string): string {
+	return `
+	<div class="h-full bg-gray-800">
+		<div class="h-full w-200 mx-auto flex flex-row items-center">
+			<div class="ml-auto text-gray-300">
+				<select id="languageSelect">
+					${languageSelect}
+				</select>
+			</div>
+		</div>
+	</div>
+	${totpString()}
+	`;
+}
+
+function loggedInString(user: User, languageSelect: string, page: string): string {
+	return `
+	<div class="h-full bg-gray-800">
+		<div class="h-full w-200 mx-auto flex flex-row items-center">
+			<div class="mr-auto">
+				<img id="accountAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-pointer h-20 w-20"
+					src="${user.avatar}" />
+			</div>
+
+			<div class="mx-auto">
+				${homeButtonString(page)}
+				${gameButtonString(page)}
+				${usersButtonString(page)}
+				${chatButtonString(page)}
+			</div>
+
+			<div class="ml-auto text-gray-300">
+				<select id="languageSelect">
+					${languageSelect}
+				</select>
+			</div>
+		</div>
+	</div>
+	`;
+}
+
+function guestString(user: User, languageSelect: string, page: string): string {
+	return `
+	<div class="h-full bg-gray-800">
+		<div class="h-full w-200 mx-auto flex flex-row items-center">
+			<div class="mr-auto text-white">
+				${user.nick}
+			</div>
+
+			<div class="mx-auto">
+				${homeButtonString(page)}
+				${gameButtonString(page)}
+			</div>
+
+			<div class="ml-auto text-gray-300">
+				<select id="languageSelect">
+					${languageSelect}
+				</select>
+			</div>
+		</div>
+	</div>
+	`;
+}
+
+function homeButtonString(page: string) {
+	const bgColour = "/" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="homeButton"
+		class="cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%BUTTON_HOME%%
+	</button>
+	`;
+}
+
+function gameButtonString(page: string) {
+	const bgColour = "/game" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="gameButton"
+		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%BUTTON_GAME%%
+	</button>
+	`;
+}
+
+function usersButtonString(page: string) {
+	const bgColour = "/users" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="usersButton"
+		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%BUTTON_USERS%%
+	</button>
+	`;
+}
+
+function chatButtonString(page: string) {
+	const bgColour = "/chat" == page ? "bg-gray-700" : "";
+
+	return `
+	<button id="chatButton"
+		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		%%BUTTON_CHAT%%
+	</button>
+	`;
+}
+
+function englishString(): string {
+	return `
+	<option class="bg-gray-800" value="english" selected>English</option>
+	<option class="bg-gray-800" value="polish">Polski</option>
+	<option class="bg-gray-800" value="dutch">Nederlands</option>
+	`;
+}
+
+function polishString(): string {
+	return `
+	<option class="bg-gray-800" value="english">English</option>
+	<option class="bg-gray-800" value="polish" selected>Polski</option>
+	<option class="bg-gray-800" value="dutch">Nederlands</option>
+	`;
+}
+
+function dutchString(): string {
+	return `
+	<option class="bg-gray-800" value="english">English</option>
+	<option class="bg-gray-800" value="polish">Polski</option>
+	<option class="bg-gray-800" value="dutch" selected>Nederlands</option>
+	`;
+}

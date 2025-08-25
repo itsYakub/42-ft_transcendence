@@ -1,92 +1,55 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSockets.js';
-import { addGameMessage, addToGame, countReady, leaveGame, markPlaying, markReady } from '../pages/game/gameDB.js';
+import { countReady, joinGame, leaveGame, markPlaying, markReady } from '../db/gameDb.js';
+import { Result, User, WebsocketMessage, WebsocketMessageGroup, WebsocketMessageType } from '../../common/interfaces.js';
+import { addGameChat } from '../db/gameChatsDb.js';
 
-export function handleGameMessage(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
+export function handleIncomingGameMessage(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
 	switch (message.type) {
-		case "game-join":
+		case WebsocketMessageType.JOIN:
 			gameJoinReceived(fastify, db, user, message);
 			break;
-		case "game-leave":
-			gameLeaveReceived(fastify, db, user);
+		case WebsocketMessageType.LEAVE:
+			gameLeaveReceived(fastify, db, user, message);
 			break;
-		case "game-gamer-ready":
-			gamePlayerReadyReceived(fastify, db, user);
-			break;
-		case "game-chat":
+		//case WebsocketMessageType.READY:
+		//	gamePlayerReadyReceived(fastify, db, user, message);
+		//	break;
+		case WebsocketMessageType.CHAT:
 			gameChatReceived(fastify, db, user, message);
 			break;
 	}
 }
 
-function gameJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
-	const response = addToGame(db, {
-		gameID: message.gameID,
-		user
-	});
+function gameJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
+	const response = joinGame(db, message.gameId, user);
+	console.log(response);
 
-	user["gameID"] = message.gameID;
+	message.fromId = user.userId;
 
-	if (200 == response.code) {
-		broadcastMessageToClients(fastify, {
-			type: "game-join",
-			gameID: user.gameID,
-			userID: user.id,
-		});
+	if (Result.SUCCESS == response.result) {
+		broadcastMessageToClients(fastify, message);
 	}
 }
 
-function gameLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: any) {
-	const response = leaveGame(db, {
-		id: user.id,
-		gameID: user.gameID
-	});
+function gameLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
+	message.gameId = user.gameId;
+	const response = leaveGame(db, user.userId);
 
-	if (200 == response.code) {
-		broadcastMessageToClients(fastify, {
-			type: "game-leave",
-			gameID: user.gameID,
-			userID: user.id,
-		});
+	console.log(`user id ${user.userId} has left the game`);
+
+	if (Result.SUCCESS == response.result) {
+		message.fromId = user.userId;
+		broadcastMessageToClients(fastify, message);
 	}
 }
 
-function gamePlayerReadyReceived(fastify: FastifyInstance, db: DatabaseSync, user: any) {
-	const response = markReady(db, user);
+function gameChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: WebsocketMessage) {
+	message.fromId = user.userId;
+	message.gameId = user.gameId;
+	const response = addGameChat(db, message);
 
-	if (200 == response.code) {
-		broadcastMessageToClients(fastify, {
-			type: "game-gamer-ready",
-			gameID: user.gameID,
-			userID: user.id,
-		});
-	}
-
-	const readyResponse = countReady(db, user);
-	if (200 == readyResponse.code && readyResponse.ready) {
-		markPlaying(db, user);
-		broadcastMessageToClients(fastify, {
-			type: "game-ready",
-			gameID: user.gameID,
-			userID: user.id,
-		});
-	}
-}
-
-function gameChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: any, message: any) {
-	const response = addGameMessage(db, {
-		toID: user.gameID,
-		fromID: user.id,
-		message: message.chat
-	});
-
-	if (200 == response.code) {
-		broadcastMessageToClients(fastify, {
-			type: "game-chat",
-			gameID: user.gameID,
-			userID: user.id,
-			chat: message.chat
-		});
-	}
+	if (Result.SUCCESS == response.result)
+		broadcastMessageToClients(fastify, message);
 }

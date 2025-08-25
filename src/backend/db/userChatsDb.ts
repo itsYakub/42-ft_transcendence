@@ -1,0 +1,132 @@
+import { DatabaseSync, SQLOutputValue } from "node:sqlite";
+import { Result, UserChatMessage, UserChatMessagesBox, UserChatPartner, UserChatPartnersBox, WebsocketMessage } from "../../common/interfaces.js";
+
+export function initUserChatsDb(db: DatabaseSync, { number, start, end, id }): void {
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS user_chats (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		from_id INTEGER NOT NULL,
+		message TEXT NOT NULL,
+		sent_at TEXT NOT NULL,
+		to_id INTEGER NOT NULL
+		);`);
+
+	for (var i = 1; i <= number; i++) {
+		for (var j = start; j <= end; j++) {
+			db.exec(`INSERT INTO user_chats (from_id, message, to_id, sent_at) VALUES (${j + 1}, '${j + 1}-to-${id}', ${id}, '${new Date().toISOString()}');`);
+			db.exec(`INSERT INTO user_chats (from_id, message, to_id, sent_at) VALUES (${id}, '${id}-to-${j}', ${j}, '${new Date().toISOString()}');`);
+		}
+	}
+}
+
+/*
+	Gets a list of ids that are in a private chat with the user
+*/
+export function outgoingChatsList(db: DatabaseSync, userId: number): UserChatPartnersBox {
+	try {
+		const select = db.prepare(`SELECT to_id AS partner_id, sent_at, message, nick FROM user_chats INNER JOIN users ON users.user_id = user_chats.to_id WHERE from_id = ? ORDER BY nick`);
+		const partners = select.all(userId).map(chat => sqlToUserChatPartner(chat));
+		const partnerIds = new Set();
+		return {
+			result: Result.SUCCESS,
+			partners: partners.filter(({ partnerId }) => !partnerIds.has(partnerId) && partnerIds.add(partnerId))
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB,
+		};
+	}
+}
+
+/*
+	Gets a list of ids that are in a private chat with the user
+*/
+export function incomingChatsList(db: DatabaseSync, userId: number): UserChatPartnersBox {
+	try {
+		const select = db.prepare(`SELECT from_id AS partner_id, sent_at, message, nick FROM user_chats INNER JOIN users ON users.user_id = user_chats.from_id WHERE to_id = ? ORDER BY nick`);
+		const partners = select.all(userId).map(chat => sqlToUserChatPartner(chat));
+		const partnerIds = new Set();
+		return {
+			result: Result.SUCCESS,
+			partners: partners.filter(({ partnerId }) => !partnerIds.has(partnerId) && partnerIds.add(partnerId))
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB,
+		};
+	}
+}
+
+// export function userAllMessagesList(db: DatabaseSync, userId: number, otherUserId: number = 0): UserChatMessagesBox {
+// 	try {
+// 		const select = db.prepare(`SELECT *, nick FROM user_chats 
+// 			INNER JOIN users ON users.user_id = user_chats.from_id 
+// 			WHERE to_id = ? OR from_id = ? 
+// 			ORDER BY sent_at DESC`);
+// 		const partners = select.all(userId, userId).map(userChatMessage => sqlToUserChatPartner(userChatMessage));
+// 		return {
+// 			result: Result.SUCCESS,
+// 			partners
+// 		};
+// 	}
+// 	catch (e) {
+// 		return {
+// 			result: Result.ERR_DB,
+// 		};
+// 	}
+// }
+
+/*
+	Gets all the user's messages
+*/
+export function userMessagesList(db: DatabaseSync, userId: number, otherUserId: number = 0): UserChatMessagesBox {
+	try {
+		const select = db.prepare("SELECT * FROM user_chats WHERE (to_id = ? AND from_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY sent_at DESC");
+		const messages = select.all(userId, otherUserId, userId, otherUserId).map(userChatMessage => sqlToUserChatMessage(userChatMessage));
+		return {
+			result: Result.SUCCESS,
+			messages
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB,
+		};
+	}
+}
+
+/*
+	Adds a private message (DM)
+*/
+export function addUserChat(db: DatabaseSync, message: WebsocketMessage): any {
+	try {
+		const select = db.prepare("INSERT INTO user_chats (to_id, from_id, message, sent_at) VALUES (?, ?, ?, ?)");
+		select.run(message.toId, message.fromId, message.chat, new Date().toISOString());
+		return {
+			result: Result.SUCCESS,
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB,
+		};
+	}
+}
+
+function sqlToUserChatPartner(userChatPartner: Record<string, SQLOutputValue>): UserChatPartner {
+	return {
+		partnerId: userChatPartner.partner_id as number,
+		partnerNick: userChatPartner.nick as string
+	};
+}
+
+function sqlToUserChatMessage(userChatMessage: Record<string, SQLOutputValue>): UserChatMessage {
+	return {
+		partnerId: userChatMessage.partner_id as number,
+		message: userChatMessage.message as string,
+		partnerNick: userChatMessage.nick as string,
+		sentAt: new Date(userChatMessage.sent_at as string)
+	};
+}
