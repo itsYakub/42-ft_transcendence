@@ -1,6 +1,9 @@
 import * as BABYLON from 'babylonjs';
 
 import { Shape } from './shape.js';
+import { Game } from './game.js';
+import { g_gamePlayableArea } from './game.js';
+import { g_boundCellSize } from './ground.js';
 
 
 /* SECTION:
@@ -22,6 +25,8 @@ export class Player extends Shape {
 	/* Game objects
 	 * */
 	private	m_mode : PlayerMode;
+	private	m_keyUp : string;
+	private	m_keyDown : string;
 
 	/* SECTION:
 	 *  Constructor
@@ -30,12 +35,7 @@ export class Player extends Shape {
 	public constructor(canvas : HTMLCanvasElement, scene : BABYLON.Scene, side : number, mode : number) {
 		/* Base constructor
 		 * */
-		super(
-			scene,
-			new BABYLON.Vector2(g_playerCenterOffset, 0.0),
-			new BABYLON.Vector3(0.2, 0.2, 2.0),
-			BABYLON.Color3.White()
-		);
+		super(scene, new BABYLON.Vector2(g_playerCenterOffset, 0.0), new BABYLON.Vector3(0.2, 0.2, 2.0), BABYLON.Color3.White());
 
 		/* Assign the references
 		 * */
@@ -52,10 +52,16 @@ export class Player extends Shape {
 				/* Move the player to the left
 				 * */
 				this.m_col = new BABYLON.Color3(0.74, 0.17, 0.83);
+				this.m_name = 'player0';
+				this.m_keyUp = 'w';
+				this.m_keyDown = 's';
 				this.m_pos.x = -g_playerCenterOffset;
 			} break;
 			case (1): {
 				this.m_col = new BABYLON.Color3(0.98, 0.8, 0.36);
+				this.m_name = 'player1';
+				this.m_keyUp = 'ArrowUp';
+				this.m_keyDown = 'ArrowDown';
 			} break;
 			default: { } break;
 		}
@@ -73,10 +79,37 @@ export class Player extends Shape {
 		/* TODO(joleksia):
 		 *  Create a basic player/ai behaviour
 		 * */
+		switch (this.m_mode) {
+			case (PlayerMode.PLAYERMODE_HUMAN): {
+				this.movePlayer(Game.keys[this.m_keyUp], Game.keys[this.m_keyDown]);
+			} break;
+			case (PlayerMode.PLAYERMODE_AI): {
+				/* TODO(joleksia):
+				 *  Implement AI
+				 * */
+			} break;
+		}
 
 		/* Update the base 'Shape' class
 		 * */
 		super.update();
+	}
+
+	/* SECTION:
+	 *  Private Methods
+	 * */
+
+	private movePlayer(up : boolean, down : boolean) {
+		/* NOTE(joleksia):
+		 *  This is just a simple, bare-bones solution for player movement
+		 *  It requires a lot of improvements especially if it comes to sockets.
+		 *  @agarbacz please review it.
+		 * */
+		let	dir : number = 0.0;
+		if (up) { dir = 1.0; }
+		else if (down) { dir = -1.0 };
+
+		this.m_vel.y = dir;
 	}
 }
 

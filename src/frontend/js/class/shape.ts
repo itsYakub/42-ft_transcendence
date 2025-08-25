@@ -1,6 +1,8 @@
 import * as BABYLON from 'babylonjs'
 
 import { g_gamePlayableArea } from './game.js';
+import { g_boundCellSize } from './ground.js';
+
 
 
 /* SECTION:
@@ -12,6 +14,7 @@ export class Shape {
 	 * */
 	public	m_scene : BABYLON.Scene;
 	public	m_box : BABYLON.Mesh;
+	public	m_name : string;
 
 	/* NOTE(joleksia):
 	 *  We only want to move our object forward-backward and left-rigth.
@@ -35,12 +38,33 @@ export class Shape {
 	}
 
 	public	update() {
+		this.m_pos.x += this.m_vel.x * 0.1;
+		this.m_pos.y += this.m_vel.y * 0.1;
+		
+		/* NOTE(joleksia):
+		 *  This chunk of code is responsible for keeping all the meshes in the playable area.
+		 *  It includes the origin point at the center of the mesh (not top-left which is IMPORTANT!!!).
+		 * */
+		if (/* Bounce: LEFT */ (this.m_pos.x - this.m_siz.x / 2.0) < (-g_gamePlayableArea.x + g_boundCellSize / 2.0)) {
+			this.m_pos.x = (-g_gamePlayableArea.x + g_boundCellSize / 2.0) + (this.m_siz.x / 2.0);
+		}
+		else if (/* Bounce: RIGHT */ (this.m_pos.x + this.m_siz.x / 2.0) > (g_gamePlayableArea.x - g_boundCellSize / 2.0)) {
+			this.m_pos.x = (g_gamePlayableArea.x - g_boundCellSize / 2.0) - (this.m_siz.x / 2.0);
+		}
+		
+		if ( /* Bounce: TOP */ (this.m_pos.y - this.m_siz.z / 2.0) < (-g_gamePlayableArea.y + g_boundCellSize / 2.0)) {
+			this.m_pos.y = (-g_gamePlayableArea.y + g_boundCellSize / 2.0) + (this.m_siz.z / 2.0);
+		}
+		else if ( /* Bounce: BOTTOM */ (this.m_pos.y + this.m_siz.z / 2.0) > (g_gamePlayableArea.y - g_boundCellSize / 2.0)) {
+			this.m_pos.y = (g_gamePlayableArea.y - g_boundCellSize / 2.0) - (this.m_siz.z / 2.0);
+		}
+
 		/* NOTE(joleksia):
 		 *  Mapping 2D Position Vector -> 3D Box Position Vector.
 		 *  As we don't want to move up-down, we don't update the 'y' coordinates of the Box.
 		 * */
-		this.m_box.position.x = this.m_pos.x += this.m_vel.x;
-		this.m_box.position.z = this.m_pos.y += this.m_vel.y;
+		this.m_box.position.x = this.m_pos.x;
+		this.m_box.position.z = this.m_pos.y;
 	}
 
 	/* SECTION: Methods
@@ -49,19 +73,19 @@ export class Shape {
 	public	setSiz(vec : BABYLON.Vector2) { this.m_pos = vec; }
 
 	public	createMesh() {
-		let light0 = new BABYLON.PointLight('light0', new BABYLON.Vector3(0, this.m_siz.y, 0), this.m_scene)
+		let light0 = new BABYLON.PointLight(this.m_name+'light0', new BABYLON.Vector3(0, this.m_siz.y, 0), this.m_scene)
 		light0.diffuse = this.m_col;
 		light0.specular = new BABYLON.Color3(0, 0, 0);
 		light0.intensity = 0.2;
 
-	    let glow = new BABYLON.GlowLayer('glow0', this.m_scene);
+	    let glow = new BABYLON.GlowLayer(this.m_name+'glow0', this.m_scene);
 		glow.intensity = 0.8;
 
-		let mat0 = new BABYLON.StandardMaterial('mat0', this.m_scene);
+		let mat0 = new BABYLON.StandardMaterial(this.m_name+'-mat0', this.m_scene);
 		mat0.emissiveColor = this.m_col;
 		mat0.disableLighting = true;
 
-		this.m_box = BABYLON.MeshBuilder.CreateBox('box0', { }, this.m_scene);
+		this.m_box = BABYLON.MeshBuilder.CreateBox(this.m_name, { }, this.m_scene);
 		this.m_box.material = mat0;
 		this.m_box.position = new BABYLON.Vector3(this.m_pos.x, this.m_siz.y, this.m_pos.y);
 		this.m_box.scaling = this.m_siz;

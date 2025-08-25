@@ -35,6 +35,8 @@ export class Game {
 	private	m_ball : Ball;
 	private	m_ground : Ground;
 
+	public static	keys : boolean[];
+
 	/* SECTION:
 	 *  Public Methods
 	 * */
@@ -51,6 +53,19 @@ export class Game {
 		this.m_canvas = document.createElement('canvas');
 		this.m_dialog.appendChild(this.m_canvas);
 
+		/* Setup keyboard input map
+		 * TODO(joleksia):
+		 *  This is just a temporary solution and should be probably switched ASAP
+		 * */
+		Game.keys = [ ];
+		window.addEventListener("keydown", function (e) {
+			Game.keys[e.key] = true;
+		});
+
+		window.addEventListener("keyup", function (e) {
+			Game.keys[e.key] = false;
+		});
+
 		/* Create a babylon layer
 		 * */
 		console.log('[ INFO ] Creating a babylon engine');
@@ -63,14 +78,17 @@ export class Game {
 		 * */
 		console.log('[ INFO ] Preparing the game');
 		this.m_dialog.showModal();
+		
 		/* Resize the canvas to the size of the dialog
 		 * */
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
-		
+	
 		this.m_engine.runRenderLoop(() => this.updateRenderLoop());
 
 		console.log('[ INFO ] Game is running...');
+
+		this.m_ball.start();
 	}
 
 	public	dispose() {
@@ -108,6 +126,11 @@ export class Game {
 
 		/* SECTION: Render
 		 * */
+		
+		/* Resize the canvas to the size of the dialog
+		 * */
+		this.m_canvas.width = this.m_dialog.clientWidth;
+		this.m_canvas.height = this.m_dialog.clientHeight;
 		
 		this.m_scene.render()
 	}
