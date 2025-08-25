@@ -27,14 +27,14 @@ export function userChatsPage(fastify: FastifyInstance, db: DatabaseSync): void 
 				result: incomingChatsBox.result
 			}));
 
-		incomingChatsBox.partners.forEach(partner => {
-			if (null == outgoingChatsBox.partners.find(id => id.partnerId == partner.partnerId)) {
-				outgoingChatsBox.partners.push(partner);
+		incomingChatsBox.contents.forEach(partner => {
+			if (null == outgoingChatsBox.contents.find(id => id.partnerId == partner.partnerId)) {
+				outgoingChatsBox.contents.push(partner);
 			}
 		});
 
-		outgoingChatsBox.partners.sort((a, b) => a.partnerNick.localeCompare(b.partnerNick));
+		outgoingChatsBox.contents.sort((a, b) => a.partnerNick.localeCompare(b.partnerNick));
 
-		return reply.type("text/html").send(frameView({ user, language, page }, userChatsView(outgoingChatsBox.partners, user)));
-	});
+		return reply.type("text/html").send(frameView({ user, language, page }, userChatsView(outgoingChatsBox.contents, user)));
+	});	
 }

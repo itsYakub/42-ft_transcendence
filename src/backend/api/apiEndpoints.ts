@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { allNicknames, allOtherUsers, isUserOnline } from '../db/userDB.js';
+import { allNicknames, isUserOnline } from '../db/userDB.js';
 import { gamePlayers } from '../db/gameDb.js';
-import { messagesString, gamersString } from '../old/matchHtml.js';
-import { translateBackend } from '../../common/translations.js';
-import { Result } from '../../common/interfaces.js';
+import { messagesString, gamersString } from '../views/lobbyView.js';
+import { translate } from '../../common/translations.js';
+import { Box, Result } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
 
 export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -17,8 +17,8 @@ export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/api/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
 		const gamersBox = gamePlayers(db, request.user.gameId);
 		if (Result.SUCCESS == gamersBox.result) {
-			let text = gamersString(gamersBox.gamers, request.user);
-			text = translateBackend(request.language, text);
+			let text = gamersString(gamersBox.contents, request.user);
+			text = translate(request.language, text);
 
 			return reply.send({
 				result: Result.SUCCESS,

@@ -1,7 +1,9 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Friend, FriendsBox, Result, User } from "../../common/interfaces.js";
+import { Box, Friend, Result } from "../../common/interfaces.js";
 
-export function initFriendsDb(db: DatabaseSync, { number, id }) {
+export function initFriendsDb(db: DatabaseSync, number: number = 0, id: number = 1) {
+	db.exec(`DROP TABLE IF EXISTS friends;`);
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS friends (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,13 +18,13 @@ export function initFriendsDb(db: DatabaseSync, { number, id }) {
 /*
 	Gets all the user's friends
 */
-export function friendsList(db: DatabaseSync, userId: number): FriendsBox {
+export function friendsList(db: DatabaseSync, userId: number): Box<Friend[]> {
 	try {
 		const select = db.prepare("SELECT *, nick, game_id, online, playing FROM friends INNER JOIN users ON users.user_id = friends.friend_id WHERE friends.user_id = ? ORDER BY online DESC, nick");
 		const friends = select.all(userId).map(friend => sqlToFriend(friend));
 		return {
 			result: Result.SUCCESS,
-			friends
+			contents: friends
 		};
 	}
 	catch (e) {

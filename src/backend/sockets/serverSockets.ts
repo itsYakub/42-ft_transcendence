@@ -6,15 +6,11 @@ import { handleIncomingUserMessage } from './userSockets.js';
 import { handleIncomingErrorMessage } from './errorsSockets.js';
 import { getUser, markUserOffline } from '../db/userDB.js';
 import { Result, User, WebsocketMessage, WebsocketMessageGroup, WebsocketMessageType } from '../../common/interfaces.js';
+import { handleIncomingTournamentMessage } from './tournamentSockets.js';
 
 export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
-		//if (socket) {
 		socket?.on("message", (data: string | Buffer) => {
-			//	const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-			//if (Result.SUCCESS != userResponse.result)
-			//	return;
-
 			const user = request.user;
 			const message = JSON.parse(data as string);
 			handleMessage(fastify, db, user, message)
@@ -36,7 +32,6 @@ export function serverSockets(fastify: FastifyInstance, db: DatabaseSync): void 
 			//	leaveRoom(db, user);
 			// too sensitive
 		});
-		//}
 	});
 }
 
@@ -56,6 +51,9 @@ function handleMessage(fastify: FastifyInstance, db: DatabaseSync, user: User, m
 
 	if (WebsocketMessageGroup.GAME == message.group)
 		handleIncomingGameMessage(fastify, db, user, message);
+
+	if (WebsocketMessageGroup.TOURNAMENT == message.group)
+		handleIncomingTournamentMessage(fastify, db, user, message);
 
 	if (WebsocketMessageGroup.USER == message.group)
 		handleIncomingUserMessage(fastify, db, user, message);

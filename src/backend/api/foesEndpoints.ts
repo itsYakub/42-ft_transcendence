@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { addFoe, foesList, removeFoe } from '../db/foesDb.js';
 import { Result } from '../../common/interfaces.js';
-import { translateBackend } from '../../common/translations.js';
+import { translate } from '../../common/translations.js';
 import { foesView } from '../views/foesView.js';
 
 export function foesEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -16,7 +16,7 @@ export function foesEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 
 		return reply.send(JSON.stringify({
 			result: Result.SUCCESS,
-			value: translateBackend(language, foesView(foesBox.foes))
+			value: translate(language, foesView(foesBox.contents))
 		}));
 	});
 

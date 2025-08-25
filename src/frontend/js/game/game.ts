@@ -3,7 +3,6 @@ import { sendMessageToServer } from "./../sockets/socket.js";
 import { g_game } from './../class/game.js';
 import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
 
-
 export function gameFunctions() {
 	const localMatchButton = document.querySelector("#localMatchButton");
 	if (localMatchButton) {
@@ -44,32 +43,27 @@ export function gameFunctions() {
 	const remoteTournamentButton = document.querySelector("#remoteTournamentButton");
 	if (remoteTournamentButton) {
 		remoteTournamentButton.addEventListener("click", async () => {
-			// 	const gameID = `t${Date.now().toString(36).substring(5)}`;
-			// 	const response = await fetch(`/game/new`, {
-			// 		method: "POST",
-			// 		body: JSON.stringify({
-			// 			gameID
-			// 		})
-			// 	});
-			// 	const json = await response.json();
-			// 	if (Result.SUCCESS == json.result)
-			// 		navigate(`/tournament/${gameID}`);
-			// 	else
-			// 		showAlert("ERR_DB");
+			const gameId = `t${Date.now().toString(36).substring(5)}`;
+			sendMessageToServer({
+				group: WebsocketMessageGroup.GAME,
+				type: WebsocketMessageType.JOIN,
+				gameId
+			});
+
+			navigate(`/game`, false);
 		});
 	}
 
 	const joinGameButtons = document.getElementsByClassName("joinGameButton");
 	for (var i = 0; i < joinGameButtons.length; i++) {
 		joinGameButtons[i].addEventListener("click", async function () {
-			// user must be in game, other not in game and online
 			sendMessageToServer({
 				group: WebsocketMessageGroup.GAME,
 				type: WebsocketMessageType.JOIN,
 				gameId: this.dataset.id
 			});
 
-			navigate(`/game`);
+			navigate(`/game`, false);
 		})
 	}
 }
@@ -103,8 +97,9 @@ export function startMatch(p1Name: string, p2Name: string) {
 	const dialog = <HTMLDialogElement>document.querySelector("#gameDialog");
 	dialog.addEventListener("keydown", (e) => {
 		if ("Escape" == e.key) {
-			e.preventDefault();
-			alert("Quitter!");
+			console.log("gamer quit");
+			//e.preventDefault();
+			//alert("Quitter!");
 			// Report gamer lost
 		}
 	});

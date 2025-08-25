@@ -1,8 +1,7 @@
 import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
-import { navigate } from "../index.js";
 import { sendMessageToServer } from "../sockets/socket.js";
 
-export function matchFunctions() {
+export function lobbyFunctions() {
 	const gamerMatchReadyForm = <HTMLFormElement>document.querySelector("#gamerMatchReadyForm");
 	if (gamerMatchReadyForm) {
 		gamerMatchReadyForm.addEventListener("submit", async function (e) {

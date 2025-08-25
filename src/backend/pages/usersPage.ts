@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
 import { usersView } from '../views/usersView.js';
-import { translateBackend } from '../../common/translations.js';
+import { translate } from '../../common/translations.js';
 import { allOtherUsers } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
@@ -20,8 +20,8 @@ export function usersPage(fastify: FastifyInstance, db: DatabaseSync) {
 				result: usersBox.result
 			}));
 
-		let text = usersView(usersBox.users, user);
-		text = translateBackend(language, text);
+		let text = usersView(usersBox.contents, user);
+		text = translate(language, text);
 
 		const frame = frameView({ user, language, page }, text);
 		return reply.type("text/html").send(frame);

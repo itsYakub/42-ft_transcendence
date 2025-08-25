@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
-import { matchHtml } from '../old/matchHtml.js';
+import { lobbyView } from '../views/lobbyView.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, Result } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
@@ -34,7 +34,7 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 				return reply.type("text/html").send(frameView(params));
 			}
 
-			const frame = frameView(params, matchHtml(gamersBox.gamers, chatsBox.messages, user));
+			const frame = frameView(params, lobbyView(gamersBox.contents, chatsBox.messages, user));
 			return reply.type("text/html").send(frame);
 		}
 
@@ -44,7 +44,7 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 			return reply.type("text/html").send(frameView(params));
 		}
 
-		const frame = frameView(params, gameView(gamesBox.games, user));
+		const frame = frameView(params, gameView(gamesBox.contents, user));
 		return reply.type("text/html").send(frame);
 	});
 }

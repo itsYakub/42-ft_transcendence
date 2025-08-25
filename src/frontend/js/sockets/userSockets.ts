@@ -1,12 +1,12 @@
-import { accountFunctions } from "../account/account.js";
 import { currentPage, sendMessageToServer } from "./socket.js";
 import { navigate } from "../index.js";
-import { Result, StringBox, User, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
+import { Result, User, WebsocketChatMessage, WebsocketMessage, WebsocketMessageType } from "../../../common/interfaces.js";
+import { chatString } from "../../../common/dynamicElements.js";
 
 export function handleIncomingUserMessage(user: User, message: WebsocketMessage) {
 	switch (message.type) {
 		case WebsocketMessageType.CHAT:
-			userChat(user, message);
+			userChat(user, message as WebsocketChatMessage);
 			break;
 		case WebsocketMessageType.INVITE:
 			userInvite(user, message);
@@ -16,50 +16,48 @@ export function handleIncomingUserMessage(user: User, message: WebsocketMessage)
 			userChangeStatus(user, message);
 			break;
 		case WebsocketMessageType.READY:
+		case WebsocketMessageType.UNREADY:
 			userReady(user, message);
 			break;
 	}
 }
 
-async function userChat(user: User, message: WebsocketMessage) {
-	if ("users" != currentPage())
+async function userChat(user: User, message: WebsocketChatMessage) {
+	if (user.userId != message.fromId && user.userId != message.toId)
 		return;
 
-	let otherId: number = 0;
-	if (message.toId == user.userId)
-		otherId = message.fromId;
-	else if (message.fromId == user.userId)
-		otherId = message.toId;
-
-	if (0 != otherId) {
-		const messagesResponse = await fetch(`/api/user-chats/${otherId}`);
-		const messages = await messagesResponse.json();
-		if (Result.SUCCESS == messages.result) {
-			(document.querySelector("#sendMessageForm") as HTMLFormElement).message.value = "";
-			document.querySelector("#usersDiv").innerHTML = messages.usersHtml;
-			document.querySelector("#messagesDiv").innerHTML = messages.messagesHtml;
-			accountFunctions();
-			//usersFunctions();
+	const partnerIdHolder = <HTMLElement>document.querySelector("#chatPartnerIdHolder");
+	if (partnerIdHolder) {
+		const partnerId = parseInt(partnerIdHolder.dataset.id);
+		if (partnerId == message.fromId || partnerId == message.toId) {
+			// user is chatting with this partner
+			const node = document.createElement("span");
+			node.innerHTML = chatString(message.chat, user.userId == message.toId);
+			const container = document.querySelector("#userChatsContainer");
+			container.insertBefore(node.firstElementChild, container.firstChild);
+		}
+		else if ("chat" == currentPage()) {
+			// user is chatting with another partner
+			console.log("another partner");
 		}
 	}
+
+	else
+		// user is on another page
+		console.log("another page");
 }
 
 /*
-	A user has clicked the Ready button
+	A user has clicked the Ready button or navigated away
 */
 async function userReady(user: User, message: WebsocketMessage) {
 	if ("game" != currentPage())
 		return;
 
-	console.log(message);
-
-	//if (user.gameId == message.gameId) {
 	const gamersBox = await fetch("/api/gamers");
-	const gamers: StringBox = await gamersBox.json();
-	console.log(gamers);
+	const gamers = await gamersBox.json();
 	if (Result.SUCCESS == gamers.result)
 		document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
-	//}
 }
 
 async function userInvite(user: User, message: WebsocketMessage) {

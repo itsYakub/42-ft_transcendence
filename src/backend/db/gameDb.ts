@@ -1,13 +1,13 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Game, Gamer, Result, User } from "../../common/interfaces.js";
+import { Box, Game, Gamer, Result, User } from "../../common/interfaces.js";
 
-export function getGames(db: DatabaseSync) {
+export function getGames(db: DatabaseSync): Box<Game[]> {
 	try {
 		const select = db.prepare("SELECT game_id, GROUP_CONCAT(nick) AS nicks FROM users WHERE NOT game_id IS NULL GROUP BY game_id");
 		const games: Game[] = select.all().map(game => sqlToGame(game));
 		return {
 			result: Result.SUCCESS,
-			games
+			contents: games
 		};
 	}
 	catch (e) {console.log(e);
@@ -17,13 +17,13 @@ export function getGames(db: DatabaseSync) {
 	}
 }
 
-export function gamePlayers(db: DatabaseSync, gameId: string) {
+export function gamePlayers(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 	try {
 		const select = db.prepare("SELECT user_id, nick, ready FROM users WHERE game_id IS ?");
 		const gamers: Gamer[] = select.all(gameId).map(gamer => sqlToGamer(gamer));
 		return {
 			result: Result.SUCCESS,
-			gamers
+			contents: gamers
 		};
 	}
 	catch (e) {
@@ -33,42 +33,34 @@ export function gamePlayers(db: DatabaseSync, gameId: string) {
 	}
 }
 
-function addToGame(db: DatabaseSync, user: User) {
+function addToGame(db: DatabaseSync, user: User): Result {
 	try {
 		const select = db.prepare(`UPDATE users SET game_id = ? WHERE user_id = ?;`);
 		select.run(user.gameId, user.userId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
-export function joinGame(db: DatabaseSync, gameId: string, user: User) {
+export function joinGame(db: DatabaseSync, gameId: string, user: User): Result {
 	try {
 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
 
 		if (user.gameId != gameId && (2 == game.count && gameId.startsWith("m") || 4 == game.count && gameId.startsWith("t")))
-			return {
-				result: Result.ERR_GAME_FULL
-			};
+			return Result.ERR_GAME_FULL;
 
 		user.gameId = gameId;
 		return addToGame(db, user);
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
-export function leaveGame(db: DatabaseSync, userId: number) {
+export function leaveGame(db: DatabaseSync, userId: number): Result {
 	try {
 		let select = db.prepare(`UPDATE users SET game_id = NULL, ready = 0 WHERE user_id = ?`);
 		select.run(userId);
@@ -78,40 +70,43 @@ export function leaveGame(db: DatabaseSync, userId: number) {
 		// 	select = db.prepare("DELETE FROM Messages Where ToID = ?");
 		// 	select.run(gameID);
 		// }
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
-export function markReady(db: DatabaseSync, userId: number) {
+export function markReady(db: DatabaseSync, userId: number): Result {
 	try {
 		const select = db.prepare(`UPDATE users SET ready = 1 WHERE user_id = ?`);
 		select.run(userId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;;
 	}
 }
 
-export function countReady(db: DatabaseSync, { gameId }) {
+export function markUnReady(db: DatabaseSync, userId: number): Result {
+	try {
+		const select = db.prepare(`UPDATE users SET ready = 0 WHERE user_id = ?`);
+		select.run(userId);
+		return Result.SUCCESS;
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+export function countReady(db: DatabaseSync, gameId: string): Box<boolean> {
 	try {
 		const select = db.prepare(`SELECT COUNT(Ready) as ready FROM users WHERE game_id = ? AND ready = 1`);
 		const { ready } = select.get(gameId);
 		const gameCount = gameId.startsWith("t") ? 4 : 2
 		return {
 			result: Result.SUCCESS,
-			ready: gameCount == ready,
+			contents: gameCount == ready,
 		};
 	}
 	catch (e) {
@@ -121,23 +116,18 @@ export function countReady(db: DatabaseSync, { gameId }) {
 	}
 }
 
-export function markPlaying(db: DatabaseSync, { gameId }) {
-	try {
-		const select = db.prepare(`UPDATE users SET playing = 1 WHERE game_id = ?`);
-		select.run(gameId);
-		return {
-			result: Result.SUCCESS
-		};
-	}
-	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
-	}
-}
+// export function markPlaying(db: DatabaseSync, { gameId }): Result {
+// 	try {
+// 		const select = db.prepare(`UPDATE users SET playing = 1 WHERE game_id = ?`);
+// 		select.run(gameId);
+// 		return Result.SUCCESS;
+// 	}
+// 	catch (e) {
+// 		return Result.ERR_DB;
+// 	}
+// }
 
 function sqlToGame(game: Record<string, SQLOutputValue>): Game {
-	console.log(game);
 	return {
 		gameId: game.game_id as string,
 		nicks: game.nicks as string

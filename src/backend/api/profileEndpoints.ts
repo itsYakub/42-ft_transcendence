@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { Result } from '../../common/interfaces.js';
-import { translateBackend } from '../../common/translations.js';
+import { translate } from '../../common/translations.js';
 import { getUserById } from '../db/userDB.js';
 import { matchResultsList } from '../db/matchResultsDb.js';
 import { profileView } from '../views/profileView.js';
@@ -30,13 +30,13 @@ export function profileEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 		if (Result.SUCCESS != foesBox.result)
 			return reply.send(foesBox);
 
-		const isFriend = null != friendsBox.friends.find(friend => friend.userId == user.userId);
-		const isFoe = null != foesBox.foes.find(foe => foe.userId == user.userId);
+		const isFriend = null != friendsBox.contents.find(friend => friend.userId == user.userId);
+		const isFoe = null != foesBox.contents.find(foe => foe.userId == user.userId);
 
-		let text = profileView(matchResultsBox.matchResults, isFriend, isFoe, user);
+		let text = profileView(matchResultsBox.contents, isFriend, isFoe, user);
 		return reply.send({
 			result: Result.SUCCESS,
-			value: translateBackend(request.language, text)
+			value: translate(request.language, text)
 		});
 	});
 }

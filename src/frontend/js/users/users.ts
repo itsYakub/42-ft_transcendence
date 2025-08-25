@@ -16,7 +16,6 @@ export function usersFunctions() {
 		friendsButton.addEventListener("click", async () => {
 			const response = await fetch("/api/friends");
 			const text = await response.text();
-			console.log(text);
 			const json = JSON.parse(text);
 			if (Result.SUCCESS == json.result) {
 				document.querySelector("#content").innerHTML = json.value;

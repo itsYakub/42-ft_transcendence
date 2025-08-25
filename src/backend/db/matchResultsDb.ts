@@ -1,7 +1,9 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { MatchResult, MatchResultBox, Result } from "../../common/interfaces.js";
+import { Box, MatchResult, Result } from "../../common/interfaces.js";
 
 export function initMatchResultsDb(db: DatabaseSync, { number, start, end }): void {
+	db.exec(`DROP TABLE IF EXISTS match_results;`);
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS match_results (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,13 +19,13 @@ export function initMatchResultsDb(db: DatabaseSync, { number, start, end }): vo
 /*
 	Gets all the user's matches
 */
-export function matchResultsList(db: DatabaseSync, userId: number): MatchResultBox {
+export function matchResultsList(db: DatabaseSync, userId: number): Box<MatchResult[]> {
 	try {
 		const select = db.prepare("SELECT * FROM match_results WHERE user_id = ? ORDER BY played_at DESC");
 		const matchResults = select.all(userId).map(mathResult => sqlToMatchResult(mathResult));
 		return {
 			result: Result.SUCCESS,
-			matchResults
+			contents: matchResults
 		};
 	}
 	catch (e) {
@@ -33,18 +35,14 @@ export function matchResultsList(db: DatabaseSync, userId: number): MatchResultB
 	}
 }
 
-export function addMatchResult(db: DatabaseSync, userId: number, opponent: string, score: number, opponentScore: number, tournamentWin: boolean, date: Date = new Date()): any {
+export function addMatchResult(db: DatabaseSync, userId: number, opponent: string, score: number, opponentScore: number, tournamentWin: boolean, date: Date = new Date()): Result {
 	try {
 		const select = db.prepare("INSERT INTO match_results (user_id, opponent, score, opponent_score, tournament_win, played_at) VALUES (?, ?, ?, ?, ?, ?)");
 		select.run(userId, opponent, score, opponentScore, Number(tournamentWin), date.toISOString());
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 

@@ -1,8 +1,7 @@
 import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function matchHtml(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
-	console.log(gamers);
+export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	let html = matchString(gamers, chats, user);
 
 	return html + gameHtmlString();
@@ -19,7 +18,7 @@ export function gamersString(gamers: Gamer[], user: User): string {
 		${gamersString}
 	</div>
 	<div class="flex flex-row justify-between mr-9">
-		${readyButtonString(user)}
+		${readyButtonString(user.ready)}
 		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 	</div>
 	`;
@@ -38,11 +37,12 @@ export function messagesString(chats: GameChatMessage[], user: User): string {
 }
 
 function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
+	const titleString = user.gameId.startsWith("m") ? "TEXT_SINGLE_GAME" : "TEXT_TOURNAMENT";
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_SINGLE_GAME%%</h1>
+		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%${titleString}%%</h1>
 		<div class="flex flex-row h-150">
-			<div class="flex flex-col">
+			<div id="lobbyDetailsContainer" class="flex flex-col">
 				<form id="gamerMatchReadyForm">
 					${gamersString(gamers, user)}
 				</form>
@@ -69,7 +69,7 @@ function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): str
 }
 
 function gamerString(gamer: Gamer) {
-	const readyText = gamer.ready ? `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>` : `<i class="fa-solid fa-check text-green-300 my-auto"></i>`;
+	const readyText = gamer.ready ? `<i class="fa-solid fa-check text-green-300 my-auto"></i>` : `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>`;
 
 	return `
 	<div class="flex flex-row mr-2">
@@ -79,9 +79,9 @@ function gamerString(gamer: Gamer) {
 	`;
 }
 
-function readyButtonString({ ready }) {
-	return 0 == ready ? `<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>` :
-		`<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>`;
+function readyButtonString(ready: boolean) {
+	return ready ? `<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
+	`<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
 }
 
 function messageString(userId: number, chat: GameChatMessage) {

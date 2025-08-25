@@ -1,6 +1,6 @@
 import { profileActionbuttons } from "../../../common/dynamicElements.js";
 import { Result } from "../../../common/interfaces.js";
-import { translateBackend } from "../../../common/translations.js";
+import { translate } from "../../../common/translations.js";
 import { getLanguage } from "../index.js";
 
 export function profileFunctions() {
@@ -29,7 +29,7 @@ export function profileFunctions() {
 			if (Result.SUCCESS == await response.text()) {
 				const actionButtons = profileActionbuttons(true, false, parseInt(this.dataset.id));
 				const language = getLanguage();
-				document.querySelector("#actionButtonsContainer").innerHTML = translateBackend(language, actionButtons);
+				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
 			}
 		});
@@ -51,7 +51,7 @@ export function profileFunctions() {
 			if (Result.SUCCESS == await response.text()) {
 				const actionButtons = profileActionbuttons(false, false, parseInt(this.dataset.id));
 				const language = getLanguage();
-				document.querySelector("#actionButtonsContainer").innerHTML = translateBackend(language, actionButtons);
+				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
 			}
 		});
@@ -73,7 +73,7 @@ export function profileFunctions() {
 			if (Result.SUCCESS == await response.text()) {
 				const actionButtons = profileActionbuttons(false, true, parseInt(this.dataset.id));
 				const language = getLanguage();
-				document.querySelector("#actionButtonsContainer").innerHTML = translateBackend(language, actionButtons);
+				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
 			}
 		});
@@ -95,7 +95,7 @@ export function profileFunctions() {
 			if (Result.SUCCESS == await response.text()) {
 				const actionButtons = profileActionbuttons(false, false, parseInt(this.dataset.id));
 				const language = getLanguage();
-				document.querySelector("#actionButtonsContainer").innerHTML = translateBackend(language, actionButtons);
+				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
 			}
 		});

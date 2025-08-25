@@ -1,4 +1,4 @@
-export function translateBackend(language: string, text: string): string {
+export function translate(language: string, text: string): string {
 	const items = [
 		"BUTTON_ACCOUNT",
 		"BUTTON_AI_GAME",
@@ -72,28 +72,20 @@ export function translateBackend(language: string, text: string): string {
 
 	switch (language) {
 		case "dutch":
-			items.forEach(item => text = text.replaceAll(`%%${item}%%`, dutchBackend(item)));
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, translateDutch(item)));
 			break;
 		case "english":
-			items.forEach(item => text = text.replaceAll(`%%${item}%%`, englishBackend(item)));
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, translateEnglish(item)));
 			break;
 		case "polish":
-			items.forEach(item => text = text.replaceAll(`%%${item}%%`, polishBackend(item)));
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, translatePolish(item)));
 			break;
 	}
 
 	return text;
 }
 
-export function translateAlert(language: string, text: string): string {
-	switch (language) {
-		case "dutch": return dutchAlert(text);
-		case "english": return englishAlert(text);
-		case "polish": return polishAlert(text);
-	}
-}
-
-function dutchBackend(text: string): string {
+function translateDutch(text: string): string {
 	switch (text) {
 		// errors
 		case "ERR_FORBIDDEN": return "!";
@@ -200,11 +192,7 @@ function dutchBackend(text: string): string {
 	}
 }
 
-function dutchAlert(text: string): string {
-	return "";
-}
-
-function englishBackend(text: string): string {
+function translateEnglish(text: string): string {
 	switch (text) {
 		case "BUTTON_ACCOUNT": return "Account";
 		case "BUTTON_ADD_FOE": return "Add foe";
@@ -239,10 +227,30 @@ function englishBackend(text: string): string {
 		case "BUTTON_UPDATE": return "Update";
 		case "BUTTON_USERS": return "Users";
 
+		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 100KiB max!";
+		case "ERR_BAD_PASSWORD": return "Incorrect password!";
 		case "ERR_DB": return "Database error!";
+		case "ERR_EMAIL_IN_USE": return "Email already registered!";
 		case "ERR_FORBIDDEN": return "Forbidden!";
 		case "ERR_FULL": return "Room full!";
+		case "ERR_GOOGLE": return "Couldn't sign in/up with Google!";
+		case "ERR_NO_NEW_PASSWORD": return "New password can't be the same as old password!";
+		case "ERR_NO_USER": return "User not found!";
 		case "ERR_NOT_FOUND": return "Not found!";
+		case "ERR_PASSWORDS_DONT_MATCH": return "Please repeat the password!";
+		case "ERR_SAME_EMAIL": return "You can't add yourself!";
+		case "ERR_SAME_NAME": return "Names must be unique!";
+		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
+		case "ERR_USER_OFFLINE": return "User offline!";
+
+		case "PROMPT_TEXT_EMAIL": return "Friend's email";
+		case "PROMPT_TOTP_CODE": return "TOTP code";
+
+		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
+		case "SUCCESS_DISABLED_TOTP": return "Disabled TOTP!";
+		case "SUCCESS_ENABLED_TOTP": return "Enabled TOTP - please log in again!";
+		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
+		case "SUCCESS_PASSWORD_CHANGED": return "Password changed!";
 
 		case "TEXT_CHANGE_AVATAR": return "Change avatar";
 		case "TEXT_CHANGE_NICK": return "Change nickname";
@@ -312,33 +320,7 @@ function englishBackend(text: string): string {
 	}
 }
 
-function englishAlert(text: string): string {
-	console.log(text);
-	switch (text) {
-		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 100KiB max!";
-		case "ERR_BAD_PASSWORD": return "Incorrect password!";
-		case "ERR_DB": return "Database error!";
-		case "ERR_EMAIL_IN_USE": return "Email already registered!";
-		case "ERR_GOOGLE": return "Couldn't sign in/up with Google!";
-		case "ERR_NO_NEW_PASSWORD": return "New password can't be the same as old password!";
-		case "ERR_NO_USER": return "User not found!";
-		case "ERR_PASSWORDS_DONT_MATCH": return "Please repeat the password!";
-		case "ERR_SAME_EMAIL": return "You can't add yourself!";
-		case "ERR_SAME_NAME": return "Names must be unique!";
-		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
-		case "ERR_USER_OFFLINE": return "User offline!";
-		case "PROMPT_TEXT_EMAIL": return "Friend's email";
-		case "PROMPT_TOTP_CODE": return "TOTP code";
-		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
-		case "SUCCESS_DISABLED_TOTP": return "Disabled TOTP!";
-		case "SUCCESS_ENABLED_TOTP": return "Enabled TOTP - please log in again!";
-		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
-		case "SUCCESS_PASSWORD_CHANGED": return "Password changed!";
-		default: return "ENUnknown frontend text";
-	}
-}
-
-function polishBackend(text: string): string {
+function translatePolish(text: string): string {
 	switch (text) {
 		// errors
 		case "ERR_FORBIDDEN": return "!";
@@ -443,8 +425,4 @@ function polishBackend(text: string): string {
 		case "TEXT_SEND": return "";
 		default: return "PLUnknown text";
 	}
-}
-
-function polishAlert(text: string): string {
-	return "";
 }

@@ -9,7 +9,7 @@ TODO (Luke):
 - move scrollbar hiding to css file
 - profile page
 - 2FA emails
-- history page
+- chat indicators - persist?
 
 Tests:
 - not logged in

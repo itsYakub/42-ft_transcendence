@@ -1,6 +1,6 @@
 import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../common/interfaces.js";
 import { addFunctions, navigate, showAlert } from "./index.js";
-import { initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
+import { currentPage, initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
 
 export async function navigated() {
 	const userResponse = await fetch("/api/user");
@@ -16,6 +16,12 @@ export async function navigated() {
 			} catch (err) {
 				console.error("❌ WebSocket failed:", err);
 			}
+		}
+		if ("game" != currentPage()) {
+			sendMessageToServer({
+				group: WebsocketMessageGroup.USER,
+				type: WebsocketMessageType.UNREADY
+			});
 		}
 	}
 }
@@ -33,11 +39,12 @@ export function registerEvents() {
 	*/
 	window.addEventListener("DOMContentLoaded", () => {
 		if (-1 != document.cookie.indexOf("googleautherror=true")) {
-			const date = new Date();
-			date.setDate(date.getDate() - 3);
+			//const date = new Date();
+			//date.setDate(date.getDate() - 3);
 
 			showAlert("ERR_GOOGLE");
-			document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
+			//document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
+			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
 		}
 		addFunctions();
 		navigated();

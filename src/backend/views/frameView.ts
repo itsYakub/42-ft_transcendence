@@ -1,5 +1,5 @@
 import { navbarView } from "./navbarView.js";
-import { translateBackend } from "../../common/translations.js";
+import { translate } from "../../common/translations.js";
 import { FrameParams } from "../../common/interfaces.js";
 
 /*
@@ -10,7 +10,7 @@ export function frameView(params: FrameParams, content: string = null): any {
 		content = errorString(params);
 
 	const text = frameString(navbarView(params), content);
-	return translateBackend(params.language, text)
+	return translate(params.language, text)
 }
 
 function frameString(navbar: string, content: string): string {

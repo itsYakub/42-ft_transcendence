@@ -1,6 +1,6 @@
 import { handleIncomingUserMessage } from "./userSockets.js";
 import { handleIncomingGameMessage } from "./gamesSockets.js";
-import { Result, User, WebsocketMessage, WebsocketMessageGroup } from "../../../common/interfaces.js";
+import { Result, User, WebsocketGameMessage, WebsocketMessage, WebsocketMessageGroup } from "../../../common/interfaces.js";
 
 let socket: WebSocket | null = null;
 
@@ -37,6 +37,11 @@ export function initChatSocket(): Promise<void> {
 	});
 }
 
+export function closeSocket() {
+	socket.close();
+	socket = null;
+}
+
 /*
 	Checkes whether it's safe to send a message
 */
@@ -47,7 +52,7 @@ export function isConnected(): boolean {
 /*
 	Sends a message from a client to the server
 */
-export function sendMessageToServer(message: WebsocketMessage) {
+export function sendMessageToServer<Type extends WebsocketMessage>(message: Type) {
 	if (1 == socket?.OPEN)
 		socket.send(JSON.stringify(message));
 }
@@ -65,7 +70,7 @@ function handleMessage(user: User, message: WebsocketMessage) {
 	//	handleIncomingErrorMessage(user, message);
 
 	if (WebsocketMessageGroup.GAME == message.group)
-		handleIncomingGameMessage(user, message);
+		handleIncomingGameMessage(user, message as WebsocketGameMessage);
 
 	if (WebsocketMessageGroup.USER == message.group)
 		handleIncomingUserMessage(user, message);

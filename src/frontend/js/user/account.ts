@@ -1,5 +1,6 @@
 import { Result } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
+import { closeSocket } from "../sockets/socket.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -263,8 +264,10 @@ export function accountFunctions() {
 	if (logoutButton) {
 		logoutButton.addEventListener("click", async () => {
 			const response = await fetch("/account/logout");
-			if (response.ok)
+			if (response.ok) {
+				closeSocket();
 				navigate("/");
+			}
 		}, { once: true });
 	}
 

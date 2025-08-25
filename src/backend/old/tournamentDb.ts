@@ -70,22 +70,22 @@ export function getTournamentByCode(db: DatabaseSync, userNick: string, code: st
 	}
 }
 
-export function addTournament(db: DatabaseSync, { code, m1p1, m1p2, m2p1, m2p2 }) {
-	try {
-		const select = db.prepare("INSERT INTO Tournaments (Code, M1P1, M1P2, M2P1, M2P2) VALUES (?, ?, ?, ?, ?)");
-		select.run(code, m1p1, m1p2, m2p1, m2p2);
-		return {
-			code: 200,
-			message: "SUCCESS"
-		};
-	}
-	catch (e) {
-		return {
-			code: 500,
-			error: "ERR_DB"
-		};
-	}
-}
+// export function addTournament(db: DatabaseSync, { code, m1p1, m1p2, m2p1, m2p2 }) {
+// 	try {
+// 		const select = db.prepare("INSERT INTO Tournaments (Code, M1P1, M1P2, M2P1, M2P2) VALUES (?, ?, ?, ?, ?)");
+// 		select.run(code, m1p1, m1p2, m2p1, m2p2);
+// 		return {
+// 			code: 200,
+// 			message: "SUCCESS"
+// 		};
+// 	}
+// 	catch (e) {
+// 		return {
+// 			code: 500,
+// 			error: "ERR_DB"
+// 		};
+// 	}
+// }
 
 export function updateTournament(db: DatabaseSync, { user, code, p1Score, p2Score }) {
 	try {

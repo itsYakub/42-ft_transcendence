@@ -6,6 +6,7 @@ import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick,
 import encodeQR from 'qr';
 import { invalidateToken } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
+import { leaveGame } from '../db/gameDb.js';
 
 export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
@@ -174,7 +175,7 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		if (!user)
 			return;
 
-		invalidateToken(db, user);
+		invalidateToken(db, user.userId);
 		const date = new Date();
 		date.setDate(date.getDate() - 3);
 		return reply.header(
@@ -183,8 +184,8 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 	});
 
 	fastify.get("/account/logout", async (request: FastifyRequest, reply: FastifyReply) => {
-		const date = new Date();
-		date.setDate(date.getDate() - 3);
+		leaveGame(db, request.user.userId);
+		const date = "Thu, 01 Jan 1970 00:00:00 UTC";
 		return reply.header(
 			"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).redirect("/");

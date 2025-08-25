@@ -1,4 +1,5 @@
 import { navigate } from "./index.js";
+import { closeSocket } from "./sockets/socket.js";
 
 export function devButtons() {
 	const addMockHistoryButton = document.querySelector("#addMockHistoryButton")
@@ -15,10 +16,12 @@ export function devButtons() {
 	const deleteCookiesButton = document.querySelector("#deleteCookiesButton")
 	if (deleteCookiesButton) {
 		deleteCookiesButton.addEventListener("click", async () => {
-			document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
 			const response = await fetch("/account/logout");
-			if (response.ok)
+			document.cookie.split(";").forEach(function (c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+			if (response.ok) {
+				closeSocket();
 				navigate("/");
+			}
 		});
 	}
 }

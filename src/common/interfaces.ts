@@ -14,6 +14,7 @@ export enum Result {
 export enum WebsocketMessageGroup {
 	ERROR = "ERROR",
 	GAME = "GAME",
+	TOURNAMENT = "TOURNAMENT",
 	USER = "USER"
 }
 
@@ -22,16 +23,27 @@ export enum WebsocketMessageType {
 	INVITE = "INVITE",
 	JOIN = "JOIN",
 	LEAVE = "LEAVE",
-	READY = "READY"
+	READY = "READY",
+	UNREADY= "UNREADY"
 }
 
 export interface WebsocketMessage {
-	chat?: string,
 	fromId?: number,
-	gameId?: string,
 	group: WebsocketMessageGroup,
 	toId?: number,
 	type: WebsocketMessageType
+}
+
+export interface WebsocketGameMessage extends WebsocketMessage {
+	gameId: string
+}
+
+export interface WebsocketChatMessage extends WebsocketMessage {
+	chat: string
+}
+
+export interface WebsocketGameChatMessage extends WebsocketGameMessage, WebsocketChatMessage {
+	gameId: string
 }
 
 export interface FrameParams {
@@ -86,8 +98,7 @@ export interface MatchResult {
 }
 
 export interface UserChatMessage {
-	partnerId: number,
-	partnerNick: string,
+	fromId: number,
 	message: string,
 	sentAt: Date,
 }
@@ -123,6 +134,22 @@ export interface GameChatMessage {
 	nick: string
 }
 
+export interface Tournament {
+	match: number,
+	m1p1Nick: string,
+	m1p2Nick: string,
+	m2p1Nick: string,
+	m2p2Nick: string,
+	m3p1Nick: string,
+	m3p2Nick: string,
+	m1p1Score: number,
+	m1p2Score: number,
+	m2p1Score: number,
+	m2p2Score: number,
+	m3p1Score: number,
+	m3p2Score: number,
+}
+
 export interface UserBox {
 	accessToken?: string,
 	refreshToken?: string,
@@ -130,42 +157,7 @@ export interface UserBox {
 	user?: User
 }
 
-export interface UsersBox {
+export interface Box<T> {
 	result: Result,
-	users?: User[]
-}
-
-export interface FriendsBox {
-	friends?: Friend[],
-	result: Result
-}
-
-export interface MatchResultBox {
-	matchResults?: MatchResult[],
-	result: Result
-}
-
-export interface UserChatMessagesBox {
-	messages?: UserChatMessage[],
-	result: Result
-}
-
-export interface UserChatPartnersBox {
-	partners?: UserChatPartner[],
-	result: Result
-}
-
-export interface FoesBox {
-	foes?: Foe[],
-	result: Result
-}
-
-export interface StringBox {
-	result: Result,
-	value?: string
-}
-
-export interface StringlistBox {
-	result: Result,
-	values?: string[]
+	contents?: T
 }

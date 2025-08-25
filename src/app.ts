@@ -6,12 +6,9 @@ import { DatabaseSync } from "node:sqlite";
 import { initFriendsDb } from "./backend/db/friendsDb.js";
 import { initMatchResultsDb } from "./backend/db/matchResultsDb.js";
 import { devEndpoints } from "./backend/devTools.js";
-import { initTournaments } from "./backend/old/tournamentDb.js";
 import { homePage } from "./backend/pages/homePage.js";
-import { tournamentRoutes } from "./backend/old/tournamentRoutes.js";
 import { usersPage } from "./backend/pages/usersPage.js";
 import { initUserChatsDb } from "./backend/db/userChatsDb.js";
-import { matchRoutes } from "./backend/old/matchRoutes.js";
 import { serverSockets } from "./backend/sockets/serverSockets.js";
 import { apiEndpoints } from "./backend/api/apiEndpoints.js";
 import { gamePage } from "./backend/pages/gamePage.js";
@@ -22,7 +19,7 @@ import { accountPage } from "./backend/pages/accountPage.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { authEndpoints } from "./backend/api/authEndpoints.js";
 import { accountEndpoints } from "./backend/api/accountEndpoints.js";
-import { translateBackend } from "./common/translations.js";
+import { translate } from "./common/translations.js";
 import { Result, User } from "./common/interfaces.js";
 import { initGameChatsDb } from "./backend/db/gameChatsDb.js";
 import { foesEndpoints } from "./backend/api/foesEndpoints.js";
@@ -31,6 +28,9 @@ import { userEndpoints } from "./backend/api/userEndpoints.js";
 import { userChatsPage } from "./backend/pages/userChatsPage.js";
 import { matchResultsEndpoints } from "./backend/api/matchResultsEndpoints.js";
 import { profileEndpoints } from "./backend/api/profileEndpoints.js";
+import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
+import { initTournamentsDb } from "./backend/db/tournamentDb.js";
+import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
 
 const __dirname = import.meta.dirname;
 
@@ -106,7 +106,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 			return reply.type("text/html").send(frameView({ language }, loggedOutView()));
 		else if (request.url.startsWith("/api/") && !publicApiEndpoints.includes(request.url))
 			return reply.send({
-				result: translateBackend(language, "%%ERR_FORBIDDEN%%")
+				result: translate(language, "%%ERR_FORBIDDEN%%")
 			});
 	}
 
@@ -132,7 +132,7 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 const db = new DatabaseSync("../data/transcendence.db");
 
 const mockData = {
-	mockUsers: 5,
+	mockUsers: 0,
 	mockMessages: {
 		number: 5,
 		start: 1,
@@ -162,21 +162,18 @@ const mockData = {
 
 try {
 	initFoesDb(db, mockData.mockFoes);
-	initFriendsDb(db, mockData.mockFriends);
+	initFriendsDb(db);
 	initGameChatsDb(db);
 	initMatchResultsDb(db, mockData.mockMatchResults);
-	//initTournaments(db);
+	initTournamentsDb(db);
 	initUserChatsDb(db, mockData.mockUserChats);
-	initUsersDb(db, mockData.mockUsers);
+	initUsersDb(db);
 
 	accountPage(fastify, db);
 	gamePage(fastify, db);
 	homePage(fastify, db);
 	userChatsPage(fastify, db);
 	usersPage(fastify, db);
-
-	matchRoutes(fastify, db);
-	tournamentRoutes(fastify, db);
 
 	accountEndpoints(fastify, db);
 	apiEndpoints(fastify, db);
@@ -185,6 +182,8 @@ try {
 	friendsEndpoints(fastify, db);
 	matchResultsEndpoints(fastify, db);
 	profileEndpoints(fastify, db);
+	tournamentEndpoints(fastify, db);
+	userChatsEndpoints(fastify, db);
 	userEndpoints(fastify, db);
 
 	serverSockets(fastify, db);

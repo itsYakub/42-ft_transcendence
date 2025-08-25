@@ -1,16 +1,15 @@
 import { navbarFunctions } from "./navbar.js";
-import { accountFunctions } from "./account/account.js";
+import { accountFunctions } from "./user/account.js";
 import { devButtons } from "./devButtons.js";
 import { localMatchFunctions } from "./game/localMatch.js";
 import { gameFunctions } from "./game/game.js";
-import { authFunctions } from "./user/auth.js";
+import { authFunctions } from "./user/loggedOut.js";
 import { usersFunctions } from "./users/users.js";
-import { matchFunctions } from "./game/match.js";
+import { lobbyFunctions } from "./game/lobby.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
-import { tournamentFunctions } from "./game/tournament.js";
-import { translateAlert } from "../../common/translations.js";
-import { userChatsFunctions } from "./userChats.js";
+import { translate } from "../../common/translations.js";
+import { userChatsFunctions } from "./user/userChats.js";
 
 /*
 	Simulates moving to a new page
@@ -41,12 +40,11 @@ export function addFunctions() {
 	accountFunctions();
 	authFunctions();
 	gameFunctions();
-	matchFunctions();
+	lobbyFunctions();
 	navbarFunctions();
 	localMatchFunctions();
 	localTournamentFunctions();
 	//profileFunctions();
-	tournamentFunctions();
 	userChatsFunctions();
 	usersFunctions();
 
@@ -64,7 +62,7 @@ export function showAlert(text: string) {
 		closeAlertButton.addEventListener("click", () => {
 			alertDialog.close();
 		});
-		const content = translateAlert(getLanguage(), text);
+		const content = translate(getLanguage(), text);
 		document.querySelector("#alertContent").textContent = content;
 		alertDialog.showModal();
 	}

@@ -3,7 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { addFriend, friendsList, removeFriend } from '../db/friendsDb.js';
 import { getUserByEmail } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
-import { translateBackend } from '../../common/translations.js';
+import { translate } from '../../common/translations.js';
 import { friendsView } from '../views/friendsView.js';
 
 export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
@@ -17,7 +17,7 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 
 		return reply.send(JSON.stringify({
 			result: Result.SUCCESS,
-			value: translateBackend(language, friendsView(friendsBox.friends))
+			value: translate(language, friendsView(friendsBox.contents))
 		}));
 	});
 

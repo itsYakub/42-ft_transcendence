@@ -2,12 +2,14 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
 import { defaultAvatar } from "./defaultAvatar.js";
-import { StringlistBox, Result, UserBox, StringBox, User, UsersBox, UserType } from "../../common/interfaces.js";
+import { Result, UserBox, User, UserType, Box } from "../../common/interfaces.js";
 
 /*
 	Sets up the Users table
 */
 export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
+	db.exec(`DROP TABLE IF EXISTS users;`);
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS users (
 		avatar TEXT,
@@ -30,7 +32,7 @@ export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 	if (addUsers > 0) {
 		const pw = hashPassword("12345678");
 		for (var i = 1; i <= addUsers; i++)
-			db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).value}', 'test${i}@test.com', '${pw}', '${defaultAvatar}');`);
+			db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).contents}', 'test${i}@test.com', '${pw}', '${defaultAvatar}');`);
 	}
 }
 
@@ -106,7 +108,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 /*
 	Adds a user to the DB after a sign up with email/password
 */
-export function addUser(db: DatabaseSync, { email, password }): any {
+export function addUser(db: DatabaseSync, { email, password }): UserBox {
 	try {
 		const stringBox = getNickname(db);
 		if (Result.SUCCESS != stringBox.result)
@@ -114,7 +116,7 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 
 		const pw = hashPassword(password);
 		const insert = db.prepare('INSERT INTO users (nick, email, password, avatar) VALUES (?, ?, ?, ?)');
-		const statementSync = insert.run(stringBox.value, email, pw, defaultAvatar);
+		const statementSync = insert.run(stringBox.contents, email, pw, defaultAvatar);
 
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
@@ -142,18 +144,18 @@ export function addUser(db: DatabaseSync, { email, password }): any {
 /*
 	Adds a guest to the DB
 */
-export function addGuest(db: DatabaseSync): StringBox {
+export function addGuest(db: DatabaseSync): Box<string> {
 	try {
 		const stringBox = getNickname(db);
 		if (Result.SUCCESS != stringBox.result)
 			return stringBox;
 
 		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
-		const statementSync = insert.run(stringBox.value, UserType[UserType.GUEST]);
+		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST]);
 		const id: number = statementSync.lastInsertRowid as number;
 		return {
 			result: Result.SUCCESS,
-			value: refreshToken(id)
+			contents: refreshToken(id)
 		};
 	}
 	catch (e) {
@@ -166,7 +168,7 @@ export function addGuest(db: DatabaseSync): StringBox {
 /*
 	After a successful Google Sign-in/up, gets the user from the DB or adds it
 */
-export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
+export function addGoogleUser(db: DatabaseSync, { email, avatar }): UserBox {
 	try {
 		let userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS == userBox.result) {
@@ -187,7 +189,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 			return stringBox;
 
 		const insert = db.prepare('INSERT INTO users (nick, email, avatar, type) VALUES (?, ?, ?, ?)');
-		const statementSync = insert.run(stringBox.value, email, avatar, UserType[UserType.GOOGLE]);
+		const statementSync = insert.run(stringBox.contents, email, avatar, UserType[UserType.GOOGLE]);
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
 		updateRefreshtoken(db, {
@@ -210,7 +212,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): any {
 /*
 	Gets a user from the DB after an email/password login
 */
-export function loginUser(db: DatabaseSync, { email, password }) {
+export function loginUser(db: DatabaseSync, { email, password }): UserBox {
 	try {
 		const userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS != userBox.result)
@@ -244,7 +246,7 @@ export function loginUser(db: DatabaseSync, { email, password }) {
 /*
 	Gets a user from the DB after an email/password login
 */
-export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
+export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): UserBox {
 	try {
 		const userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS != userBox.result) {
@@ -271,13 +273,10 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 				userId: user.userId, refreshToken: token
 			});
 			return {
-				code: 200,
-				user: {
-					nick: user.nick,
-					avatar: user.avatar,
-					accessToken: accessToken(user.userId),
-					refreshToken: token
-				}
+				result: Result.SUCCESS,
+				accessToken: accessToken(user.userId),
+				refreshToken: token,
+				user
 			}
 		}
 		return {
@@ -286,8 +285,7 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }) {
 	}
 	catch (e) {
 		return {
-			code: 500,
-			error: Result.ERR_DB
+			result: Result.ERR_DB
 		};
 	}
 }
@@ -339,14 +337,14 @@ export function getUserByEmail(db: DatabaseSync, email: string): UserBox {
 /*
 
 */
-export function isUserOnline(db: DatabaseSync, userId: number): any {
+export function isUserOnline(db: DatabaseSync, userId: number): Box<boolean> {
 	try {
 		const select = db.prepare("SELECT online FROM users WHERE user_id = ?");
 		const user = select.get(userId);
 		if (user) {
 			return {
 				result: Result.SUCCESS,
-				online: user.Online
+				contents: Boolean(user.online)
 			}
 		};
 		return {
@@ -360,72 +358,56 @@ export function isUserOnline(db: DatabaseSync, userId: number): any {
 	}
 }
 
-export function updateRefreshtoken(db: DatabaseSync, { userId, refreshToken }) {
+export function updateRefreshtoken(db: DatabaseSync, { userId, refreshToken }): Result {
 	try {
 		const select = db.prepare("UPDATE users SET refresh_token = ? WHERE user_id = ?");
 		select.run(refreshToken, userId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
-export function invalidateToken(db: DatabaseSync, { userId }) {
+export function invalidateToken(db: DatabaseSync, userId: number): Result {
 	try {
 		const select = db.prepare("UPDATE users SET refresh_token = NULL WHERE user_id = ?");
 		select.run(userId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
-export function markUserOnline(db: DatabaseSync, { userId }) {
+export function markUserOnline(db: DatabaseSync, userId: number): Result {
 	try {
 		const select = db.prepare("UPDATE Users SET online = 1 WHERE user_id = ?");
 		select.run(userId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
-export function markUserOffline(db: DatabaseSync, userId: number) {
+export function markUserOffline(db: DatabaseSync, userId: number): Result {
 	try {
 		const select = db.prepare("UPDATE users SET online = 0 WHERE user_id = ?");
 		// const select = "guest" == type ? db.prepare("DELETE FROM Users WHERE UserID = ?") :
 		// 	db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
 		select.run(userId);
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allNicknames(db: DatabaseSync): StringlistBox {
+export function allNicknames(db: DatabaseSync): Box<string[]> {
 	try {
 		const select = db.prepare("SELECT nick FROM users");
 		const list = select.all();
@@ -437,7 +419,7 @@ export function allNicknames(db: DatabaseSync): StringlistBox {
 
 		return {
 			result: Result.SUCCESS,
-			values: nicknames
+			contents: nicknames
 		};
 	}
 	catch (e) {
@@ -451,7 +433,7 @@ export function allNicknames(db: DatabaseSync): StringlistBox {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allUsers(db: DatabaseSync): StringlistBox {
+export function allUsers(db: DatabaseSync): Box<string[]> {
 	try {
 		const select = db.prepare("SELECT user_id, nick FROM users");
 		const list = select.all();
@@ -466,7 +448,7 @@ export function allUsers(db: DatabaseSync): StringlistBox {
 
 		return {
 			result: Result.SUCCESS,
-			values: users
+			contents: users
 		};
 	}
 	catch (e) {
@@ -479,7 +461,7 @@ export function allUsers(db: DatabaseSync): StringlistBox {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allOtherUsers(db: DatabaseSync, user: User): UsersBox {
+export function allOtherUsers(db: DatabaseSync, user: User): Box<User[]> {
 	if (UserType.GUEST == user.userType) {
 		return {
 			result: Result.ERR_FORBIDDEN
@@ -491,7 +473,7 @@ export function allOtherUsers(db: DatabaseSync, user: User): UsersBox {
 
 		return {
 			result: Result.SUCCESS,
-			users
+			contents: users
 		};
 	}
 	catch (e) {
@@ -501,7 +483,7 @@ export function allOtherUsers(db: DatabaseSync, user: User): UsersBox {
 	}
 }
 
-function getNickname(db: DatabaseSync): StringBox {
+function getNickname(db: DatabaseSync): Box<string> {
 	const response = allNicknames(db);
 	if (Result.SUCCESS != response.result)
 		return {
@@ -509,12 +491,12 @@ function getNickname(db: DatabaseSync): StringBox {
 		};
 
 	let nickname = generateNickname();
-	while (response.values.includes(nickname))
+	while (response.contents.includes(nickname))
 		nickname = generateNickname();
 
 	return {
 		result: Result.SUCCESS,
-		value: nickname
+		contents: nickname
 	};
 }
 
@@ -1604,7 +1586,6 @@ const animals = [
 	"Heron",
 	"Herring",
 	"Hippopotamus",
-	"Hornet",
 	"Horse",
 	"Human",
 	"Hummingbird",
