@@ -37,8 +37,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${response.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${response.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
+			"Set-Cookie", `accessToken=${response.contents[0]}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${response.contents[1]}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
 					result: Result.SUCCESS
 				});
 	});
@@ -46,14 +46,13 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	fastify.post("/api/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
 		const userBox = loginUser(db, request.body as any);
 		if (Result.SUCCESS != userBox.result) {
-			const date = new Date();
-			date.setDate(date.getDate() - 3);
+			const date = "Thu, 01 Jan 1970 00:00:00 UTC";
 			return reply.header(
 				"Set-Cookie", `accessToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).header(
 					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(userBox);
 		}
 
-		if (userBox.user.totpEnabled) {
+		if (userBox.contents.totpEnabled) {
 			return reply.send({
 				result: Result.SUCCESS,
 				totpEnabled: true
@@ -65,8 +64,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${userBox.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${userBox.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+			"Set-Cookie", `accessToken=${userBox.contents.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${userBox.contents.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
 					result: Result.SUCCESS,
 					totpEnabled: false
 				});

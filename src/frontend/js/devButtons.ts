@@ -1,5 +1,5 @@
 import { navigate } from "./index.js";
-import { closeSocket } from "./sockets/socket.js";
+import { closeSocket } from "./sockets/clientSocket.js";
 
 export function devButtons() {
 	const addMockHistoryButton = document.querySelector("#addMockHistoryButton")

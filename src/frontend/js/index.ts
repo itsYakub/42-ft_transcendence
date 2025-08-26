@@ -42,7 +42,6 @@ export function addFunctions() {
 	lobbyFunctions();
 	navbarFunctions();
 	localTournamentFunctions();
-	//profileFunctions();
 	userChatsFunctions();
 	usersFunctions();
 

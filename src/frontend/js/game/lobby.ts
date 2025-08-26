@@ -1,5 +1,5 @@
-import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
-import { sendMessageToServer } from "../sockets/socket.js";
+import { MessageType } from "../../../common/interfaces.js";
+import { sendMessageToServer } from "../sockets/clientSocket.js";
 
 export function lobbyFunctions() {
 	const gamerMatchReadyForm = <HTMLFormElement>document.querySelector("#gamerMatchReadyForm");
@@ -9,15 +9,13 @@ export function lobbyFunctions() {
 
 			if ("leaveMatchButton" == e.submitter.id) {
 				sendMessageToServer({
-					group: WebsocketMessageGroup.GAME,
-					type: WebsocketMessageType.LEAVE
+					type: MessageType.USER_LEAVE_GAME,
 				});
 				return;
 			}
 
 			sendMessageToServer({
-				group: WebsocketMessageGroup.USER,
-				type: WebsocketMessageType.READY
+				type: MessageType.USER_READY
 			});
 		});
 	}
@@ -29,8 +27,7 @@ export function lobbyFunctions() {
 
 			if (sendMatchMessageForm.message.value.length > 0) {
 				sendMessageToServer({
-					group: WebsocketMessageGroup.GAME,
-					type: WebsocketMessageType.CHAT,
+					type: MessageType.USER_SEND_GAME_CHAT,
 					chat: sendMatchMessageForm.message.value
 				});
 			}

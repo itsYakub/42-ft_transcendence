@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Result, UserChatMessage, UserChatPartner, WebsocketChatMessage } from "../../common/interfaces.js";
+import { Box, Message, Result, UserChatMessage, UserChatPartner } from "../../common/interfaces.js";
 
 export function initUserChatsDb(db: DatabaseSync, { number, start, end, id }): void {
 	db.exec(`DROP TABLE IF EXISTS user_chats;`);
@@ -83,7 +83,7 @@ export function partnerChats(db: DatabaseSync, userId: number, partnerId: number
 /*
 	Adds a private message (DM)
 */
-export function addUserChat(db: DatabaseSync, message: WebsocketChatMessage): any {
+export function addUserChat(db: DatabaseSync, message: Message): any {
 	try {
 		const select = db.prepare("INSERT INTO user_chats (to_id, from_id, message, sent_at) VALUES (?, ?, ?, ?)");
 		select.run(message.toId, message.fromId, message.chat, new Date().toISOString());

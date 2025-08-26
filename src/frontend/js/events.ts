@@ -1,6 +1,6 @@
-import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../common/interfaces.js";
+import { MessageType, Result } from "../../common/interfaces.js";
 import { addFunctions, navigate, showAlert } from "./index.js";
-import { currentPage, initChatSocket, isConnected, sendMessageToServer } from "./sockets/socket.js";
+import { currentPage, initClientSocket, isConnected, sendMessageToServer } from "./sockets/clientSocket.js";
 
 export async function navigated() {
 	const userResponse = await fetch("/api/user");
@@ -8,10 +8,9 @@ export async function navigated() {
 	if (Result.SUCCESS == json.result) {
 		if (!isConnected()) {
 			try {
-				await initChatSocket();
+				await initClientSocket();
 				sendMessageToServer({
-					group: WebsocketMessageGroup.USER,
-					type: WebsocketMessageType.JOIN,
+					type: MessageType.USER_CONNECT,
 				});
 			} catch (err) {
 				console.error("❌ WebSocket failed:", err);
@@ -19,8 +18,7 @@ export async function navigated() {
 		}
 		if ("game" != currentPage()) {
 			sendMessageToServer({
-				group: WebsocketMessageGroup.USER,
-				type: WebsocketMessageType.UNREADY
+				type: MessageType.USER_UNREADY
 			});
 		}
 	}

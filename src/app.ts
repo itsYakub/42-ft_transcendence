@@ -9,7 +9,7 @@ import { devEndpoints } from "./backend/devTools.js";
 import { homePage } from "./backend/pages/homePage.js";
 import { usersPage } from "./backend/pages/usersPage.js";
 import { initUserChatsDb } from "./backend/db/userChatsDb.js";
-import { serverSockets } from "./backend/sockets/serverSockets.js";
+import { serverSocket } from "./backend/sockets/serverSocket.js";
 import { apiEndpoints } from "./backend/api/apiEndpoints.js";
 import { gamePage } from "./backend/pages/gamePage.js";
 import { initFoesDb } from "./backend/db/foesDb.js";
@@ -111,7 +111,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 			});
 	}
 
-	request.user = userBox.user;
+	request.user = userBox.contents;
 	request.language = language;
 	done();
 });
@@ -188,7 +188,7 @@ try {
 	userChatsEndpoints(fastify, db);
 	userEndpoints(fastify, db);
 
-	serverSockets(fastify, db);
+	serverSocket(fastify, db);
 
 	// Remove!
 	devEndpoints(fastify, db);

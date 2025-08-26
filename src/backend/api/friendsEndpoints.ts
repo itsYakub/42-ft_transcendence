@@ -49,7 +49,7 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
-		addFriend(db, user.userId, userBox.user.userId);
+		addFriend(db, user.userId, userBox.contents.userId);
 		return reply.send(userBox);
 	});
 }

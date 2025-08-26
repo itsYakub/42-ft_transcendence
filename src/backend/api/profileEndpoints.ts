@@ -15,7 +15,7 @@ export function profileEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
-		const user = userBox.user;
+		const user = userBox.contents;
 
 		const matchResultsBox = matchResultsList(db, user.userId);
 

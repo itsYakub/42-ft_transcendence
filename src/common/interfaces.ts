@@ -11,39 +11,26 @@ export enum Result {
 	SUCCESS = "SUCCESS"
 }
 
-export enum WebsocketMessageGroup {
-	ERROR = "ERROR",
-	GAME = "GAME",
-	TOURNAMENT = "TOURNAMENT",
-	USER = "USER"
+export enum MessageType {
+	GAME_READY = "GAME_READY",
+	USER_CONNECT = "USER_CONNECT",
+	USER_DISCONNECT = "USER_DISCONNECT",
+	USER_JOIN_GAME = "USER_JOIN_GAME",
+	USER_INVITE = "USER_INVITE",
+	USER_LEAVE_GAME = "USER_LEAVE_GAME",
+	USER_READY = "USER_READY",
+	USER_SEND_GAME_CHAT = "USER_SEND_GAME_CHAT",
+	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
+	USER_UNREADY = "USER_UNREADY"
 }
 
-export enum WebsocketMessageType {
-	CHAT = "CHAT",
-	INVITE = "INVITE",
-	JOIN = "JOIN",
-	LEAVE = "LEAVE",
-	READY = "READY",
-	UNREADY= "UNREADY"
-}
-
-export interface WebsocketMessage {
+export interface Message {
+	chat?: string,
+	content?: string
 	fromId?: number,
-	group: WebsocketMessageGroup,
+	gameId?: string,
 	toId?: number,
-	type: WebsocketMessageType
-}
-
-export interface WebsocketGameMessage extends WebsocketMessage {
-	gameId: string
-}
-
-export interface WebsocketChatMessage extends WebsocketMessage {
-	chat: string
-}
-
-export interface WebsocketGameChatMessage extends WebsocketGameMessage, WebsocketChatMessage {
-	gameId: string
+	type: MessageType
 }
 
 export interface FrameParams {
@@ -60,6 +47,7 @@ export enum UserType {
 }
 
 export interface User {
+	accessToken?: string,
 	avatar: string,
 	email: string,
 	gameId: string,
@@ -148,13 +136,6 @@ export interface Tournament {
 	m2p2Score: number,
 	m3p1Score: number,
 	m3p2Score: number,
-}
-
-export interface UserBox {
-	accessToken?: string,
-	refreshToken?: string,
-	result: Result,
-	user?: User
 }
 
 export interface Box<T> {

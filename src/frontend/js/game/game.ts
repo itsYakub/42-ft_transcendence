@@ -1,7 +1,7 @@
 import { getLanguage, navigate, showAlert } from "./../index.js";
-import { sendMessageToServer } from "./../sockets/socket.js";
+import { sendMessageToServer } from "../sockets/clientSocket.js";
 import { g_game } from './../class/game.js';
-import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
+import { MessageType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { localMatchFunctions } from "./localMatch.js";
 
@@ -29,8 +29,7 @@ export function gameFunctions() {
 			const gameId = `m${Date.now().toString(36).substring(5)}`;
 
 			sendMessageToServer({
-				group: WebsocketMessageGroup.GAME,
-				type: WebsocketMessageType.JOIN,
+				type: MessageType.USER_JOIN_GAME,
 				gameId
 			});
 
@@ -50,8 +49,7 @@ export function gameFunctions() {
 		remoteTournamentButton.addEventListener("click", async () => {
 			const gameId = `t${Date.now().toString(36).substring(5)}`;
 			sendMessageToServer({
-				group: WebsocketMessageGroup.GAME,
-				type: WebsocketMessageType.JOIN,
+				type: MessageType.USER_JOIN_GAME,
 				gameId
 			});
 
@@ -63,8 +61,7 @@ export function gameFunctions() {
 	for (var i = 0; i < joinGameButtons.length; i++) {
 		joinGameButtons[i].addEventListener("click", async function () {
 			sendMessageToServer({
-				group: WebsocketMessageGroup.GAME,
-				type: WebsocketMessageType.JOIN,
+				type: MessageType.USER_JOIN_GAME,
 				gameId: this.dataset.id
 			});
 

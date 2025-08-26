@@ -11,7 +11,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
-		const user = userBox.user;
+		const user = userBox.contents;
 
 		let totp = new OTPAuth.TOTP({
 			issuer: "Transcendence",
@@ -33,8 +33,8 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${userBox.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${userBox.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+			"Set-Cookie", `accessToken=${userBox.contents[0]}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${userBox.contents[1]}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
 					result: Result.SUCCESS
 				});
 	});
@@ -94,8 +94,8 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 		return reply.header(
-			"Set-Cookie", `accessToken=${payload.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=${payload.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).redirect("/");
+			"Set-Cookie", `accessToken=${payload.contents[0]}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+				"Set-Cookie", `refreshToken=${payload.contents[1]}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).redirect("/");
 	});
 
 	/* Converts the image blob into base64 */

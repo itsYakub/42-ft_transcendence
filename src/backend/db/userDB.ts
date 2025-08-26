@@ -2,7 +2,7 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
 import { defaultAvatar } from "./defaultAvatar.js";
-import { Result, UserBox, User, UserType, Box } from "../../common/interfaces.js";
+import { Result, User, UserType, Box } from "../../common/interfaces.js";
 
 /*
 	Sets up the Users table
@@ -39,7 +39,7 @@ export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 /*
 	Gets a user using the refresh token if it's still valid
 */
-function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): UserBox {
+function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): Box<User> {
 	const valid = validJWT(refreshToken);
 	if (valid) {
 		let payload = refreshToken.split(".")[1];
@@ -60,7 +60,7 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): UserBox 
 		}
 		return {
 			result: Result.SUCCESS,
-			user: sqlToUser(user)
+			contents: sqlToUser(user)
 		};
 	}
 	return {
@@ -71,7 +71,7 @@ function getUserByRefreshToken(db: DatabaseSync, refreshToken: string): UserBox 
 /*
 	Returns a complete user from the DB
 */
-export function getUser(db: DatabaseSync, accessToken: string, refreshToken: string): UserBox {
+export function getUser(db: DatabaseSync, accessToken: string, refreshToken: string): Box<User> {
 	try {
 		const valid = validJWT(accessToken);
 		if (valid) {
@@ -92,7 +92,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 			}
 			return {
 				result: Result.SUCCESS,
-				user: sqlToUser(user)
+				contents: sqlToUser(user)
 			};
 		}
 		else
@@ -108,11 +108,13 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 /*
 	Adds a user to the DB after a sign up with email/password
 */
-export function addUser(db: DatabaseSync, { email, password }): UserBox {
+export function addUser(db: DatabaseSync, { email, password }): Box<string[]> {
 	try {
 		const stringBox = getNickname(db);
 		if (Result.SUCCESS != stringBox.result)
-			return stringBox;
+			return {
+				result: stringBox.result
+			};
 
 		const pw = hashPassword(password);
 		const insert = db.prepare('INSERT INTO users (nick, email, password, avatar) VALUES (?, ?, ?, ?)');
@@ -123,10 +125,13 @@ export function addUser(db: DatabaseSync, { email, password }): UserBox {
 		updateRefreshtoken(db, {
 			userId, refreshToken: token
 		});
+
 		return {
 			result: Result.SUCCESS,
-			accessToken: accessToken(userId),
-			refreshToken: token
+			contents: [
+				accessToken(userId),
+				token
+			]
 		};
 	}
 	catch (e) {
@@ -168,25 +173,30 @@ export function addGuest(db: DatabaseSync): Box<string> {
 /*
 	After a successful Google Sign-in/up, gets the user from the DB or adds it
 */
-export function addGoogleUser(db: DatabaseSync, { email, avatar }): UserBox {
+export function addGoogleUser(db: DatabaseSync, { email, avatar }): Box<string[]> {
 	try {
 		let userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS == userBox.result) {
-			const token = refreshToken(userBox.user.userId);
+			const token = refreshToken(userBox.contents.userId);
 			updateRefreshtoken(db, {
-				userId: userBox.user.userId,
+				userId: userBox.contents.userId,
 				refreshToken: token
 			});
+			userBox.contents.refreshToken = token;
 			return {
 				result: Result.SUCCESS,
-				accessToken: accessToken(userBox.user.userId),
-				refreshToken: token
+				contents: [
+					accessToken(userBox.contents.userId),
+					token
+				]
 			};
 		}
 
 		const stringBox = getNickname(db);
 		if (Result.SUCCESS != stringBox.result)
-			return stringBox;
+			return {
+				result: stringBox.result
+			};
 
 		const insert = db.prepare('INSERT INTO users (nick, email, avatar, type) VALUES (?, ?, ?, ?)');
 		const statementSync = insert.run(stringBox.contents, email, avatar, UserType[UserType.GOOGLE]);
@@ -198,8 +208,10 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): UserBox {
 		});
 		return {
 			result: Result.SUCCESS,
-			accessToken: accessToken(userId),
-			refreshToken: token
+			contents: [
+				accessToken(userId),
+				token
+			]
 		};
 	}
 	catch (e) {
@@ -212,24 +224,24 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): UserBox {
 /*
 	Gets a user from the DB after an email/password login
 */
-export function loginUser(db: DatabaseSync, { email, password }): UserBox {
+export function loginUser(db: DatabaseSync, { email, password }): Box<User> {
 	try {
 		const userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS != userBox.result)
 			return userBox;
 
-		const user = userBox.user;
+		const user = userBox.contents;
 
 		if (compareSync(password, user.password)) {
 			const token = refreshToken(user.userId);
 			updateRefreshtoken(db, {
 				userId: user.userId, refreshToken: token
 			});
+			user.accessToken = accessToken(user.userId);
+			user.refreshToken = token;
 			return {
 				result: Result.SUCCESS,
-				user,
-				accessToken: accessToken(user.userId),
-				refreshToken: token
+				contents: user
 			}
 		}
 		return {
@@ -246,14 +258,14 @@ export function loginUser(db: DatabaseSync, { email, password }): UserBox {
 /*
 	Gets a user from the DB after an email/password login
 */
-export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): UserBox {
+export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): Box<User> {
 	try {
 		const userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS != userBox.result) {
 			return userBox;
 		}
 
-		const user = userBox.user;
+		const user = userBox.contents;
 
 		// let totp = new OTPAuth.TOTP({
 		// 			issuer: "Transcendence",
@@ -272,11 +284,11 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): 
 			updateRefreshtoken(db, {
 				userId: user.userId, refreshToken: token
 			});
+			user.accessToken = accessToken(user.userId);
+			user.refreshToken = token;
 			return {
 				result: Result.SUCCESS,
-				accessToken: accessToken(user.userId),
-				refreshToken: token,
-				user
+				contents: user
 			}
 		}
 		return {
@@ -291,14 +303,14 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): 
 }
 
 // Finds the user in the DB by email
-export function getUserById(db: DatabaseSync, userId: number): UserBox {
+export function getUserById(db: DatabaseSync, userId: number): Box<User> {
 	try {
 		const select = db.prepare("SELECT * FROM users WHERE user_id = ?");
 		const user = select.get(userId);
 		if (user) {
 			return {
 				result: Result.SUCCESS,
-				user: sqlToUser(user)
+				contents: sqlToUser(user)
 			}
 		}
 		return {
@@ -313,14 +325,14 @@ export function getUserById(db: DatabaseSync, userId: number): UserBox {
 }
 
 // Finds the user in the DB by email
-export function getUserByEmail(db: DatabaseSync, email: string): UserBox {
+export function getUserByEmail(db: DatabaseSync, email: string): Box<User> {
 	try {
 		const select = db.prepare("SELECT * FROM users WHERE email = ?");
 		const user = select.get(email);
 		if (user) {
 			return {
 				result: Result.SUCCESS,
-				user: sqlToUser(user)
+				contents: sqlToUser(user)
 			}
 		}
 		return {

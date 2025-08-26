@@ -1,5 +1,5 @@
-import { Result, WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
-import { sendMessageToServer } from "../sockets/socket.js";
+import { MessageType, Result } from "../../../common/interfaces.js";
+import { sendMessageToServer } from "../sockets/clientSocket.js";
 
 export function userChatsFunctions() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
@@ -38,8 +38,7 @@ export function userChatsFunctions() {
 			const messageText: string = sendUserChatForm.message.value;
 			if (messageText.length > 0) {
 				sendMessageToServer({
-					group: WebsocketMessageGroup.USER,
-					type: WebsocketMessageType.CHAT,
+					type: MessageType.USER_SEND_USER_CHAT,
 					chat: messageText,
 					toId: parseInt(partnerIdHolder.dataset.id)
 				});

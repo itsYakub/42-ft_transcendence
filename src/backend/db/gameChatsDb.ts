@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { GameChatMessage, Result, WebsocketChatMessage, WebsocketGameChatMessage, WebsocketMessage } from "../../common/interfaces.js";
+import { GameChatMessage, Message, Result } from "../../common/interfaces.js";
 
 export function initGameChatsDb(db: DatabaseSync): void {
 	db.exec(`DROP TABLE IF EXISTS game_chats;`);
@@ -37,7 +37,7 @@ export function gameChatsList(db: DatabaseSync, gameId: string): any {
 /*
 	Adds a message to the game (lobby)
 */
-export function addGameChat(db: DatabaseSync, message: WebsocketGameChatMessage): any {
+export function addGameChat(db: DatabaseSync, message: Message): any {
 	try {
 		const select = db.prepare("INSERT INTO game_chats (game_id, from_id, chat, sent_at) VALUES (?, ?, ?, ?)");
 		select.run(message.gameId, message.fromId, message.chat, new Date().toISOString());

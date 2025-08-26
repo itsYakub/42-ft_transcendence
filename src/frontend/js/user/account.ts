@@ -1,6 +1,6 @@
 import { Result } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
-import { closeSocket } from "../sockets/socket.js";
+import { closeSocket } from "../sockets/clientSocket.js";
 
 /*
 	The buttons and events create by the /profile page
