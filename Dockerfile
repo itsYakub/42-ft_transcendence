@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
 # Build stage
 # -----------------------------------------------------------------------------
-FROM node:24.5.0-bookworm-slim AS build
+FROM node:24.6.0-bookworm-slim AS build
 WORKDIR /app
 
 # Install deps (use lockfile for reproducibility)
@@ -19,7 +19,7 @@ RUN npm prune --omit=dev
 # -----------------------------------------------------------------------------
 # Runtime stage
 # -----------------------------------------------------------------------------
-FROM node:24.5.0-bookworm-slim
+FROM node:24.6.0-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production
 

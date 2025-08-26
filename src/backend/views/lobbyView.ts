@@ -37,7 +37,7 @@ export function messagesString(chats: GameChatMessage[], user: User): string {
 }
 
 function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
-	const titleString = user.gameId.startsWith("m") ? "TEXT_SINGLE_GAME" : "TEXT_TOURNAMENT";
+	const titleString = user.gameId.startsWith("m") ? "TEXT_REMOTE_MATCH" : "TEXT_TOURNAMENT";
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
 		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%${titleString}%%</h1>

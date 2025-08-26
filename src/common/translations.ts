@@ -53,6 +53,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_NO_FOES",
 		"TEXT_NO_USERS",
 		"TEXT_PASSWORD",
+		"TEXT_REMOTE_MATCH",
 		"TEXT_REMOVE_FOE",
 		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
@@ -178,6 +179,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_USERS": return "No other users!";
 		case "TEXT_PASSWORD": return "Password";
+		case "TEXT_REMOTE_MATCH": return "Local match";
 		case "TEXT_REMOVE_FOE": return "Remove from foes";
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";

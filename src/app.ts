@@ -1,6 +1,6 @@
 import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import fastifyStatic from "@fastify/static";
-import fastifyCookie from "fastify-cookie";
+import cookie from '@fastify/cookie'
 import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { initFriendsDb } from "./backend/db/friendsDb.js";
@@ -43,7 +43,7 @@ const fastify = Fastify({
 /*
 	Allows the request to access the browser cookies
 */
-await fastify.register(fastifyCookie);
+await fastify.register(cookie);
 
 /*
 	Allows websocket connections (chat, remote gamers)
