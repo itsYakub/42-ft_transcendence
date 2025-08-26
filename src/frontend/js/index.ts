@@ -1,7 +1,6 @@
 import { navbarFunctions } from "./navbar.js";
 import { accountFunctions } from "./user/account.js";
 import { devButtons } from "./devButtons.js";
-import { localMatchFunctions } from "./game/localMatch.js";
 import { gameFunctions } from "./game/game.js";
 import { authFunctions } from "./user/loggedOut.js";
 import { usersFunctions } from "./users/users.js";
@@ -42,7 +41,6 @@ export function addFunctions() {
 	gameFunctions();
 	lobbyFunctions();
 	navbarFunctions();
-	localMatchFunctions();
 	localTournamentFunctions();
 	//profileFunctions();
 	userChatsFunctions();

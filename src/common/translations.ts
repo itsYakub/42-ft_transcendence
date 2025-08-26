@@ -42,6 +42,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_CURRENT_PASSWORD",
 		"TEXT_EMAIL",
 		"TEXT_JOIN",
+		"TEXT_LOCAL_MATCH",
 		"TEXT_LOG_IN_OR_REGISTER",
 		"TEXT_MATCH",
 		"TEXT_MATCH_SINGLE",
@@ -55,7 +56,6 @@ export function translate(language: string, text: string): string {
 		"TEXT_REMOVE_FOE",
 		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
-		"TEXT_SINGLE_GAME",
 		"TEXT_TOKENS",
 		"TEXT_TOTP_CODE",
 		"TEXT_TOTP_INPUT",
@@ -87,107 +87,15 @@ export function translate(language: string, text: string): string {
 
 function translateDutch(text: string): string {
 	switch (text) {
-		// errors
-		case "ERR_FORBIDDEN": return "!";
-		case "ERR_FULL": return "!";
-		case "ERR_NOT_FOUND": return "!";
-		// navbar, including register and log in dialogs
 		case "TEXT_HOME": return "Start";
 		case "TEXT_GAME": return "Speel";
 		case "TEXT_TOURNAMENT": return "Toernooi";
-		case "TEXT_TOTP_CODE_TITLE": return "";
-		case "TEXT_TOTP_CODE": return "";
-		case "TEXT_TOTP_CODE_VERIFY": return "";
-		case "TEXT_PLAYER_NAME_TITLE": return "";
-		case "TEXT_PLAYER_NAME": return "";
-		case "TEXT_PLAYER_NAME_SET": return "";
-		// user
-		case "TEXT_TITLE": return "";
 		case "TEXT_FORM_TITLE": return "Inloggen of registreren";
 		case "TEXT_EMAIL": return "Mail";
 		case "TEXT_PASSWORD": return "Hasło";
 		case "TEXT_LOGIN": return "Inloggen";
 		case "TEXT_REGISTER": return "Registreren";
-		case "TEXT_GOOGLE_TITLE": return "";
-		case "TEXT_GUEST_TITLE": return "";
-		// home
 		case "HOME_TITLE": return "Welkom bij Transcendence!";
-		// profile
-		case "TEXT_PROFILE": return "";
-		case "TEXT_HISTORY": return "";
-		case "TEXT_FRIENDS": return "";
-		case "TEXT_USERS": return "";
-		case "TEXT_FOES": return "";
-		case "TEXT_CHANGE_AVATAR": return "";
-		case "TEXT_CHANGE_NICK": return "";
-		case "TEXT_CHANGE_PASSWORD": return "";
-		case "TEXT_NEW_NICK": return "";
-		case "TEXT_CURRENT_PASSWORD": return "";
-		case "TEXT_NEW_PASSWORD": return "";
-		case "TEXT_REPEAT_PASSWORD": return "";
-		case "TEXT_UPDATE": return "";
-		case "TEXT_TOKENS": return "";
-		case "TEXT_ENABLE_TOTP": return "";
-		case "TEXT_DISABLE_TOTP": return "";
-		case "TEXT_LOGOUT": return "";
-		case "TEXT_INVALIDATE_TOKEN": return "";
-		case "TEXT_TOTP_TITLE": return "";
-		case "TEXT_TOTP_SCAN": return "";
-		case "TEXT_TOTP_INPUT": return "";
-		case "TEXT_TOTP_CODE": return "";
-		case "TEXT_TOTP_VERIFY": return "";
-		// history
-		case "TEXT_PROFILE": return "";
-		case "TEXT_HISTORY": return "";
-		case "TEXT_FRIENDS": return "";
-		case "TEXT_USERS": return "";
-		case "TEXT_FOES": return "";
-		case "TEXT_WON": return "";
-		case "TEXT_MATCH_SINGULAR": return "";
-		case "TEXT_MATCH_PLURAL": return "";
-		case "TEXT_TEXT_SINGULAR": return "";
-		case "TEXT_TEXT_PLURAL": return "";
-		// friends
-		case "TEXT_PROFILE": return "";
-		case "TEXT_HISTORY": return "";
-		case "TEXT_FRIENDS": return "";
-		case "TEXT_USERS": return "";
-		case "TEXT_FOES": return "";
-		case "TEXT_ONLINE": return "";
-		case "TEXT_OFFLINE": return "";
-		case "TEXT_REMOVE": return "";
-		case "TEXT_ADD_TITLE": return "";
-		case "TEXT_ADD_EMAIL": return "";
-		case "TEXT_ADD_FRIEND": return "";
-		// users
-		case "USERS_PROFILE": return "";
-		case "USERS_HISTORY": return "";
-		case "USERS_FRIENDS": return "";
-		case "USERS_USERS": return "";
-		case "USERS_FOES": return "";
-		// game
-		case "TEXT_SINGLE_GAME": return "";
-		case "TEXT_PLAYER": return "";
-		case "TEXT_READY": return "";
-		case "TEXT_LEAVE": return "";
-		case "TEXT_MATCH": return "";
-		case "TEXT_TOURNAMENT": return "";
-		case "TEXT_SEND": return "";
-		// tournament
-		case "TEXT_NEW": return "";
-		case "TEXT_PLAYER": return "";
-		case "TEXT_START": return "";
-		case "TEXT_TITLE": return "";
-		case "TEXT_CODE": return "";
-		case "TEXT_SEMI_FINALS": return "";
-		case "TEXT_FINAL": return "";
-		case "TEXT_TBD": return "";
-		case "TEXT_NEXT_MATCH": return "";
-		case "TEXT_GAME": return "";
-		case "TEXT_CONGRATULATIONS": return "";
-		case "TEXT_UNKNOWN": return "";
-		case "TEXT_READY": return "";
-		case "TEXT_SEND": return "";
 		default: return "NLUnknown text";
 	}
 }
@@ -259,6 +167,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_CURRENT_PASSWORD": return "Current password";
 		case "TEXT_EMAIL": return "Email";
 		case "TEXT_JOIN": return "Join...";
+		case "TEXT_LOCAL_MATCH": return "Local match";
 		case "TEXT_LOG_IN_OR_REGISTER": return "Log in or register";
 		case "TEXT_MATCH": return "Match";
 		case "TEXT_MATCH_SINGULAR": return "match";
@@ -272,7 +181,6 @@ function translateEnglish(text: string): string {
 		case "TEXT_REMOVE_FOE": return "Remove from foes";
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
-		case "TEXT_SINGLE_GAME": return "Single game";
 		case "TEXT_TOKENS": return "Tokens";
 		case "TEXT_TOTP_CODE": return "Code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
@@ -322,107 +230,15 @@ function translateEnglish(text: string): string {
 
 function translatePolish(text: string): string {
 	switch (text) {
-		// errors
-		case "ERR_FORBIDDEN": return "!";
-		case "ERR_FULL": return "!";
-		case "ERR_NOT_FOUND": return "!";
-		// navbar, including register and log in dialogs
 		case "TEXT_HOME": return "Strona Główna";
 		case "TEXT_GAME": return "Gra";
 		case "TEXT_TOURNAMENT": return "Turniej";
-		case "TEXT_TOTP_CODE_TITLE": return "";
-		case "TEXT_TOTP_CODE": return "";
-		case "TEXT_TOTP_CODE_VERIFY": return "";
-		case "TEXT_PLAYER_NAME_TITLE": return "";
-		case "TEXT_PLAYER_NAME": return "";
-		case "TEXT_PLAYER_NAME_SET": return "";
-		// user
-		case "TEXT_TITLE": return "";
 		case "TEXT_FORM_TITLE": return "Zaloguj się lub załóż konto";
 		case "TEXT_EMAIL": return "Mail";
 		case "TEXT_PASSWORD": return "Hasło";
 		case "TEXT_LOGIN": return "Zaloguj się";
 		case "TEXT_REGISTER": return "Załóż konto";
-		case "TEXT_GOOGLE_TITLE": return "";
-		case "TEXT_GUEST_TITLE": return "";
-		// home
 		case "HOME_TITLE": return "Witamy w projekcie Transcendence!";
-		// profile
-		case "TEXT_PROFILE": return "";
-		case "TEXT_HISTORY": return "";
-		case "TEXT_FRIENDS": return "";
-		case "TEXT_USERS": return "";
-		case "TEXT_FOES": return "";
-		case "TEXT_CHANGE_AVATAR": return "";
-		case "TEXT_CHANGE_NICK": return "";
-		case "TEXT_CHANGE_PASSWORD": return "";
-		case "TEXT_NEW_NICK": return "";
-		case "TEXT_CURRENT_PASSWORD": return "";
-		case "TEXT_NEW_PASSWORD": return "";
-		case "TEXT_REPEAT_PASSWORD": return "";
-		case "TEXT_UPDATE": return "";
-		case "TEXT_TOKENS": return "";
-		case "TEXT_ENABLE_TOTP": return "";
-		case "TEXT_DISABLE_TOTP": return "";
-		case "TEXT_LOGOUT": return "";
-		case "TEXT_INVALIDATE_TOKEN": return "";
-		case "TEXT_TOTP_TITLE": return "";
-		case "TEXT_TOTP_SCAN": return "";
-		case "TEXT_TOTP_INPUT": return "";
-		case "TEXT_TOTP_CODE": return "";
-		case "TEXT_TOTP_VERIFY": return "";
-		// history
-		case "TEXT_PROFILE": return "";
-		case "TEXT_HISTORY": return "";
-		case "TEXT_FRIENDS": return "";
-		case "TEXT_USERS": return "";
-		case "TEXT_FOES": return "";
-		case "TEXT_WON": return "";
-		case "TEXT_MATCH_SINGULAR": return "";
-		case "TEXT_MATCH_PLURAL": return "";
-		case "TEXT_TEXT_SINGULAR": return "";
-		case "TEXT_TEXT_PLURAL": return "";
-		// friends
-		case "TEXT_PROFILE": return "";
-		case "TEXT_HISTORY": return "";
-		case "TEXT_FRIENDS": return "";
-		case "TEXT_USERS": return "";
-		case "TEXT_FOES": return "";
-		case "TEXT_ONLINE": return "";
-		case "TEXT_OFFLINE": return "";
-		case "TEXT_REMOVE": return "";
-		case "TEXT_ADD_TITLE": return "";
-		case "TEXT_ADD_EMAIL": return "";
-		case "TEXT_ADD_FRIEND": return "";
-		// users
-		case "USERS_PROFILE": return "";
-		case "USERS_HISTORY": return "";
-		case "USERS_FRIENDS": return "";
-		case "USERS_USERS": return "";
-		case "USERS_FOES": return "";
-		// game
-		case "TEXT_SINGLE_GAME": return "";
-		case "TEXT_PLAYER": return "";
-		case "TEXT_READY": return "";
-		case "TEXT_LEAVE": return "";
-		case "TEXT_MATCH": return "";
-		case "TEXT_TOURNAMENT": return "";
-		case "TEXT_SEND": return "";
-		// tournament
-		case "TEXT_NEW": return "";
-		case "TEXT_PLAYER": return "";
-		case "TEXT_START": return "";
-		case "TEXT_TITLE": return "";
-		case "TEXT_CODE": return "";
-		case "TEXT_SEMI_FINALS": return "";
-		case "TEXT_FINAL": return "";
-		case "TEXT_TBD": return "";
-		case "TEXT_NEXT_MATCH": return "";
-		case "TEXT_GAME": return "";
-		case "TEXT_CONGRATULATIONS": return "";
-		case "TEXT_UNKNOWN": return "";
-		case "TEXT_READY": return "";
-		case "TEXT_SEND": return "";
 		default: return "PLUnknown text";
 	}
 }

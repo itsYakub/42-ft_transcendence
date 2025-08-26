@@ -31,6 +31,7 @@ import { profileEndpoints } from "./backend/api/profileEndpoints.js";
 import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
 import { initTournamentsDb } from "./backend/db/tournamentDb.js";
 import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
+import { gameEndpoints } from "./backend/api/gameEndpoints.js";
 
 const __dirname = import.meta.dirname;
 
@@ -180,6 +181,7 @@ try {
 	authEndpoints(fastify, db);
 	foesEndpoints(fastify, db);
 	friendsEndpoints(fastify, db);
+	gameEndpoints(fastify, db);
 	matchResultsEndpoints(fastify, db);
 	profileEndpoints(fastify, db);
 	tournamentEndpoints(fastify, db);

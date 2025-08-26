@@ -1,8 +1,8 @@
+import { showAlert } from "../index.js";
 import { startMatch } from "./game.js";
-import { showAlert } from "./../index.js";
 
 export function localMatchFunctions() {
-	const form = <HTMLFormElement>document.querySelector("#singleGameForm");
+	const form = <HTMLFormElement>document.querySelector("#localGameForm");
 	if (form) {
 		form.addEventListener("submit", async (e) => {
 			e.preventDefault();

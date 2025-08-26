@@ -1,13 +1,18 @@
-import { navigate } from "./../index.js";
+import { getLanguage, navigate, showAlert } from "./../index.js";
 import { sendMessageToServer } from "./../sockets/socket.js";
 import { g_game } from './../class/game.js';
 import { WebsocketMessageGroup, WebsocketMessageType } from "../../../common/interfaces.js";
+import { translate } from "../../../common/translations.js";
+import { localMatchFunctions } from "./localMatch.js";
 
 export function gameFunctions() {
 	const localMatchButton = document.querySelector("#localMatchButton");
 	if (localMatchButton) {
-		localMatchButton.addEventListener("click", () => {
-			navigate("/match/local")
+		localMatchButton.addEventListener("click", async () => {
+			const response = await fetch("/api/game/local-match");
+			const text = await response.text();
+			document.querySelector("#content").innerHTML = translate(getLanguage(), text);
+			localMatchFunctions();
 		});
 	}
 
@@ -72,35 +77,12 @@ export function gameFunctions() {
 	Entry point for the game
 */
 export function startMatch(p1Name: string, p2Name: string) {
-
-	// This is a button in the dialog with simulates p1 winning a game. Call the endMatch function from within your code
-	const winMatchButton = document.querySelector("#winMatchButton");
-	if (winMatchButton) {
-		const losingScore = Math.floor(Math.random() * 9);
-		winMatchButton.textContent = `${p1Name} 10 : ${losingScore} ${p2Name}`;
-		winMatchButton.addEventListener("click", () => {
-			endMatch(10, losingScore, p2Name);
-		}, { once: true });
-	}
-
-	// This is a button in the dialog with simulates p1 losing a game. Call the endMatch function from within your code
-	const loseMatchButton = document.querySelector("#loseMatchButton");
-	if (loseMatchButton) {
-		const losingScore = Math.floor(Math.random() * 9);
-		loseMatchButton.textContent = `${p1Name} ${losingScore} : 10 ${p2Name}`;
-		loseMatchButton.addEventListener("click", () => {
-			endMatch(losingScore, 10, p2Name);
-		}, { once: true });
-	}
-
 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
 	const dialog = <HTMLDialogElement>document.querySelector("#gameDialog");
 	dialog.addEventListener("keydown", (e) => {
 		if ("Escape" == e.key) {
-			console.log("gamer quit");
+			console.log("Escape pressed");
 			//e.preventDefault();
-			//alert("Quitter!");
-			// Report gamer lost
 		}
 	});
 
