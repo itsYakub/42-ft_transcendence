@@ -7,7 +7,6 @@ TODO (Luke):
 - tournament next-match gatekeeping
 - check and protect all responses
 - move scrollbar hiding to css file
-- profile page
 - 2FA emails
 - chat indicators - persist?
 

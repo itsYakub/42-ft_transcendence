@@ -63,14 +63,14 @@ async function gameChat(user: User, message: WebsocketGameMessage) {
 
 async function gameReady(user: User, message: WebsocketGameMessage) {
 	console.log(user, message);
-	if (user.gameId != message.gameId || user.userId != message.fromId)
-		return;
 
 	if (message.gameId.startsWith("m")) {
 		console.log("match");
 		startMatch("John", "Ed");
 	}
 	else {
+		if (user.gameId != message.gameId || user.userId != message.fromId)
+			return;
 		console.log("tournament");
 		generateTournament();
 	}

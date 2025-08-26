@@ -179,7 +179,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_USERS": return "No other users!";
 		case "TEXT_PASSWORD": return "Password";
-		case "TEXT_REMOTE_MATCH": return "Local match";
+		case "TEXT_REMOTE_MATCH": return "Remote match";
 		case "TEXT_REMOVE_FOE": return "Remove from foes";
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
