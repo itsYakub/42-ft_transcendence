@@ -41,7 +41,7 @@ export class Ground {
                 }
 
                 let box = BABYLON.MeshBuilder.CreateBox('cell0', { }, scene);
-				box.scaling = new BABYLON.Vector3(g_boundCellSize, g_boundCellSize * 2.0, g_boundCellSize);
+				box.scaling = new BABYLON.Vector3(g_boundCellSize - 0.05, g_boundCellSize * 2.0, g_boundCellSize - 0.05);
 				box.position = new BABYLON.Vector3(x, 0.0, y);
 
 				this.m_mesh_arr.push(box);
@@ -54,7 +54,7 @@ export class Ground {
 	 * */
 
 	public update() {
-		const	_position_scale : number = 0.1;
+		const	_position_scale : number = 0.2;
 		const	_time_scale : number = 0.0001;
 		const	_value_offset : number = 0.2;
 

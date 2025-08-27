@@ -55,11 +55,7 @@ export class Ball extends Shape {
 
 	public update() {
 		this.wallBounceCheck();
-		/* TODO(joleksia):
-		 *  Fix this function:
-		 *
-		 *	this.playerBounceCheck();
-		 * */
+		this.playerBounceCheck();
 
 		/* Update the base 'Shape' class
 		 * */
@@ -90,19 +86,62 @@ export class Ball extends Shape {
 	private playerBounceCheck() {
 		let	p0 = this.m_scene.getMeshByName('player0');
 		let	p1 = this.m_scene.getMeshByName('player1');
-		let tolerance = p0.scaling.x;
 		
 		/* TODO(joleksia):
 		 *  Paste the previous implementation of the ball bouncing
 		 *  SOURCE:
 		 *	- https://github.com/coldandtired/ft_transcendence/blob/a19c083a77dd46ab9a900f0b97a5211eef3f9922/src/frontend/public/js/game/ball.ts#L68
 		 * */
-		if (this.m_box.intersectsMesh(p0)) {
-		
+
+		let	p0_tl = new BABYLON.Vector4(
+			p0.position.x - p0.scaling.x / 2.0, p0.position.z - p0.scaling.z / 2.0,
+			p0.scaling.x, p0.scaling.z
+		);
+		let	p1_tl = new BABYLON.Vector4(
+			p1.position.x - p1.scaling.x / 2.0, p1.position.z - p1.scaling.z / 2.0,
+			p1.scaling.x, p1.scaling.z
+		);
+		let	b_tl = new BABYLON.Vector4(
+			this.m_box.position.x - this.m_box.scaling.x / 2.0, this.m_box.position.z - this.m_box.scaling.z / 2.0,
+			this.m_box.scaling.x, this.m_box.scaling.z
+		);
+
+		/* Ball - Player0 (left) bounce
+		 * */
+		if (this.m_box.intersectsMesh(p0) && this.m_vel.x < 0.0) {
+			/* Horizontal bounce (on X axis: left-right)
+			 * */
+			if (Math.abs((b_tl.x) - (p0_tl.x + p0_tl.z)) < p0_tl.z) {
+				this.m_vel.x *= -1.0;
+			}
+			
+			/* Vertical bounce (on Y axis: top-down)
+			 * */
+			else if (
+				Math.abs((b_tl.y + b_tl.w) - (p0_tl.y)) < p0_tl.w && this.m_vel.y > 0 ||
+				Math.abs((b_tl.y) - (p0_tl.y + p0_tl.w)) < p0_tl.w && this.m_vel.y < 0
+			) {
+				this.m_vel.y *= -1.0;
+			}
 		}
 		
-		if (this.m_box.intersectsMesh(p1)) {
+		/* Ball - Player1 (right) bounce
+		 * */
+		if (this.m_box.intersectsMesh(p1) && this.m_vel.x > 0.0) {
+			/* Horizontal bounce (on X axis: left-right)
+			 * */
+			if (Math.abs((b_tl.x + b_tl.z) - (p1_tl.x)) < p1_tl.w) {
+				this.m_vel.x *= -1.0;
+			}
 			
+			/* Vertical bounce (on Y axis: top-down)
+			 * */
+			else if (
+				Math.abs((b_tl.y + b_tl.w) - (p1_tl.y)) < p1_tl.w && this.m_vel.y > 0 ||
+				Math.abs((b_tl.y) - (p1_tl.y + p1_tl.w)) < p1_tl.w && this.m_vel.y < 0
+			) {
+				this.m_vel.y *= -1.0;
+			}
 		}
 	}
 }
