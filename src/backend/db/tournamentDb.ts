@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Gamer, Result, Tournament, User } from "../../common/interfaces.js";
+import { Box, Gamer, MatchStatus, Result, Tournament, TournamentGamer, User } from "../../common/interfaces.js";
 
 export function initTournamentsDb(db: DatabaseSync) {
 	db.exec(`DROP TABLE IF EXISTS tournaments;`);
@@ -16,22 +16,25 @@ export function initTournamentsDb(db: DatabaseSync) {
 		g2_nick TEXT NOT NULL,
 		g3_nick TEXT NOT NULL,
 		g4_nick TEXT NOT NULL,
-		g1_status INTEGER NOT NULL DEFAULT 0,
-		g2_status INTEGER NOT NULL DEFAULT 0,
-		g3_status INTEGER NOT NULL DEFAULT 0,
-		g4_status INTEGER NOT NULL DEFAULT 0,
+		g1_ready INTEGER NOT NULL DEFAULT 0,
+		g2_ready INTEGER NOT NULL DEFAULT 0,
+		g3_ready INTEGER NOT NULL DEFAULT 0,
+		g4_ready INTEGER NOT NULL DEFAULT 0,
+		final_status INTEGER NOT NULL DEFAULT 0,
 		game_id TEXT PRIMARY KEY UNIQUE,
 		match_a_g1_score INTEGER,
 		match_a_g2_score INTEGER,
+		match_a_status INTEGER NOT NULL DEFAULT 0,
 		match_b_g1_score INTEGER,
-		match_b_g2_score INTEGER
+		match_b_g2_score INTEGER,
+		match_b_status INTEGER NOT NULL DEFAULT 0
 		);`);
 }
 
-export function getTournament(db: DatabaseSync, gameId: number): Box<Tournament> {
+export function getTournament(db: DatabaseSync, user: User): Box<Tournament> {
 	try {
 		const select = db.prepare("SELECT * FROM tournaments WHERE game_id = ?");
-		const tournament = sqlToTournament(select.get(gameId));
+		const tournament = sqlToTournament(select.get(user.gameId), user);
 		return {
 			result: Result.SUCCESS,
 			contents: tournament
@@ -55,33 +58,78 @@ export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[])
 	}
 }
 
-function sqlToTournament(tournament: Record<string, SQLOutputValue>): Tournament {
-	// return {
-
-	// }
-
-
-	return {
-		finalG1Score: tournament.final_g1_score as number,
-		finalG2Score: tournament.final_g2_score as number,
-		g1Id: tournament.g1_id as number,
-		g2Id: tournament.g2_id as number,
-		g3Id: tournament.g3_id as number,
-		g4Id: tournament.g4_id as number,
-		g1Nick: tournament.g1_nick as string,
-		g2Nick: tournament.g2_nick as string,
-		g3Nick: tournament.g3_nick as string,
-		g4Nick: tournament.g4Nick as string,
-		matchAG1Score: tournament.match_a_g1_score as number,
-		matchAG2Score: tournament.match_a_g2_score as number,
-		matchBG1Score: tournament.match_b_g1_score as number,
-		matchBG2Score: tournament.match_b_g2_score as number,
-	};
+export function markTournamentGamerReady(db: DatabaseSync, gameId: string, index: number): Result {
+	const player = `g${index}_ready`;
+	try {
+		const select = db.prepare(`UPDATE tournaments SET ${player} = 1 WHERE game_id = ?;`);
+		select.run(gameId);
+		return Result.SUCCESS;
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
 }
 
-// function sqlToGamer(tournament: Record<string, SQLOutputValue>, index: number): Gamer {
-// 	return {
-// 		nick: tournament.g1_nick as string,
-// 		userId: tournament.g1_id as number,
-// 	}
-// }
+function sqlToTournament(tournament: Record<string, SQLOutputValue>, user: User): Tournament {
+	const isPrimaryMatch = user.userId == tournament.g1_id as number || user.userId == tournament.g2_id as number;
+
+	return isPrimaryMatch ?
+		{
+			primaryMatch: {
+				gamer1: sqlToGamer(tournament, 0),
+				gamer2: sqlToGamer(tournament, 1),
+				matchStatus: tournament.match_a_status as number
+			},
+			secondaryMatch: {
+				gamer1: sqlToGamer(tournament, 2),
+				gamer2: sqlToGamer(tournament, 3),
+				matchStatus: tournament.match_b_status as number
+			}
+		}
+		:
+		{
+			primaryMatch: {
+				gamer1: sqlToGamer(tournament, 2),
+				gamer2: sqlToGamer(tournament, 3),
+				matchStatus: tournament.match_a_status as number
+			},
+			secondaryMatch: {
+				gamer1: sqlToGamer(tournament, 0),
+				gamer2: sqlToGamer(tournament, 1),
+				matchStatus: tournament.match_b_status as number
+			}
+		};
+}
+
+function sqlToGamer(tournament: Record<string, SQLOutputValue>, index: number): TournamentGamer {
+	switch (index) {
+		case 0:
+			return {
+				index: 1,
+				nick: tournament.g1_nick as string,
+				ready: Boolean(tournament.g1_ready as number),
+				userId: tournament.g1_id as number,
+			}
+		case 1:
+			return {
+				index: 2,
+				nick: tournament.g2_nick as string,
+				ready: Boolean(tournament.g2_ready as number),
+				userId: tournament.g2_id as number,
+			}
+		case 2:
+			return {
+				index: 3,
+				nick: tournament.g3_nick as string,
+				ready: Boolean(tournament.g3_ready as number),
+				userId: tournament.g3_id as number,
+			}
+		default:
+			return {
+				index: 4,
+				nick: tournament.g4_nick as string,
+				ready: Boolean(tournament.g4_ready as number),
+				userId: tournament.g4_id as number,
+			}
+	}
+}

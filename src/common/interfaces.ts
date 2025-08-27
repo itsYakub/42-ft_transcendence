@@ -23,7 +23,8 @@ export enum MessageType {
 	USER_SEND_GAME_CHAT = "USER_SEND_GAME_CHAT",
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
 	USER_UNREADY = "USER_UNREADY",
-	TOURNAMENT_UPDATE = "TOURNAMENT_UPDATE"
+	TOURNAMENT_GAMER_READY = "TOURNAMENT_GAMER_READY",
+	TOURNAMENT_UPDATE = "TOURNAMENT_UPDATE",
 }
 
 export interface Message {
@@ -71,7 +72,6 @@ export interface Gamer {
 	gameId: string,
 	nick: string,
 	ready: boolean,
-	score?: number,
 	userId: number
 }
 
@@ -126,39 +126,34 @@ export interface GameChatMessage {
 	nick: string
 }
 
+export enum MatchStatus {
+	FINISHED = 1,
+	NOT_STARTED = 0,
+	PLAYING = 2
+}
+
+export interface TournamentGamer {
+	index: number,
+	nick: string,
+	ready: boolean,
+	userId: number
+}
+
 export interface Tournament {
-	g1Id: number,
-	g2Id: number,
-	g3Id: number,
-	g4Id: number,
-	g1Nick: string,
-	g2Nick: string,
-	g3Nick: string,
-	g4Nick: string,
-	matchAG1Score: number,
-	matchAG2Score: number,
-	matchBG1Score: number,
-	matchBG2Score: number,
-	finalG1Score: number,
-	finalG2Score: number,
-}
-
-export enum GamerStatus {
-
-}
-
-export interface Tournamente {
-	matchA: {
-		gamer1: Gamer,
-		gamer2: Gamer,
+	primaryMatch: {
+		gamer1: TournamentGamer,
+		gamer2: TournamentGamer,
+		matchStatus: MatchStatus
 	},
-	matchB: {
-		gamer1: Gamer,
-		gamer2: Gamer
+	secondaryMatch: {
+		gamer1: TournamentGamer,
+		gamer2: TournamentGamer,
+		matchStatus: MatchStatus
 	},
-	final: {
-		gamer1?: Gamer,
-		gamer2?: Gamer,
+	final?: {
+		gamer1?: TournamentGamer,
+		gamer2?: TournamentGamer,
+		matchStatus?: MatchStatus
 	}
 }
 

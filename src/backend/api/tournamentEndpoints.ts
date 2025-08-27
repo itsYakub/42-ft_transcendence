@@ -2,8 +2,9 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { updateTournament } from '../old/tournamentDb.js';
 import { gamePlayers } from '../db/gameDb.js';
-import { Result } from '../../common/interfaces.js';
-import { addTournament } from '../db/tournamentDb.js';
+import { Box, Result } from '../../common/interfaces.js';
+import { getTournament } from '../db/tournamentDb.js';
+import { activeMatchHtml } from '../views/tournamentView.js';
 
 export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get('/api/tournament/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -11,16 +12,18 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 		return reply.send(gamersBox);
 	});
 
-	// fastify.post('/api/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {
-	// 	const { gamers } = request.body as any;
+	fastify.get('/api/tournament', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
+		const gamersBox = getTournament(db, request.user);
+		if (Result.SUCCESS != gamersBox.result)
+			return reply.send({
+				result: gamersBox.result
+			});
 
-	// 	if (Result.SUCCESS == addTournament(db, request.user.gameId, gamers)) {
-	// 		gamers.forEach(gamer => {
-	// 			//send message
-	// 		});
-	// 	}
-	// 	return reply.send(Result.SUCCESS);
-	// });
+		return reply.send({
+			result: Result.SUCCESS,
+			contents: activeMatchHtml(gamersBox.contents, request.user)
+		});
+	});
 
 	fastify.post('/api/tournament/update', async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = request.body as any;

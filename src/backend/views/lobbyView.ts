@@ -1,4 +1,4 @@
-import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
+import { GameChatMessage, Gamer, Tournament, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
 export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
@@ -26,48 +26,24 @@ export function gamersString(gamers: Gamer[], user: User): string {
 	return html;
 }
 
-export function tournamentMatchString(gamers: Gamer[], user: User): string {
+// export function tournamentMatchString(gamers: Gamer[], user: User): string {
 
-	// gamers.forEach((gamer, index) => {
-	// 	if (gamer.userId == user.userId)
-	// 		console.log(`${user.nick} is player ${index}`);
-	// });
+// 	// gamers.forEach((gamer, index) => {
+// 	// 	if (gamer.userId == user.userId)
+// 	// 		console.log(`${user.nick} is player ${index}`);
+// 	// });
 
 
-	const gamerStrings = [];
-	let otherStrings = [];
-	gamers.forEach((gamer, index) => {
-		gamer.ready = false;
-		if (index < 2)
-			gamerStrings.push(gamerString(gamer));
-		else
-			otherStrings.push(`<div class="text-gray-300 text-center">${gamer.nick}</div>`);
-	});
+// 	const gamerStrings = [];
+// 	let otherStrings = [];
+// 	gamers.forEach((gamer, index) => {
+// 		gamer.ready = false;
+// 		if (index < 2)
+// 			gamerStrings.push(gamerString(gamer));
+// 		else
+// 			otherStrings.push(`<div class="text-gray-300 text-center">${gamer.nick}</div>`);
+// 	});
 
-	const html = `
-	<div class="flex flex-col gap-2">
-		${gamerStrings[0]}
-		<div class="text-white text-center">Vs</div>
-		${gamerStrings[1]}
-	</div>
-	<form id="tournamentMatchReadyForm">
-		<div class="flex flex-row justify-between mr-9">
-			${readyButtonString(user.ready)}
-			<button id="leaveTournamentButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
-		</div>
-	</form>
-	<div class="flex flex-col gap-2 mt-2">
-		${otherStrings[0]}
-		<div class="text-white text-center">Vs</div>
-		${otherStrings[1]}
-	</div>
-	<div id="finishMatchButton" class="text-white mt-2">Finish match</div>
-	`;
-
-	return html;
-}
-
-// function activeMatch(activerGamers: Gamer[], otherGamers: Gamer[]): string {
 // 	const html = `
 // 	<div class="flex flex-col gap-2">
 // 		${gamerStrings[0]}
@@ -90,6 +66,8 @@ export function tournamentMatchString(gamers: Gamer[], user: User): string {
 
 // 	return html;
 // }
+
+
 
 
 

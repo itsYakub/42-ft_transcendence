@@ -1,4 +1,4 @@
-import { Message, MessageType, User } from "../../../common/interfaces.js";
+import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { getLanguage } from "../index.js";
 import { currentPage, sendMessageToServer } from "../sockets/clientSocket.js";
@@ -17,19 +17,27 @@ export function tournamentFunctions() {
 			}
 
 			sendMessageToServer({
-				type: MessageType.TOURNAMENT_UPDATE
+				type: MessageType.TOURNAMENT_GAMER_READY,
+				gameId: e.submitter.dataset.game,
+				fromId: parseInt(e.submitter.dataset.id)
 			});
 		});
 	}
 }
 
-export function updateTournamentDetails(user: User, message: Message) {
-	if ("game" == currentPage() && user.userId == message.toId && message.content) {
+export async function updateTournamentDetails(user: User, message: Message) {
+	if ("game" == currentPage() && user.gameId == message.gameId) {
 		console.log("for me");
-		const lobbyDetailsContainer = document.querySelector("#lobbyDetailsContainer");
-		if (lobbyDetailsContainer) {
-			lobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
-			tournamentFunctions();
+
+		const contentBox = await fetch("/api/tournament");
+
+		const json = await contentBox.json();
+		if (Result.SUCCESS == json.result) {
+			const lobbyDetailsContainer = document.querySelector("#lobbyDetailsContainer");
+			if (lobbyDetailsContainer) {
+				lobbyDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
+				tournamentFunctions();
+			}
 		}
 	}
 	else
