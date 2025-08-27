@@ -1,4 +1,5 @@
 import { Tournament, TournamentGamer, User } from "../../common/interfaces.js";
+import { gameHtmlString } from "../game/game.js";
 
 export function activeMatchHtml(tournament: Tournament, user: User): string {
 	const gamer = whichGamerIsUser(tournament, user);
@@ -19,7 +20,7 @@ export function activeMatchHtml(tournament: Tournament, user: User): string {
 	</div>
 	<form id="tournamentMatchReadyForm">
 		<div class="flex flex-row justify-between mr-9">
-			${readyButtonString(gamer, user)}
+			${readyButtonString(gamer)}
 			<button id="leaveTournamentButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 		</div>
 	</form>
@@ -29,6 +30,7 @@ export function activeMatchHtml(tournament: Tournament, user: User): string {
 		${otherStrings[1]}
 	</div>
 	<div id="finishMatchButton" class="text-white mt-2">Finish match</div>
+	${gameHtmlString()}
 	`;
 
 	return html;
@@ -55,7 +57,7 @@ function gamerString(gamer: TournamentGamer) {
 	`;
 }
 
-function readyButtonString(gamer: TournamentGamer, user: User) {
+function readyButtonString(gamer: TournamentGamer) {
 	return gamer.ready ? `<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
-		`<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700" data-id=${gamer.index} data-game=${user.gameId}>%%BUTTON_READY%%</button>`;
+		`<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
 }

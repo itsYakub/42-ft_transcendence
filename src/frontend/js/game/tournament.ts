@@ -2,6 +2,7 @@ import { Message, MessageType, Result, User } from "../../../common/interfaces.j
 import { translate } from "../../../common/translations.js";
 import { getLanguage } from "../index.js";
 import { currentPage, sendMessageToServer } from "../sockets/clientSocket.js";
+import { startMatch } from "./game.js";
 
 export function tournamentFunctions() {
 	const gamerMatchReadyForm = <HTMLFormElement>document.querySelector("#tournamentMatchReadyForm");
@@ -17,9 +18,7 @@ export function tournamentFunctions() {
 			}
 
 			sendMessageToServer({
-				type: MessageType.TOURNAMENT_GAMER_READY,
-				gameId: e.submitter.dataset.game,
-				fromId: parseInt(e.submitter.dataset.id)
+				type: MessageType.TOURNAMENT_GAMER_READY
 			});
 		});
 	}
@@ -39,6 +38,16 @@ export async function updateTournamentDetails(user: User, message: Message) {
 				tournamentFunctions();
 			}
 		}
+	}
+	else
+		console.log("not for me");
+}
+
+export async function startTournamentMatch(user: User, message: Message) {
+	if ("game" == currentPage() && user.userId == message.toId) {
+		console.log("for me");
+
+		startMatch("abc", "def");
 	}
 	else
 		console.log("not for me");

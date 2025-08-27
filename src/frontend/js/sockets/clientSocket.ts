@@ -1,5 +1,5 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { updateTournamentDetails } from "../game/tournament.js";
+import { startTournamentMatch, updateTournamentDetails } from "../game/tournament.js";
 import { gameReady, userJoinOrLeave, userSendGameChat } from "./gamesMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
@@ -81,6 +81,9 @@ function handleServerMessage(user: User, message: Message) {
 			break;
 		case MessageType.GAME_READY:
 			gameReady(user, message);
+			break;
+		case MessageType.TOURNAMENT_MATCH_START:
+			startTournamentMatch(user, message);
 			break;
 		case MessageType.TOURNAMENT_UPDATE:
 			updateTournamentDetails(user, message);
