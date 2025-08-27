@@ -28,6 +28,11 @@ export class Player extends Shape {
 	private	m_keyUp : string;
 	private	m_keyDown : string;
 
+	/* AI Section
+	 * */
+	private	m_aiDest : BABYLON.Vector2;
+	private	m_aiTimerElapsed : number;
+
 	/* SECTION:
 	 *  Constructor
 	 * */
@@ -69,6 +74,11 @@ export class Player extends Shape {
 		/* Finalize the player creation
 		 * */
 		this.createMesh();
+
+		/* Set the AI data
+		 * */
+		this.m_aiTimerElapsed = 0.0;
+		this.m_aiDest = BABYLON.Vector2.Zero();
 	}	
 
 	/* SECTION:
@@ -76,19 +86,27 @@ export class Player extends Shape {
 	 * */
 
 	public update() {
+		let	up : boolean;
+		let down : boolean;
+
 		/* TODO(joleksia):
 		 *  Create a basic player/ai behaviour
 		 * */
 		switch (this.m_mode) {
 			case (PlayerMode.PLAYERMODE_HUMAN): {
-				this.movePlayer(Game.keys[this.m_keyUp], Game.keys[this.m_keyDown]);
+				up = Game.keys[this.m_keyUp];
+				down = Game.keys[this.m_keyDown];
 			} break;
 			case (PlayerMode.PLAYERMODE_AI): {
 				/* TODO(joleksia):
 				 *  Implement AI
 				 * */
+				this.aiBehaviour();
+				up = this.m_box.position.y < this.m_aiDest.y;
+				down = this.m_box.position.y > this.m_aiDest.y;
 			} break;
 		}
+		this.movePlayer(up, down);
 
 		/* Update the base 'Shape' class
 		 * */
@@ -110,6 +128,22 @@ export class Player extends Shape {
 		else if (down) { dir = -1.0 };
 
 		this.m_vel.y = dir;
+	}
+
+	private aiBehaviour() {
+		/* Simple workflow:
+		 * - if m_aiTimerElapsed < 1.0: just increase the value by the deltaTime;
+		 * - if m_aiTimerElasped >= 1.0: get the potential ball position and return it
+		 * */
+		if (this.m_aiTimerElapsed >= 1.0) {
+			let	ball = this.m_scene.getMeshByName('ball');
+
+			this.m_aiDest.x = ball.position.x;
+			this.m_aiDest.y = ball.position.y;
+		}
+		else {
+			this.m_aiTimerElapsed += this.m_scene.deltaTime;
+		}
 	}
 }
 

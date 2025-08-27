@@ -155,10 +155,10 @@ export class Game {
 		 *  - specifing if player is a human or AI;
 		 *  - specifing if the game is local or remote (which is important for the socket listening);
 		 * */
-		this.m_player0 = new Player(this.m_canvas, this.m_scene, 0, 1);
-		this.m_player1 = new Player(this.m_canvas, this.m_scene, 1, 1);
-		this.m_ball = new Ball(this.m_canvas, this.m_scene);
-		this.m_ground = new Ground(this.m_scene, new BABYLON.Vector2(32.0, 24.0));
+		this.m_player0 = new Player(this.m_canvas, scene, 0, 1);
+		this.m_player1 = new Player(this.m_canvas, scene, 1, 1);
+		this.m_ball = new Ball(this.m_canvas, scene);
+		this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
 		return (scene);
 	}
 }
