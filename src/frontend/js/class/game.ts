@@ -41,7 +41,7 @@ export class Game {
 	 *  Public Methods
 	 * */
 	
-	public	setupElements() {
+	public	setupElements(isAi: boolean) {
 		/* Get the dialog element from the document
 		 * */
 		console.log('[ INFO ] Referencing the modal dialog');
@@ -72,7 +72,7 @@ export class Game {
 		this.m_engine = new BABYLON.Engine(this.m_canvas, true, {preserveDrawingBuffer: true, stencil: true } );
 
 		console.log('[ INFO ] Creating a babylon scene');
-		this.m_scene = this.createScene();
+		this.m_scene = this.createScene(isAi);
 	
 		/* Display the game dialog
 		 * */
@@ -135,7 +135,7 @@ export class Game {
 		this.m_scene.render()
 	}
 
-	private	createScene() {
+	private	createScene(isAi: boolean) {
 		let	scene = new BABYLON.Scene(this.m_engine);
 
 		/* SECTION:
@@ -156,7 +156,7 @@ export class Game {
 		 *  - specifing if the game is local or remote (which is important for the socket listening);
 		 * */
 		this.m_player0 = new Player(this.m_canvas, scene, 0, 1);
-		this.m_player1 = new Player(this.m_canvas, scene, 1, 1);
+		this.m_player1 = new Player(this.m_canvas, scene, 1, isAi ? 2 : 1);
 		this.m_ball = new Ball(this.m_canvas, scene);
 		this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
 		return (scene);

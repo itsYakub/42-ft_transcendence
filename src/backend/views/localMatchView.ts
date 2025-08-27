@@ -1,7 +1,7 @@
 import { User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function localMatchHtml(user: User): string {
+export function localMatchView(user: User): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
 		<h1 class="text-white pt-4 mb-4 text-4xl">%%TEXT_LOCAL_MATCH%%</h1>

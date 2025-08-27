@@ -19,7 +19,7 @@ export function gameFunctions() {
 	const aiMatchButton = document.querySelector("#aiMatchButton");
 	if (aiMatchButton) {
 		aiMatchButton.addEventListener("click", () => {
-			navigate("/match/local")
+			startAiMatch("player");
 		});
 	}
 
@@ -83,7 +83,11 @@ export function startMatch(p1Name: string, p2Name: string) {
 		}
 	});
 
-	g_game.setupElements();
+	g_game.setupElements(false);
+}
+
+function startAiMatch(p1Name: string) {
+	g_game.setupElements(true);
 }
 
 /*
