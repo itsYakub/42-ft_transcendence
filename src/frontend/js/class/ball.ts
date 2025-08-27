@@ -39,6 +39,13 @@ export class Ball extends Shape {
 	 * */
 
 	public start() {
+		/* NOTE(joleksia):
+		 *  This thing should be handled by the server
+		 *
+		 *  @agarbacz/@lwillis:
+		 *   Please, consider this as a server operation somehow.
+		 *   Preferably it should be handled by some other server-instance and then sent to the clients.
+		 * */
 		this.reset();
 		do {
 			this.m_vel.x = Math.floor(Math.random() * 3.0 + -1.0);

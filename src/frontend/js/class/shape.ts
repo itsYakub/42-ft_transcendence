@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
-import { g_gamePlayableArea } from './game.js';
+import { g_game, g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';
 
 
@@ -38,8 +38,8 @@ export class Shape {
 	}
 
 	public	update() {
-		this.m_pos.x += this.m_vel.x * 0.1;
-		this.m_pos.y += this.m_vel.y * 0.1;
+		this.m_pos.x += this.m_vel.x * g_game.deltaTime * 4.0;
+		this.m_pos.y += this.m_vel.y * g_game.deltaTime * 4.0;
 		
 		/* NOTE(joleksia):
 		 *  This chunk of code is responsible for keeping all the meshes in the playable area.
