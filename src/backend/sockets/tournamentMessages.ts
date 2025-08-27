@@ -10,9 +10,6 @@ export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, u
 	if (Result.SUCCESS == gamersBox.result) {
 		const shuffled = shuffleGamers(gamersBox.contents);
 		if (Result.SUCCESS == addTournament(db, user.gameId, shuffled)) {
-			// shuffled.forEach(gamer => {
-			// 	markUnReady(db, gamer.userId);
-			// });
 			broadcastMessageToClients(fastify, {
 				type: MessageType.TOURNAMENT_UPDATE,
 				gameId: user.gameId
@@ -25,6 +22,7 @@ export function tournamentGamerReadyReceived(fastify: FastifyInstance, db: Datab
 
 	const tournament = getTournament(db, user);
 	if (Result.SUCCESS == tournament.result) {
+		console.log(tournament.contents);
 		const gamer = gamerFromUser(tournament.contents, user);
 		const opponent = opponentFromUser(tournament.contents, user);
 		console.log(`match is between ${gamer.nick} and ${opponent.nick}`);

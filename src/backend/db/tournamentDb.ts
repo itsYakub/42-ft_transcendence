@@ -76,26 +76,26 @@ function sqlToTournament(tournament: Record<string, SQLOutputValue>, user: User)
 	return isPrimaryMatch ?
 		{
 			primaryMatch: {
-				gamer1: sqlToGamer(tournament, 0),
-				gamer2: sqlToGamer(tournament, 1),
+				gamer1: sqlToGamer(tournament, 1),
+				gamer2: sqlToGamer(tournament, 2),
 				matchStatus: tournament.match_a_status as number
 			},
 			secondaryMatch: {
-				gamer1: sqlToGamer(tournament, 2),
-				gamer2: sqlToGamer(tournament, 3),
+				gamer1: sqlToGamer(tournament, 3),
+				gamer2: sqlToGamer(tournament, 4),
 				matchStatus: tournament.match_b_status as number
 			}
 		}
 		:
 		{
 			primaryMatch: {
-				gamer1: sqlToGamer(tournament, 2),
-				gamer2: sqlToGamer(tournament, 3),
+				gamer1: sqlToGamer(tournament, 3),
+				gamer2: sqlToGamer(tournament, 4),
 				matchStatus: tournament.match_a_status as number
 			},
 			secondaryMatch: {
-				gamer1: sqlToGamer(tournament, 0),
-				gamer2: sqlToGamer(tournament, 1),
+				gamer1: sqlToGamer(tournament, 1),
+				gamer2: sqlToGamer(tournament, 2),
 				matchStatus: tournament.match_b_status as number
 			}
 		};
@@ -103,30 +103,30 @@ function sqlToTournament(tournament: Record<string, SQLOutputValue>, user: User)
 
 function sqlToGamer(tournament: Record<string, SQLOutputValue>, index: number): TournamentGamer {
 	switch (index) {
-		case 0:
+		case 1:
 			return {
-				index: 1,
+				index,
 				nick: tournament.g1_nick as string,
 				ready: Boolean(tournament.g1_ready as number),
 				userId: tournament.g1_id as number,
 			}
-		case 1:
+		case 2:
 			return {
-				index: 2,
+				index,
 				nick: tournament.g2_nick as string,
 				ready: Boolean(tournament.g2_ready as number),
 				userId: tournament.g2_id as number,
 			}
-		case 2:
+		case 3:
 			return {
-				index: 3,
+				index,
 				nick: tournament.g3_nick as string,
 				ready: Boolean(tournament.g3_ready as number),
 				userId: tournament.g3_id as number,
 			}
 		default:
 			return {
-				index: 4,
+				index,
 				nick: tournament.g4_nick as string,
 				ready: Boolean(tournament.g4_ready as number),
 				userId: tournament.g4_id as number,

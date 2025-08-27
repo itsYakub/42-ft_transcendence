@@ -3,20 +3,12 @@ import { gameHtmlString } from "../game/game.js";
 
 export function activeMatchHtml(tournament: Tournament, user: User): string {
 	const gamer = whichGamerIsUser(tournament, user);
-	const gamerStrings = [
-		gamerString(tournament.primaryMatch.gamer1),
-		gamerString(tournament.primaryMatch.gamer2)
-	];
-	let otherStrings = [
-		`<div class="text-gray-300 text-center">${tournament.secondaryMatch.gamer1.nick}</div>`,
-		`<div class="text-gray-300 text-center">${tournament.secondaryMatch.gamer2.nick}</div>`
-	];
-
+	
 	const html = `
 	<div class="flex flex-col gap-2">
-		${gamerStrings[0]}
+		${gamerString(tournament.primaryMatch.gamer1)}
 		<div class="text-white text-center">Vs</div>
-		${gamerStrings[1]}
+		${gamerString(tournament.primaryMatch.gamer2)}
 	</div>
 	<form id="tournamentMatchReadyForm">
 		<div class="flex flex-row justify-between mr-9">
@@ -25,9 +17,9 @@ export function activeMatchHtml(tournament: Tournament, user: User): string {
 		</div>
 	</form>
 	<div class="flex flex-col gap-2 mt-2">
-		${otherStrings[0]}
+		${tournament.secondaryMatch.gamer1.nick}
 		<div class="text-white text-center">Vs</div>
-		${otherStrings[1]}
+		${tournament.secondaryMatch.gamer2.nick}
 	</div>
 	<div id="finishMatchButton" class="text-white mt-2">Finish match</div>
 	${gameHtmlString()}
