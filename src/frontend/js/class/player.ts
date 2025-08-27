@@ -138,18 +138,38 @@ export class Player extends Shape {
 		 * - if m_aiTimerElasped >= 1.0: get the potential ball position and return it
 		 * */
 		if (this.m_aiTimerElapsed >= 1.0) {
-			let	ball = this.m_scene.getMeshByName('ball');
+			let	vel : BABYLON.Vector2;
+			let	pos : BABYLON.Vector2;
 
-			this.m_aiDest.x = ball.position.x;
-			this.m_aiDest.y = ball.position.z;
+			vel.x = g_game.ball.vel.x;
+			vel.y = g_game.ball.vel.y;
+			pos.x = g_game.ball.pos.x;
+			pos.y = g_game.ball.pos.y;
+			while (Math.abs(this.pos.x) < Math.abs(pos.x)) {	
+				if (/* Bounce: LEFT */  (pos.x - g_game.ball.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
+					/* Bounce: RIGHT */ (pos.x + g_game.ball.m_siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
+				) {
+					vel.x *= -1.0;
+				}
+				
+				if (/* Bounce: TOP */    (pos.y - g_game.ball.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
+					/* Bounce: BOTTOM */ (pos.y + g_game.ball.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
+				) {
+					vel.y *= -1.0;
+				}
+				pos.x += vel.x;
+				pos.y += vel.y;
+			}
 
+			this.m_aiDest.x = pos.x;
+			this.m_aiDest.y = pos.y;
 			this.m_aiTimerElapsed = 0.0;
 
 			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
 			console.log('[ INFO ] Current pallet position: ' + this.m_pos);
 		}
 		else if (this.m_aiTimerElapsed < 1.0) {
-			this.m_aiTimerElapsed += g_game.getDeltaTime();
+			this.m_aiTimerElapsed += g_game.deltaTime;
 		}
 	}
 }

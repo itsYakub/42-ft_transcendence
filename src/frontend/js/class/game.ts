@@ -108,9 +108,8 @@ export class Game {
 		console.log('[ INFO ] Game is disposed...');
 	}
 
-	public	getDeltaTime() {
-		return (this.m_engine.getDeltaTime() * 0.001);
-	}
+	public get	deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
+	public get	ball() { return (this.m_ball); }
 
 	/* SECTION:
 	 *  Private Methods
@@ -122,7 +121,7 @@ export class Game {
 
 		/* Update game time
 		 * */
-		g_gameTime += this.getDeltaTime();
+		g_gameTime += this.deltaTime;
 
 		/* Update game components
 		 * */
