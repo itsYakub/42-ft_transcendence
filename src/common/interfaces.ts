@@ -18,10 +18,12 @@ export enum MessageType {
 	USER_JOIN_GAME = "USER_JOIN_GAME",
 	USER_INVITE = "USER_INVITE",
 	USER_LEAVE_GAME = "USER_LEAVE_GAME",
+	USER_LEAVE_TOURNAMENT = "USER_LEAVE_TOURNAMENT",
 	USER_READY = "USER_READY",
 	USER_SEND_GAME_CHAT = "USER_SEND_GAME_CHAT",
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
-	USER_UNREADY = "USER_UNREADY"
+	USER_UNREADY = "USER_UNREADY",
+	TOURNAMENT_UPDATE = "TOURNAMENT_UPDATE"
 }
 
 export interface Message {
@@ -66,8 +68,10 @@ export interface User {
 }
 
 export interface Gamer {
+	gameId: string,
 	nick: string,
 	ready: boolean,
+	score?: number,
 	userId: number
 }
 
@@ -123,19 +127,39 @@ export interface GameChatMessage {
 }
 
 export interface Tournament {
-	match: number,
-	m1p1Nick: string,
-	m1p2Nick: string,
-	m2p1Nick: string,
-	m2p2Nick: string,
-	m3p1Nick: string,
-	m3p2Nick: string,
-	m1p1Score: number,
-	m1p2Score: number,
-	m2p1Score: number,
-	m2p2Score: number,
-	m3p1Score: number,
-	m3p2Score: number,
+	g1Id: number,
+	g2Id: number,
+	g3Id: number,
+	g4Id: number,
+	g1Nick: string,
+	g2Nick: string,
+	g3Nick: string,
+	g4Nick: string,
+	matchAG1Score: number,
+	matchAG2Score: number,
+	matchBG1Score: number,
+	matchBG2Score: number,
+	finalG1Score: number,
+	finalG2Score: number,
+}
+
+export enum GamerStatus {
+
+}
+
+export interface Tournamente {
+	matchA: {
+		gamer1: Gamer,
+		gamer2: Gamer,
+	},
+	matchB: {
+		gamer1: Gamer,
+		gamer2: Gamer
+	},
+	final: {
+		gamer1?: Gamer,
+		gamer2?: Gamer,
+	}
 }
 
 export interface Box<T> {

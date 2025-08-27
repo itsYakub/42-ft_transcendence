@@ -18,8 +18,11 @@ export async function userJoinOrLeave(user: User, message: Message) {
 	if (user.gameId == message.gameId && user.userId != message.fromId) {
 		const gamerBox = await fetch("/api/gamers");
 		const gamers = await gamerBox.json();
-		if (Result.SUCCESS == gamers.result)
-			document.querySelector("#gamerMatchReadyForm").innerHTML = gamers.value;
+		if (Result.SUCCESS == gamers.result) {
+			const gameMatchReadyForm = document.querySelector("#gamerMatchReadyForm");
+			if (gameMatchReadyForm)
+				gameMatchReadyForm.innerHTML = gamers.value;
+		}
 	}
 }
 

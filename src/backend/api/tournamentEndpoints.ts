@@ -11,16 +11,16 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 		return reply.send(gamersBox);
 	});
 
-	fastify.post('/api/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {
-		const { gamers } = request.body as any;
+	// fastify.post('/api/tournament/add', async (request: FastifyRequest, reply: FastifyReply) => {
+	// 	const { gamers } = request.body as any;
 
-		if (Result.SUCCESS == addTournament(db, request.user.gameId, gamers)) {
-			gamers.forEach(gamer => {
-				//send message
-			});
-		}
-		return reply.send(Result.SUCCESS);
-	});
+	// 	if (Result.SUCCESS == addTournament(db, request.user.gameId, gamers)) {
+	// 		gamers.forEach(gamer => {
+	// 			//send message
+	// 		});
+	// 	}
+	// 	return reply.send(Result.SUCCESS);
+	// });
 
 	fastify.post('/api/tournament/update', async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = request.body as any;

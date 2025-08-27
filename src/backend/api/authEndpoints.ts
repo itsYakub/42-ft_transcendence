@@ -43,9 +43,12 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		const guestBox = addGuest(db);
 		if (Result.SUCCESS != guestBox.result)
 			return reply.send(guestBox);
+//TODO remove!
+const accessTokenDate = new Date();
+		accessTokenDate.setMinutes(accessTokenDate.getMinutes() + 1);
 
 		return reply.header(
-			"Set-Cookie", `accessToken=${guestBox.contents}; Path=/; Secure; HttpOnly;`).send(Result.SUCCESS);
+			"Set-Cookie", `accessToken=${guestBox.contents}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).send(Result.SUCCESS);
 	});
 
 	fastify.get("/auth/google", async (request: FastifyRequest, reply: FastifyReply) => {

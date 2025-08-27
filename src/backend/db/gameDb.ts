@@ -19,7 +19,7 @@ export function getGames(db: DatabaseSync): Box<Game[]> {
 
 export function gamePlayers(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 	try {
-		const select = db.prepare("SELECT user_id, nick, ready FROM users WHERE game_id IS ?");
+		const select = db.prepare("SELECT game_id, user_id, nick, ready FROM users WHERE game_id IS ?");
 		const gamers: Gamer[] = select.all(gameId).map(gamer => sqlToGamer(gamer));
 		return {
 			result: Result.SUCCESS,
@@ -141,6 +141,7 @@ function sqlToGame(game: Record<string, SQLOutputValue>): Game {
 
 function sqlToGamer(gamer: Record<string, SQLOutputValue>): Gamer {
 	return {
+		gameId: gamer.game_id as string,
 		nick: gamer.nick as string,
 		ready: Boolean(gamer.ready as number),
 		userId: gamer.user_id as number
