@@ -55,7 +55,7 @@ export class Ground {
 
 	public update() {
 		const	_position_scale : number = 0.2;
-		const	_time_scale : number = 0.0001;
+		const	_time_scale : number = 0.1;
 		const	_value_offset : number = 0.2;
 
 		/* NOTE(joleksia):

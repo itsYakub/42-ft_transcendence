@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs';
 
 import { Shape } from './shape.js';
-import { Game } from './game.js';
+import { Game, g_game, GameMode } from './game.js';
 import { g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';
 
@@ -11,9 +11,9 @@ import { g_boundCellSize } from './ground.js';
  * */
 
 export enum PlayerMode {
-	PLAYERMODE_NONE = 0,
-	PLAYERMODE_HUMAN,
-	PLAYERMODE_AI,
+	PLAYERMODE_NONE = 0.0,
+	PLAYERMODE_HUMAN = 1.0,
+	PLAYERMODE_AI = 2.0,
 	PLAYERMODE_COUNT,
 }
 
@@ -48,7 +48,7 @@ export class Player extends Shape {
 
 		/* Decide if player is HUMAN (PLAYERMODE_HUMAN / 1.0) or AI (PLAYERMODE_AI / 2.0)
 		 * */
-		this.m_mode = mode;
+		this.m_mode = (mode != 2.0 ? (mode != 1.0 ? PlayerMode.PLAYERMODE_NONE : PlayerMode.PLAYERMODE_HUMAN) : PlayerMode.PLAYERMODE_AI);
 
 		/* Decide if player is on the left or right of the map
 		 * */
@@ -79,6 +79,8 @@ export class Player extends Shape {
 		 * */
 		this.m_aiTimerElapsed = 0.0;
 		this.m_aiDest = BABYLON.Vector2.Zero();
+
+		console.log('[ INFO ] Player created | Side: ' + (side == 0.0 ? 'LEFT' : 'RIGHT') + ' | Mode: ' + (this.m_mode == PlayerMode.PLAYERMODE_HUMAN ? 'HUMAN' : 'AI'));
 	}	
 
 	/* SECTION:
@@ -139,10 +141,15 @@ export class Player extends Shape {
 			let	ball = this.m_scene.getMeshByName('ball');
 
 			this.m_aiDest.x = ball.position.x;
-			this.m_aiDest.y = ball.position.y;
+			this.m_aiDest.y = ball.position.z;
+
+			this.m_aiTimerElapsed = 0.0;
+
+			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
+			console.log('[ INFO ] Current pallet position: ' + this.m_pos);
 		}
-		else {
-			this.m_aiTimerElapsed += this.m_scene.deltaTime;
+		else if (this.m_aiTimerElapsed < 1.0) {
+			this.m_aiTimerElapsed += g_game.getDeltaTime();
 		}
 	}
 }

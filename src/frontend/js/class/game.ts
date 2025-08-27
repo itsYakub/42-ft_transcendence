@@ -12,8 +12,8 @@ import { Ground }  from './ground.js';
 
 export enum	GameMode {
 	GAMEMODE_NONE = 0,
-	GAMEMODE_LOCAL_PVP,
-	GAMEMODE_LOCAL_AI,
+	GAMEMODE_PVP,
+	GAMEMODE_AI,
 	GAMEMODE_COUNT
 }
 
@@ -30,6 +30,8 @@ export class Game {
 
 	/* Game objects
 	 * */
+	private	m_mode : GameMode;
+
 	private m_player0 : Player;
 	private	m_player1 : Player;
 	private	m_ball : Ball;
@@ -41,7 +43,7 @@ export class Game {
 	 *  Public Methods
 	 * */
 	
-	public	setupElements(isAi: boolean) {
+	public	setupElements(mode : GameMode) {
 		/* Get the dialog element from the document
 		 * */
 		console.log('[ INFO ] Referencing the modal dialog');
@@ -72,7 +74,8 @@ export class Game {
 		this.m_engine = new BABYLON.Engine(this.m_canvas, true, {preserveDrawingBuffer: true, stencil: true } );
 
 		console.log('[ INFO ] Creating a babylon scene');
-		this.m_scene = this.createScene(isAi);
+		this.m_mode = mode;
+		this.m_scene = this.createScene();
 	
 		/* Display the game dialog
 		 * */
@@ -105,6 +108,10 @@ export class Game {
 		console.log('[ INFO ] Game is disposed...');
 	}
 
+	public	getDeltaTime() {
+		return (this.m_engine.getDeltaTime() * 0.001);
+	}
+
 	/* SECTION:
 	 *  Private Methods
 	 * */
@@ -115,7 +122,7 @@ export class Game {
 
 		/* Update game time
 		 * */
-		g_gameTime += this.m_engine.getDeltaTime();
+		g_gameTime += this.getDeltaTime();
 
 		/* Update game components
 		 * */
@@ -135,7 +142,7 @@ export class Game {
 		this.m_scene.render()
 	}
 
-	private	createScene(isAi: boolean) {
+	private	createScene() {
 		let	scene = new BABYLON.Scene(this.m_engine);
 
 		/* SECTION:
@@ -151,14 +158,20 @@ export class Game {
 		/* TODO(joleksia):
 		 *  Here we should set-up the game based on the gamemode.
 		 *  By setting-up I mean:
-		 *  - creating both players;
-		 *  - specifing if player is a human or AI;
+		 *  - creating both players [X];
+		 *  - specifing if player is a human or AI [X];
 		 *  - specifing if the game is local or remote (which is important for the socket listening);
 		 * */
-		this.m_player0 = new Player(this.m_canvas, scene, 0, 1);
-		this.m_player1 = new Player(this.m_canvas, scene, 1, isAi ? 2 : 1);
-		this.m_ball = new Ball(this.m_canvas, scene);
 		this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
+		this.m_ball = new Ball(this.m_canvas, scene);
+		if (this.m_mode == GameMode.GAMEMODE_PVP) {
+			this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
+			this.m_player1 = new Player(this.m_canvas, scene, 1.0, 1.0);
+		}
+		if (this.m_mode == GameMode.GAMEMODE_AI) {
+			this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
+			this.m_player1 = new Player(this.m_canvas, scene, 1.0, 2.0);
+		}
 		return (scene);
 	}
 }
@@ -172,4 +185,3 @@ export var	g_gamePlayableArea : BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var	g_gameTime : number = 0.0;
 
 export var	g_game : Game = new Game();
-export var	g_gameMode : GameMode = GameMode.GAMEMODE_NONE;

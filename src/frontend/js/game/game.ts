@@ -1,6 +1,6 @@
 import { getLanguage, navigate, showAlert } from "./../index.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
-import { g_game } from './../class/game.js';
+import { g_game, GameMode } from './../class/game.js';
 import { MessageType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { localMatchFunctions } from "./localMatch.js";
@@ -83,11 +83,11 @@ export function startMatch(p1Name: string, p2Name: string) {
 		}
 	});
 
-	g_game.setupElements(false);
+	g_game.setupElements(GameMode.GAMEMODE_PVP);
 }
 
 function startAiMatch(p1Name: string) {
-	g_game.setupElements(true);
+	g_game.setupElements(GameMode.GAMEMODE_AI);
 }
 
 /*
