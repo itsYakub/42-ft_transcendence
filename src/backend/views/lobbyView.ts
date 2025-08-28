@@ -6,9 +6,9 @@ export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User)
 	const titleString = user.gameId.startsWith("m") ? "TEXT_REMOTE_MATCH" : "TEXT_TOURNAMENT";
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%${titleString}%%</h1>
+		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-4xl text-center">%%${titleString}%%</h1>
 		<div class="flex flex-row h-150">
-			<div id="lobbyDetailsContainer" class="flex flex-col">
+			<div id="lobbyDetailsContainer" class="flex flex-col w-69">
 				<form id="gamerMatchReadyForm">
 					${gamersString(gamers, user)}
 				</form>
@@ -55,7 +55,6 @@ export function gamersString(gamers: Gamer[], user: User): string {
 }
 
 export function messagesString(chats: GameChatMessage[], user: User): string {
-	console.log(chats);
 	let messageList = "";
 	for (var key in chats) {
 		messageList += messageString(user.userId, chats[key]);

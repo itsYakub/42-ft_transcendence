@@ -38,6 +38,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_CHANGE_AVATAR",
 		"TEXT_CHANGE_NICK",
 		"TEXT_CHANGE_PASSWORD",
+		"TEXT_CONGRATULATIONS",
 		"TEXT_CREATE",
 		"TEXT_CURRENT_PASSWORD",
 		"TEXT_EMAIL",
@@ -63,6 +64,8 @@ export function translate(language: string, text: string): string {
 		"TEXT_TOTP_SCAN",
 		"TEXT_TOTP_TITLE",
 		"TEXT_TOURNAMENT",
+		"TEXT_TOURNAMENT_FINAL",
+		"TEXT_TOURNAMENT_SEMI_FINALS",
 		"TEXT_TOURNAMENT_SINGLE",
 		"TEXT_TOURNAMENT_PLURAL",
 		"TEXT_USER_DECISION",
@@ -164,6 +167,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_CHANGE_AVATAR": return "Change avatar";
 		case "TEXT_CHANGE_NICK": return "Change nickname";
 		case "TEXT_CHANGE_PASSWORD": return "Change password";
+		case "TEXT_CONGRATULATIONS": return "Congratulations";
 		case "TEXT_CREATE": return "Or create a new...";
 		case "TEXT_CURRENT_PASSWORD": return "Current password";
 		case "TEXT_EMAIL": return "Email";
@@ -189,6 +193,8 @@ function translateEnglish(text: string): string {
 		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";
 		case "TEXT_TOTP_TITLE": return "TOTP";
 		case "TEXT_TOURNAMENT": return "Tournament";
+		case "TEXT_TOURNAMENT_FINAL": return "Final";
+		case "TEXT_TOURNAMENT_SEMI_FINALS": return "Semi-finals";
 		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
 		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
 		case "TEXT_USER_DECISION": return "Please choose an option to continue";

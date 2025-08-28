@@ -19,8 +19,6 @@ export function userGameLeaveReceived(fastify: FastifyInstance, db: DatabaseSync
 	message.gameId = user.gameId;
 	const response = leaveGame(db, user.userId);
 
-	console.log(`user id ${user.userId} has left the game`);
-
 	if (Result.SUCCESS == response) {
 		message.fromId = user.userId;
 		broadcastMessageToClients(fastify, message);

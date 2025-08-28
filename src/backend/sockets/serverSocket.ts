@@ -5,7 +5,7 @@ import { userGameJoinReceived, userGameLeaveReceived, userSendGameChatReceived }
 import { userInviteReceived, userLoginReceived, userReadyReceived, userSendUserChatReceived, userUnreadyReceived } from './userMessages.js';
 import { getUser, markUserOffline } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
-import { tournamentGamerReadyReceived, tournamentMatchEnd, userLeaveTournamentReceived } from './tournamentMessages.js';
+import { tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, userLeaveTournamentReceived } from './tournamentMessages.js';
 
 export function serverSocket(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -52,7 +52,10 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 			tournamentGamerReadyReceived(fastify, db, user, message);
 			break;
 		case MessageType.TOURNAMENT_MATCH_END:
-			tournamentMatchEnd(fastify, db, user, message);
+			tournamentMatchEndReceived(fastify, db, user, message);
+			break;
+		case MessageType.TOURNAMENT_OVER:
+			tournamentOverReceived(fastify, db, user, message);
 			break;
 		case MessageType.TOURNAMENT_UPDATE:
 			console.log("user ready for match");

@@ -3,12 +3,12 @@ import { gameHtmlString } from "../game/game.js";
 import { messagesString } from "./lobbyView.js";
 
 export function tournamentLobbyView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
-	console.log("chats here", chats);
+	const title = isFinalReady(tournament) ? "TEXT_TOURNAMENT_FINAL" : "TEXT_TOURNAMENT_SEMI_FINALS";
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_TOURNAMENT%%</h1>
+		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_TOURNAMENT%% - %%${title}%%</h1>
 		<div class="flex flex-row h-150">
-			<div id="lobbyDetailsContainer" class="flex flex-col">
+			<div id="lobbyDetailsContainer" class="flex flex-col w-69">
 				<form id="gamerMatchReadyForm">
 					${tournamentDetails(tournament, user)}
 				</form>
@@ -36,9 +36,11 @@ export function tournamentLobbyView(tournament: Tournament, chats: GameChatMessa
 }
 
 export function tournamentDetails(tournament: Tournament, user: User): string {
-	if (isFinalFinished(tournament)) {
+	if (isFinalFinished(tournament.matches[2])) {
+		const match = tournament.matches[2];
+		const winner = match.g1.score > match.g2.score ? match.g1 : match.g2;
 		return `
-			<div class="text-white">All done!</div>
+			<div class="text-white text-center">Winner - ${winner.nick}</div>
 		`;
 	}
 
@@ -61,10 +63,10 @@ export function tournamentDetails(tournament: Tournament, user: User): string {
 			<button id="leaveTournamentButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 		</div>
 	</form>
-	<div class="flex flex-col gap-2 mt-2">
+	<div class="flex flex-col gap-2 mt-2 w-69">
+		<div class="border border-gray-800 my-4 h-0.5 w-full px-2"></div>
 		${secondaryMatchHtml(tournament.matches[1 == match.matchNumber ? 1 : 0])}
 	</div>
-	<div id="finishMatchButton" class="text-white mt-2">Finish match</div>
 	${gameHtmlString()}
 	`;
 
@@ -72,14 +74,39 @@ export function tournamentDetails(tournament: Tournament, user: User): string {
 }
 
 function secondaryMatchHtml(match: Match): string {
-	const statusString = match.g1.ready && match.g2.ready ?
-		"Playing" : "Waiting to start";
+	let statusString = "";
+	let g1Score = "";
+	let g2Score = "";
+	if (!match.g1.ready || !match.g2.ready)
+		statusString = "Waiting to start";
+	else if (match.g1.ready && match.g2.ready) {
+		if (0 == match.g1.score + match.g2.score) {
+			statusString = "Playing";
+		}
+		else {
+			statusString = "";
+			g1Score = ` :  ${gamerScore(match.g1, match.g2)}`;
+			g2Score = ` :  ${gamerScore(match.g2, match.g1)}`;
+		}
+		
+	}
 
 	return `
-	<div class="text-gray-300 text-center">${match.g1.nick} : ${match.g1.score}</div>
+	<div class="text-gray-300 text-center">${match.g1.nick}${g1Score}</div>
 	<div class="text-white text-center">Vs</div>
-	<div class="text-gray-300 text-center">${match.g2.nick} : ${match.g2.score}</div>
+	<div class="text-gray-300 text-center">${match.g2.nick}${g2Score}</div>
 	<div class="text-white text-center">${statusString}</div>
+	`;
+}
+
+function gamerScore(gamer: MatchGamer, opponent: MatchGamer) : string {
+	return gamer.score > opponent.score ?
+	`
+	<span class="text-green-300">${gamer.score}</span>
+	`
+	:
+	`
+	<span class="text-red-300">${gamer.score}</span>
 	`;
 }
 
@@ -101,12 +128,11 @@ function isFinalReady(tournament: Tournament): boolean {
 	return match1Count > 0 && match2Count > 0;
 }
 
-function isFinalFinished(tournament: Tournament): boolean {
-	return tournament.matches[2].g1.score + tournament.matches[2].g2.score > 0;
+function isFinalFinished(match: Match): boolean {
+	return match.g1.score + match.g2.score > 0;
 }
 
 function finalHtml(match: Match, user: User): string {
-	console.log(match);
 	if (match.g1.userId == user.userId || match.g2.userId == user.userId)
 		return `
 			<div class="flex flex-col gap-2">
@@ -123,9 +149,7 @@ function finalHtml(match: Match, user: User): string {
 			${gameHtmlString()}
 		`;
 	else
-		return `
-		<div class="text-white">Not yours!</div>
-	`;
+		return secondaryMatchHtml(match);
 }
 
 function gamerString(gamer: MatchGamer) {

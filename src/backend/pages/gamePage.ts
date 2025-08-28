@@ -23,11 +23,9 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		// user is already in a game
 		if (user.gameId) {
 			const gameId = user.gameId;
-console.log(`gameId set ${gameId}`);
+
 			const tournamentBox = getTournament(db, gameId);
-			console.log(tournamentBox);
 			if (Result.SUCCESS == tournamentBox.result) {
-				console.log("in tournament");
 				const chatsBox = gameChatsList(db, gameId);
 				if (Result.SUCCESS != chatsBox.result) {
 					params.result = chatsBox.result;
@@ -44,7 +42,6 @@ console.log(`gameId set ${gameId}`);
 			}
 
 			const chatsBox = gameChatsList(db, gameId);
-			console.log(chatsBox);
 			if (Result.SUCCESS != chatsBox.result) {
 				params.result = chatsBox.result;
 				return reply.type("text/html").send(frameView(params));

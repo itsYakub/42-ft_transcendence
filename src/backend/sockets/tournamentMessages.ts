@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSocket.js';
-import { gamePlayers } from '../db/gameDb.js';
+import { gamePlayers, leaveGame } from '../db/gameDb.js';
 import { Gamer, Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User } from '../../common/interfaces.js';
 import { addTournament, getTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentDb.js';
 
@@ -27,7 +27,8 @@ export function tournamentGamerReadyReceived(fastify: FastifyInstance, db: Datab
 		markTournamentGamerReady(db, tournament.contents, user);
 		broadcastMessageToClients(fastify, {
 			type: MessageType.TOURNAMENT_UPDATE,
-			gameId: user.gameId
+			gameId: user.gameId,
+			match
 		});
 
 		if (userOpponent(match, user).ready) {
@@ -40,7 +41,7 @@ export function tournamentGamerReadyReceived(fastify: FastifyInstance, db: Datab
 	}
 }
 
-export function tournamentMatchEnd(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentMatchEndReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	const match = message.match;
 	// Only handle the message once per match
 	if (match.g1.userId != user.userId)
@@ -51,15 +52,35 @@ export function tournamentMatchEnd(fastify: FastifyInstance, db: DatabaseSync, u
 		const tournament = getTournament(db, user.gameId);
 		if (Result.SUCCESS == tournament.result) {
 			const matches = tournament.contents.matches;
+
+			if (3 == match.matchNumber) {
+				if (match.g1.score > 0 && match.g2.score > 0) {
+					//TODO also remove on login
+					broadcastMessageToClients(fastify, {
+						type: MessageType.TOURNAMENT_OVER,
+						gameId: user.gameId,
+						match
+					});
+				}
+			}
+
 			if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[1].g1.score + matches[1].g2.score > 0)) {
-				updateTournamentFinal(db, user.gameId, matches);
+				if (null == matches[2].g1.userId && null == matches[2].g2.userId) {
+					updateTournamentFinal(db, user.gameId, matches);
+				}
+				match.matchNumber = 3;
 			}
 			broadcastMessageToClients(fastify, {
 				type: MessageType.TOURNAMENT_UPDATE,
-				gameId: user.gameId
+				gameId: user.gameId,
+				match
 			});
 		}
 	}
+}
+
+export function tournamentOverReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+	leaveGame(db, user.userId);
 }
 
 function userMatch(tournament: Tournament, user: User): Match {

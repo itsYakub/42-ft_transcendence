@@ -36,7 +36,6 @@ export async function userSendGameChat(user: User, message: Message) {
 	if (user.gameId == message.gameId) {
 		const messagesBox = await fetch("/api/game-chats");
 		const messages = await messagesBox.json();
-		console.log(messages);
 		if (Result.SUCCESS == messages.result) {
 			(document.querySelector("#sendMatchMessageForm") as HTMLFormElement).message.value = "";
 			document.querySelector("#messagesDiv").innerHTML = messages.value;
@@ -45,7 +44,6 @@ export async function userSendGameChat(user: User, message: Message) {
 }
 
 export async function gameReady(user: User, message: Message) {
-	console.log(user, message);
 	if (user.gameId != message.gameId)
 		return;
 

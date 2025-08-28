@@ -7,7 +7,7 @@ export function alertString(): string {
 			</h1>
 			<p id="alertContent" class="text-gray-400 text-center text-wrap"></p>
 			<button id="closeAlertButton"
-				class="float-right cursor-pointer border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 font-medium rounded-lg px-4 py-2">OK</button>
+				class="float-right cursor-pointer border border-gray-700 bg-gray-800 text-white hover:bg-gray-700 font-medium rounded-lg px-4 py-1">OK</button>
 		</div>
 	</dialog>
 	`;

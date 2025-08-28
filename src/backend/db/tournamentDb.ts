@@ -36,7 +36,6 @@ export function initTournamentsDb(db: DatabaseSync) {
 
 export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
 	try {
-		console.log(gameId);
 		const select = db.prepare("SELECT * FROM tournaments WHERE game_id = ?");
 		const tournament = sqlToTournament(select.get(gameId));
 		return {
@@ -58,7 +57,6 @@ export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[])
 		return Result.SUCCESS;
 	}
 	catch (e) {
-		console.log(e);
 		return Result.ERR_DB;
 	}
 }
@@ -96,8 +94,9 @@ export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches:
 			const select = db.prepare(`UPDATE tournaments SET m1_g1_nick = NULL, m1_g2_nick = NULL,
 				m2_g1_nick = NULL, m2_g2_nick = NULL, m1_g1_user_id = NULL, m1_g2_user_id = NULL,
 				m2_g1_user_id = NULL, m2_g2_user_id = NULL,
-				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?;`);
+				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
 			select.run(g1.nick, g2.nick, g1.userId, g2.userId, gameId);
+			console.log("updated db");
 			return Result.SUCCESS;
 		}
 	}

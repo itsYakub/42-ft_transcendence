@@ -1,6 +1,6 @@
 import { Match, Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
-import { getLanguage } from "../index.js";
+import { getLanguage, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "../sockets/clientSocket.js";
 import { startMatch } from "./game.js";
 
@@ -32,6 +32,14 @@ export async function updateTournamentDetails(user: User, message: Message) {
 
 		const json = await contentBox.json();
 		if (Result.SUCCESS == json.result) {
+			const gameTitle = document.querySelector("#gameTitle");
+			if (gameTitle) {
+				if (3 == message.match?.matchNumber)
+					gameTitle.innerHTML = translate(getLanguage(), "%%TEXT_TOURNAMENT%% - %%TEXT_TOURNAMENT_FINAL%%");
+				else
+					gameTitle.innerHTML = translate(getLanguage(), "%%TEXT_TOURNAMENT%% - %%TEXT_TOURNAMENT_SEMI_FINALS%%");
+			}
+
 			const lobbyDetailsContainer = document.querySelector("#lobbyDetailsContainer");
 			if (lobbyDetailsContainer) {
 				lobbyDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
@@ -52,7 +60,6 @@ export async function startTournamentMatch(user: User, message: Message) {
 		console.log("for me");
 		console.log("starting match...");
 
-		console.log(message);
 		//TODO game with small window
 
 		//startMatch(message.match);
@@ -68,5 +75,16 @@ export async function startTournamentMatch(user: User, message: Message) {
 		console.log("not for me");
 }
 
-export async function endTournamentMatch(user: User, message: Message) {
+export function tournamentOver(user: User, message: Message) {
+	if ("game" != currentPage() || user.gameId != message.gameId)
+		return;
+
+	const match = message.match;
+	const gamer = match.g1.score > match.g2.score ? match.g1 : match.g2;
+	
+	sendMessageToServer({
+		type: MessageType.TOURNAMENT_OVER,
+	});
+	showAlert(translate(getLanguage(), `%%TEXT_CONGRATULATIONS%% ${gamer.nick}!`));
+
 }
