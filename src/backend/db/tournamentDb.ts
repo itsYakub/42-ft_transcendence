@@ -36,6 +36,7 @@ export function initTournamentsDb(db: DatabaseSync) {
 
 export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
 	try {
+		console.log(gameId);
 		const select = db.prepare("SELECT * FROM tournaments WHERE game_id = ?");
 		const tournament = sqlToTournament(select.get(gameId));
 		return {

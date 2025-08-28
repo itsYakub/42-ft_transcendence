@@ -2,87 +2,7 @@ import { GameChatMessage, Gamer, Tournament, User } from "../../common/interface
 import { gameHtmlString } from "../game/game.js";
 
 export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
-	let html = matchString(gamers, chats, user);
-
-	return html + gameHtmlString();
-}
-
-export function gamersString(gamers: Gamer[], user: User): string {
-	let gamersString = "";
-	gamers.forEach(gamer => {
-		gamersString += gamerString(gamer);
-	});
-
-	const html = `
-	<div class="flex flex-col gap-8">
-		${gamersString}
-	</div>
-	<div class="flex flex-row justify-between mr-9">
-		${readyButtonString(user.ready)}
-		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
-	</div>
-	`;
-
-	return html;
-}
-
-// export function tournamentMatchString(gamers: Gamer[], user: User): string {
-
-// 	// gamers.forEach((gamer, index) => {
-// 	// 	if (gamer.userId == user.userId)
-// 	// 		console.log(`${user.nick} is player ${index}`);
-// 	// });
-
-
-// 	const gamerStrings = [];
-// 	let otherStrings = [];
-// 	gamers.forEach((gamer, index) => {
-// 		gamer.ready = false;
-// 		if (index < 2)
-// 			gamerStrings.push(gamerString(gamer));
-// 		else
-// 			otherStrings.push(`<div class="text-gray-300 text-center">${gamer.nick}</div>`);
-// 	});
-
-// 	const html = `
-// 	<div class="flex flex-col gap-2">
-// 		${gamerStrings[0]}
-// 		<div class="text-white text-center">Vs</div>
-// 		${gamerStrings[1]}
-// 	</div>
-// 	<form id="tournamentMatchReadyForm">
-// 		<div class="flex flex-row justify-between mr-9">
-// 			${readyButtonString(user.ready)}
-// 			<button id="leaveTournamentButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
-// 		</div>
-// 	</form>
-// 	<div class="flex flex-col gap-2 mt-2">
-// 		${otherStrings[0]}
-// 		<div class="text-white text-center">Vs</div>
-// 		${otherStrings[1]}
-// 	</div>
-// 	<div id="finishMatchButton" class="text-white mt-2">Finish match</div>
-// 	`;
-
-// 	return html;
-// }
-
-
-
-
-
-
-export function messagesString(chats: GameChatMessage[], user: User): string {
-	console.log(chats);
-	let messageList = "";
-	for (var key in chats) {
-		messageList += messageString(user.userId, chats[key]);
-	}
-
-	return messageList;
-}
-
-function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
+	console.log("lobby chats", chats);
 	const titleString = user.gameId.startsWith("m") ? "TEXT_REMOTE_MATCH" : "TEXT_TOURNAMENT";
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
@@ -111,7 +31,37 @@ function matchString(gamers: Gamer[], chats: GameChatMessage[], user: User): str
 			</div>
 		</div>
 	</div>
+	${gameHtmlString()}
 	`;
+}
+
+export function gamersString(gamers: Gamer[], user: User): string {
+	let gamersString = "";
+	gamers.forEach(gamer => {
+		gamersString += gamerString(gamer);
+	});
+
+	const html = `
+	<div class="flex flex-col gap-8">
+		${gamersString}
+	</div>
+	<div class="flex flex-row justify-between mr-9">
+		${readyButtonString(user.ready)}
+		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
+	</div>
+	`;
+
+	return html;
+}
+
+export function messagesString(chats: GameChatMessage[], user: User): string {
+	console.log(chats);
+	let messageList = "";
+	for (var key in chats) {
+		messageList += messageString(user.userId, chats[key]);
+	}
+
+	return messageList;
 }
 
 function gamerString(gamer: Gamer) {
@@ -131,10 +81,15 @@ function readyButtonString(ready: boolean) {
 }
 
 function messageString(userId: number, chat: GameChatMessage) {
-	const diff = userId == chat.fromId ? "green-700 ml" : "blue-700 mr";
-
-	return `
-	<div class="bg-${diff}-auto px-4 py-2 rounded-lg">
+	return userId == chat.fromId ? 
+	`
+	<div class="bg-green-700 ml-auto px-4 py-2 rounded-lg">
+		<div class="text-gray-300">${chat.chat}</div>
+	</div>	
+	`
+	:
+	`
+	<div class="bg-blue-700 mr-auto px-4 py-2 rounded-lg">
 		<div class="text-white font-bold">${chat.nick}</div>
 		<div class="text-gray-300">${chat.chat}</div>
 	</div>

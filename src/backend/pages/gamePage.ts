@@ -6,6 +6,8 @@ import { lobbyView } from '../views/lobbyView.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, Result } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
+import { getTournament } from '../db/tournamentDb.js';
+import { tournamentDetails, tournamentLobbyView } from '../views/tournamentView.js';
 
 export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -21,6 +23,19 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		// user is already in a game
 		if (user.gameId) {
 			const gameId = user.gameId;
+console.log(`gameId set ${gameId}`);
+			const tournamentBox = getTournament(db, gameId);
+			console.log(tournamentBox);
+			if (Result.SUCCESS == tournamentBox.result) {
+				console.log("in tournament");
+				const chatsBox = gameChatsList(db, gameId);
+				if (Result.SUCCESS != chatsBox.result) {
+					params.result = chatsBox.result;
+					return reply.type("text/html").send(frameView(params));
+				}
+				const frame = frameView(params, tournamentLobbyView(tournamentBox.contents, chatsBox.contents, user));
+				return reply.type("text/html").send(frame);
+			}
 
 			const gamersBox = gamePlayers(db, gameId);
 			if (Result.SUCCESS != gamersBox.result) {
@@ -29,12 +44,13 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 			}
 
 			const chatsBox = gameChatsList(db, gameId);
+			console.log(chatsBox);
 			if (Result.SUCCESS != chatsBox.result) {
 				params.result = chatsBox.result;
 				return reply.type("text/html").send(frameView(params));
 			}
 
-			const frame = frameView(params, lobbyView(gamersBox.contents, chatsBox.messages, user));
+			const frame = frameView(params, lobbyView(gamersBox.contents, chatsBox.contents, user));
 			return reply.type("text/html").send(frame);
 		}
 

@@ -12,6 +12,7 @@ TODO (Luke):
 - delete accessToken check messages
 - remove user.ready
 - block DMs
+- tournamentView with and without messages
 
 TODO (Kuba):
 - synchronise game start on remote - start button?

@@ -4,7 +4,7 @@ import { updateTournament } from '../old/tournamentDb.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { Box, Result } from '../../common/interfaces.js';
 import { getTournament } from '../db/tournamentDb.js';
-import { activeMatchHtml } from '../views/tournamentView.js';
+import { tournamentDetails } from '../views/tournamentView.js';
 
 export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get('/api/tournament/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -21,7 +21,7 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 
 		return reply.send({
 			result: Result.SUCCESS,
-			contents: activeMatchHtml(gamersBox.contents, request.user)
+			contents: tournamentDetails(gamersBox.contents, request.user)
 		});
 	});
 

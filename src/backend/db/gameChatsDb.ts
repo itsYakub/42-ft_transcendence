@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { GameChatMessage, Message, Result } from "../../common/interfaces.js";
+import { Box, GameChatMessage, Message, Result } from "../../common/interfaces.js";
 
 export function initGameChatsDb(db: DatabaseSync): void {
 	db.exec(`DROP TABLE IF EXISTS game_chats;`);
@@ -17,14 +17,13 @@ export function initGameChatsDb(db: DatabaseSync): void {
 /*
 	Gets all the game's messages
 */
-export function gameChatsList(db: DatabaseSync, gameId: string): any {
+export function gameChatsList(db: DatabaseSync, gameId: string): Box<GameChatMessage[]> {
 	try {
 		const select = db.prepare("SELECT from_id, chat, nick FROM game_chats INNER JOIN users ON users.user_id = game_chats.from_id WHERE game_chats.game_id = ? ORDER BY sent_at DESC");
 		const chats: GameChatMessage[] = select.all(gameId).map(sqlChat => sqlToGameChatMessage(sqlChat));
-		console.log("db", chats);
 		return {
 			result: Result.SUCCESS,
-			chats
+			contents: chats
 		};
 	}
 	catch (e) {
@@ -37,18 +36,14 @@ export function gameChatsList(db: DatabaseSync, gameId: string): any {
 /*
 	Adds a message to the game (lobby)
 */
-export function addGameChat(db: DatabaseSync, message: Message): any {
+export function addGameChat(db: DatabaseSync, message: Message): Result {
 	try {
 		const select = db.prepare("INSERT INTO game_chats (game_id, from_id, chat, sent_at) VALUES (?, ?, ?, ?)");
 		select.run(message.gameId, message.fromId, message.chat, new Date().toISOString());
-		return {
-			result: Result.SUCCESS
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
+		return Result.ERR_DB;
 	}
 }
 

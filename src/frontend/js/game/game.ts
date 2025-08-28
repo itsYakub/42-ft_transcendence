@@ -69,8 +69,10 @@ export function gameFunctions() {
 				type: MessageType.USER_JOIN_GAME,
 				gameId: this.dataset.id
 			});
-
-			navigate(`/game`, false);
+			setTimeout(function(){
+  navigate(`/game`, false);
+}, 2000);
+			
 		})
 	}
 }

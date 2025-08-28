@@ -1,7 +1,41 @@
-import { Match, MatchGamer, Tournament, User } from "../../common/interfaces.js";
+import { GameChatMessage, Match, MatchGamer, Tournament, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
+import { messagesString } from "./lobbyView.js";
 
-export function activeMatchHtml(tournament: Tournament, user: User): string {
+export function tournamentLobbyView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
+	console.log("chats here", chats);
+	return `
+	<div class="w-full h-full bg-gray-900 m-auto">
+		<h1 class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_TOURNAMENT%%</h1>
+		<div class="flex flex-row h-150">
+			<div id="lobbyDetailsContainer" class="flex flex-col">
+				<form id="gamerMatchReadyForm">
+					${tournamentDetails(tournament, user)}
+				</form>
+			</div>
+			<div class="grow border border-gray-700 rounded-lg p-2">				
+				<div class="flex flex-col h-full">
+					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
+						${messagesString(chats, user)}
+					</div>
+					<div class="mt-2">
+						<form id="sendMatchMessageForm">
+							<div class="flex flex-row gap-1">
+								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
+								<input type="submit" hidden>
+								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	${gameHtmlString()}
+	`;
+}
+
+export function tournamentDetails(tournament: Tournament, user: User): string {
 	if (isFinalFinished(tournament)) {
 		return `
 			<div class="text-white">All done!</div>
@@ -14,7 +48,7 @@ export function activeMatchHtml(tournament: Tournament, user: User): string {
 
 	const match = whichMatchIsUserIn(tournament, user);
 	const gamer = whichGamerIsUser(match, user);
-	
+
 	const html = `
 	<div class="flex flex-col gap-2">
 		${gamerString(match.g1)}

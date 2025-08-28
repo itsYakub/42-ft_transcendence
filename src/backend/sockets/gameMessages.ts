@@ -30,8 +30,7 @@ export function userGameLeaveReceived(fastify: FastifyInstance, db: DatabaseSync
 export function userSendGameChatReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	message.fromId = user.userId;
 	message.gameId = user.gameId;
-	const response = addGameChat(db, message);
 
-	if (Result.SUCCESS == response.result)
+	if (Result.SUCCESS == addGameChat(db, message))
 		broadcastMessageToClients(fastify, message);
 }

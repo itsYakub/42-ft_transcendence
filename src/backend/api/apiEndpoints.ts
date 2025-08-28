@@ -34,7 +34,7 @@ export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/api/game-chats', async (request: FastifyRequest, reply: FastifyReply) => {
 		const messagesBox = gameChatsList(db, request.user.gameId);
 		if (Result.SUCCESS == messagesBox.result) {
-			const html = messagesString(messagesBox.chats, request.user);
+			const html = messagesString(messagesBox.contents, request.user);
 			return reply.send({
 				result: Result.SUCCESS,
 				value: html
