@@ -51,7 +51,8 @@ export async function gameReady(user: User, message: Message) {
 
 	if (message.gameId.startsWith("m")) {
 		console.log("match");
-		startMatch("John", "Ed");
+		//TODO change this
+		startMatch(null);//"John", "Ed");
 	}
 	else {
 		console.log("tournament");

@@ -13,7 +13,7 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 	});
 
 	fastify.get('/api/tournament', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
-		const gamersBox = getTournament(db, request.user);
+		const gamersBox = getTournament(db, request.user.gameId);
 		if (Result.SUCCESS != gamersBox.result)
 			return reply.send({
 				result: gamersBox.result

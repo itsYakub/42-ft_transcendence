@@ -30,7 +30,8 @@ export function localTournamentFunctions() {
 	const nextMatchButton = <HTMLButtonElement>document.querySelector("#nextMatchButton");
 	if (nextMatchButton) {
 		nextMatchButton.addEventListener("click", async () => {
-			startMatch(nextMatchButton.dataset.p1, nextMatchButton.dataset.p2);
+			//TODO change this
+			startMatch(null);//nextMatchButton.dataset.p1, nextMatchButton.dataset.p2);
 		});
 	}
 

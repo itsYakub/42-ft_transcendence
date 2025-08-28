@@ -15,7 +15,7 @@ function gameString(user: User, gamesHtmlString: string): string {
 		<div class="flex flex-row h-150 mx-auto justify-center pt-8">
 			<div class="w-95 flex flex-col gap-8 px-8">
 				<p class="text-gray-300 text-2xl">%%TEXT_JOIN%%</p>
-				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 overscroll-contain overflow-auto">
+				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 					${gamesHtmlString}
 				</div>
 			</div>

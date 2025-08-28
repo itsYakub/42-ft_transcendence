@@ -1,7 +1,7 @@
 import { getLanguage, navigate, showAlert } from "./../index.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 import { g_game, GameMode } from './../class/game.js';
-import { MessageType } from "../../../common/interfaces.js";
+import { Match, MatchGamer, MessageType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { localMatchFunctions } from "./localMatch.js";
 
@@ -19,7 +19,12 @@ export function gameFunctions() {
 	const aiMatchButton = document.querySelector("#aiMatchButton");
 	if (aiMatchButton) {
 		aiMatchButton.addEventListener("click", () => {
-			startAiMatch("player");
+			startAiMatch({
+				nick: "abc",
+				ready: true,
+				score: 0,
+				userId: 1
+			});
 		});
 	}
 
@@ -73,7 +78,7 @@ export function gameFunctions() {
 /*
 	Entry point for the game
 */
-export function startMatch(p1Name: string, p2Name: string) {
+export function startMatch(match: Match) {
 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
 	const dialog = <HTMLDialogElement>document.querySelector("#gameDialog");
 	dialog.addEventListener("keydown", (e) => {
@@ -86,7 +91,7 @@ export function startMatch(p1Name: string, p2Name: string) {
 	g_game.setupElements(GameMode.GAMEMODE_PVP);
 }
 
-function startAiMatch(p1Name: string) {
+function startAiMatch(gamer: MatchGamer) {
 	g_game.setupElements(GameMode.GAMEMODE_AI);
 }
 

@@ -9,6 +9,9 @@ TODO (Luke):
 - move scrollbar hiding to css file
 - 2FA emails
 - chat indicators - persist?
+- delete accessToken check messages
+- remove user.ready
+- block DMs
 
 TODO (Kuba):
 - synchronise game start on remote - start button?

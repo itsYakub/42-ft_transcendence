@@ -11,7 +11,8 @@ server {
 
     # the server will use the generated logging + modsecurity snippets from the image
     # kids, that's exactly why we don't build our own images
-    include /etc/nginx/conf.d/logging.conf;
+    
+	include /etc/nginx/conf.d/logging.conf;
     include /etc/nginx/conf.d/modsecurity.conf;
 
     # main reverse proxy

@@ -1,4 +1,4 @@
-import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
+import { Match, Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { getLanguage } from "../index.js";
 import { currentPage, sendMessageToServer } from "../sockets/clientSocket.js";
@@ -44,11 +44,29 @@ export async function updateTournamentDetails(user: User, message: Message) {
 }
 
 export async function startTournamentMatch(user: User, message: Message) {
-	if ("game" == currentPage() && user.userId == message.toId) {
-		console.log("for me");
+	if ("game" != currentPage() || null == message.match)
+		return;
 
-		startMatch("abc", "def");
+	const match = message.match;
+	if (user.userId == match.g1.userId || user.userId == match.g2.userId) {
+		console.log("for me");
+		console.log("starting match...");
+
+		console.log(message);
+		//TODO game with small window
+
+		//startMatch(message.match);
+
+		match.g1.score = 5;
+		match.g2.score = 10;
+		sendMessageToServer({
+			type: MessageType.TOURNAMENT_MATCH_END,
+			match
+		})
 	}
 	else
 		console.log("not for me");
+}
+
+export async function endTournamentMatch(user: User, message: Message) {
 }

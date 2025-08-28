@@ -12,7 +12,18 @@ export function localMatchFunctions() {
 				return;
 			}
 
-			startMatch(form.p1Name.value, form.p2Name.value);
+			//TODO change this
+			startMatch({
+				g1: {
+					nick: "abc",
+					userId: 1
+				},
+				g2: {
+					nick: "def",
+					userId: 2
+				},
+				matchNumber: 1
+			});
 		});
 	}
 }

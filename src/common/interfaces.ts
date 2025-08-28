@@ -24,6 +24,7 @@ export enum MessageType {
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
 	USER_UNREADY = "USER_UNREADY",
 	TOURNAMENT_GAMER_READY = "TOURNAMENT_GAMER_READY",
+	TOURNAMENT_MATCH_END = "TOURNAMENT_MATCH_END",
 	TOURNAMENT_MATCH_START = "TOURNAMENT_MATCH_START",
 	TOURNAMENT_UPDATE = "TOURNAMENT_UPDATE",
 }
@@ -33,6 +34,7 @@ export interface Message {
 	content?: string
 	fromId?: number,
 	gameId?: string,
+	match?: Match,
 	toId?: number,
 	type: MessageType
 }
@@ -82,12 +84,19 @@ export interface Game {
 }
 
 export interface MatchResult {
-	opponent: string,
-	opponentScore: number,
-	playedAt: Date,
-	score: number,
-	tournamentWin: boolean,
-	userId: number
+	g1Id?: number,
+	g2Id?: number,
+	g1Nick?: string,
+	g2Nick?: string,
+	g1Score?: number,
+	g2Score?: number,
+
+	opponent?: string,
+	opponentScore?: number,
+	playedAt?: Date,
+	score?: number,
+	tournamentWin?: boolean,
+	userId?: number
 }
 
 export interface UserChatMessage {
@@ -136,26 +145,31 @@ export enum MatchStatus {
 export interface TournamentGamer {
 	index: number,
 	nick: string,
+	opponentId: number,
+	opponentIndex: number,
+	opponentNick: string,
+	opponentReady: boolean,
+	opponentScore: number,
 	ready: boolean,
+	score: number,
 	userId: number
 }
 
+export interface MatchGamer {
+	userId: number,
+	nick: string,
+	ready?: boolean,
+	score?: number
+}
+
+export interface Match {
+	g1: MatchGamer,
+	g2: MatchGamer,
+	matchNumber: number
+}
+
 export interface Tournament {
-	primaryMatch: {
-		gamer1: TournamentGamer,
-		gamer2: TournamentGamer,
-		matchStatus: MatchStatus
-	},
-	secondaryMatch: {
-		gamer1: TournamentGamer,
-		gamer2: TournamentGamer,
-		matchStatus: MatchStatus
-	},
-	final?: {
-		gamer1?: TournamentGamer,
-		gamer2?: TournamentGamer,
-		matchStatus?: MatchStatus
-	}
+	matches: Match[]
 }
 
 export interface Box<T> {
