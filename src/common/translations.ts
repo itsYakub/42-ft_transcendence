@@ -24,7 +24,7 @@ export function translate(language: string, text: string): string {
 		"BUTTON_MATCH",
 		"BUTTON_READY",
 		"BUTTON_REGISTER",
-		"BUTTON_REMOTE_GAME",
+		"BUTTON_REMOTE_MATCH",
 		"BUTTON_REMOTE_TOURNAMENT",
 		"BUTTON_REMOVE_FOE",
 		"BUTTON_REMOVE_FRIEND",
@@ -54,6 +54,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_NO_FOES",
 		"TEXT_NO_USERS",
 		"TEXT_PASSWORD",
+		"TEXT_PLAYERS",
 		"TEXT_REMOTE_MATCH",
 		"TEXT_REMOVE_FOE",
 		"TEXT_REMOVE_FRIEND",
@@ -130,7 +131,7 @@ function translateEnglish(text: string): string {
 		case "BUTTON_READY": return "Ready";
 		case "BUTTON_LEAVE": return "Leave";
 		case "BUTTON_REGISTER": return "Register";
-		case "BUTTON_REMOTE_GAME": return "Remote game";
+		case "BUTTON_REMOTE_MATCH": return "Remote match";
 		case "BUTTON_REMOTE_TOURNAMENT": return "Remote tournament";
 		case "BUTTON_REMOVE_FOE": return "Remove foe";
 		case "BUTTON_REMOVE_FRIEND": return "Remove friend";
@@ -183,6 +184,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_USERS": return "No other users!";
 		case "TEXT_PASSWORD": return "Password";
+		case "TEXT_PLAYERS": return "players";
 		case "TEXT_REMOTE_MATCH": return "Remote match";
 		case "TEXT_REMOVE_FOE": return "Remove from foes";
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
@@ -220,7 +222,6 @@ function translateEnglish(text: string): string {
 
 		// tournament
 		case "TEXT_NEW": return "New tournament";
-		case "TEXT_PLAYER": return "Player";
 		case "TEXT_START": return "Start";
 		case "TEXT_TITLE": return "Tournament";
 		case "TEXT_CODE": return "Tournament code";

@@ -20,7 +20,7 @@ export function initFriendsDb(db: DatabaseSync, number: number = 0, id: number =
 */
 export function friendsList(db: DatabaseSync, userId: number): Box<Friend[]> {
 	try {
-		const select = db.prepare("SELECT *, nick, game_id, online, playing FROM friends INNER JOIN users ON users.user_id = friends.friend_id WHERE friends.user_id = ? ORDER BY online DESC, nick");
+		const select = db.prepare("SELECT *, nick, game_id, online FROM friends INNER JOIN users ON users.user_id = friends.friend_id WHERE friends.user_id = ? ORDER BY online DESC, nick");
 		const friends = select.all(userId).map(friend => sqlToFriend(friend));
 		return {
 			result: Result.SUCCESS,

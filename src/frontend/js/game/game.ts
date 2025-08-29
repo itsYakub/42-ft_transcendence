@@ -1,9 +1,10 @@
-import { getLanguage, navigate, showAlert } from "./../index.js";
-import { sendMessageToServer } from "../sockets/clientSocket.js";
+import { getLanguage, navigate } from "./../index.js";
 import { g_game, GameMode } from './../class/game.js';
-import { Match, MatchGamer, MessageType } from "../../../common/interfaces.js";
+import { TournamentMatch, MatchGamer } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { localMatchFunctions } from "./localMatch.js";
+import { createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
+import { createRemoteMatch, joiningMatch } from "../sockets/remoteMatchesMessages.js";
 
 export function gameFunctions() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -30,14 +31,8 @@ export function gameFunctions() {
 
 	const remoteMatchButton = document.querySelector("#remoteMatchButton");
 	if (remoteMatchButton) {
-		remoteMatchButton.addEventListener("click", async () => {
-			const gameId = `m${Date.now().toString(36).substring(5)}`;
-
-			sendMessageToServer({
-				type: MessageType.USER_JOIN_GAME,
-				gameId
-			});
-
+		remoteMatchButton.addEventListener("click", () => {
+			createRemoteMatch();
 			navigate(`/game`, false);
 		});
 	}
@@ -50,37 +45,33 @@ export function gameFunctions() {
 	}
 
 	const remoteTournamentButton = document.querySelector("#remoteTournamentButton");
-	if (remoteTournamentButton) {
-		remoteTournamentButton.addEventListener("click", async () => {
-			const gameId = `t${Date.now().toString(36).substring(5)}`;
-			sendMessageToServer({
-				type: MessageType.USER_JOIN_GAME,
-				gameId
-			});
-
+	if (remoteTournamentButton)
+		remoteTournamentButton.addEventListener("click", () => {
+			createRemoteTournament();
 			navigate(`/game`, false);
+		});
+
+	const joinMatchButtons = document.getElementsByClassName("joinMatchButton");
+	for (var i = 0; i < joinMatchButtons.length; i++) {
+		joinMatchButtons[i].addEventListener("click", function () {
+			joiningMatch(this.dataset.id)
+			navigate("/game", false);
 		});
 	}
 
-	const joinGameButtons = document.getElementsByClassName("joinGameButton");
-	for (var i = 0; i < joinGameButtons.length; i++) {
-		joinGameButtons[i].addEventListener("click", async function () {
-			sendMessageToServer({
-				type: MessageType.USER_JOIN_GAME,
-				gameId: this.dataset.id
-			});
-		//	setTimeout(function(){
-  navigate(`/game`, false);
-//}, 2000);
-			
-		})
+	const joinTournamentButtons = document.getElementsByClassName("joinTournamentButton");
+	for (var i = 0; i < joinTournamentButtons.length; i++) {
+		joinTournamentButtons[i].addEventListener("click", function () {
+			joiningTournament(this.dataset.id)
+			navigate("/game", false);
+		});
 	}
 }
 
 /*
 	Entry point for the game
 */
-export function startMatch(match: Match) {
+export function startMatch(match: TournamentMatch) {
 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
 	const dialog = <HTMLDialogElement>document.querySelector("#gameDialog");
 	dialog.addEventListener("keydown", (e) => {

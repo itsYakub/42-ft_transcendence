@@ -1,19 +1,20 @@
 import { profileActionbuttons } from "../../common/dynamicElements.js";
 import { MatchResult, User } from "../../common/interfaces.js";
 
-export function profileView(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, user: User): string {
-	return profileViewHtml(matchResults, isfriend, isFoe, user);
+export function profileView(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, profileUser: User, user: User): string {
+	return profileViewHtml(matchResults, isfriend, isFoe, profileUser, user);
 }
 
-function profileViewHtml(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, user: User): string {
+function profileViewHtml(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, profileUser: User, user: User): string {
+	const actionButtons = profileUser.userId == user.userId ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
 	return `
 	<div class="w-full h-full flex flex-col p-2">
 		<div id="closeProfileButton" class="mx-auto"><i class="text-white hover:text-gray-800 fa fa-xmark"></i></div>
-		<div class="text-white mb-2">${user.nick}</div>
+		<div class="text-white mb-2 text-lg">${profileUser.nick}</div>
 		<div id="actionButtonsContainer" class="flex flex-row mx-auto gap-4">
-			${profileActionbuttons(isfriend, isFoe, user.userId)}
+			${actionButtons}
 		</div>
-		<div inert class="my-2 grow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
+		<div class="my-2 grow [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 			${matchResultsString(matchResults)}
 		</div>
 		<div class="text-gray-300">

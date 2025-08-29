@@ -1,17 +1,5 @@
 import { User } from "../../common/interfaces.js";
 
-export function usersView(users: User[], user: User): string {
-	if (0 == users.length) {
-		return `
-		<div class="w-full h-full bg-gray-900">
-			<div class="text-gray-300 pt-8 text-center">%%TEXT_NO_USERS%%</div>
-		</div>
-		`;
-	}
-
-	return usersViewHtml(users, user);
-}
-
 /*
 	The list of user buttons
 */
@@ -25,7 +13,7 @@ export function usersHtml(users: User[]) {
 }
 
 
-function usersViewHtml(users: User[], user: User): string {
+export function usersView(users: User[], user: User): string {
 	return `
 	<div class="w-full h-full bg-gray-900">
 		<div class="h-full m-auto text-center flex flex-row">

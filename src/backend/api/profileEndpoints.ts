@@ -33,7 +33,7 @@ export function profileEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 		const isFriend = null != friendsBox.contents.find(friend => friend.userId == user.userId);
 		const isFoe = null != foesBox.contents.find(foe => foe.userId == user.userId);
 
-		let text = profileView(matchResultsBox.contents, isFriend, isFoe, user);
+		let text = profileView(matchResultsBox.contents, isFriend, isFoe, user, request.user);
 		return reply.send({
 			result: Result.SUCCESS,
 			value: translate(request.language, text)

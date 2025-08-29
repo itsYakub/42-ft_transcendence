@@ -1,4 +1,4 @@
-import { Game, User } from "../../common/interfaces.js";
+import { Game, GameType, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
 export function gameView(games: Game[], user: User): string {
@@ -23,7 +23,7 @@ function gameString(user: User, gamesHtmlString: string): string {
 				<p class="text-gray-300 text-2xl">%%TEXT_CREATE%%</p>
 				<button id="localMatchButton" class="w-50 text-white bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LOCAL_GAME%%</button>
 				<button id="aiMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_AI_GAME%%</button>
-				<button id="remoteMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_GAME%%</button>
+				<button id="remoteMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_MATCH%%</button>
 				<button id="localTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LOCAL_TOURNAMENT%%</button>
 				<button id="remoteTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_TOURNAMENT%%</button>
 			</div>
@@ -45,18 +45,20 @@ function gamesString(games): string {
 function gameButtonString(game: Game): string {
 	const gameID: string = game.gameId;
 	const gamers: string[] = game.nicks.split(",");
-	if ((gameID.startsWith("t") && 4 == gamers.length) || (gameID.startsWith("m") && 2 == gamers.length))
+	if ((GameType.TOURNAMENT == game.type && 4 == gamers.length) || (GameType.MATCH == game.type && 2 == gamers.length))
 		return "";
 
-	const type = gameID.startsWith("t") ? "tournament" : "match";
-	const title = gameID.startsWith("t") ? "%%TEXT_TOURNAMENT%%" : "%%TEXT_MATCH%%";
 	let gamersString = "";
 	gamers.forEach((name) => {
 		gamersString += nameString(name);
 	});
 
-	return `
-	<button class="joinGameButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-type="${type}" data-id="${gameID}"><span class="text-green-300">${title}</span>${gamersString}</button>
+	return GameType.TOURNAMENT == game.type ? `
+	<button class="joinTournamentButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-id="${gameID}"><span class="text-green-300">%%TEXT_TOURNAMENT%%</span>${gamersString}</button>
+	`
+	:
+	`
+	<button class="joinMatchButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-id="${gameID}"><span class="text-green-300">%%TEXT_MATCH%%</span>${gamersString}</button>
 	`;
 }
 

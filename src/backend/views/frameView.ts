@@ -19,8 +19,6 @@ function frameString(navbar: string, content: string): string {
 	<html>
 		<head>
 			<meta charset="UTF-8" />
-			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-			<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 			<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 			<script type="module" src="/js/index.js"></script>
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
@@ -29,7 +27,7 @@ function frameString(navbar: string, content: string): string {
 		</head>
 
 		<body>
-			<div class="h-screen w-screen bg-gray-900 flex flex-col">
+			<div class="h-screen w-screen bg-gray-900 flex flex-col grow">
 				<div id="navbar" class="h-32">${navbar}</div>
 				<div class="w-200 mx-auto grow">
 					<div class="flex flex-row grow h-full">

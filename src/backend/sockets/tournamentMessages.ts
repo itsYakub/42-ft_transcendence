@@ -2,8 +2,9 @@ import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSocket.js';
 import { gamePlayers, leaveGame } from '../db/gameDb.js';
-import { Gamer, Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User } from '../../common/interfaces.js';
-import { addTournament, getTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentDb.js';
+import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User } from '../../common/interfaces.js';
+import { addTournament, getTournament, joinTournament, markTournamentGamerReady, tournamentGamers, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
+import { tournamentGamersHtml } from '../views/tournamentLobbyView.js';
 
 export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, user: User) {
 	const gamersBox = gamePlayers(db, user.gameId);
@@ -18,12 +19,31 @@ export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, u
 	}
 }
 
-export function tournamentGamerReadyReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function joinTournamentReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+	const gameId = message.gameId;
+	if (Result.SUCCESS == joinTournament(db, gameId, user)) {
+		const gamers = tournamentGamers(db, gameId);
+		if (Result.SUCCESS == gamers.result) {
+			if (4 == gamers.contents.length) {
+				if (addTournament(db, gameId, gamers.contents))
+					broadcastMessageToClients(
+						fastify, {
+						type: MessageType.TOURNAMENT_UPDATE,
+						gameId
+					}
+					);
+				return;
+			}
+			message.content = tournamentGamersHtml(gamers.contents);
+			broadcastMessageToClients(fastify, message);
+		}
+	}
+}
 
+export function tournamentGamerReadyReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	const tournament = getTournament(db, user.gameId);
 	if (Result.SUCCESS == tournament.result) {
 		const match = userMatch(tournament.contents, user);
-		console.debug(`match is between ${match.g1.nick} and ${match.g2.nick}`);
 		markTournamentGamerReady(db, tournament.contents, user);
 		broadcastMessageToClients(fastify, {
 			type: MessageType.TOURNAMENT_UPDATE,
@@ -55,19 +75,18 @@ export function tournamentMatchEndReceived(fastify: FastifyInstance, db: Databas
 
 			if (3 == match.matchNumber) {
 				if (match.g1.score > 0 && match.g2.score > 0) {
-					//TODO also remove on login
 					broadcastMessageToClients(fastify, {
 						type: MessageType.TOURNAMENT_OVER,
 						gameId: user.gameId,
 						match
 					});
+					return;
 				}
 			}
 
 			if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[1].g1.score + matches[1].g2.score > 0)) {
-				if (null == matches[2].g1.userId && null == matches[2].g2.userId) {
+				if (null == matches[2].g1.userId && null == matches[2].g2.userId)
 					updateTournamentFinal(db, user.gameId, matches);
-				}
 				match.matchNumber = 3;
 			}
 			broadcastMessageToClients(fastify, {
@@ -83,40 +102,26 @@ export function tournamentOverReceived(fastify: FastifyInstance, db: DatabaseSyn
 	leaveGame(db, user.userId);
 }
 
-function userMatch(tournament: Tournament, user: User): Match {
+function userMatch(tournament: Tournament, user: User): TournamentMatch {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
 export function userLeaveTournamentReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	broadcastMessageToClients(fastify, {
-		type: MessageType.USER_LEAVE_TOURNAMENT,
+		type: MessageType.TOURNAMENT_LEAVE,
 		fromId: user.userId
 	})
 }
 
-function userGamer(match: Match, user: User): MatchGamer {
+function userGamer(match: TournamentMatch, user: User): MatchGamer {
 	return match.g1.userId == user.userId ? match.g1 : match.g2;
 }
 
-function userOpponent(match: Match, user: User): MatchGamer {
+function userOpponent(match: TournamentMatch, user: User): MatchGamer {
 	return match.g1.userId == user.userId ? match.g2 : match.g1;
 }
 
-// function opponentFromUser(tournament: Tournament, user: User): TournamentGamer {
-// 	const gamer = gamerFromUser(tournament, user);
-// 	switch (gamer.index) {
-// 		case 1:
-// 			return tournament.primaryMatch.gamer2;
-// 		case 2:
-// 			return tournament.primaryMatch.gamer1;
-// 		case 3:
-// 			return tournament.secondaryMatch.gamer2;
-// 		default:
-// 			return tournament.secondaryMatch.gamer1;
-// 	}
-// }
-
-function shuffleGamers(gamers: Gamer[]): Gamer[] {
+function shuffleGamers(gamers: MatchGamer[]): MatchGamer[] {
 	let players = [
 		0, 1, 2, 3
 	];

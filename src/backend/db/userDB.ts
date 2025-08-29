@@ -3,6 +3,7 @@ import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
 import { defaultAvatar } from "./defaultAvatar.js";
 import { Result, User, UserType, Box } from "../../common/interfaces.js";
+import { leaveGame } from "./gameDb.js";
 
 /*
 	Sets up the Users table
@@ -18,8 +19,6 @@ export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 		nick TEXT UNIQUE NOT NULL,
 		online INTEGER NOT NULL DEFAULT 0,
 		password TEXT,
-		playing INTEGER NOT NULL DEFAULT 0,
-		ready INTEGER NOT NULL DEFAULT 0,
 		refresh_token TEXT UNIQUE,
 		totp_email INTEGER NOT NULL DEFAULT 0,
 		totp_enabled INTEGER NOT NULL DEFAULT 0,
@@ -158,6 +157,7 @@ export function addGuest(db: DatabaseSync): Box<string> {
 		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
 		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST]);
 		const id: number = statementSync.lastInsertRowid as number;
+		leaveGame(db, id);
 		return {
 			result: Result.SUCCESS,
 			contents: refreshToken(id)
@@ -202,6 +202,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): Box<string[]
 		const statementSync = insert.run(stringBox.contents, email, avatar, UserType[UserType.GOOGLE]);
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
+		leaveGame(db, userId);
 		updateRefreshtoken(db, {
 			userId,
 			refreshToken: token
@@ -239,6 +240,7 @@ export function loginUser(db: DatabaseSync, { email, password }): Box<User> {
 			});
 			user.accessToken = accessToken(user.userId);
 			user.refreshToken = token;
+			leaveGame(db, user.userId);
 			return {
 				result: Result.SUCCESS,
 				contents: user
@@ -527,8 +529,6 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 		nick: sqlUser.nick as string,
 		online: Boolean(sqlUser.online as number),
 		password: sqlUser.password as string,
-		playing: Boolean(sqlUser.playing as number),
-		ready: Boolean(sqlUser.ready as number),
 		refreshToken: sqlUser.refresh_token as string,
 		totpEmail: Boolean(sqlUser.totp_email as number),
 		totpEnabled: Boolean(sqlUser.totp_enabled as number),

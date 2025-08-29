@@ -15,19 +15,27 @@ export enum MessageType {
 	GAME_READY = "GAME_READY",
 	USER_CONNECT = "USER_CONNECT",
 	USER_DISCONNECT = "USER_DISCONNECT",
-	USER_JOIN_GAME = "USER_JOIN_GAME",
 	USER_INVITE = "USER_INVITE",
 	USER_LEAVE_GAME = "USER_LEAVE_GAME",
-	USER_LEAVE_TOURNAMENT = "USER_LEAVE_TOURNAMENT",
 	USER_READY = "USER_READY",
 	USER_SEND_GAME_CHAT = "USER_SEND_GAME_CHAT",
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
 	USER_UNREADY = "USER_UNREADY",
+
+	// Match message types
+	MATCH_GAMER_READY = "MATCH_GAMER_READY",
+	MATCH_JOIN = "MATCH_JOIN",
+	MATCH_LEAVE = "MATCH_LEAVE",
+	MATCH_UPDATE = "MATCH_UPDATE",
+
+	// Tournament message types
 	TOURNAMENT_GAMER_READY = "TOURNAMENT_GAMER_READY",
+	TOURNAMENT_JOIN = "TOURNAMENT_JOIN",
+	TOURNAMENT_LEAVE = "TOURNAMENT_LEAVE",
 	TOURNAMENT_MATCH_END = "TOURNAMENT_MATCH_END",
 	TOURNAMENT_MATCH_START = "TOURNAMENT_MATCH_START",
 	TOURNAMENT_OVER = "TOURNAMENT_OVER",
-	TOURNAMENT_UPDATE = "TOURNAMENT_UPDATE",
+	TOURNAMENT_UPDATE = "TOURNAMENT_UPDATE"
 }
 
 export interface Message {
@@ -35,7 +43,7 @@ export interface Message {
 	content?: string
 	fromId?: number,
 	gameId?: string,
-	match?: Match,
+	match?: TournamentMatch,
 	toId?: number,
 	type: MessageType
 }
@@ -52,6 +60,10 @@ export enum UserType {
 	GUEST = "GUEST",
 	USER = "USER"
 }
+export enum GameType {
+	MATCH = "MATCH",
+	TOURNAMENT = "TOURNAMENT"
+}
 
 export interface User {
 	accessToken?: string,
@@ -61,8 +73,6 @@ export interface User {
 	nick: string,
 	online: boolean,
 	password: string,
-	playing: boolean,
-	ready: boolean,
 	refreshToken: string,
 	totpEmail: boolean,
 	totpEnabled: boolean,
@@ -72,16 +82,10 @@ export interface User {
 	userType: UserType
 }
 
-export interface Gamer {
-	gameId: string,
-	nick: string,
-	ready: boolean,
-	userId: number
-}
-
 export interface Game {
 	gameId: string,
-	nicks: string
+	nicks: string,
+	type: GameType
 }
 
 export interface MatchResult {
@@ -156,6 +160,11 @@ export interface TournamentGamer {
 	userId: number
 }
 
+export interface Gamer {
+	nick: string,
+	userId: number
+}
+
 export interface MatchGamer {
 	userId: number,
 	nick: string,
@@ -165,12 +174,17 @@ export interface MatchGamer {
 
 export interface Match {
 	g1: MatchGamer,
+	g2?: MatchGamer
+}
+
+export interface TournamentMatch {
+	g1: MatchGamer,
 	g2: MatchGamer,
 	matchNumber: number
 }
 
 export interface Tournament {
-	matches: Match[]
+	matches: TournamentMatch[]
 }
 
 export interface Box<T> {

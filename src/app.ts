@@ -29,9 +29,10 @@ import { userChatsPage } from "./backend/pages/userChatsPage.js";
 import { matchResultsEndpoints } from "./backend/api/matchResultsEndpoints.js";
 import { profileEndpoints } from "./backend/api/profileEndpoints.js";
 import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
-import { initTournamentsDb } from "./backend/db/tournamentDb.js";
+import { initTournamentsDb } from "./backend/db/tournamentsDb.js";
 import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
 import { gameEndpoints } from "./backend/api/gameEndpoints.js";
+import { initMatchesDb } from "./backend/db/matchesDb.js";
 
 const __dirname = import.meta.dirname;
 
@@ -162,9 +163,10 @@ const mockData = {
 }
 
 try {
-	initFoesDb(db, mockData.mockFoes);
+	initFoesDb(db);
 	initFriendsDb(db);
 	initGameChatsDb(db);
+	initMatchesDb(db);
 	initMatchResultsDb(db, mockData.mockMatchResults);
 	initTournamentsDb(db);
 	initUserChatsDb(db, mockData.mockUserChats);

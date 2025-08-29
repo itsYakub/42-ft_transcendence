@@ -1,7 +1,7 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Foe, Result } from "../../common/interfaces.js";
 
-export function initFoesDb(db: DatabaseSync, { number, id }) {
+export function initFoesDb(db: DatabaseSync, number: number = 0, id: number = 1) {
 	db.exec(`DROP TABLE IF EXISTS foes;`);
 
 	db.exec(`

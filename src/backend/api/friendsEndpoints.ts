@@ -6,7 +6,7 @@ import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { friendsView } from '../views/friendsView.js';
 
-export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get("/api/friends", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 		const language = request.language;

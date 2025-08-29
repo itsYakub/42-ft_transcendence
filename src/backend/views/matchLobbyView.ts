@@ -1,17 +1,13 @@
-import { GameChatMessage, Gamer, Tournament, User } from "../../common/interfaces.js";
+import { GameChatMessage, MatchGamer, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
-	console.log("lobby chats", chats);
-	const titleString = user.gameId.startsWith("m") ? "TEXT_REMOTE_MATCH" : "TEXT_TOURNAMENT";
+export function matchLobbyView(g1: MatchGamer, g2: MatchGamer, chats: GameChatMessage[], user: User): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-4xl text-center">%%${titleString}%%</h1>
+		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_REMOTE_MATCH%%</h1>
 		<div class="flex flex-row h-150">
-			<div id="lobbyDetailsContainer" class="flex flex-col w-69">
-				<form id="gamerMatchReadyForm">
-					${gamersString(gamers, user)}
-				</form>
+			<div id="matchLobbyDetailsContainer" class="flex flex-col w-69">
+				${gamersString(g1, g2, user)}
 			</div>
 			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
@@ -19,13 +15,11 @@ export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User)
 						${messagesString(chats, user)}
 					</div>
 					<div class="mt-2">
-						<form id="sendMatchMessageForm">
-							<div class="flex flex-row gap-1">
-								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-								<input type="submit" hidden>
-								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
-							</div>
-						</form>
+						<div class="flex flex-row gap-1">
+							<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
+							<input type="submit" hidden>
+							<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -35,18 +29,14 @@ export function lobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User)
 	`;
 }
 
-export function gamersString(gamers: Gamer[], user: User): string {
-	let gamersString = "";
-	gamers.forEach(gamer => {
-		gamersString += gamerString(gamer);
-	});
-
+export function gamersString(g1: MatchGamer, g2: MatchGamer, user: User): string {
 	const html = `
 	<div class="flex flex-col gap-8">
-		${gamersString}
+		${gamerString(g1)}
+		${gamerString(g2)}
 	</div>
 	<div class="flex flex-row justify-between mr-9">
-		${readyButtonString(user.ready)}
+		${readyButtonString(g1, g2, user)}
 		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 	</div>
 	`;
@@ -63,7 +53,10 @@ export function messagesString(chats: GameChatMessage[], user: User): string {
 	return messageList;
 }
 
-function gamerString(gamer: Gamer) {
+function gamerString(gamer: MatchGamer) {
+	if (!gamer)
+		return "";
+
 	const readyText = gamer.ready ? `<i class="fa-solid fa-check text-green-300 my-auto"></i>` : `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>`;
 
 	return `
@@ -74,20 +67,21 @@ function gamerString(gamer: Gamer) {
 	`;
 }
 
-function readyButtonString(ready: boolean) {
-	return ready ? `<button type="submit" disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
-		`<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
+function readyButtonString(g1: MatchGamer, g2: MatchGamer, user: User) {
+	const gamer = g1.userId == user.userId ? g1 : g2;
+	return gamer.ready ? `<button disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
+		`<button id="matchGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
 }
 
 function messageString(userId: number, chat: GameChatMessage) {
-	return userId == chat.fromId ? 
-	`
+	return userId == chat.fromId ?
+		`
 	<div class="bg-green-700 ml-auto px-4 py-2 rounded-lg">
 		<div class="text-gray-300">${chat.chat}</div>
 	</div>	
 	`
-	:
-	`
+		:
+		`
 	<div class="bg-blue-700 mr-auto px-4 py-2 rounded-lg">
 		<div class="text-white font-bold">${chat.nick}</div>
 		<div class="text-gray-300">${chat.chat}</div>

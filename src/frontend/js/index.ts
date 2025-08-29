@@ -4,7 +4,7 @@ import { devButtons } from "./devButtons.js";
 import { gameFunctions } from "./game/game.js";
 import { authFunctions } from "./user/loggedOut.js";
 import { usersFunctions } from "./users/users.js";
-import { lobbyFunctions } from "./game/lobby.js";
+import { matchLobbyFunctions } from "./game/matchLobby.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
@@ -39,7 +39,7 @@ export function addFunctions() {
 	accountFunctions();
 	authFunctions();
 	gameFunctions();
-	lobbyFunctions();
+	matchLobbyFunctions();
 	navbarFunctions();
 	localTournamentFunctions();
 	userChatsFunctions();

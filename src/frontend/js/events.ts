@@ -51,38 +51,38 @@ export function registerEvents() {
 	/*
 		A match has finished with a winner
 	*/
-	window.addEventListener("matchOver", async (e: CustomEvent) => {
-		if (document.location.href.includes("tournament")) {
-			const response = await fetch("/tournament/update", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
-					p1Score: e.detail.p1Score,
-					p2Score: e.detail.p2Score
-				})
-			});
-			const json = await response.json();
-			if (!json.error)
-				navigate(document.location.href);
-		}
-		else if (document.location.href.includes("3000/game")) {
-			const response = await fetch("/match/add", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					score: e.detail.p1Score,
-					p2Score: e.detail.p2Score,
-					p2Name: e.detail.p2Name
-				})
-			});
-			const json = await response.json();
-			if (!json.error)
-				navigate(document.location.href);
-		}
-	});
+	// window.addEventListener("matchOver", async (e: CustomEvent) => {
+	// 	if (document.location.href.includes("tournament")) {
+	// 		const response = await fetch("/tournament/update", {
+	// 			method: "POST",
+	// 			headers: {
+	// 				"content-type": "application/json"
+	// 			},
+	// 			body: JSON.stringify({
+	// 				code: document.location.href.substring(document.location.href.lastIndexOf('/') + 1),
+	// 				p1Score: e.detail.p1Score,
+	// 				p2Score: e.detail.p2Score
+	// 			})
+	// 		});
+	// 		const json = await response.json();
+	// 		if (!json.error)
+	// 			navigate(document.location.href);
+	// 	}
+	// 	else if (document.location.href.includes("3000/game")) {
+	// 		const response = await fetch("/match/add", {
+	// 			method: "POST",
+	// 			headers: {
+	// 				"content-type": "application/json"
+	// 			},
+	// 			body: JSON.stringify({
+	// 				score: e.detail.p1Score,
+	// 				p2Score: e.detail.p2Score,
+	// 				p2Name: e.detail.p2Name
+	// 			})
+	// 		});
+	// 		const json = await response.json();
+	// 		if (!json.error)
+	// 			navigate(document.location.href);
+	// 	}
+	// });
 }

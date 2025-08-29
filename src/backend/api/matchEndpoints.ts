@@ -3,17 +3,17 @@ import { DatabaseSync } from "node:sqlite";
 import { updateTournament } from '../old/tournamentDb.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { Box, Result } from '../../common/interfaces.js';
-import { getTournament } from '../db/tournamentsDb.js';
-import { tournamentDetails } from '../views/tournamentView.js';
+import { getMatch } from '../db/matchesDb.js';
+import { gamersString } from '../views/matchLobbyView.js';
 
 export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
-	fastify.get('/api/tournament/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.get('/api/match/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
 		const gamersBox = gamePlayers(db, request.user.gameId);
 		return reply.send(gamersBox);
 	});
 
-	fastify.get('/api/tournament', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
-		const gamersBox = getTournament(db, request.user.gameId);
+	fastify.get('/api/match', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
+		const gamersBox = getMatch(db, request.user.gameId);
 		if (Result.SUCCESS != gamersBox.result)
 			return reply.send({
 				result: gamersBox.result
@@ -21,7 +21,7 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 
 		return reply.send({
 			result: Result.SUCCESS,
-			contents: tournamentDetails(gamersBox.contents, request.user)
+			contents: gamersString(gamersBox.contents.g1, gamersBox.contents.g2, request.user)
 		});
 	});
 

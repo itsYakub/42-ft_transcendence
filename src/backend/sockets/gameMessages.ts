@@ -1,19 +1,14 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSocket.js';
-import { joinGame, leaveGame, } from '../db/gameDb.js';
-import { Message, Result, User } from '../../common/interfaces.js';
+import { joinLobby, leaveGame, } from '../db/gameDb.js';
+import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { addGameChat } from '../db/gameChatsDb.js';
+import { addTournament, joinTournament, tournamentGamers } from '../db/tournamentsDb.js';
+import { tournamentGamersHtml } from '../views/tournamentLobbyView.js';
+import { joinMatch } from '../db/matchesDb.js';
 
-export function userGameJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
-	const response = joinGame(db, message.gameId, user);
 
-	message.fromId = user.userId;
-
-	if (Result.SUCCESS == response) {
-		broadcastMessageToClients(fastify, message);
-	}
-}
 
 export function userGameLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	message.gameId = user.gameId;

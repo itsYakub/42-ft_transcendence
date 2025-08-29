@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { addUser, getUserByEmail, getUserById, loginUser } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
+import { leaveGame } from '../db/gameDb.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/api/user", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -63,6 +64,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
 		const refreshTokenDate = new Date();
 		refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
+
 		return reply.header(
 			"Set-Cookie", `accessToken=${userBox.contents.accessToken}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=${userBox.contents.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({

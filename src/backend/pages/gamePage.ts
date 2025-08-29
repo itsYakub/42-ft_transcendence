@@ -2,12 +2,13 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
-import { lobbyView } from '../views/lobbyView.js';
+import { matchLobbyView } from '../views/matchLobbyView.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, Result } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
-import { getTournament } from '../db/tournamentDb.js';
-import { tournamentDetails, tournamentLobbyView } from '../views/tournamentView.js';
+import { getTournament } from '../db/tournamentsDb.js';
+import { tournamentDetails, tournamentView } from '../views/tournamentView.js';
+import { tournamentLobbyView } from '../views/tournamentLobbyView.js';
 
 export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -31,7 +32,7 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 					params.result = chatsBox.result;
 					return reply.type("text/html").send(frameView(params));
 				}
-				const frame = frameView(params, tournamentLobbyView(tournamentBox.contents, chatsBox.contents, user));
+				const frame = frameView(params, tournamentView(tournamentBox.contents, chatsBox.contents, user));
 				return reply.type("text/html").send(frame);
 			}
 
@@ -47,7 +48,9 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 				return reply.type("text/html").send(frameView(params));
 			}
 
-			const frame = frameView(params, lobbyView(gamersBox.contents, chatsBox.contents, user));
+			const html = gameId.startsWith("m") ? matchLobbyView(gamersBox.contents[0], gamersBox.contents[1], chatsBox.contents, user) :
+				tournamentLobbyView(gamersBox.contents, chatsBox.contents, user);
+			const frame = frameView(params, html);
 			return reply.type("text/html").send(frame);
 		}
 
