@@ -1,4 +1,4 @@
-import Fastify, { FastifyReply, FastifyRequest } from "fastify";
+import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fastifyStatic from "@fastify/static";
 import cookie from '@fastify/cookie'
 import fastifyWebsocket from "@fastify/websocket";
@@ -31,7 +31,6 @@ import { profileEndpoints } from "./backend/api/profileEndpoints.js";
 import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
 import { initTournamentsDb } from "./backend/db/tournamentsDb.js";
 import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
-import { gameEndpoints } from "./backend/api/gameEndpoints.js";
 import { initMatchesDb } from "./backend/db/matchesDb.js";
 
 const __dirname = import.meta.dirname;
@@ -183,7 +182,6 @@ try {
 	authEndpoints(fastify, db);
 	foesEndpoints(fastify, db);
 	friendsEndpoints(fastify, db);
-	gameEndpoints(fastify, db);
 	matchResultsEndpoints(fastify, db);
 	profileEndpoints(fastify, db);
 	tournamentEndpoints(fastify, db);

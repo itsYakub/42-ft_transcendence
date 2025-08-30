@@ -51,21 +51,7 @@ export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament>
 	}
 }
 
-export function tournamentGamers(db: DatabaseSync, gameId: string): Box<Gamer[]> {
-	try {
-		const select = db.prepare("SELECT user_id, nick from users WHERE game_id = ?");
-		const gamers = select.all(gameId).map(gamer => sqlToGamer(gamer));;
-		return {
-			result: Result.SUCCESS,
-			contents: gamers
-		};
-	}
-	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
-	}
-}
+
 
 export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
 	try {
@@ -155,13 +141,6 @@ function sqlToMatch(tournament: Record<string, SQLOutputValue>, matchNumber: num
 		g1: sqlToMatchGamer(tournament, matchNumber, 1),
 		g2: sqlToMatchGamer(tournament, matchNumber, 2),
 		matchNumber
-	}
-}
-
-function sqlToGamer(gamer: Record<string, SQLOutputValue>): Gamer {
-	return {
-		nick: gamer.nick as string,
-		userId: gamer.user_id as number
 	}
 }
 

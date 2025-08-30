@@ -1,4 +1,6 @@
-export function localTournamentHtml({ user }): string {
+import { User } from "../../common/interfaces.js";
+
+export function localTournamentHtml(user: User): string {
 	const p1String = gamer1String(user);
 	let html = tournamentString(user, p1String);
 

@@ -1,6 +1,6 @@
 import { GameChatMessage, TournamentMatch, MatchGamer, Tournament, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
-import { messagesString } from "./matchLobbyView.js";
+import { tournamentMessagesHtml } from "./tournamentLobbyView.js";
 
 export function tournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
 	const title = isFinalReady(tournament) ? "TEXT_TOURNAMENT_FINAL" : "TEXT_TOURNAMENT_SEMI_FINALS";
@@ -14,7 +14,7 @@ export function tournamentView(tournament: Tournament, chats: GameChatMessage[],
 			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
 					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-						${messagesString(chats, user)}
+						${tournamentMessagesHtml(chats, user)}
 					</div>
 					<div class="mt-2">
 						<form id="sendMatchMessageForm">

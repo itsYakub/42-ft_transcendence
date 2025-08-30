@@ -1,4 +1,3 @@
-import { startMatch } from "./game.js";
 import { navigate, showAlert } from "./../index.js";
 
 async function generateTournament(names: string[]): Promise<string> {
@@ -31,7 +30,7 @@ export function localTournamentFunctions() {
 	if (nextMatchButton) {
 		nextMatchButton.addEventListener("click", async () => {
 			//TODO change this
-			startMatch(null);//nextMatchButton.dataset.p1, nextMatchButton.dataset.p2);
+			//startMatch(null);//nextMatchButton.dataset.p1, nextMatchButton.dataset.p2);
 		});
 	}
 

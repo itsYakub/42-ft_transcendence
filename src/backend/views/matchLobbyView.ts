@@ -1,90 +1,53 @@
-import { GameChatMessage, MatchGamer, User } from "../../common/interfaces.js";
+import { Gamer, User } from "../../common/interfaces.js";
 import { gameHtmlString } from "../game/game.js";
 
-export function matchLobbyView(g1: MatchGamer, g2: MatchGamer, chats: GameChatMessage[], user: User): string {
+export function matchLobbyView(gamers: Gamer[], user: User): string {
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
 		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-4xl text-center">%%TEXT_REMOTE_MATCH%%</h1>
 		<div class="flex flex-row h-150">
-			<div id="matchLobbyDetailsContainer" class="flex flex-col w-69">
-				${gamersString(g1, g2, user)}
+			<div id="matchLobbyDetailsContainer" class="mt-8 mx-auto">
+				${gamersHtml(gamers)}
 			</div>
-			<div class="grow border border-gray-700 rounded-lg p-2">				
-				<div class="flex flex-col h-full">
-					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-						${messagesString(chats, user)}
-					</div>
-					<div class="mt-2">
-						<div class="flex flex-row gap-1">
-							<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-							<input type="submit" hidden>
-							<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		</div>		
 	</div>
 	${gameHtmlString()}
 	`;
 }
 
-export function gamersString(g1: MatchGamer, g2: MatchGamer, user: User): string {
+export function gamersHtml(gamers: Gamer[]): string {
 	const html = `
-	<div class="flex flex-col gap-8">
-		${gamerString(g1)}
-		${gamerString(g2)}
+	<div class="flex flex-row gap-8 mx-auto">
+		${gamerHtml(gamers[0])}
+		<div class="text-gray-300 text-5xl mx-8 pb-16 my-auto">Vs</div>
+		${gamerHtml(gamers[1])}
 	</div>
-	<div class="flex flex-row justify-between mr-9">
-		${readyButtonString(g1, g2, user)}
-		<button id="leaveMatchButton" type="submit" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
-	</div>
+	${spinnerHtml(gamers)}
 	`;
 
 	return html;
 }
 
-export function messagesString(chats: GameChatMessage[], user: User): string {
-	let messageList = "";
-	for (var key in chats) {
-		messageList += messageString(user.userId, chats[key]);
-	}
-
-	return messageList;
-}
-
-function gamerString(gamer: MatchGamer) {
+function gamerHtml(gamer: Gamer) {
 	if (!gamer)
-		return "";
-
-	const readyText = gamer.ready ? `<i class="fa-solid fa-check text-green-300 my-auto"></i>` : `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>`;
+		return `<div class="text-gray-300 text-center my-auto pb-16 text-9xl">?</div>`;
 
 	return `
-	<div class="flex flex-row mr-2">
-		<div class="w-60 py-2 mr-2 border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
-		${readyText}
+	<div class="flex flex-col gap-3">
+		<img id="accountAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-pointer h-60 w-60" src="${gamer.avatar}" />
+		<div class="w-60 py-2 mt-2 border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
 	</div>
 	`;
 }
 
-function readyButtonString(g1: MatchGamer, g2: MatchGamer, user: User) {
-	const gamer = g1.userId == user.userId ? g1 : g2;
-	return gamer.ready ? `<button disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
-		`<button id="matchGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
-}
-
-function messageString(userId: number, chat: GameChatMessage) {
-	return userId == chat.fromId ?
-		`
-	<div class="bg-green-700 ml-auto px-4 py-2 rounded-lg">
-		<div class="text-gray-300">${chat.chat}</div>
-	</div>	
-	`
-		:
-		`
-	<div class="bg-blue-700 mr-auto px-4 py-2 rounded-lg">
-		<div class="text-white font-bold">${chat.nick}</div>
-		<div class="text-gray-300">${chat.chat}</div>
+function spinnerHtml(gamer: Gamer[]) {
+	return gamer.length != 2 ? "" : `
+	<div class="text-center mx-auto mt-12 flex flex-row justify-center gap-4">
+		<div class="text-gray-300 my-auto">Match starting</div>
+		<svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+			<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+		</svg>
 	</div>
 	`;
 }

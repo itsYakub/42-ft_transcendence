@@ -3,14 +3,6 @@
 */
 export function gameHtmlString(): string {
 	return `
-	<dialog id="gameDialog" class="w-8/10 h-8/10 m-auto text-center content-center rounded-lg shadow border bg-gray-900 border-gray-100">
-
-	<!-- Put your canvas or whatever else here instead -->
-		<!-- NOTE: These are the obsolete buttons created to test win-lose scenarios -->
-		<!-- <button id="winMatchButton" class="text-white bg-gray-800 border border-gray-700 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700"></button> -->
-		<!-- <button id="loseMatchButton" class="mt-8 text-white bg-gray-800 border border-gray-700 block mx-auto cursor-pointer text-center p-2 rounded-lg hover:bg-gray-700"></button> -->
-	<!-- -->
-
-	</dialog>
+	<dialog id="gameDialog" class="w-8/10 h-8/10 m-auto text-center content-center rounded-lg shadow border bg-gray-900 border-gray-100"></dialog>
 	`;
 }

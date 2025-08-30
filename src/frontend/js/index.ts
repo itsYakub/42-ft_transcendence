@@ -1,14 +1,14 @@
 import { navbarFunctions } from "./navbar.js";
 import { accountFunctions } from "./user/account.js";
 import { devButtons } from "./devButtons.js";
-import { gameFunctions } from "./game/game.js";
+import { gameFunctions } from "./game/gamePage.js";
 import { authFunctions } from "./user/loggedOut.js";
 import { usersFunctions } from "./users/users.js";
-import { matchLobbyFunctions } from "./game/matchLobby.js";
 import { registerEvents, navigated } from "./events.js";
 import { localTournamentFunctions } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./user/userChats.js";
+import { tournamentListeners } from "./game/tournament.js";
 
 /*
 	Simulates moving to a new page
@@ -23,7 +23,7 @@ export async function navigate(page: string, updateHistory: boolean = true): Pro
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
-	addFunctions();
+	addListeners();
 	navigated();
 }
 
@@ -35,13 +35,13 @@ registerEvents();
 /*
 	Sets up all the listeners after navigating to a new page
 */
-export function addFunctions() {
+export function addListeners() {
 	accountFunctions();
 	authFunctions();
 	gameFunctions();
-	matchLobbyFunctions();
 	navbarFunctions();
 	localTournamentFunctions();
+	tournamentListeners();
 	userChatsFunctions();
 	usersFunctions();
 

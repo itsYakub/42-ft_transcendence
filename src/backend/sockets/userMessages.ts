@@ -6,7 +6,7 @@ import { markUserOnline } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { generateTournament } from './tournamentMessages.js';
-import { gamersString } from '../views/matchLobbyView.js';
+import { gamersHtml } from '../views/matchLobbyView.js';
 import { translate } from '../../common/translations.js';
 import { getMatch, markMatchGamerReady } from '../db/matchesDb.js';
 

@@ -4,9 +4,8 @@ import * as OTPAuth from "otpauth";
 //import nodemailer from 'nodemailer';
 import { addTOTPSecret, confirmTOTP, removeTOTPSecret, updateAvatar, updateNick, updatePassword } from '../db/accountDb.js';
 import encodeQR from 'qr';
-import { invalidateToken } from '../db/userDB.js';
+import { invalidateToken, removeUserFromMatch } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
-import { leaveGame } from '../db/gameDb.js';
 
 export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 
@@ -184,7 +183,7 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 	});
 
 	fastify.get("/account/logout", async (request: FastifyRequest, reply: FastifyReply) => {
-		leaveGame(db, request.user.userId);
+		removeUserFromMatch(db, request.user.userId);
 		const date = "Thu, 01 Jan 1970 00:00:00 UTC";
 		return reply.header(
 			"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(

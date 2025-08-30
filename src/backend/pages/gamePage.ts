@@ -14,7 +14,7 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 		const language = request.language;
-
+console.log("/game");
 		const params: FrameParams = {
 			page: request.url,
 			language,
@@ -48,7 +48,7 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 				return reply.type("text/html").send(frameView(params));
 			}
 
-			const html = gameId.startsWith("m") ? matchLobbyView(gamersBox.contents[0], gamersBox.contents[1], chatsBox.contents, user) :
+			const html = gameId.startsWith("m") ? matchLobbyView(gamersBox.contents,  user) :
 				tournamentLobbyView(gamersBox.contents, chatsBox.contents, user);
 			const frame = frameView(params, html);
 			return reply.type("text/html").send(frame);

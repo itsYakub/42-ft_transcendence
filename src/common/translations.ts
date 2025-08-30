@@ -1,7 +1,7 @@
 export function translate(language: string, text: string): string {
 	const items = [
 		"BUTTON_ACCOUNT",
-		"BUTTON_AI_GAME",
+		"BUTTON_AI_MATCH",
 		"BUTTON_ADD_FOE",
 		"BUTTON_ADD_FRIEND",
 		"BUTTON_BLOCK_USER",
@@ -17,15 +17,11 @@ export function translate(language: string, text: string): string {
 		"BUTTON_HOME",
 		"BUTTON_INVALIDATE_TOKEN",
 		"BUTTON_LEAVE",
-		"BUTTON_LOCAL_GAME",
-		"BUTTON_LOCAL_TOURNAMENT",
 		"BUTTON_LOGIN",
 		"BUTTON_LOGOUT",
 		"BUTTON_MATCH",
 		"BUTTON_READY",
 		"BUTTON_REGISTER",
-		"BUTTON_REMOTE_MATCH",
-		"BUTTON_REMOTE_TOURNAMENT",
 		"BUTTON_REMOVE_FOE",
 		"BUTTON_REMOVE_FRIEND",
 		"BUTTON_TOTP_VERIFY",
@@ -110,7 +106,7 @@ function translateEnglish(text: string): string {
 		case "BUTTON_ACCOUNT": return "Account";
 		case "BUTTON_ADD_FOE": return "Add foe";
 		case "BUTTON_ADD_FRIEND": return "Add friend";
-		case "BUTTON_AI_GAME": return "AI game";
+		case "BUTTON_AI_MATCH": return "Vs AI";
 		case "BUTTON_BLOCK_USER": return "Block";
 		case "BUTTON_CHAT": return "Chat";
 		case "BUTTON_DISABLE_TOTP": return "Disable TOTP";
@@ -121,8 +117,6 @@ function translateEnglish(text: string): string {
 		case "BUTTON_HISTORY": return "History";
 		case "BUTTON_HOME": return "Home";
 		case "BUTTON_INVALIDATE_TOKEN": return "Invalidate token";
-		case "BUTTON_LOCAL_GAME": return "Local game";
-		case "BUTTON_LOCAL_TOURNAMENT": return "Local tournament";
 		case "BUTTON_LOGIN": return "Log in";
 		case "BUTTON_GOOGLE": return "Continue with Google";
 		case "BUTTON_GUEST": return "Continue as a guest";
@@ -131,8 +125,6 @@ function translateEnglish(text: string): string {
 		case "BUTTON_READY": return "Ready";
 		case "BUTTON_LEAVE": return "Leave";
 		case "BUTTON_REGISTER": return "Register";
-		case "BUTTON_REMOTE_MATCH": return "Remote match";
-		case "BUTTON_REMOTE_TOURNAMENT": return "Remote tournament";
 		case "BUTTON_REMOVE_FOE": return "Remove foe";
 		case "BUTTON_REMOVE_FRIEND": return "Remove friend";
 		case "BUTTON_TOTP_VERIFY": return "Verify";
@@ -169,7 +161,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_CHANGE_NICK": return "Change nickname";
 		case "TEXT_CHANGE_PASSWORD": return "Change password";
 		case "TEXT_CONGRATULATIONS": return "Congratulations";
-		case "TEXT_CREATE": return "Or create a new...";
+		case "TEXT_CREATE": return "Or create...";
 		case "TEXT_CURRENT_PASSWORD": return "Current password";
 		case "TEXT_EMAIL": return "Email";
 		case "TEXT_JOIN": return "Join...";
@@ -204,18 +196,10 @@ function translateEnglish(text: string): string {
 		case "TEXT_WON": return "Won";
 
 
-
-
-
 		case "TEXT_TOTP_CODE_TITLE": return "Enter TOTP code";
 		case "TEXT_PLAYER_NAME_TITLE": return "Choose a name";
 		case "TEXT_PLAYER_NAME": return "Player name";
 		case "TEXT_PLAYER_NAME_SET": return "Set";
-
-
-
-		case "TEXT_ADD_TITLE": return "Friend's email address";
-		case "TEXT_ADD_EMAIL": return "Email";
 
 		// game
 		case "TEXT_PLAYER": return "Player";
@@ -225,14 +209,9 @@ function translateEnglish(text: string): string {
 		case "TEXT_START": return "Start";
 		case "TEXT_TITLE": return "Tournament";
 		case "TEXT_CODE": return "Tournament code";
-		case "TEXT_SEMI_FINALS": return "Semi-finals";
-		case "TEXT_FINAL": return "Final";
 		case "TEXT_TBD": return "TBD";
 		case "TEXT_NEXT_MATCH": return "Next match";
 		case "TEXT_GAME": return "Play";
-		case "TEXT_CONGRATULATIONS": return "Congratulations";
-		case "TEXT_UNKNOWN": return "No tournament with that code exists";
-		case "TEXT_READY": return "Ready";
 		default: return "ENUnknown text";
 	}
 }

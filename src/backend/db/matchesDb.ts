@@ -36,28 +36,7 @@ export function getMatch(db: DatabaseSync, gameId: string): Box<Match> {
 	}
 }
 
-export function joinMatch(db: DatabaseSync, user: User): Result {
-	try {
-		const match = getMatch(db, user.gameId);
-		if (Result.SUCCESS == match.result) {
-			console.log("exists", match);
-			const select = db.prepare("INSERT INTO matches (game_id, g2_nick, g2_user_id) VALUES (?, ?, ?)");
-			select.run(user.gameId, user.nick, user.userId);
-		}
-		// let select = db.prepare(`SELECT COUNT(game_id) AS count FROM matches WHERE game_id = ?`);
-		// const game = select.get(user.gameId);
 
-		else {
-			console.log("doesn't exist");
-			const select = db.prepare("INSERT INTO matches (game_id, g1_nick, g1_user_id) VALUES (?, ?, ?)");
-			select.run(user.gameId, user.nick, user.userId);
-		}
-		return Result.SUCCESS;
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
 
 export function markMatchGamerReady(db: DatabaseSync, user: User): Result {
 	try {

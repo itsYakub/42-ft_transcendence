@@ -3,36 +3,38 @@ import { gameHtmlString } from "../game/game.js";
 
 export function gameView(games: Game[], user: User): string {
 	const gamesHtmlString = gamesString(games);
-	let html = gameString(user, gamesHtmlString);
+	let html = gameHtml(user, gamesHtmlString);
 
 	return html + gameHtmlString();
 }
 
-function gameString(user: User, gamesHtmlString: string): string {
+function gameHtml(user: User, gamesHtmlString: string): string {
 	return `
 	<span id="data" data-id="${user.userId}"></span>
 	<div class="w-full h-full bg-gray-900 m-auto text-center">
-		<div class="flex flex-row h-150 mx-auto justify-center pt-8">
-			<div class="w-95 flex flex-col gap-8 px-8">
+		<div class="flex flex-row h-150 justify-center pt-8 mx-auto">
+			<div class="w-100 flex flex-col gap-8">
 				<p class="text-gray-300 text-2xl">%%TEXT_JOIN%%</p>
 				<div class="flex flex-col border p-2 border-gray-700 rounded-lg grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 					${gamesHtmlString}
 				</div>
 			</div>
-			<div class="w-95 flex flex-col gap-8">
-				<p class="text-gray-300 text-2xl">%%TEXT_CREATE%%</p>
-				<button id="localMatchButton" class="w-50 text-white bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LOCAL_GAME%%</button>
-				<button id="aiMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_AI_GAME%%</button>
-				<button id="remoteMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_MATCH%%</button>
-				<button id="localTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LOCAL_TOURNAMENT%%</button>
-				<button id="remoteTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_REMOTE_TOURNAMENT%%</button>
+			<div class="w-85 flex flex-col">
+				<p class="text-gray-300 text-2xl mt-2">%%TEXT_CREATE%%</p>
+				<p class="text-gray-300 text-lg mt-12 mb-4">Offline</p>
+				<button id="localMatchButton" class="w-50 text-white bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_MATCH%%</button>
+				<button id="aiMatchButton" class="w-50 my-8 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_AI_MATCH%%</button>			
+				<button id="localTournamentButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_TOURNAMENT%%</button>				
+				<p class="text-gray-300 text-lg mt-8 mb-4">Online</p>
+				<button id="remoteMatchButton" class="w-50 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_MATCH%%</button>
+				<button id="remoteTournamentButton" class="w-50 mt-8 text-gray-300 bg-gray-800 block mx-auto cursor-pointer text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_TOURNAMENT%%</button>
 			</div>
 		</div>
 	</div>
 	`;
 }
 
-function gamesString(games): string {
+function gamesString(games: Game[]): string {
 	let gameStrings: string = "";
 
 	games.forEach(game => {

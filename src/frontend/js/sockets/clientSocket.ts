@@ -1,5 +1,5 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { gameReady, updateMatchDetails, userJoinOrLeave, userSendGameChat } from "./remoteMatchesMessages.js";
+import { actuallyStartingMatch, gameReady, startingMatch, tournamentChat, updateMatchDetails } from "./remoteMatchesMessages.js";
 import { joinOrLeaveTournament, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
@@ -31,10 +31,7 @@ export function initClientSocket(): Promise<void> {
 			reject(err);
 		};
 
-		socket!.onclose = (event) => {
-			console.warn(`🔌 WebSocket connection closed ${event}`);
-			//setTimeout(initChatSocket, 1000);
-		};
+		socket!.onclose = (event) => console.warn(`🔌 WebSocket connection closed ${event}`);
 	});
 }
 
@@ -72,12 +69,6 @@ function handleServerMessage(user: User, message: Message) {
 		case MessageType.USER_DISCONNECT:
 			userConnectOrDisconnect(user, message);
 			break;
-		case MessageType.USER_LEAVE_GAME:
-			userJoinOrLeave(user, message);
-			break;
-		case MessageType.USER_SEND_GAME_CHAT:
-			userSendGameChat(user, message);
-			break;
 		case MessageType.GAME_READY:
 			gameReady(user, message);
 			break;
@@ -93,11 +84,20 @@ function handleServerMessage(user: User, message: Message) {
 			break;
 
 		// Match  messages
+		case MessageType.MATCH_READY:
+			startingMatch(user, message);
+			break;
+		case MessageType.MATCH_START:
+			actuallyStartingMatch(user, message);
+			break;
 		case MessageType.MATCH_UPDATE:
 			updateMatchDetails(user, message);
 			break;
 
 		// Tournament messages
+		case MessageType.TOURNAMENT_CHAT:
+			tournamentChat(user, message);
+			break;
 		case MessageType.TOURNAMENT_JOIN:
 			joinOrLeaveTournament(user, message);
 			break;

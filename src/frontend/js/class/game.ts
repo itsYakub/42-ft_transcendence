@@ -1,8 +1,10 @@
 import * as BABYLON from 'babylonjs'
 
 import { Player } from './player.js';
-import { Ball }  from './ball.js';
-import { Ground }  from './ground.js';
+import { Ball } from './ball.js';
+import { Ground } from './ground.js';
+import { GamePlayer, MessageType } from '../../../common/interfaces.js';
+import { sendMessageToServer } from '../sockets/clientSocket.js';
 
 
 
@@ -10,7 +12,7 @@ import { Ground }  from './ground.js';
  *  Classes
  * */
 
-export enum	GameMode {
+export enum GameMode {
 	GAMEMODE_NONE = 0,
 	GAMEMODE_PVP,
 	GAMEMODE_AI,
@@ -20,30 +22,30 @@ export enum	GameMode {
 export class Game {
 	/* HTML DOM Elements
 	 * */
-	private m_dialog : HTMLDialogElement;
-	private	m_canvas : HTMLCanvasElement;
+	private m_dialog: HTMLDialogElement;
+	private m_canvas: HTMLCanvasElement;
 
 	/* babylonjs elements
 	 * */
-	private	m_engine : BABYLON.Engine;
-	private	m_scene : BABYLON.Scene;
+	private m_engine: BABYLON.Engine;
+	private m_scene: BABYLON.Scene;
 
 	/* Game objects
 	 * */
-	private	m_mode : GameMode;
+	private m_mode: GameMode;
 
-	private m_player0 : Player;
-	private	m_player1 : Player;
-	private	m_ball : Ball;
-	private	m_ground : Ground;
+	private m_player0: Player;
+	private m_player1: Player;
+	private m_ball: Ball;
+	private m_ground: Ground;
 
-	public static	keys : boolean[];
+	public static keys: boolean[];
 
 	/* SECTION:
 	 *  Public Methods
 	 * */
-	
-	public	setupElements(mode : GameMode) {
+
+	public setupElements(mode: GameMode, player1: GamePlayer, player2?: GamePlayer) {
 		/* Get the dialog element from the document
 		 * */
 		console.log('[ INFO ] Referencing the modal dialog');
@@ -59,7 +61,7 @@ export class Game {
 		 * TODO(joleksia):
 		 *  This is just a temporary solution and should be probably switched ASAP
 		 * */
-		Game.keys = [ ];
+		Game.keys = [];
 		window.addEventListener("keydown", function (e) {
 			Game.keys[e.key] = true;
 		});
@@ -71,51 +73,67 @@ export class Game {
 		/* Create a babylon layer
 		 * */
 		console.log('[ INFO ] Creating a babylon engine');
-		this.m_engine = new BABYLON.Engine(this.m_canvas, true, {preserveDrawingBuffer: true, stencil: true } );
+		this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true, stencil: true });
 
 		console.log('[ INFO ] Creating a babylon scene');
 		this.m_mode = mode;
 		this.m_scene = this.createScene();
-	
+
 		/* Display the game dialog
 		 * */
 		console.log('[ INFO ] Preparing the game');
 		this.m_dialog.showModal();
-		
+
 		/* Resize the canvas to the size of the dialog
 		 * */
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
-	
+
 		this.m_engine.runRenderLoop(() => this.updateRenderLoop());
 
 		console.log('[ INFO ] Game is running...');
 
+		// ready to show
+		// only for remote matches
+		if (GameMode.GAMEMODE_NONE == mode) {
+			setTimeout(() =>
+				sendMessageToServer({
+					type: MessageType.MATCH_START,
+					gameId: player1.gameId
+				}), 1000);
+		}
+		else {
+			setTimeout(() =>
+				this.actuallyStart(), 1000);
+		}
+	}
+
+	public actuallyStart() {
 		this.m_ball.start();
 	}
 
-	public	dispose() {
+	public dispose() {
 		console.log('[ INFO ] Disposing babylon engine');
 		this.m_engine.stopRenderLoop();
 		this.m_engine.dispose();
 
 		console.log('[ INFO ] Removing canvas object from dialog');
 		this.m_dialog.removeChild(this.m_canvas);
-		
+
 		console.log('[ INFO ] Closing dialog');
 		this.m_dialog.close();
-		
+
 		console.log('[ INFO ] Game is disposed...');
 	}
 
-	public get	deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
-	public get	ball() { return (this.m_ball); }
+	public get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
+	public get ball() { return (this.m_ball); }
 
 	/* SECTION:
 	 *  Private Methods
 	 * */
 
-	private	updateRenderLoop() {
+	private updateRenderLoop() {
 		/* SECTION: Update
 		 * */
 
@@ -132,24 +150,24 @@ export class Game {
 
 		/* SECTION: Render
 		 * */
-		
+
 		/* Resize the canvas to the size of the dialog
 		 * */
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
-		
+
 		this.m_scene.render()
 	}
 
-	private	createScene() {
-		let	scene = new BABYLON.Scene(this.m_engine);
+	private createScene() {
+		let scene = new BABYLON.Scene(this.m_engine);
 
 		/* SECTION:
 		 *  Camera Setup
 		 * */
 		let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 10, new BABYLON.Vector3(0, 0, 0));
-		
-		const light = new BABYLON.PointLight("light0", new BABYLON.Vector3(0, 5, 0), scene);	light.intensity = 2.0;
+
+		const light = new BABYLON.PointLight("light0", new BABYLON.Vector3(0, 5, 0), scene); light.intensity = 2.0;
 		light.diffuse = new BABYLON.Color3(0.15, 0, 0.4);
 		light.specular = new BABYLON.Color3(0, 0, 0);
 		light.intensity = 1;
@@ -180,7 +198,7 @@ export class Game {
 /* SECTION:
  *  Global game object
  * */
-export var	g_gamePlayableArea : BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
-export var	g_gameTime : number = 0.0;
+export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
+export var g_gameTime: number = 0.0;
 
-export var	g_game : Game = new Game();
+export var g_game: Game = new Game();

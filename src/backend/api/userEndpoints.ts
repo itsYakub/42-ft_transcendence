@@ -1,16 +1,16 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUser, getUserByEmail, getUserById, loginUser } from '../db/userDB.js';
+import { addUser, getUserByEmail, loginUser } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
-import { leaveGame } from '../db/gameDb.js';
 
-export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get("/api/user", async (request: FastifyRequest, reply: FastifyReply) => {
 		if (!request.user)
 			return reply.send({
 				result: Result.ERR_NO_USER
 			});
 
+		// Don't send all details to the frontend
 		return reply.send({
 			result: Result.SUCCESS,
 			user: {

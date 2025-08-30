@@ -1,10 +1,11 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSocket.js';
-import { gamePlayers, leaveGame } from '../db/gameDb.js';
+import { gamePlayers } from '../db/gameDb.js';
 import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User } from '../../common/interfaces.js';
-import { addTournament, getTournament, joinTournament, markTournamentGamerReady, tournamentGamers, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
+import { addTournament, getTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
 import { tournamentGamersHtml } from '../views/tournamentLobbyView.js';
+import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
 
 export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, user: User) {
 	const gamersBox = gamePlayers(db, user.gameId);
@@ -19,10 +20,10 @@ export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, u
 	}
 }
 
-export function joinTournamentReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	const gameId = message.gameId;
 	if (Result.SUCCESS == joinTournament(db, gameId, user)) {
-		const gamers = tournamentGamers(db, gameId);
+		const gamers = usersInTournament(db, gameId);
 		if (Result.SUCCESS == gamers.result) {
 			if (4 == gamers.contents.length) {
 				if (addTournament(db, gameId, gamers.contents))
@@ -34,6 +35,7 @@ export function joinTournamentReceived(fastify: FastifyInstance, db: DatabaseSyn
 					);
 				return;
 			}
+			message.fromId = user.userId;
 			message.content = tournamentGamersHtml(gamers.contents);
 			broadcastMessageToClients(fastify, message);
 		}
@@ -99,14 +101,15 @@ export function tournamentMatchEndReceived(fastify: FastifyInstance, db: Databas
 }
 
 export function tournamentOverReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
-	leaveGame(db, user.userId);
+	removeUserFromMatch(db, user.userId);
 }
 
 function userMatch(tournament: Tournament, user: User): TournamentMatch {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
-export function userLeaveTournamentReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+	removeUserFromMatch(db, user.userId);
 	broadcastMessageToClients(fastify, {
 		type: MessageType.TOURNAMENT_LEAVE,
 		fromId: user.userId

@@ -1,5 +1,5 @@
 import { MessageType, Result } from "../../common/interfaces.js";
-import { addFunctions, navigate, showAlert } from "./index.js";
+import { addListeners, navigate, showAlert } from "./index.js";
 import { currentPage, initClientSocket, isConnected, sendMessageToServer } from "./sockets/clientSocket.js";
 
 export async function navigated() {
@@ -16,7 +16,12 @@ export async function navigated() {
 				console.error("❌ WebSocket failed:", err);
 			}
 		}
+
 		if ("game" != currentPage()) {
+			if (json.user.gameId?.startsWith("m"))
+				sendMessageToServer({
+					type: MessageType.MATCH_LEAVE
+				});
 			sendMessageToServer({
 				type: MessageType.USER_UNREADY
 			});
@@ -44,7 +49,7 @@ export function registerEvents() {
 			//document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
 		}
-		addFunctions();
+		addListeners();
 		navigated();
 	});
 

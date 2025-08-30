@@ -45,38 +45,7 @@ export function updateGameId(db: DatabaseSync, user: User): Result {
 	}
 }
 
-export function joinLobby(db: DatabaseSync, gameId: string, user: User): Result {
-	try {
-		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
-		const game = select.get(gameId);
 
-		if (user.gameId != gameId && (2 == game.count && gameId.startsWith("m") || 4 == game.count && gameId.startsWith("t")))
-			return Result.ERR_GAME_FULL;
-
-		user.gameId = gameId;
-		return updateGameId(db, user);
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
-
-export function leaveGame(db: DatabaseSync, userId: number): Result {
-	try {
-		let select = db.prepare(`UPDATE users SET game_id = NULL, ready = 0 WHERE user_id = ?`);
-		select.run(userId);
-		//select = db.prepare("SELECT COUNT(game_id) as gameCount FROM Users WHERE game_id = ?");
-		//const { gameCount } = select.get(gameID);
-		// if (0 == gameCount) {
-		// 	select = db.prepare("DELETE FROM Messages Where ToID = ?");
-		// 	select.run(gameID);
-		// }
-		return Result.SUCCESS;
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
 
 // export function markReady(db: DatabaseSync, userId: number): Result {
 // 	try {

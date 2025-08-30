@@ -18,17 +18,18 @@ export enum MessageType {
 	USER_INVITE = "USER_INVITE",
 	USER_LEAVE_GAME = "USER_LEAVE_GAME",
 	USER_READY = "USER_READY",
-	USER_SEND_GAME_CHAT = "USER_SEND_GAME_CHAT",
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
 	USER_UNREADY = "USER_UNREADY",
 
 	// Match message types
-	MATCH_GAMER_READY = "MATCH_GAMER_READY",
 	MATCH_JOIN = "MATCH_JOIN",
 	MATCH_LEAVE = "MATCH_LEAVE",
+	MATCH_READY = "MATCH_READY",
+	MATCH_START = "MATCH_START",
 	MATCH_UPDATE = "MATCH_UPDATE",
 
 	// Tournament message types
+	TOURNAMENT_CHAT = "TOURNAMENT_CHAT",
 	TOURNAMENT_GAMER_READY = "TOURNAMENT_GAMER_READY",
 	TOURNAMENT_JOIN = "TOURNAMENT_JOIN",
 	TOURNAMENT_LEAVE = "TOURNAMENT_LEAVE",
@@ -86,6 +87,13 @@ export interface Game {
 	gameId: string,
 	nicks: string,
 	type: GameType
+}
+
+export interface GamePlayer {
+	nick: string,
+	gameId?: string
+	online?: boolean,
+	userId?: number
 }
 
 export interface MatchResult {
@@ -161,6 +169,7 @@ export interface TournamentGamer {
 }
 
 export interface Gamer {
+	avatar?: string,
 	nick: string,
 	userId: number
 }

@@ -1,8 +1,12 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
-import { tournamentFunctions } from "../game/tournament.js";
+import { tournamentListeners } from "../game/tournament.js";
 import { getLanguage, navigate, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
+
+export function createLocalTournament() {
+	const gameId = `t${Date.now().toString(36).substring(5)}`;
+}
 
 export function createRemoteTournament() {
 	const gameId = `t${Date.now().toString(36).substring(5)}`;
@@ -30,7 +34,7 @@ export function tournamentGamerLeaving() {
 
 export function sendTournamentMessage(chat: string) {
 	sendMessageToServer({
-		type: MessageType.USER_SEND_GAME_CHAT,
+		type: MessageType.TOURNAMENT_CHAT,
 		chat
 	});
 }
@@ -54,6 +58,7 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 		const gamers = document.getElementsByClassName("tournamentGamer").length;
 		const tournamentTitle = document.querySelector("#tournamentTitle");
 		tournamentTitle.innerHTML = translate(getLanguage(), `%%TEXT_TOURNAMENT%% - ${gamers} / 4 %%TEXT_PLAYERS%%`);
+		tournamentListeners();
 	}
 }
 
@@ -76,7 +81,7 @@ export async function updateTournamentDetails(user: User, message: Message) {
 			const tournamentDetailsContainer = document.querySelector("#tournamentDetailsContainer");
 			if (tournamentDetailsContainer) {
 				tournamentDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
-				tournamentFunctions();
+				tournamentListeners();
 			}
 		}
 	}

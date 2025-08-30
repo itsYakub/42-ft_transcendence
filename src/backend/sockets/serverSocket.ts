@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { userGameLeaveReceived, userSendGameChatReceived } from './gameMessages.js';
+import { userGameLeaveReceived, tournamentChatReceived } from './gameMessages.js';
 import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from './userMessages.js';
 import { getUser, markUserOffline } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
-import { joinTournamentReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, userLeaveTournamentReceived } from './tournamentMessages.js';
-import { matchGamerReadyReceived, matchJoinReceived } from './matchMessages.js';
+import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
+import { matchJoinReceived, matchLeaveReceived, matchStartReceived } from './matchMessages.js';
 
 export function serverSocket(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -17,11 +17,7 @@ export function serverSocket(fastify: FastifyInstance, db: DatabaseSync): void {
 		});
 
 		socket?.on("close", () => {
-			const userResponse = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-			if (Result.SUCCESS != userResponse.result)
-				return;
-
-			const user = userResponse.contents;
+			const user = request.user
 			markUserOffline(db, user.userId);
 			broadcastMessageToClients(fastify, {
 				type: MessageType.MATCH_JOIN,
@@ -58,9 +54,6 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.USER_LEAVE_GAME:
 			userGameLeaveReceived(fastify, db, user, message);
 			break;
-		case MessageType.USER_SEND_GAME_CHAT:
-			userSendGameChatReceived(fastify, db, user, message);
-			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChatReceived(fastify, db, user, message);
 			break;
@@ -68,19 +61,25 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 			break;
 
 		// Match messages
-		case MessageType.MATCH_GAMER_READY:
-			matchGamerReadyReceived(fastify, db, user, message);
-			break;
 		case MessageType.MATCH_JOIN:
 			matchJoinReceived(fastify, db, user, message);
 			break;
+		case MessageType.MATCH_LEAVE:
+			matchLeaveReceived(fastify, db, user, message);
+			break;
+		case MessageType.MATCH_START:
+			matchStartReceived(fastify, db, user, message);
+			break;
 
 		// Tournament messsages
+		case MessageType.TOURNAMENT_CHAT:
+			tournamentChatReceived(fastify, db, user, message);
+			break;
 		case MessageType.TOURNAMENT_JOIN:
-			joinTournamentReceived(fastify, db, user, message);
+			tournamentJoinReceived(fastify, db, user, message);
 			break;
 		case MessageType.TOURNAMENT_LEAVE:
-			userLeaveTournamentReceived(fastify, db, user, message);
+			tournamentLeaveReceived(fastify, db, user, message);
 			break;
 		case MessageType.TOURNAMENT_GAMER_READY:
 			console.log(message);

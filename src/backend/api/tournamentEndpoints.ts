@@ -12,6 +12,12 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 		return reply.send(gamersBox);
 	});
 
+	fastify.get('/api/match/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
+		const gamersBox = gamePlayers(db, request.user.gameId);
+		console.log(gamersBox);
+		return reply.send(gamersBox);
+	});
+
 	fastify.get('/api/tournament', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
 		const gamersBox = getTournament(db, request.user.gameId);
 		if (Result.SUCCESS != gamersBox.result)

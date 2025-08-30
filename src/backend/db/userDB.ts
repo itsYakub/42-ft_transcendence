@@ -2,8 +2,8 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
 import { defaultAvatar } from "./defaultAvatar.js";
-import { Result, User, UserType, Box } from "../../common/interfaces.js";
-import { leaveGame } from "./gameDb.js";
+import { Result, User, UserType, Box, Gamer } from "../../common/interfaces.js";
+import { updateGameId } from "./gameDb.js";
 
 /*
 	Sets up the Users table
@@ -32,6 +32,80 @@ export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 		const pw = hashPassword("12345678");
 		for (var i = 1; i <= addUsers; i++)
 			db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).contents}', 'test${i}@test.com', '${pw}', '${defaultAvatar}');`);
+	}
+}
+
+export function usersInMatch(db: DatabaseSync, gameId: string): Box<Gamer[]> {
+	try {
+		const select = db.prepare("SELECT user_id, nick, avatar from users WHERE game_id = ?");
+		const gamers = select.all(gameId).map(gamer => sqlToGamer(gamer));;
+		return {
+			result: Result.SUCCESS,
+			contents: gamers
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB
+		};
+	}
+}
+
+export function usersInTournament(db: DatabaseSync, gameId: string): Box<Gamer[]> {
+	try {
+		const select = db.prepare("SELECT user_id, nick from users WHERE game_id = ?");
+		const gamers = select.all(gameId).map(gamer => sqlToGamer(gamer));;
+		return {
+			result: Result.SUCCESS,
+			contents: gamers
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB
+		};
+	}
+}
+
+export function addUserToMatch(db: DatabaseSync, gameId: string, user: User): Result {
+	try {
+		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
+		const game = select.get(gameId);
+
+		if (user.gameId != gameId && 2 == game.count)
+			return Result.ERR_GAME_FULL;
+
+		user.gameId = gameId;
+		return updateGameId(db, user);
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+export function removeUserFromMatch(db: DatabaseSync, userId: number): Result {
+	try {
+		let select = db.prepare(`UPDATE users SET game_id = NULL WHERE user_id = ?`);
+		select.run(userId);
+		//select = db.prepare("SELECT COUNT(game_id) as gameCount FROM Users WHERE game_id = ?");
+		//const { gameCount } = select.get(gameID);
+		// if (0 == gameCount) {
+		// 	select = db.prepare("DELETE FROM Messages Where ToID = ?");
+		// 	select.run(gameID);
+		// }
+		return Result.SUCCESS;
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+
+function sqlToGamer(gamer: Record<string, SQLOutputValue>): Gamer {
+	return {
+		avatar: gamer.avatar as string,
+		nick: gamer.nick as string,
+		userId: gamer.user_id as number
 	}
 }
 
@@ -154,10 +228,10 @@ export function addGuest(db: DatabaseSync): Box<string> {
 		if (Result.SUCCESS != stringBox.result)
 			return stringBox;
 
-		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
-		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST]);
+		const insert = db.prepare('INSERT INTO users (nick, type, avatar) VALUES (?, ?, ?)');
+		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST], defaultAvatar);
 		const id: number = statementSync.lastInsertRowid as number;
-		leaveGame(db, id);
+		removeUserFromMatch(db, id);
 		return {
 			result: Result.SUCCESS,
 			contents: refreshToken(id)
@@ -202,7 +276,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): Box<string[]
 		const statementSync = insert.run(stringBox.contents, email, avatar, UserType[UserType.GOOGLE]);
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
-		leaveGame(db, userId);
+		removeUserFromMatch(db, userId);
 		updateRefreshtoken(db, {
 			userId,
 			refreshToken: token
@@ -240,7 +314,7 @@ export function loginUser(db: DatabaseSync, { email, password }): Box<User> {
 			});
 			user.accessToken = accessToken(user.userId);
 			user.refreshToken = token;
-			leaveGame(db, user.userId);
+			removeUserFromMatch(db, user.userId);
 			return {
 				result: Result.SUCCESS,
 				contents: user
