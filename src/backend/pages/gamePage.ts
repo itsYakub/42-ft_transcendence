@@ -4,57 +4,42 @@ import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
 import { matchLobbyView } from '../views/matchLobbyView.js';
 import { gameView } from '../views/gameView.js';
-import { FrameParams, Result } from '../../common/interfaces.js';
+import { FrameParams, Result, Tournament } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
 import { getTournament } from '../db/tournamentsDb.js';
-import { tournamentDetails, tournamentView } from '../views/tournamentView.js';
+import { tournamentView } from '../views/tournamentView.js';
 import { tournamentLobbyView } from '../views/tournamentLobbyView.js';
+import { localTournamentView } from '../views/localTournamentView.js';
 
 export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 		const language = request.language;
-console.log("/game");
+
+		// user is already in a game
+		if (user.gameId) {
+			const gameId = user.gameId;
+
+			const tournamentBox = getTournament(db, gameId); console.log(tournamentBox);
+			if (Result.SUCCESS == tournamentBox.result) {
+				const tournament = tournamentBox.contents;
+				if (!tournament.matches[0].g1.userId)
+					return localTournament(db, tournament, request, reply);
+
+				return (remoteTournament(db, tournament, request, reply));
+			}
+
+			return lobby(db, request, reply);
+		}
+
+		const gamesBox = getGames(db);
+
 		const params: FrameParams = {
 			page: request.url,
 			language,
 			user
 		};
 
-		// user is already in a game
-		if (user.gameId) {
-			const gameId = user.gameId;
-
-			const tournamentBox = getTournament(db, gameId);
-			if (Result.SUCCESS == tournamentBox.result) {
-				const chatsBox = gameChatsList(db, gameId);
-				if (Result.SUCCESS != chatsBox.result) {
-					params.result = chatsBox.result;
-					return reply.type("text/html").send(frameView(params));
-				}
-				const frame = frameView(params, tournamentView(tournamentBox.contents, chatsBox.contents, user));
-				return reply.type("text/html").send(frame);
-			}
-
-			const gamersBox = gamePlayers(db, gameId);
-			if (Result.SUCCESS != gamersBox.result) {
-				params.result = gamersBox.result;
-				return reply.type("text/html").send(frameView(params));
-			}
-
-			const chatsBox = gameChatsList(db, gameId);
-			if (Result.SUCCESS != chatsBox.result) {
-				params.result = chatsBox.result;
-				return reply.type("text/html").send(frameView(params));
-			}
-
-			const html = gameId.startsWith("m") ? matchLobbyView(gamersBox.contents,  user) :
-				tournamentLobbyView(gamersBox.contents, chatsBox.contents, user);
-			const frame = frameView(params, html);
-			return reply.type("text/html").send(frame);
-		}
-
-		const gamesBox = getGames(db);
 		if (Result.SUCCESS != gamesBox.result) {
 			params.result = gamesBox.result;
 			return reply.type("text/html").send(frameView(params));
@@ -63,4 +48,65 @@ console.log("/game");
 		const frame = frameView(params, gameView(gamesBox.contents, user));
 		return reply.type("text/html").send(frame);
 	});
+}
+
+function localTournament(db: DatabaseSync, tournament: Tournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+	const user = request.user;
+	const language = request.language;
+
+	const params: FrameParams = {
+		page: request.url,
+		language,
+		user
+	};
+
+	return reply.type("text/html").send(frameView(params, localTournamentView(tournament, user)));
+}
+
+function lobby(db: DatabaseSync, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+	const user = request.user;
+	const language = request.language;
+
+	const params: FrameParams = {
+		page: request.url,
+		language,
+		user
+	};
+
+	const gamersBox = gamePlayers(db, user.gameId);
+	if (Result.SUCCESS != gamersBox.result) {
+		params.result = gamersBox.result;
+		return reply.type("text/html").send(frameView(params));
+	}
+
+	if (user.gameId.startsWith("m"))
+		return reply.type("text/html").send(frameView(params, matchLobbyView(gamersBox.contents, user)));
+
+	const chatsBox = gameChatsList(db, user.gameId);
+	if (Result.SUCCESS != chatsBox.result) {
+		params.result = chatsBox.result;
+		return reply.type("text/html").send(frameView(params));
+	}
+
+	return reply.type("text/html").send(frameView(params, tournamentLobbyView(gamersBox.contents, chatsBox.contents, user)));
+}
+
+function remoteTournament(db: DatabaseSync, tournament: Tournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+	const user = request.user;
+	const language = request.language;
+
+	const params: FrameParams = {
+		page: request.url,
+		language,
+		user
+	};
+
+	const chatsBox = gameChatsList(db, user.gameId);
+	if (Result.SUCCESS != chatsBox.result) {
+		params.result = chatsBox.result;
+		return reply.type("text/html").send(frameView(params));
+	}
+	const frame = frameView(params, tournamentView(tournament, chatsBox.contents, user));
+	return reply.type("text/html").send(frame);
+
 }

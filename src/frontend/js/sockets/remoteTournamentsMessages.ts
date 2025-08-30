@@ -4,10 +4,6 @@ import { tournamentListeners } from "../game/tournament.js";
 import { getLanguage, navigate, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
-export function createLocalTournament() {
-	const gameId = `t${Date.now().toString(36).substring(5)}`;
-}
-
 export function createRemoteTournament() {
 	const gameId = `t${Date.now().toString(36).substring(5)}`;
 	joiningTournament(gameId);

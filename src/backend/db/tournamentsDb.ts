@@ -51,12 +51,21 @@ export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament>
 	}
 }
 
-
-
 export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
 	try {
 		const select = db.prepare("INSERT INTO tournaments (game_id, m1_g1_user_id, m1_g2_user_id, m2_g1_user_id, m2_g2_user_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		select.run(gameId, gamers[0].userId, gamers[1].userId, gamers[2].userId, gamers[3].userId, gamers[0].nick, gamers[1].nick, gamers[2].nick, gamers[3].nick);
+		return Result.SUCCESS;
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+export function addLocalTournament(db: DatabaseSync, gameId: string, gamers: string[]): Result {
+	try {
+		const select = db.prepare("INSERT INTO tournaments (game_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?)");
+		select.run(gameId, gamers[0], gamers[1], gamers[2], gamers[3]);
 		return Result.SUCCESS;
 	}
 	catch (e) {

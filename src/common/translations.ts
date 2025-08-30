@@ -31,6 +31,7 @@ export function translate(language: string, text: string): string {
 		"ERR_DB",
 		"ERR_FORBIDDEN",
 		"ERR_NOT_FOUND",
+		"ERR_UNIQUE",
 		"TEXT_CHANGE_AVATAR",
 		"TEXT_CHANGE_NICK",
 		"TEXT_CHANGE_PASSWORD",
@@ -40,6 +41,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_EMAIL",
 		"TEXT_JOIN",
 		"TEXT_LOCAL_MATCH",
+		"TEXT_LOCAL_TOURNAMENT",
 		"TEXT_LOG_IN_OR_REGISTER",
 		"TEXT_MATCH",
 		"TEXT_MATCH_SINGLE",
@@ -50,11 +52,13 @@ export function translate(language: string, text: string): string {
 		"TEXT_NO_FOES",
 		"TEXT_NO_USERS",
 		"TEXT_PASSWORD",
+		"TEXT_PLAYER",
 		"TEXT_PLAYERS",
 		"TEXT_REMOTE_MATCH",
 		"TEXT_REMOVE_FOE",
 		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
+		"TEXT_START",
 		"TEXT_TOKENS",
 		"TEXT_TOTP_CODE",
 		"TEXT_TOTP_INPUT",
@@ -62,9 +66,12 @@ export function translate(language: string, text: string): string {
 		"TEXT_TOTP_TITLE",
 		"TEXT_TOURNAMENT",
 		"TEXT_TOURNAMENT_FINAL",
+		"TEXT_TOURNAMENT_NEXT_MATCH",
 		"TEXT_TOURNAMENT_SEMI_FINALS",
 		"TEXT_TOURNAMENT_SINGLE",
+		"TEXT_TOURNAMENT_PLAY",
 		"TEXT_TOURNAMENT_PLURAL",
+		"TEXT_TOURNAMENT_TBD",
 		"TEXT_USER_DECISION",
 		"TEXT_WELCOME",
 		"TEXT_WON"
@@ -146,6 +153,7 @@ function translateEnglish(text: string): string {
 		case "ERR_SAME_EMAIL": return "You can't add yourself!";
 		case "ERR_SAME_NAME": return "Names must be unique!";
 		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
+		case "ERR_UNIQUE": return "Names must be unique!";
 		case "ERR_USER_OFFLINE": return "User offline!";
 
 		case "PROMPT_TEXT_EMAIL": return "Friend's email";
@@ -166,6 +174,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_EMAIL": return "Email";
 		case "TEXT_JOIN": return "Join...";
 		case "TEXT_LOCAL_MATCH": return "Local match";
+		case "TEXT_LOCAL_TOURNAMENT": return "Local tournament";
 		case "TEXT_LOG_IN_OR_REGISTER": return "Log in or register";
 		case "TEXT_MATCH": return "Match";
 		case "TEXT_MATCH_SINGULAR": return "match";
@@ -176,11 +185,13 @@ function translateEnglish(text: string): string {
 		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_USERS": return "No other users!";
 		case "TEXT_PASSWORD": return "Password";
+		case "TEXT_PLAYER": return "Player";
 		case "TEXT_PLAYERS": return "players";
 		case "TEXT_REMOTE_MATCH": return "Remote match";
 		case "TEXT_REMOVE_FOE": return "Remove from foes";
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
+		case "TEXT_START": return "Start";
 		case "TEXT_TOKENS": return "Tokens";
 		case "TEXT_TOTP_CODE": return "Code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
@@ -188,9 +199,12 @@ function translateEnglish(text: string): string {
 		case "TEXT_TOTP_TITLE": return "TOTP";
 		case "TEXT_TOURNAMENT": return "Tournament";
 		case "TEXT_TOURNAMENT_FINAL": return "Final";
+		case "TEXT_TOURNAMENT_NEXT_MATCH": return "Next match";
 		case "TEXT_TOURNAMENT_SEMI_FINALS": return "Semi-finals";
 		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
+		case "TEXT_TOURNAMENT_PLAY": return "Play";
 		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
+		case "TEXT_TOURNAMENT_TBD": return "TBD";
 		case "TEXT_USER_DECISION": return "Please choose an option to continue";
 		case "TEXT_WELCOME": return "Welcome to Transcendence!";
 		case "TEXT_WON": return "Won";
@@ -200,18 +214,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_PLAYER_NAME_TITLE": return "Choose a name";
 		case "TEXT_PLAYER_NAME": return "Player name";
 		case "TEXT_PLAYER_NAME_SET": return "Set";
-
-		// game
-		case "TEXT_PLAYER": return "Player";
-
-		// tournament
-		case "TEXT_NEW": return "New tournament";
-		case "TEXT_START": return "Start";
-		case "TEXT_TITLE": return "Tournament";
-		case "TEXT_CODE": return "Tournament code";
-		case "TEXT_TBD": return "TBD";
-		case "TEXT_NEXT_MATCH": return "Next match";
-		case "TEXT_GAME": return "Play";
+		
 		default: return "ENUnknown text";
 	}
 }

@@ -5,7 +5,7 @@ import { gameFunctions } from "./game/gamePage.js";
 import { authFunctions } from "./user/loggedOut.js";
 import { usersFunctions } from "./users/users.js";
 import { registerEvents, navigated } from "./events.js";
-import { localTournamentFunctions } from "./game/localTournament.js";
+import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./user/userChats.js";
 import { tournamentListeners } from "./game/tournament.js";
@@ -40,7 +40,7 @@ export function addListeners() {
 	authFunctions();
 	gameFunctions();
 	navbarFunctions();
-	localTournamentFunctions();
+	//localTournamentListeners();
 	tournamentListeners();
 	userChatsFunctions();
 	usersFunctions();

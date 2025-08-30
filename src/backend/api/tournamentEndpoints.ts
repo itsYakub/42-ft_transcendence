@@ -1,10 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { updateTournament } from '../old/tournamentDb.js';
-import { gamePlayers } from '../db/gameDb.js';
+import { gamePlayers, updateGameId } from '../db/gameDb.js';
 import { Box, Result } from '../../common/interfaces.js';
-import { getTournament } from '../db/tournamentsDb.js';
+import { addLocalTournament, getTournament } from '../db/tournamentsDb.js';
 import { tournamentDetails } from '../views/tournamentView.js';
+import { addUserToMatch } from '../db/userDB.js';
 
 export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get('/api/tournament/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -14,7 +15,6 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 
 	fastify.get('/api/match/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
 		const gamersBox = gamePlayers(db, request.user.gameId);
-		console.log(gamersBox);
 		return reply.send(gamersBox);
 	});
 
@@ -29,6 +29,14 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 			result: Result.SUCCESS,
 			contents: tournamentDetails(gamersBox.contents, request.user)
 		});
+	});
+
+	fastify.post('/api/tournament/add', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
+		const { gameId, gamers } = request.body as any;
+		if (Result.SUCCESS == addLocalTournament(db, gameId, gamers)) {
+			request.user.gameId = gameId;
+			return reply.send(updateGameId(db, request.user));
+		}
 	});
 
 	fastify.post('/api/tournament/update', async (request: FastifyRequest, reply: FastifyReply) => {

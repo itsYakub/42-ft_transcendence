@@ -1,8 +1,11 @@
 import { getLanguage, navigate } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
 import { TournamentMatch, MatchGamer, Result } from "../../../common/interfaces.js";
-import { createLocalTournament, createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
+import { createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
 import { createRemoteMatch, joiningMatch } from "../sockets/remoteMatchesMessages.js";
+import { localTournamentHtml } from "../../../common/dynamicElements.js";
+import { translate } from "../../../common/translations.js";
+import { localTournamentListeners } from "./localTournament.js";
 
 export function gameFunctions() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -17,7 +20,7 @@ export function gameFunctions() {
 	if (localTournamentButton) {
 		localTournamentButton.addEventListener("click", () => {
 			createLocalTournament();
-			
+
 			//navigate(`/game`, false);
 		});
 	}
@@ -83,6 +86,15 @@ async function startAiMatch() {
 	const userBox = await userBoxResponse.json();
 	if (Result.SUCCESS == userBox.result) {
 		g_game.setupElements(GameMode.GAMEMODE_AI, userBox.contents);
+	}
+}
+
+async function createLocalTournament() {
+	const userBoxResponse = await fetch("/api/user");
+	const userBox = await userBoxResponse.json();
+	if (Result.SUCCESS == userBox.result) {
+		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(userBox.user));
+		localTournamentListeners();
 	}
 }
 

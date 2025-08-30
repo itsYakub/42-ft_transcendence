@@ -1,30 +1,26 @@
+import { Box, Result } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "./../index.js";
 
-async function generateTournament(names: string[]): Promise<string> {
-	const code = Date.now().toString(36).substring(4);
+async function generateTournament(names: string[]) {
+	const gameId = `t${Date.now().toString(36).substring(5)}`;
 	const shuffled = names.sort(() => Math.random() - 0.5);
-	const response = await fetch("/tournament/add", {
+	const response = await fetch("/api/tournament/add", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
 		},
 		body: JSON.stringify({
-			code,
-			m1p1: shuffled[0],
-			m1p2: shuffled[1],
-			m2p1: shuffled[2],
-			m2p2: shuffled[3]
+			gameId,
+			gamers: shuffled
 		})
 	});
 
-	const json = await response.json();
-	if (!json.error)
-		return code;
-	else
-		return "ERR_BAD_TOURNAMENT";
+	const json = await response.text();
+	console.log(json);
+	return json;
 }
 
-export function localTournamentFunctions() {
+export function localTournamentListeners() {
 
 	const nextMatchButton = <HTMLButtonElement>document.querySelector("#nextMatchButton");
 	if (nextMatchButton) {
@@ -34,28 +30,32 @@ export function localTournamentFunctions() {
 		});
 	}
 
-	const newTournamentForm = <HTMLFormElement>document.querySelector("#newTournamentForm");
+	const newTournamentForm = <HTMLFormElement>document.querySelector("#localTournamentForm");
 	if (newTournamentForm) {
 		newTournamentForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const names = [
-				newTournamentForm.p1Name.value,
-				newTournamentForm.p2Name.value,
-				newTournamentForm.p3Name.value,
-				newTournamentForm.p4Name.value
-			];
+			const userBoxResponse = await fetch("/api/user");
+			const userBox = await userBoxResponse.json();
+			if (Result.SUCCESS == userBox.result) {
+				const names = [
+					userBox.user.nick,
+					newTournamentForm.g2Name.value,
+					newTournamentForm.g3Name.value,
+					newTournamentForm.g4Name.value
+				];
 
-			if (4 != names.filter((n, i) => names.indexOf(n) === i).length) {
-				alert("Must be unique!");
-				return;
-			}
+				if (4 != names.filter((n, i) => names.indexOf(n) === i).length) {
+					showAlert(Result.ERR_UNIQUE);
+					return;
+				}
 
-			const code = await generateTournament(names);
-			if ("ERR_BAD_TOURNAMENT" == code) {
-				showAlert("ERR_BAD_TOURNAMENT");
-				return;
+				const code = await generateTournament(names);
+				if (Result.SUCCESS != code) {
+					showAlert(Result.ERR_BAD_TOURNAMENT);
+					return;
+				}
+				navigate("/game");
 			}
-			navigate(`/tournament/local/${code}`);
-		})
+		});
 	}
 }

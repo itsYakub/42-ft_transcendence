@@ -8,7 +8,7 @@
 	"author": "lwillis",
 	"license": "MIT",
 	"scripts": {
-		"build": "npx tsc && npx vite build && cp -r src/frontend/images dist/frontend/images"
+		"build": "npx tsc && npx vite build && cp -r src/frontend/images dist/frontend/images && npx @tailwindcss/cli -i ./src/frontend/css/tailwind.css -o ./src/frontend/css/styles.css && cp -r src/frontend/css dist/frontend/css"
 	},
 	"dependencies": {
 		"@fastify/cookie": "^11.0.2",

@@ -21,8 +21,9 @@ function frameString(navbar: string, content: string): string {
 			<meta charset="UTF-8" />
 			<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 			<script type="module" src="/js/index.js"></script>
+			<link href="/css/styles.css" rel="stylesheet">
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
-			<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+			<!--script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script-->
 			<title>Transcendence</title>
 		</head>
 
