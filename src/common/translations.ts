@@ -4,9 +4,11 @@ export function translate(language: string, text: string): string {
 		"BUTTON_AI_MATCH",
 		"BUTTON_ADD_FOE",
 		"BUTTON_ADD_FRIEND",
+		"BUTTON_APP_TOTP",
 		"BUTTON_BLOCK_USER",
 		"BUTTON_CHAT",
 		"BUTTON_DISABLE_TOTP",
+		"BUTTON_EMAIL_TOTP",
 		"BUTTON_ENABLE_TOTP",
 		"BUTTON_FOES",
 		"BUTTON_FRIENDS",
@@ -44,7 +46,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_LOCAL_TOURNAMENT",
 		"TEXT_LOG_IN_OR_REGISTER",
 		"TEXT_MATCH",
-		"TEXT_MATCH_SINGLE",
+		"TEXT_MATCH_SINGULAR",
 		"TEXT_MATCH_PLURAL",
 		"TEXT_NEW_NICK",
 		"TEXT_NEW_PASSWORD",
@@ -59,16 +61,14 @@ export function translate(language: string, text: string): string {
 		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
 		"TEXT_START",
-		"TEXT_TOKENS",
 		"TEXT_TOTP_CODE",
 		"TEXT_TOTP_INPUT",
 		"TEXT_TOTP_SCAN",
 		"TEXT_TOTP_TITLE",
 		"TEXT_TOURNAMENT",
 		"TEXT_TOURNAMENT_FINAL",
-		"TEXT_TOURNAMENT_NEXT_MATCH",
 		"TEXT_TOURNAMENT_SEMI_FINALS",
-		"TEXT_TOURNAMENT_SINGLE",
+		"TEXT_TOURNAMENT_SINGULAR",
 		"TEXT_TOURNAMENT_PLAY",
 		"TEXT_TOURNAMENT_PLURAL",
 		"TEXT_TOURNAMENT_TBD",
@@ -114,10 +114,11 @@ function translateEnglish(text: string): string {
 		case "BUTTON_ADD_FOE": return "Add foe";
 		case "BUTTON_ADD_FRIEND": return "Add friend";
 		case "BUTTON_AI_MATCH": return "Vs AI";
+		case "BUTTON_APP_TOTP": return "App";
 		case "BUTTON_BLOCK_USER": return "Block";
 		case "BUTTON_CHAT": return "Chat";
-		case "BUTTON_DISABLE_TOTP": return "Disable TOTP";
-		case "BUTTON_ENABLE_TOTP": return "Enable TOTP";
+		case "BUTTON_DISABLE_TOTP": return "Disabled";
+		case "BUTTON_EMAIL_TOTP": return "Email";
 		case "BUTTON_FOES": return "Foes";
 		case "BUTTON_FRIENDS": return "Friends";
 		case "BUTTON_GAME": return "Game";
@@ -192,14 +193,12 @@ function translateEnglish(text: string): string {
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
 		case "TEXT_START": return "Start";
-		case "TEXT_TOKENS": return "Tokens";
 		case "TEXT_TOTP_CODE": return "Code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
 		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";
 		case "TEXT_TOTP_TITLE": return "TOTP";
 		case "TEXT_TOURNAMENT": return "Tournament";
 		case "TEXT_TOURNAMENT_FINAL": return "Final";
-		case "TEXT_TOURNAMENT_NEXT_MATCH": return "Next match";
 		case "TEXT_TOURNAMENT_SEMI_FINALS": return "Semi-finals";
 		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
 		case "TEXT_TOURNAMENT_PLAY": return "Play";

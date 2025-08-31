@@ -46,9 +46,9 @@ function friendsViewHtml(friends: Friend[]): string {
 function switcherHtml(): string {
 	return `
 		<div class="flex flex-row justify-center mb-2 gap-2">
-			<div id="allButton" class="cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-800">All</div>
+			<div id="allButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">All</div>
 			<div class="disabled p-2 rounded-lg text-gray-600 bg-gray-800">Friends</div>
-			<div id="foesButton" class="cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-800">Foes</div>
+			<div id="foesButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Foes</div>
 		</div>
 	`;
 }
@@ -63,7 +63,7 @@ function friendHtml(friend: Friend): string {
 			${onlineString}
 			<div class="grow">${friend.nick}</div>
 			<div class="ml-auto my-auto relative group">
-				<button class="removeFriendButton cursor-pointer" data-id="${friend.friendId}"><i class="text-red-300 fa-solid fa-minus"></i></button>
+				<button class="removeFriendButton cursor-[url(/images/pointer.png),pointer]" data-id="${friend.friendId}"><i class="text-red-300 fa-solid fa-minus"></i></button>
 				<div class="absolute right-full top-1/2 transform hover:opacity-0 -translate-y-1/2 mr-2 w-max px-2 py-1 text-sm text-white bg-gray-700 rounded shadow-lg opacity-0 group-hover:opacity-100">%%TEXT_REMOVE_FRIEND%%</div>
 			</div>
 		</div>

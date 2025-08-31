@@ -31,9 +31,9 @@ function registerString(): string {
 				</div>
 				<div class="grid grid-cols-2 justify-between my-4">
 					<button id="loginButton" type="submit" formmethod="post"
-						class="mr-auto cursor-pointer text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%BUTTON_LOGIN%%</button>
+						class="mr-auto cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%BUTTON_LOGIN%%</button>
 					<button id="registerButton" type="submit" formmethod="post"
-						class="ml-auto cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_REGISTER%%</button>
+						class="ml-auto cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_REGISTER%%</button>
 				</div>
 				</form>
 		</div>
@@ -44,7 +44,7 @@ function registerString(): string {
 function googleString(): string {
 	return `	
 	<div class="rounded-lg shadow border py-8 bg-gray-900 border-gray-100 text-center">
-		<button id="googleButton" class="w-60 cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GOOGLE%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
+		<button id="googleButton" class="w-60 cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GOOGLE%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
 	</div>
 	`;
 }
@@ -52,7 +52,7 @@ function googleString(): string {
 function guestString(): string {
 	return `	
 	<div class="rounded-lg shadow border py-8 bg-gray-900 border-gray-100 text-center">
-		<button id="guestButton" class="w-60 cursor-pointer border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GUEST%%</button>
+		<button id="guestButton" class="w-60 cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GUEST%%</button>
 	</div>
 	`;
 }

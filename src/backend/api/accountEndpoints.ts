@@ -131,7 +131,10 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		// 	}
 		// });
 
-		reply.send(response);
+		reply.send({
+			result: Result.SUCCESS,
+			contents: response
+		});
 	});
 
 	fastify.post("/account/verify-totp", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -149,21 +152,14 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 		const params = request.body as any;
 		if (null != totp.validate({ token: params.code, window: 1 })) {
 			confirmTOTP(db, user.userId);
-			return reply.send({
-				result: Result.SUCCESS
-			});
+			return reply.send(Result.SUCCESS);
 		}
 
-		return reply.send({
-			result: Result.ERR_BAD_TOTP
-		});
+		return reply.send(Result.ERR_BAD_TOTP);
 	});
 
 	fastify.post("/account/disable-totp", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
-
-		if (!user)
-			return reply.send(false);
 
 		return reply.send(removeTOTPSecret(db, user.userId));
 	});
@@ -171,12 +167,8 @@ export function accountEndpoints(fastify: FastifyInstance, db: DatabaseSync): vo
 	fastify.post("/account/invalidate-token", async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 
-		if (!user)
-			return;
-
 		invalidateToken(db, user.userId);
-		const date = new Date();
-		date.setDate(date.getDate() - 3);
+		const date = "Thu, 01 Jan 1970 00:00:00 UTC";
 		return reply.header(
 			"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
 				"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).redirect("/");

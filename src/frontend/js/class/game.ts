@@ -117,13 +117,26 @@ export class Game {
 	// might need more fields later
 	private matchOver() {
 		this.m_ball.reset();
-		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
-			detail: {
-				g1Score: 5,
-				g2Score: 10
-			}
-		}));
-		// print "winner message" or something
+
+		const losingScore = Math.floor(Math.random() * 10);
+		if (0 == Math.floor(Math.random() * 2)) {
+			this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+				detail: {
+					g1Score: 10,
+					g2Score: losingScore
+				}
+			}));
+		}
+		else {
+			this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+				detail: {
+					g1Score: losingScore,
+					g2Score: 10
+				}
+			}));
+		}
+
+		// show "winner message" or something
 
 		// close the dialog
 		setTimeout(() => this.m_dialog.close(), 2000);

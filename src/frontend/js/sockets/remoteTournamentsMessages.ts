@@ -1,5 +1,6 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
+import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/tournament.js";
 import { getLanguage, navigate, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
@@ -110,26 +111,31 @@ export async function tournamentMatchStart(user: User, message: Message) {
 	const match = message.match;
 	if (user.userId == match.g1.userId || user.userId == match.g2.userId) {
 		console.log("for me");
+		setTimeout(async () => {
+			const dialog = document.querySelector("#gameDialog");
+			if (dialog) {
+				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+					const response = await fetch("/api/match-result/add", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({
+							g2Nick: match.g1.nick == user.nick ? match.g2.nick : match.g1.nick,
+							g1Score: e.detail["g1Score"],
+							g2Score: e.detail["g2Score"],
+						})
+					});
+					navigate("/");
+				});
+			}
 
-		// TODO remove this
-		const losingScore = Math.floor(Math.random() * 10);
-		if (0 == Math.floor(Math.random() * 2)) {
-			match.g1.score = 10;
-			match.g2.score = losingScore;
-		}
-		else {
-			match.g1.score = losingScore;
-			match.g2.score = 10;
-		}
-		// END
-
-		sendMessageToServer({
-			type: MessageType.TOURNAMENT_MATCH_END,
-			match
-		});
-
-		// TODO game with small window?
-		// startMatch(message.match);
+			g_game.setupElements(GameMode.GAMEMODE_PVP, {
+				nick: match.g1.nick
+			}, {
+				nick: match.g2.nick
+			});
+		}, 2000);
 	}
 	else
 		console.log("not for me");
@@ -145,6 +151,9 @@ export function tournamentOver(user: User, message: Message) {
 	sendMessageToServer({
 		type: MessageType.TOURNAMENT_OVER,
 	});
-	showAlert(translate(getLanguage(), `%%TEXT_CONGRATULATIONS%% ${gamer.nick}!`));
-
+	const alertDialog = document.querySelector("#alertDialog");
+	alertDialog.addEventListener("close", async () => {
+		navigate("/");
+	});
+	showAlert(`${translate(getLanguage(), "%%TEXT_CONGRATULATIONS%%")} ${gamer.nick}!`, false);
 }

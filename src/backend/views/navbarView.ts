@@ -28,7 +28,7 @@ function loggedOutString(languageSelect: string): string {
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">
 			<div class="ml-auto text-gray-300">
-				<select id="languageSelect">
+				<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer]">
 					${languageSelect}
 				</select>
 			</div>
@@ -43,7 +43,7 @@ function loggedInString(user: User, languageSelect: string, page: string): strin
 	<div class="h-full bg-gray-800">
 		<div class="h-full w-200 mx-auto flex flex-row items-center">
 			<div class="mr-auto">
-				<img id="accountAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-pointer h-20 w-20"
+				<img id="accountAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-[url(/images/pointer.png),pointer] h-20 w-20"
 					src="${user.avatar}" />
 			</div>
 
@@ -55,7 +55,7 @@ function loggedInString(user: User, languageSelect: string, page: string): strin
 			</div>
 
 			<div class="ml-auto text-gray-300">
-				<select id="languageSelect">
+				<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer]">
 					${languageSelect}
 				</select>
 			</div>
@@ -78,7 +78,7 @@ function guestString(user: User, languageSelect: string, page: string): string {
 			</div>
 
 			<div class="ml-auto text-gray-300">
-				<select id="languageSelect">
+				<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer]">
 					${languageSelect}
 				</select>
 			</div>
@@ -92,7 +92,7 @@ function homeButtonString(page: string) {
 
 	return `
 	<button id="homeButton"
-		class="cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 		%%BUTTON_HOME%%
 	</button>
 	`;
@@ -103,7 +103,7 @@ function gameButtonString(page: string) {
 
 	return `
 	<button id="gameButton"
-		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		class="ml-2 cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 		%%BUTTON_GAME%%
 	</button>
 	`;
@@ -114,7 +114,7 @@ function usersButtonString(page: string) {
 
 	return `
 	<button id="usersButton"
-		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		class="ml-2 cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 		%%BUTTON_USERS%%
 	</button>
 	`;
@@ -125,7 +125,7 @@ function chatButtonString(page: string) {
 
 	return `
 	<button id="chatButton"
-		class="ml-2 cursor-pointer text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
+		class="ml-2 cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700">
 		%%BUTTON_CHAT%%
 	</button>
 	`;

@@ -80,7 +80,7 @@ async function login(email: string, password: string) {
 						totpCodeForm.code.value = "";
 						totpCodeForm.code.focus();
 					});
-					showAlert("ERR_TOTP_CODE");
+					showAlert(Result.ERR_BAD_TOTP);
 					return;
 				}
 

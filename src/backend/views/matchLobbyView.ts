@@ -1,5 +1,5 @@
 import { Gamer, User } from "../../common/interfaces.js";
-import { gameHtmlString } from "../game/game.js";
+import { gameHtml } from "./dialogsView.js";
 
 export function matchLobbyView(gamers: Gamer[], user: User): string {
 	return `
@@ -11,7 +11,7 @@ export function matchLobbyView(gamers: Gamer[], user: User): string {
 			</div>
 		</div>		
 	</div>
-	${gameHtmlString()}
+	${gameHtml()}
 	`;
 }
 
@@ -34,7 +34,7 @@ function gamerHtml(gamer: Gamer) {
 
 	return `
 	<div class="flex flex-col gap-3">
-		<img id="accountAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-pointer h-60 w-60" src="${gamer.avatar}" />
+		<img id="accountAvatar" class="rounded-lg mx-auto border border-gray-800 cursor-[url(/images/pointer.png),pointer] h-60 w-60" src="${gamer.avatar}" />
 		<div class="w-60 py-2 mt-2 border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
 	</div>
 	`;

@@ -8,11 +8,11 @@ export function homeView(user: User): string {
 		<div class="grid grid-cols-1 mt-16">
 			<div class="flex flex-col justify-between">
 				<button id="addMockHistoryButton"
-					class="block mx-auto cursor-pointer text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
+					class="block mx-auto cursor-[url(/images/pointer.png),pointer] text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
 					Add mock history
 				</button>
 				<button id="deleteCookiesButton"
-					class="mt-8 block mx-auto cursor-pointer text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+					class="mt-8 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 					Delete cookies
 				</button>
 			</div>

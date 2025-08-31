@@ -1,11 +1,13 @@
-import { Result } from "../../../common/interfaces.js";
+import { doesNotMatch } from "assert";
+import { Result, TotpType } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
 import { closeSocket } from "../sockets/clientSocket.js";
+import { prePassVertex } from "babylonjs/Shaders/ShadersInclude/prePassVertex";
 
 /*
 	The buttons and events create by the /profile page
 */
-export function accountFunctions() {
+export function accountListeners() {
 	/*
 		Shows the dialog to choose a file
 	*/
@@ -25,7 +27,7 @@ export function accountFunctions() {
 			const files = avatarUploadButton.files;
 			if (1 == files.length) {
 				if (files[0].size > 100 * 1024) {
-					showAlert("ERR_AVATAR_TOO_BIG");
+					showAlert(Result.ERR_AVATAR_TOO_BIG);
 					return;
 				}
 
@@ -61,19 +63,6 @@ export function accountFunctions() {
 		});
 	}
 
-	function replaceInvalidBase64Chars(input: string) {
-		return input.replace(/[=+/]/g, charToBeReplaced => {
-			switch (charToBeReplaced) {
-				case '=':
-					return '';
-				case '+':
-					return '#';
-				case '/':
-					return '_';
-			}
-		});
-	};
-
 	/*
 		Updates the user's nickname
 	*/
@@ -102,7 +91,7 @@ export function accountFunctions() {
 			alertDialog.addEventListener("close", () => {
 				navigate("/account");
 			});
-			showAlert("done");
+			showAlert(Result.SUCCESS);
 		});
 	}
 
@@ -117,12 +106,12 @@ export function accountFunctions() {
 			const newPassword = changePasswordForm.newPassword.value;
 			const repeatPassword = changePasswordForm.repeatPassword.value;
 			if (newPassword != repeatPassword) {
-				showAlert("ERR_PASSWORDS_DONT_MATCH");
+				showAlert(Result.ERR_PASSWORDS_DONT_MATCH);
 				return;
 			}
 
 			if (newPassword == checkPassword) {
-				showAlert("ERR_NO_NEW_PASSWORD");
+				showAlert(Result.ERR_NO_NEW_PASSWORD);
 				return;
 			}
 
@@ -144,69 +133,72 @@ export function accountFunctions() {
 					alertDialog.addEventListener("close", () => {
 						navigate("/account");
 					});
-					showAlert("SUCCESS_PASSWORD_CHANGED");
+					showAlert(Result.SUCCESS);
 					break;
 				case Result.ERR_FORBIDDEN:
-					showAlert("ERR_BAD_PASSWORD");
+					showAlert(Result.ERR_BAD_PASSWORD);
 					break;
 				case Result.ERR_DB:
-					showAlert("ERR_DB");
+					showAlert(Result.ERR_DB);
 			}
 		});
 	}
 
-	/*
-		Shows the dialog to scan the TOTP QR code
-	*/
-	const enableTOTPButton = document.querySelector("#enableTOTPButton");
-	if (enableTOTPButton) {
-		enableTOTPButton.addEventListener("click", async () => {
-			const response = await fetch("/account/enable-totp", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({})
-			});
+	const radios = document.getElementsByClassName("totpSetting");
+	for (var i = 0; i < radios.length; i++) {
+		radios[i].addEventListener("click", async (e) => {
+			const type = TotpType[(<HTMLInputElement>e.target).value];
+			e.returnValue = false;
+e.cancelBubble = true;
+			var previousSelected =  <HTMLInputElement>document.querySelector("input[name=totpSetting]:checked");
+			switch (type) {
+				case TotpType.APP:
+					const enableToptResponse = await fetch("/account/enable-totp", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({})
+					});
 
-			if (response.ok) {
-				const json = await response.json();
+					const enableToptJson = await enableToptResponse.json();
+					if (Result.SUCCESS == enableToptJson.result) {
+						const qrCode = document.querySelector("#totpQRCode");
+						qrCode.innerHTML = enableToptJson.contents.qrcode;
 
-				const qrCode = document.querySelector("#totpQRCode");
-				qrCode.innerHTML = json.qrcode;
+						const totpSecret = document.querySelector("#totpSecret");
+						totpSecret.innerHTML = enableToptJson.contents.secret;
 
-				const totpSecret = document.querySelector("#totpSecret");
-				totpSecret.innerHTML = json.secret;
+						const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
+						totpDialog.showModal();
+					}
+					break;
+				case TotpType.DISABLED:
+					// password protect this!
+					const disableToptResponse = await fetch("/account/disable-totp", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({})
+					});
 
-				const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
-				totpDialog.showModal();
+					const disableToptJson = await disableToptResponse.json();
+					if (Result.SUCCESS == disableToptJson.result) {
+						const alertDialog = document.querySelector("#alertDialog");
+						alertDialog.addEventListener("close", async () => {
+							navigate("/account");
+						});
+						showAlert(Result.SUCCESS);
+					}
+					break;
+				case TotpType.EMAIL:
+					break;
 			}
-		});
-	}
-
-	/*
-		Turns off TOTP
-	*/
-	const disableTOTPButton = document.querySelector("#disableTOTPButton");
-	if (disableTOTPButton) {
-		disableTOTPButton.addEventListener("click", async () => {
-			// password protect this!
-			const response = await fetch("/account/disable-totp", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({})
-			});
-
-			const json = await response.json();
-			if (!json.error) {
-				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-				alertDialog.addEventListener("close", async () => {
-					navigate("/account");
-				});
-				showAlert("SUCCESS_DISABLED_TOTP");
-			}
+			
+			console.log(previousSelected);
+			previousSelected.checked = true;
+			return false;
 		});
 	}
 
@@ -245,7 +237,7 @@ export function accountFunctions() {
 					if (response.ok)
 						navigate("/");
 				});
-				showAlert("SUCCESS_ENABLED_TOTP");
+				showAlert(Result.SUCCESS);
 				return;
 			}
 
@@ -253,7 +245,7 @@ export function accountFunctions() {
 				totpForm.code.value = "";
 				totpForm.code.focus();
 			});
-			showAlert("ERR_TOTP_CODE");
+			showAlert(Result.ERR_BAD_TOTP);
 		});
 	}
 
@@ -291,8 +283,21 @@ export function accountFunctions() {
 				alertDialog.addEventListener("close", () => {
 					navigate("/");
 				});
-				showAlert("SUCCESS_INVALIDATED_TOKEN");
+				showAlert(Result.SUCCESS);
 			}
 		}, { once: true });
 	}
 }
+
+function replaceInvalidBase64Chars(input: string) {
+	return input.replace(/[=+/]/g, charToBeReplaced => {
+		switch (charToBeReplaced) {
+			case '=':
+				return '';
+			case '+':
+				return '#';
+			case '/':
+				return '_';
+		}
+	});
+};

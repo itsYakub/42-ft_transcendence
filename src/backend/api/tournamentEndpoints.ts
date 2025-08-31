@@ -5,6 +5,7 @@ import { Box, Result } from '../../common/interfaces.js';
 import { getTournament } from '../db/tournamentsDb.js';
 import { tournamentDetails } from '../views/tournamentView.js';
 import { addLocalTournament, updateLocalTournament } from '../db/localTournamentsDb.js';
+import { addMatchResult } from '../db/matchResultsDb.js';
 
 export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get('/api/tournament/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -32,13 +33,14 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 
 	fastify.post('/api/tournament/add', async (request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> => {
 		const { gameId, gamers } = request.body as any;
-		request.user.gameId = gameId;
-		if (Result.SUCCESS == addLocalTournament(db, gamers, request.user))
-			return reply.send(updateGameId(db, request.user));
+		if (Result.SUCCESS == addLocalTournament(db, gamers, gameId))
+			request.user.gameId = gameId;
+		return reply.send(updateGameId(db, request.user));
 	});
 
 	fastify.post('/api/tournament/update', async (request: FastifyRequest, reply: FastifyReply) => {
 		const { g1Nick, g1Score, g2Nick, g2Score, matchNumber } = request.body as any;
+		const user = request.user;
 		const match = {
 			g1: {
 				nick: g1Nick,
@@ -50,6 +52,18 @@ export function tournamentEndpoints(fastify: FastifyInstance, db: DatabaseSync) 
 			},
 			matchNumber
 		};
-		return reply.send(updateLocalTournament(db, request.user.gameId, match));
+		if (g1Nick == user.nick) {
+			const tournamentWin = 3 == matchNumber && g1Score > g2Score;
+			const result = addMatchResult(db, user.userId, g2Nick, g1Score, g2Score, tournamentWin);
+			if (Result.SUCCESS != result)
+				return reply.send(result);
+		}
+		else if (g2Nick == user.nick) {
+			const tournamentWin = 3 == matchNumber && g2Score > g1Score;
+			const result = addMatchResult(db, user.userId, g1Nick, g2Score, g1Score, tournamentWin);
+			if (Result.SUCCESS != result)
+				return reply.send(result);
+		}
+		return reply.send(updateLocalTournament(db, user.gameId, match));
 	});
 }

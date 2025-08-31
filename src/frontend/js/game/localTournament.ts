@@ -61,9 +61,9 @@ export function localTournamentListeners() {
 			if (Result.SUCCESS == userBox.result) {
 				const names = [
 					userBox.user.nick,
-					newTournamentForm.g2Name.value,
-					newTournamentForm.g3Name.value,
-					newTournamentForm.g4Name.value
+					newTournamentForm.g2Nick.value,
+					newTournamentForm.g3Nick.value,
+					newTournamentForm.g4Nick.value
 				];
 
 				if (4 != names.filter((n, i) => names.indexOf(n) === i).length) {

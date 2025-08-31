@@ -75,9 +75,25 @@ async function startLocalMatch() {
 	const userBoxResponse = await fetch("/api/user");
 	const userBox = await userBoxResponse.json();
 	if (Result.SUCCESS == userBox.result) {
-		g_game.setupElements(GameMode.GAMEMODE_PVP, userBox.contents, {
-			nick: "Guest"
-		});
+		const dialog = document.querySelector("#gameDialog");
+		if (dialog) {
+			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+				const response = await fetch("/api/match-result/add", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({
+							g2Nick: "Guest",
+							g1Score: e.detail["g1Score"],
+							g2Score: e.detail["g2Score"],
+						})
+					});
+			});
+			g_game.setupElements(GameMode.GAMEMODE_PVP, userBox.contents, {
+				nick: "Guest"
+			});
+		}
 	}
 }
 

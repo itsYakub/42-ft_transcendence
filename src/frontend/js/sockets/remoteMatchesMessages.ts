@@ -1,4 +1,4 @@
-import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
+import { Gamer, Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { getLanguage, navigate } from "../index.js";
@@ -43,7 +43,33 @@ export async function startingMatch(user: User, message: Message) {
 		if (Result.SUCCESS != json.result || 2 != json.contents.length)
 			return;
 
-		//g_game.setupElements(user.gameId, GameMode.GAMEMODE_PVP)
+		const gamers: Gamer[] = json.contents;
+		const dialog = document.querySelector("#gameDialog");
+		if (dialog) {
+			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+				sendMessageToServer({
+					type: MessageType.MATCH_LEAVE
+				});
+				const response = await fetch("/api/match-result/add", {
+					method: "POST",
+					headers: {
+						"content-type": "application/json"
+					},
+					body: JSON.stringify({
+						g2Nick: gamers[0].nick == user.nick ? gamers[1].nick : gamers[0].nick,
+						g1Score: e.detail["g1Score"],
+						g2Score: e.detail["g2Score"],
+					})
+				});
+				navigate("/");
+			});
+		}
+
+		g_game.setupElements(GameMode.GAMEMODE_PVP, {
+			nick: gamers[0].nick
+		}, {
+			nick: gamers[1].nick
+		});
 	}, 2000);
 }
 
@@ -54,16 +80,16 @@ export function actuallyStartingMatch(user: User, message: Message) {
 	g_game.actuallyStart();
 }
 
-export async function gameReady(user: User, message: Message) {
-	if (user.gameId != message.gameId)
-		return;
+// export async function gameReady(user: User, message: Message) {
+// 	if (user.gameId != message.gameId)
+// 		return;
 
-	if (message.gameId.startsWith("m")) {
-		console.log("match");
-		//TODO change this
-		//startMatch(null);//"John", "Ed");
-	}
-	else {
-		console.log("tournament");
-	}
-}
+// 	if (message.gameId.startsWith("m")) {
+// 		console.log("match");
+// 		//TODO change this
+// 		//startMatch(null);//"John", "Ed");
+// 	}
+// 	else {
+// 		console.log("tournament");
+// 	}
+// }

@@ -126,6 +126,7 @@ function whichMatchIsUserIn(tournament: Tournament, user: User): TournamentMatch
 
 function sqlToTournament(tournament: Record<string, SQLOutputValue>): Tournament {
 	return {
+		finished: Boolean(tournament.m3_g1_score && tournament.m3_g2_score),
 		matches: [
 			sqlToMatch(tournament, 1),
 			sqlToMatch(tournament, 2),

@@ -1,5 +1,5 @@
 import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
-import { gameHtmlString } from "../game/game.js";
+import { gameHtml } from "./dialogsView.js";
 
 export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
@@ -19,7 +19,7 @@ export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], u
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" hidden>
-								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
+								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
 							</div>
 						</form>
 					</div>
@@ -27,7 +27,7 @@ export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], u
 			</div>
 		</div>
 	</div>
-	${gameHtmlString()}
+	${gameHtml()}
 	`;
 }
 
@@ -41,7 +41,7 @@ export function tournamentGamersHtml(gamers: Gamer[]): string {
 	<div class="flex flex-col gap-8">
 		${gamersString}
 	</div>
-	<div id="leaveTournamentButton" class="text-gray-300 mt-4 mx-auto bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</div>
+	<div id="leaveTournamentButton" class="text-gray-300 mt-4 mx-auto bg-red-600 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</div>
 	`;
 }
 

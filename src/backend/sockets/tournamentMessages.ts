@@ -6,6 +6,7 @@ import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, 
 import { addTournament, getTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
 import { tournamentGamersHtml } from '../views/tournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
+import { addMatchResult } from '../db/matchResultsDb.js';
 
 export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, user: User) {
 	const gamersBox = gamePlayers(db, user.gameId);
@@ -69,7 +70,19 @@ export function tournamentMatchEndReceived(fastify: FastifyInstance, db: Databas
 	if (match.g1.userId != user.userId)
 		return;
 
-	//TODO add to history
+	if (match.g1.userId == user.userId) {
+		const tournamentWin = 3 == match.matchNumber && match.g1.score > match.g2.score;
+		const result = addMatchResult(db, user.userId, match.g2.nick, match.g1.score, match.g2.score, tournamentWin);
+		if (Result.SUCCESS != result)
+			return;
+	}
+	else if (match.g2.userId == user.userId) {
+		const tournamentWin = 3 == match.matchNumber && match.g2.score > match.g1.score;
+		const result = addMatchResult(db, user.userId, match.g1.nick, match.g2.score, match.g1.score, tournamentWin);
+		if (Result.SUCCESS != result)
+			return;
+	}
+
 	if (Result.SUCCESS == updateTournamentMatchResult(db, user.gameId, match)) {
 		const tournament = getTournament(db, user.gameId);
 		if (Result.SUCCESS == tournament.result) {

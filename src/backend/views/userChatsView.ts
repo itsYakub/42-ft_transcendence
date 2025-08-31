@@ -15,7 +15,7 @@ function partnersHtml(partners: UserChatPartner[]): string {
 
 function partnerHtml(partner: UserChatPartner): string {
 	return `
-		<div class="chatPartnerButton cursor-pointer text-right w-full text-gray-300 hover:bg-gray-800 p-2 rounded-lg" data-id="${partner.partnerId}">${partner.partnerNick}</div>
+		<div class="chatPartnerButton cursor-[url(/images/pointer.png),pointer] text-right w-full text-gray-300 hover:bg-gray-800 p-2 rounded-lg" data-id="${partner.partnerId}">${partner.partnerNick}</div>
 	`;
 }
 
@@ -43,7 +43,7 @@ function userChatsHtml(partners: UserChatPartner[]): string {
 										<div class="flex flex-row gap-1">
 											<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 											<input type="submit" hidden>
-											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
+											<button type="submit" class="border border-gray-700 py-1 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
 										</div>
 									</form>
 								</div>						

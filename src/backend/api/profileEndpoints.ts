@@ -4,9 +4,9 @@ import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { getUserById } from '../db/userDB.js';
 import { matchResultsList } from '../db/matchResultsDb.js';
-import { profileView } from '../views/profileView.js';
 import { friendsList } from '../db/friendsDb.js';
 import { foesList } from '../db/foesDb.js';
+import { profileView } from '../../common/dynamicElements.js';
 
 export function profileEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.post("/api/profile", async (request: FastifyRequest, reply: FastifyReply) => {

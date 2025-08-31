@@ -1,5 +1,5 @@
 import { navbarFunctions } from "./navbar.js";
-import { accountFunctions } from "./user/account.js";
+import { accountListeners } from "./user/account.js";
 import { devButtons } from "./devButtons.js";
 import { gameFunctions } from "./game/gamePage.js";
 import { authFunctions } from "./user/loggedOut.js";
@@ -36,7 +36,7 @@ registerEvents();
 	Sets up all the listeners after navigating to a new page
 */
 export function addListeners() {
-	accountFunctions();
+	accountListeners();
 	authFunctions();
 	gameFunctions();
 	navbarFunctions();
@@ -52,14 +52,14 @@ export function addListeners() {
 /*
 	Shows the (improved?) alert dialog
 */
-export function showAlert(text: string) {
+export function showAlert(text: string, shouldTranslate: boolean = true) {
 	const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 	if (alertDialog) {
 		const closeAlertButton = document.querySelector("#closeAlertButton");
 		closeAlertButton.addEventListener("click", () => {
 			alertDialog.close();
 		});
-		const content = translate(getLanguage(), text);
+		const content = shouldTranslate ? translate(getLanguage(), `%%${text}%%`) : text;
 		document.querySelector("#alertContent").textContent = content;
 		alertDialog.showModal();
 	}

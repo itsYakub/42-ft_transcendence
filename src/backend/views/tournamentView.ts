@@ -1,5 +1,5 @@
 import { GameChatMessage, TournamentMatch, MatchGamer, Tournament, User } from "../../common/interfaces.js";
-import { gameHtmlString } from "../game/game.js";
+import { gameHtml } from "./dialogsView.js";
 import { tournamentMessagesHtml } from "./tournamentLobbyView.js";
 
 export function tournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
@@ -21,7 +21,7 @@ export function tournamentView(tournament: Tournament, chats: GameChatMessage[],
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" hidden>
-								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-pointer hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
+								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
 							</div>
 						</form>
 					</div>
@@ -29,7 +29,7 @@ export function tournamentView(tournament: Tournament, chats: GameChatMessage[],
 			</div>
 		</div>
 	</div>
-	${gameHtmlString()}
+	${gameHtml()}
 	`;
 }
 
@@ -51,20 +51,20 @@ export function tournamentDetails(tournament: Tournament, user: User): string {
 
 	const html = `
 	<div class="flex flex-col gap-2">
-		${gamerString(match.g1)}
+		${gamerHtml(match.g1)}
 		<div class="text-white text-center">Vs</div>
-		${gamerString(match.g2)}
+		${gamerHtml(match.g2)}
 	</div>
 	<div class="flex flex-row justify-between mr-9">
-		${readyButtonString(gamer)}
-		<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
+		${readyButtonHtml(gamer)}
+		<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 	</div>
 	<div class="flex flex-col gap-2 mt-2 w-69">
 		<div class="border border-gray-800 my-4 h-0.5 w-full mx-2"></div>
 		<div class="text-gray-300 text-lg text-center mb-2">Other match</div>
 		${secondaryMatchHtml(tournament.matches[1 == match.matchNumber ? 1 : 0])}
 	</div>
-	${gameHtmlString()}
+	${gameHtml()}
 	`;
 
 	return html;
@@ -133,22 +133,22 @@ function finalHtml(match: TournamentMatch, user: User): string {
 	if (match.g1.userId == user.userId || match.g2.userId == user.userId)
 		return `
 			<div class="flex flex-col gap-2">
-				${gamerString(match.g1)}
+				${gamerHtml(match.g1)}
 				<div class="text-white text-center">Vs</div>
-				${gamerString(match.g2)}
+				${gamerHtml(match.g2)}
 			</div>
 			<div class="flex flex-row justify-between mr-9">
-				${readyButtonString(whichGamerIsUser(match, user))}
-				<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
+				${readyButtonHtml(whichGamerIsUser(match, user))}
+				<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 			</div>
 
-			${gameHtmlString()}
+			${gameHtml()}
 		`;
 	else
 		return secondaryMatchHtml(match);
 }
 
-function gamerString(gamer: MatchGamer) {
+function gamerHtml(gamer: MatchGamer) {
 	const readyText = gamer.ready ? `<i class="fa-solid fa-check text-green-300 my-auto"></i>` : `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>`;
 
 	return `
@@ -159,7 +159,7 @@ function gamerString(gamer: MatchGamer) {
 	`;
 }
 
-function readyButtonString(gamer: MatchGamer) {
+function readyButtonHtml(gamer: MatchGamer) {
 	return gamer.ready ? `<button disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
-		`<button id="tournamentGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 block cursor-pointer py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
+		`<button id="tournamentGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
 }

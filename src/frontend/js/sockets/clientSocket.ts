@@ -1,5 +1,5 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { actuallyStartingMatch, gameReady, startingMatch, updateMatchDetails } from "./remoteMatchesMessages.js";
+import { actuallyStartingMatch, startingMatch, updateMatchDetails } from "./remoteMatchesMessages.js";
 import { joinOrLeaveTournament, tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
@@ -69,9 +69,9 @@ function handleServerMessage(user: User, message: Message) {
 		case MessageType.USER_DISCONNECT:
 			userConnectOrDisconnect(user, message);
 			break;
-		case MessageType.GAME_READY:
-			gameReady(user, message);
-			break;
+		// case MessageType.GAME_READY:
+		// 	gameReady(user, message);
+		// 	break;
 		case MessageType.USER_INVITE:
 			userInvite(user, message);
 			break;

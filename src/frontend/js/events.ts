@@ -45,7 +45,7 @@ export function registerEvents() {
 			//const date = new Date();
 			//date.setDate(date.getDate() - 3);
 
-			showAlert("ERR_GOOGLE");
+			showAlert(Result.ERR_GOOGLE);
 			//document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
 		}

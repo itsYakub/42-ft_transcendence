@@ -53,12 +53,12 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 					"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(userBox);
 		}
 
-		if (userBox.contents.totpEnabled) {
-			return reply.send({
-				result: Result.SUCCESS,
-				totpEnabled: true
-			});
-		}
+		// if (userBox.contents.totpEnabled) {
+		// 	return reply.send({
+		// 		result: Result.SUCCESS,
+		// 		totpEnabled: true
+		// 	});
+		// }
 
 		const accessTokenDate = new Date();
 		accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);

@@ -1,4 +1,3 @@
-import { profileView } from "../../../backend/views/profileView.js";
 import { Result } from "../../../common/interfaces.js";
 import { navigate } from "../index.js";
 import { profileFunctions } from "./profile.js";

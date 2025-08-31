@@ -42,8 +42,8 @@ function foesViewHtml(foes: Foe[]): string {
 function switcherHtml(): string {
 	return `
 		<div class="flex flex-row justify-center mb-2 gap-2">
-			<div id="allButton" class="cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-800">All</div>
-			<div id="friendsButton" class="cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-800">Friends</div>
+			<div id="allButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">All</div>
+			<div id="friendsButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Friends</div>
 			<div class="disabled p-2 rounded-lg text-gray-600 bg-gray-800">Foes</div>
 		</div>
 	`;
@@ -56,7 +56,7 @@ function foeHtml(foe: Foe): string {
 			<div class="grow">${foe.nick}</div>
 			<div class="text-right my-auto">
 				<div class="relative group">
-					<button class="removeFoeButton cursor-pointer" data-id="${foe.foeId}"></data><i class="text-red-300 fa-solid fa-minus"></i></button>
+					<button class="removeFoeButton cursor-[url(/images/pointer.png),pointer]" data-id="${foe.foeId}"></data><i class="text-red-300 fa-solid fa-minus"></i></button>
 					<div class="absolute right-full top-1/2 transform hover:opacity-0 -translate-y-1/2 mr-2 w-max px-2 py-1 text-sm text-white bg-gray-700 rounded shadow-lg opacity-0 group-hover:opacity-100">%%TEXT_REMOVE_FOE%%</div>
 				</div>
 			</div>

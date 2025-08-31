@@ -11,6 +11,7 @@ import { tournamentView } from '../views/tournamentView.js';
 import { tournamentLobbyView } from '../views/tournamentLobbyView.js';
 import { localTournamentView } from '../views/localTournamentView.js';
 import { getLocalTournament } from '../db/localTournamentsDb.js';
+import { removeUserFromMatch } from '../db/userDB.js';
 
 export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -60,6 +61,12 @@ function localTournament(db: DatabaseSync, tournament: LocalTournament, request:
 		user
 	};
 
+	if (tournament.finished) {
+		const result = removeUserFromMatch(db, user.userId);
+		if (Result.SUCCESS != result)
+			return reply.type("text/html").send(frameView(params));
+	}
+
 	return reply.type("text/html").send(frameView(params, localTournamentView(tournament, user)));
 }
 
@@ -100,6 +107,12 @@ function remoteTournament(db: DatabaseSync, tournament: Tournament, request: Fas
 		language,
 		user
 	};
+
+	if (tournament.finished) {
+		const result = removeUserFromMatch(db, user.userId);
+		if (Result.SUCCESS != result)
+			return reply.type("text/html").send(frameView(params));
+	}
 
 	const chatsBox = gameChatsList(db, user.gameId);
 	if (Result.SUCCESS != chatsBox.result) {

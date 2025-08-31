@@ -1,6 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Gamer, TournamentMatch, MatchGamer, Result, Tournament, User, LocalMatch, LocalGamer, LocalTournament } from "../../common/interfaces.js";
-import { updateGameId } from "./gameDb.js";
+import { Box, Result, LocalMatch, LocalGamer, LocalTournament } from "../../common/interfaces.js";
 
 export function initLocalTournamentsDb(db: DatabaseSync) {
 	db.exec(`DROP TABLE IF EXISTS local_tournaments;`);
@@ -19,8 +18,7 @@ export function initLocalTournamentsDb(db: DatabaseSync) {
 		m2_g1_score INTEGER DEFAULT 0,
 		m2_g2_score INTEGER DEFAULT 0,
 		m3_g1_score INTEGER DEFAULT 0,
-		m3_g2_score INTEGER DEFAULT 0,
-		user_id INTEGER
+		m3_g2_score INTEGER DEFAULT 0
 		);`);
 }
 
@@ -40,27 +38,11 @@ export function getLocalTournament(db: DatabaseSync, gameId: string): Box<LocalT
 	}
 }
 
-export function addLocalTournament(db: DatabaseSync, gamers: string[], user: User): Result {
+export function addLocalTournament(db: DatabaseSync, gamers: string[], gameId: string): Result {
 	try {
-		const select = db.prepare("INSERT INTO local_tournaments (game_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick, user_id) VALUES (?, ?, ?, ?, ?, ?)");
-		select.run(user.gameId, gamers[0], gamers[1], gamers[2], gamers[3], user.userId);
+		const select = db.prepare("INSERT INTO local_tournaments (game_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?)");
+		select.run(gameId, gamers[0], gamers[1], gamers[2], gamers[3]);
 		return Result.SUCCESS;
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
-
-export function joinLocalTournament(db: DatabaseSync, gameId: string, user: User): Result {
-	try {
-		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
-		const game = select.get(gameId);
-
-		if (user.gameId != gameId && 4 == game.count)
-			return Result.ERR_GAME_FULL;
-
-		user.gameId = gameId;
-		return updateGameId(db, user);
 	}
 	catch (e) {
 		return Result.ERR_DB;
@@ -83,26 +65,10 @@ export function updateLocalTournament(db: DatabaseSync, gameId: string, match: L
 	}
 }
 
-// export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: TournamentMatch[]): Result {
-// 	try {
-// 		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
-// 			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
-// 			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
-// 			const select = db.prepare(`UPDATE tournaments SET m1_g1_nick = NULL, m1_g2_nick = NULL,
-// 				m2_g1_nick = NULL, m2_g2_nick = NULL, m1_g1_user_id = NULL, m1_g2_user_id = NULL,
-// 				m2_g1_user_id = NULL, m2_g2_user_id = NULL,
-// 				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
-// 			select.run(g1.nick, g2.nick, g1.userId, g2.userId, gameId);
-// 			return Result.SUCCESS;
-// 		}
-// 	}
-// 	catch (e) {
-// 		return Result.ERR_DB;
-// 	}
-// }
-
 function sqlToLocalTournament(tournament: Record<string, SQLOutputValue>): LocalTournament {
+
 	return {
+		finished: Boolean(tournament.m3_g1_score && tournament.m3_g2_score),
 		matches: [
 			sqlToLocalMatch(tournament, 1),
 			sqlToLocalMatch(tournament, 2),

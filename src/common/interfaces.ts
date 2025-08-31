@@ -1,13 +1,18 @@
 export enum Result {
+	ERR_AVATAR_TOO_BIG = "ERR_AVATAR_TOO_BIG",
+	ERR_BAD_PASSWORD = "ERR_BAD_PASSWORD",
 	ERR_BAD_TOTP = "ERR_BAD_TOTP",
 	ERR_BAD_TOURNAMENT = "ERR_BAD_TOURNAMENT",
 	ERR_DB = "ERR_DB",
 	ERR_EMAIL_IN_USE = "ERR_EMAIL_IN_USE",
 	ERR_EXPIRED_TOKEN = "ERR_EXPIRED_TOKEN",
 	ERR_FORBIDDEN = "ERR_FORBIDDEN",
+	ERR_GOOGLE = "ERR_GOOGLE",
 	ERR_GAME_FULL = "ERR_GAME_FULL",
+	ERR_NO_NEW_PASSWORD = "ERR_NO_NEW_PASSWORD",
 	ERR_NO_USER = "ERR_NO_USER",
 	ERR_NOT_FOUND = "ERR_NOT_FOUND",
+	ERR_PASSWORDS_DONT_MATCH = "ERR_PASSWORDS_DONT_MATCH",
 	ERR_SAME_EMAIL = "ERR_SAME_EMAIL",
 	ERR_UNIQUE = "ERR_UNIQUE",
 	SUCCESS = "SUCCESS"
@@ -68,6 +73,12 @@ export enum GameType {
 	TOURNAMENT = "TOURNAMENT"
 }
 
+export enum TotpType {
+	APP = "APP",
+	DISABLED = "DISABLED",
+	EMAIL = "EMAIL"
+}
+
 export interface User {
 	accessToken?: string,
 	avatar: string,
@@ -78,7 +89,7 @@ export interface User {
 	password: string,
 	refreshToken: string,
 	totpEmail: boolean,
-	totpEnabled: boolean,
+	totpType: TotpType,
 	totpSecret: string,
 	totpVerified: boolean,
 	userId: number,
@@ -183,6 +194,7 @@ export interface LocalMatch {
 }
 
 export interface LocalTournament {
+	finished: boolean,
 	matches: LocalMatch[]
 }
 
@@ -211,6 +223,7 @@ export interface TournamentMatch {
 }
 
 export interface Tournament {
+	finished: boolean,
 	matches: TournamentMatch[]
 }
 
