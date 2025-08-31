@@ -1,6 +1,6 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { actuallyStartingMatch, gameReady, startingMatch, tournamentChat, updateMatchDetails } from "./remoteMatchesMessages.js";
-import { joinOrLeaveTournament, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
+import { actuallyStartingMatch, gameReady, startingMatch, updateMatchDetails } from "./remoteMatchesMessages.js";
+import { joinOrLeaveTournament, tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
 let socket: WebSocket | null = null;

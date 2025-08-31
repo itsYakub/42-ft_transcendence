@@ -62,17 +62,6 @@ export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[])
 	}
 }
 
-export function addLocalTournament(db: DatabaseSync, gameId: string, gamers: string[]): Result {
-	try {
-		const select = db.prepare("INSERT INTO tournaments (game_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?)");
-		select.run(gameId, gamers[0], gamers[1], gamers[2], gamers[3]);
-		return Result.SUCCESS;
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
-
 export function joinTournament(db: DatabaseSync, gameId: string, user: User): Result {
 	try {
 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);

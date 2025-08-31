@@ -170,6 +170,22 @@ export interface TournamentGamer {
 	userId: number
 }
 
+export interface LocalGamer {
+	nick: string,
+	score: number,
+	userId?: number
+}
+
+export interface LocalMatch {
+	g1: LocalGamer,
+	g2?: LocalGamer,
+	matchNumber: number
+}
+
+export interface LocalTournament {
+	matches: LocalMatch[]
+}
+
 export interface Gamer {
 	avatar?: string,
 	nick: string,

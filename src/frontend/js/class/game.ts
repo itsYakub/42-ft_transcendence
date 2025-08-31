@@ -110,6 +110,23 @@ export class Game {
 
 	public actuallyStart() {
 		this.m_ball.start();
+		setTimeout(() => this.matchOver(), 1000);
+	}
+
+	// send the match info back to the frontend
+	// might need more fields later
+	private matchOver() {
+		this.m_ball.reset();
+		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+			detail: {
+				g1Score: 5,
+				g2Score: 10
+			}
+		}));
+		// print "winner message" or something
+
+		// close the dialog
+		setTimeout(() => this.m_dialog.close(), 2000);
 	}
 
 	public dispose() {

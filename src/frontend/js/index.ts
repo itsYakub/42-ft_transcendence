@@ -40,7 +40,7 @@ export function addListeners() {
 	authFunctions();
 	gameFunctions();
 	navbarFunctions();
-	//localTournamentListeners();
+	localTournamentListeners();
 	tournamentListeners();
 	userChatsFunctions();
 	usersFunctions();

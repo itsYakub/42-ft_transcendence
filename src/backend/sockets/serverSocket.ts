@@ -82,7 +82,6 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 			tournamentLeaveReceived(fastify, db, user, message);
 			break;
 		case MessageType.TOURNAMENT_GAMER_READY:
-			console.log(message);
 			tournamentGamerReadyReceived(fastify, db, user, message);
 			break;
 		case MessageType.TOURNAMENT_MATCH_END:

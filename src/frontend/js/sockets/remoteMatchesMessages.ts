@@ -22,24 +22,6 @@ export function matchGamerLeaving() {
 	});
 }
 
-/*
-	A chat message has been sent to a game (match/tournament)
-*/
-export async function tournamentChat(user: User, message: Message) {
-	if ("game" != currentPage())
-		return;
-
-	if (user.gameId == message.gameId) {
-		const messagesBox = await fetch("/api/game-chats");
-		const messages = await messagesBox.json();
-		if (Result.SUCCESS == messages.result) {
-			const tournamentMessagesDiv = document.querySelector("#tournamentMessagesDiv");
-			if (tournamentMessagesDiv)
-				tournamentMessagesDiv.innerHTML = messages.value;
-		}
-	}
-}
-
 export async function updateMatchDetails(user: User, message: Message) {
 	if ("game" == currentPage() && user.gameId == message.gameId) {
 		console.log("for me");

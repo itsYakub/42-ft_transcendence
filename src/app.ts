@@ -32,6 +32,7 @@ import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
 import { initTournamentsDb } from "./backend/db/tournamentsDb.js";
 import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
 import { initMatchesDb } from "./backend/db/matchesDb.js";
+import { initLocalTournamentsDb } from "./backend/db/localTournamentsDb.js";
 
 const __dirname = import.meta.dirname;
 
@@ -165,6 +166,7 @@ try {
 	initFoesDb(db);
 	initFriendsDb(db);
 	initGameChatsDb(db);
+	initLocalTournamentsDb(db);
 	initMatchesDb(db);
 	initMatchResultsDb(db, mockData.mockMatchResults);
 	initTournamentsDb(db);

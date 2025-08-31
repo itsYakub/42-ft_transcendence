@@ -4,12 +4,13 @@ import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
 import { matchLobbyView } from '../views/matchLobbyView.js';
 import { gameView } from '../views/gameView.js';
-import { FrameParams, Result, Tournament } from '../../common/interfaces.js';
+import { FrameParams, LocalTournament, Result, Tournament } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
 import { getTournament } from '../db/tournamentsDb.js';
 import { tournamentView } from '../views/tournamentView.js';
 import { tournamentLobbyView } from '../views/tournamentLobbyView.js';
 import { localTournamentView } from '../views/localTournamentView.js';
+import { getLocalTournament } from '../db/localTournamentsDb.js';
 
 export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -20,14 +21,13 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 		if (user.gameId) {
 			const gameId = user.gameId;
 
-			const tournamentBox = getTournament(db, gameId); console.log(tournamentBox);
-			if (Result.SUCCESS == tournamentBox.result) {
-				const tournament = tournamentBox.contents;
-				if (!tournament.matches[0].g1.userId)
-					return localTournament(db, tournament, request, reply);
+			const tournamentBox = getTournament(db, gameId);
+			if (Result.SUCCESS == tournamentBox.result)
+				return (remoteTournament(db, tournamentBox.contents, request, reply));
 
-				return (remoteTournament(db, tournament, request, reply));
-			}
+			const localTournamentBox = getLocalTournament(db, gameId);
+			if (Result.SUCCESS == localTournamentBox.result)
+				return localTournament(db, localTournamentBox.contents, request, reply);
 
 			return lobby(db, request, reply);
 		}
@@ -50,7 +50,7 @@ export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	});
 }
 
-function localTournament(db: DatabaseSync, tournament: Tournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+function localTournament(db: DatabaseSync, tournament: LocalTournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
 	const user = request.user;
 	const language = request.language;
 

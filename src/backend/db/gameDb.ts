@@ -11,7 +11,7 @@ export function getGames(db: DatabaseSync): Box<Game[]> {
 		};
 	}
 	catch (e) {
-		console.log(e);
+		console.log("getGames", e);
 		return {
 			result: Result.ERR_DB
 		};

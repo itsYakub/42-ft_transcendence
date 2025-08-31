@@ -58,6 +58,24 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 	}
 }
 
+/*
+	A chat message has been sent to a tournament
+*/
+export async function tournamentChat(user: User, message: Message) {
+	if ("game" != currentPage())
+		return;
+
+	if (user.gameId == message.gameId) {
+		const messagesBox = await fetch("/api/game-chats");
+		const messages = await messagesBox.json();
+		if (Result.SUCCESS == messages.result) {
+			const tournamentMessagesDiv = document.querySelector("#tournamentMessagesDiv");
+			if (tournamentMessagesDiv)
+				tournamentMessagesDiv.innerHTML = messages.value;
+		}
+	}
+}
+
 export async function updateTournamentDetails(user: User, message: Message) {
 	if ("game" == currentPage() && user.gameId == message.gameId) {
 		console.log("for me");
@@ -118,7 +136,6 @@ export async function tournamentMatchStart(user: User, message: Message) {
 }
 
 export function tournamentOver(user: User, message: Message) {
-	console.log(message);
 	if ("game" != currentPage() || user.gameId != message.gameId)
 		return;
 

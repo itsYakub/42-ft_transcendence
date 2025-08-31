@@ -1,4 +1,5 @@
 import { Box, Result } from "../../../common/interfaces.js";
+import { g_game, GameMode } from "../class/game.js";
 import { navigate, showAlert } from "./../index.js";
 
 async function generateTournament(names: string[]) {
@@ -15,18 +16,39 @@ async function generateTournament(names: string[]) {
 		})
 	});
 
-	const json = await response.text();
-	console.log(json);
-	return json;
+	return await response.text();
 }
 
 export function localTournamentListeners() {
 
-	const nextMatchButton = <HTMLButtonElement>document.querySelector("#nextMatchButton");
-	if (nextMatchButton) {
-		nextMatchButton.addEventListener("click", async () => {
-			//TODO change this
-			//startMatch(null);//nextMatchButton.dataset.p1, nextMatchButton.dataset.p2);
+	const nextTournamentMatchButton = <HTMLButtonElement>document.querySelector("#nextTournamentMatchButton");
+	if (nextTournamentMatchButton) {
+		nextTournamentMatchButton.addEventListener("click", async function () {
+			const dialog = document.querySelector("#gameDialog");
+			if (dialog) {
+				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+					const response = await fetch("/api/tournament/update", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({
+							g1Nick: this.dataset.g1,
+							g2Nick: this.dataset.g2,
+							g1Score: e.detail["g1Score"],
+							g2Score: e.detail["g2Score"],
+							matchNumber: this.dataset.match
+						})
+					});
+					if (Result.SUCCESS == await response.text())
+						navigate("/game");
+				})
+			}
+			setTimeout(async () => {
+				g_game.setupElements(GameMode.GAMEMODE_PVP, {
+					nick: "John"
+				});
+			}, 1000);
 		});
 	}
 
@@ -49,8 +71,7 @@ export function localTournamentListeners() {
 					return;
 				}
 
-				const code = await generateTournament(names);
-				if (Result.SUCCESS != code) {
+				if (Result.SUCCESS != await generateTournament(names)) {
 					showAlert(Result.ERR_BAD_TOURNAMENT);
 					return;
 				}
