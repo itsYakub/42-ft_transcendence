@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs';
 
 import { Shape } from './shape.js';
-import { g_gamePlayableArea } from './game.js';
+import { g_game, g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';
 
 
@@ -46,27 +46,64 @@ export class Ball extends Shape {
 		 *   Please, consider this as a server operation somehow.
 		 *   Preferably it should be handled by some other server-instance and then sent to the clients.
 		 * */
-		this.reset();
 		do {
-			this.m_vel.x = Math.floor(Math.random() * 3.0 + -1.0);
-		} while(this.m_vel.x == 0.0);
+			this.vel.x = Math.floor(Math.random() * 3.0 + -1.0);
+		} while(this.vel.x == 0.0);
 		do {
-			this.m_vel.y = Math.floor(Math.random() * 3.0 + -1.0);
-		} while(this.m_vel.y == 0.0);
+			this.vel.y = Math.floor(Math.random() * 3.0 + -1.0);
+		} while(this.vel.y == 0.0);
+
+		/* Simple position-prediction for the ball
+		 * */
+		this.simulatePosition();
 	}
 
 	public reset() {
-		this.m_pos.x = this.m_pos.y = 0.0;
-		this.m_vel.x = this.m_vel.y = 0.0;
+		this.pos.x = this.pos.y = 0.0;
+		this.vel.x = this.vel.y = 0.0;
+		setTimeout(() => {
+			this.start();
+		}, 1000);
 	}
 
 	public update() {
-		this.wallBounceCheck();
+		if (g_game.gameOver) { return; }
+		
 		this.playerBounceCheck();
+		this.wallBounceCheck();
 
 		/* Update the base 'Shape' class
 		 * */
 		super.update();
+	}
+
+	/* NOTE(joleksia):
+	 *  This function simulates the future ball position after the bounce
+	 * */
+	public simulatePosition() : BABYLON.Vector2 {
+		let	pos : BABYLON.Vector2 = new BABYLON.Vector2(this.pos.x, this.pos.y);
+		let	vel : BABYLON.Vector2 = new BABYLON.Vector2(this.vel.x, this.vel.y);
+		/* This is kept here for safety purposes to avoid infinite loops
+		 * */
+		let	sim_cap : number = 128;
+
+		while (sim_cap-- > 0) {
+			if (/* Bounce: TOP */    (pos.y - this.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
+				/* Bounce: BOTTOM */ (pos.y + this.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
+			) {
+				vel.y *= -1.0;
+			}
+			else if (/* Bounce: LEFT */  (pos.x - this.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
+					 /* Bounce: RIGHT */ (pos.x + this.siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
+			) {
+				break;
+			}
+			
+			pos.x += vel.x;
+			pos.y += vel.y;
+		}
+		
+		return (pos);
 	}
 
 	/* SECTION:
@@ -77,14 +114,15 @@ export class Ball extends Shape {
 		/* NOTE(joleksia):
 		 *  This should also be a 'lose condition' and should send a 'goal event' (or something like that)
 		 * */
-		if (/* Bounce: LEFT */  (this.m_pos.x - this.m_siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
-			/* Bounce: RIGHT */ (this.m_pos.x + this.m_siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
+		if (/* Bounce: LEFT */  (this.pos.x - this.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
+			/* Bounce: RIGHT */ (this.pos.x + this.siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
 		) {
+			g_game.score(this.pos.x > 0.0, this.pos.x < 0.0);
 			this.m_vel.x *= -1.0;
 		}
 		
-		if (/* Bounce: TOP */    (this.m_pos.y - this.m_siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
-			/* Bounce: BOTTOM */ (this.m_pos.y + this.m_siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
+		if (/* Bounce: TOP */    (this.pos.y - this.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
+			/* Bounce: BOTTOM */ (this.pos.y + this.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
 		) {
 			this.m_vel.y *= -1.0;
 		}
@@ -115,39 +153,39 @@ export class Ball extends Shape {
 
 		/* Ball - Player0 (left) bounce
 		 * */
-		if (this.m_box.intersectsMesh(p0) && this.m_vel.x < 0.0) {
+		if (this.m_box.intersectsMesh(p0) && this.vel.x < 0.0) {
 			/* Horizontal bounce (on X axis: left-right)
 			 * */
 			if (Math.abs((b_tl.x) - (p0_tl.x + p0_tl.z)) < p0_tl.z) {
-				this.m_vel.x *= -1.0;
+				this.vel.x *= -1.0;
 			}
 			
 			/* Vertical bounce (on Y axis: top-down)
 			 * */
 			else if (
-				Math.abs((b_tl.y + b_tl.w) - (p0_tl.y)) < p0_tl.w && this.m_vel.y > 0 ||
-				Math.abs((b_tl.y) - (p0_tl.y + p0_tl.w)) < p0_tl.w && this.m_vel.y < 0
+				Math.abs((b_tl.y + b_tl.w) - (p0_tl.y)) < p0_tl.w && this.vel.y > 0 ||
+				Math.abs((b_tl.y) - (p0_tl.y + p0_tl.w)) < p0_tl.w && this.vel.y < 0
 			) {
-				this.m_vel.y *= -1.0;
+				this.vel.y *= -1.0;
 			}
 		}
 		
 		/* Ball - Player1 (right) bounce
 		 * */
-		if (this.m_box.intersectsMesh(p1) && this.m_vel.x > 0.0) {
+		if (this.m_box.intersectsMesh(p1) && this.vel.x > 0.0) {
 			/* Horizontal bounce (on X axis: left-right)
 			 * */
 			if (Math.abs((b_tl.x + b_tl.z) - (p1_tl.x)) < p1_tl.w) {
-				this.m_vel.x *= -1.0;
+				this.vel.x *= -1.0;
 			}
 			
 			/* Vertical bounce (on Y axis: top-down)
 			 * */
 			else if (
-				Math.abs((b_tl.y + b_tl.w) - (p1_tl.y)) < p1_tl.w && this.m_vel.y > 0 ||
-				Math.abs((b_tl.y) - (p1_tl.y + p1_tl.w)) < p1_tl.w && this.m_vel.y < 0
+				Math.abs((b_tl.y + b_tl.w) - (p1_tl.y)) < p1_tl.w && this.vel.y > 0 ||
+				Math.abs((b_tl.y) - (p1_tl.y + p1_tl.w)) < p1_tl.w && this.vel.y < 0
 			) {
-				this.m_vel.y *= -1.0;
+				this.vel.y *= -1.0;
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs'
 import * as SIMPLEX from 'simplex-noise';
 
-import { g_gameTime, g_gamePlayableArea } from './game.js';
+import { g_game, g_gameTime, g_gamePlayableArea } from './game.js';
 
 
 
@@ -57,6 +57,8 @@ export class Ground {
 		const	_position_scale : number = 0.2;
 		const	_time_scale : number = 0.1;
 		const	_value_offset : number = 0.2;
+
+		if (g_game.gameOver) { return; }
 
 		/* NOTE(joleksia):
 		 *  We can mess around with those values to get even better noise effects

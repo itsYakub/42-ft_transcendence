@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs';
 
 import { Shape } from './shape.js';
-import { Game, g_game, GameMode } from './game.js';
+import { Game, GameMode, g_game } from './game.js';
 import { g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';
 
@@ -27,6 +27,7 @@ export class Player extends Shape {
 	private	m_mode : PlayerMode;
 	private	m_keyUp : string;
 	private	m_keyDown : string;
+	private	m_score : number;
 
 	/* AI Section
 	 * */
@@ -40,7 +41,7 @@ export class Player extends Shape {
 	public constructor(canvas : HTMLCanvasElement, scene : BABYLON.Scene, side : number, mode : number) {
 		/* Base constructor
 		 * */
-		super(scene, new BABYLON.Vector2(g_playerCenterOffset, 0.0), new BABYLON.Vector3(0.2, 0.2, 2.0), BABYLON.Color3.White());
+		super(scene, new BABYLON.Vector2(g_playerCenterOffset, 0.0), new BABYLON.Vector3(0.2, 0.2, 1.0), BABYLON.Color3.White());
 
 		/* Assign the references
 		 * */
@@ -75,6 +76,10 @@ export class Player extends Shape {
 		 * */
 		this.createMesh();
 
+		/* Reset the player's score
+		 * */
+		this.m_score = 0.0;
+
 		/* Set the AI data
 		 * */
 		this.m_aiTimerElapsed = 0.0;
@@ -87,10 +92,20 @@ export class Player extends Shape {
 	 *  Public Methods
 	 * */
 
+	get	score() { return (this.m_score); }
+	set score(val : number) { this.m_score = val; }
+
+	public reset() {
+		this.pos.y = 0.0;
+		this.vel.x = this.vel.y = 0.0;
+	}
+
 	public update() {
 		let	up : boolean;
 		let down : boolean;
 
+		if (g_game.gameOver) { return; }
+		
 		/* TODO(joleksia):
 		 *  Create a basic player/ai behaviour
 		 * */
@@ -104,8 +119,8 @@ export class Player extends Shape {
 				 *  Implement AI
 				 * */
 				this.aiBehaviour();
-				up = this.m_box.position.y < this.m_aiDest.y;
-				down = this.m_box.position.y > this.m_aiDest.y;
+				up = this.pos.y < this.m_aiDest.y;
+				down = this.pos.y > this.m_aiDest.y;
 			} break;
 		}
 		this.movePlayer(up, down);
@@ -129,7 +144,7 @@ export class Player extends Shape {
 		if (up) { dir = 1.0; }
 		else if (down) { dir = -1.0 };
 
-		this.m_vel.y = dir;
+		this.vel.y = dir;
 	}
 
 	private aiBehaviour() {
@@ -138,35 +153,12 @@ export class Player extends Shape {
 		 * - if m_aiTimerElasped >= 1.0: get the potential ball position and return it
 		 * */
 		if (this.m_aiTimerElapsed >= 1.0) {
-			let	vel : BABYLON.Vector2;
-			let	pos : BABYLON.Vector2;
-
-			vel.x = g_game.ball.vel.x;
-			vel.y = g_game.ball.vel.y;
-			pos.x = g_game.ball.pos.x;
-			pos.y = g_game.ball.pos.y;
-			while (Math.abs(this.pos.x) < Math.abs(pos.x)) {	
-				if (/* Bounce: LEFT */  (pos.x - g_game.ball.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
-					/* Bounce: RIGHT */ (pos.x + g_game.ball.m_siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
-				) {
-					vel.x *= -1.0;
-				}
-				
-				if (/* Bounce: TOP */    (pos.y - g_game.ball.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
-					/* Bounce: BOTTOM */ (pos.y + g_game.ball.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
-				) {
-					vel.y *= -1.0;
-				}
-				pos.x += vel.x;
-				pos.y += vel.y;
-			}
-
-			this.m_aiDest.x = pos.x;
-			this.m_aiDest.y = pos.y;
 			this.m_aiTimerElapsed = 0.0;
 
+			this.m_aiDest = g_game.ball.simulatePosition();
+
 			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
-			console.log('[ INFO ] Current pallet position: ' + this.m_pos);
+			console.log('[ INFO ] Current pallet position: ' + this.pos);
 		}
 		else if (this.m_aiTimerElapsed < 1.0) {
 			this.m_aiTimerElapsed += g_game.deltaTime;
@@ -179,4 +171,4 @@ export class Player extends Shape {
 /* SECTION:
  *  Global game object
  * */
-export var	g_playerCenterOffset : number = 6.0;
+export var	g_playerCenterOffset : number = 6.5;
