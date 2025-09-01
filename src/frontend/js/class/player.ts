@@ -96,14 +96,16 @@ export class Player extends Shape {
 	set score(val : number) { this.m_score = val; }
 
 	public reset() {
-		this.m_pos.y = 0.0;
-		this.m_vel.x = this.m_vel.y = 0.0;
+		this.pos.y = 0.0;
+		this.vel.x = this.vel.y = 0.0;
 	}
 
 	public update() {
 		let	up : boolean;
 		let down : boolean;
 
+		if (g_game.gameOver) { return; }
+		
 		/* TODO(joleksia):
 		 *  Create a basic player/ai behaviour
 		 * */
@@ -142,7 +144,7 @@ export class Player extends Shape {
 		if (up) { dir = 1.0; }
 		else if (down) { dir = -1.0 };
 
-		this.m_vel.y = dir;
+		this.vel.y = dir;
 	}
 
 	private aiBehaviour() {
@@ -156,7 +158,7 @@ export class Player extends Shape {
 			this.m_aiDest = g_game.ball.simulatePosition();
 
 			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
-			console.log('[ INFO ] Current pallet position: ' + this.m_pos);
+			console.log('[ INFO ] Current pallet position: ' + this.pos);
 		}
 		else if (this.m_aiTimerElapsed < 1.0) {
 			this.m_aiTimerElapsed += g_game.deltaTime;

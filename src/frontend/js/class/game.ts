@@ -58,7 +58,13 @@ export class Game {
 	 *  Public Methods
 	 * */
 
+	get	gameOver() { return (this.m_gameOver); }
+	get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
+	get ball() { return (this.m_ball); }
+
 	public setupElements(mode: GameMode, player1: GamePlayer, player2?: GamePlayer) {
+		this.m_gameOver = false;
+
 		/* Get the dialog element from the document
 		 * */
 		console.log('[ INFO ] Referencing the modal dialog');
@@ -76,7 +82,7 @@ export class Game {
 
 		/* Setup keyboard input map
 		 * TODO(joleksia):
-		 *  This is just a temporary solution and should be probably switched ASAP
+		 *  This is just a temporary solution and should be probably switched ASAP (@agarbacz?)
 		 * */
 		Game.keys = [];
 		window.addEventListener("keydown", function (e) {
@@ -136,6 +142,28 @@ export class Game {
 		}
 	}
 
+	public dispose() {
+		console.log('[ INFO ] Disposing babylon scene');
+		this.m_scene.dispose();
+		this.m_sceneCreated = false;
+		
+		console.log('[ INFO ] Disposing babylon engine');
+		this.m_engine.stopRenderLoop();
+		this.m_engine.dispose();
+		this.m_engineCreated = false;
+
+		console.log('[ INFO ] Removing canvas object from dialog');
+		this.m_dialog.removeChild(this.m_canvas);
+		this.m_canvasCreated = false;
+
+		console.log('[ INFO ] Closing dialog');
+		this.m_dialog.close();
+
+		console.log('[ INFO ] Game is disposed...');
+		this.m_gameOver = true;
+	}
+
+
 	public score(p0 : boolean, p1 : boolean) {
 		/* Increment the player score.
 		 * */
@@ -158,34 +186,10 @@ export class Game {
 		 *  to wait before the actual match starts. It also must be in sync with other clients!
 		 *  @agarbacz
 		 * */
-		this.m_ball.reset();
 		this.m_player0.reset();
 		this.m_player1.reset();
+		this.m_ball.reset();
 	}
-
-	public dispose() {
-		console.log('[ INFO ] Disposing babylon scene');
-		this.m_scene.dispose();
-		this.m_sceneCreated = false;
-		
-		console.log('[ INFO ] Disposing babylon engine');
-		this.m_engine.stopRenderLoop();
-		this.m_engine.dispose();
-		this.m_engineCreated = false;
-
-		console.log('[ INFO ] Removing canvas object from dialog');
-		this.m_dialog.removeChild(this.m_canvas);
-		this.m_canvasCreated = false;
-
-		console.log('[ INFO ] Closing dialog');
-		this.m_dialog.close();
-
-		console.log('[ INFO ] Game is disposed...');
-		this.m_gameOver = true;
-	}
-
-	public get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
-	public get ball() { return (this.m_ball); }
 
 	/* SECTION:
 	 *  Private Methods
@@ -194,6 +198,9 @@ export class Game {
 	private updateRenderLoop() {
 		/* SECTION: Update
 		 * */
+		if (this.gameOver) {
+			return;
+		}
 
 		/* Update game time
 		 * */
@@ -201,10 +208,10 @@ export class Game {
 
 		/* Update game components
 		 * */
+		this.m_ground.update();
 		this.m_player0.update();
 		this.m_player1.update();
 		this.m_ball.update();
-		this.m_ground.update();
 
 		/* SECTION: Render
 		 * */
@@ -276,6 +283,6 @@ export class Game {
  * */
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
-export const g_gameScoreTotal: number = 10.0;
+export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
 
 export var g_game: Game = new Game();
