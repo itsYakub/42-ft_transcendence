@@ -39,6 +39,19 @@ export class Game {
 	private m_ball: Ball;
 	private m_ground: Ground;
 
+	private	m_canvasCreated: boolean = false;
+	private	m_engineCreated: boolean = false;
+	private	m_sceneCreated: boolean = false;
+
+	/* TODO(joleksia):
+	 *  This variable is here to tell every game object to no update anymore.
+	 *  Basically, every method should now check if this flag is set to tru or false.
+	 *  If true: no update;
+	 *  If false: update normally;
+	 *  This also should be in sync between clients.
+	 * */
+	private	m_gameOver: boolean = false;
+
 	public static keys: boolean[];
 
 	/* SECTION:
@@ -51,10 +64,14 @@ export class Game {
 		console.log('[ INFO ] Referencing the modal dialog');
 		this.m_dialog = document.getElementById('gameDialog') as HTMLDialogElement;
 
-		/* Create a canvas element and set it as the child of the dialog
+		/* Check if there's no scene created yet.
+		 * If so, create a new one
 		 * */
-		console.log('[ INFO ] Creating a canvas object');
-		this.m_canvas = document.createElement('canvas');
+		if (!this.m_canvasCreated) {
+			console.log('[ INFO ] Creating a canvas object');
+			this.m_canvas = document.createElement('canvas');
+			this.m_canvasCreated = true;
+		}
 		this.m_dialog.appendChild(this.m_canvas);
 
 		/* Setup keyboard input map
@@ -72,12 +89,17 @@ export class Game {
 
 		/* Create a babylon layer
 		 * */
-		console.log('[ INFO ] Creating a babylon engine');
-		this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true, stencil: true });
+		if (!this.m_engineCreated) {
+			console.log('[ INFO ] Creating a babylon engine');
+			this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true, stencil: true });
+			this.m_engineCreated = true;
+		}
 
-		console.log('[ INFO ] Creating a babylon scene');
-		this.m_mode = mode;
-		this.m_scene = this.createScene();
+		if (!this.m_sceneCreated) {
+			console.log('[ INFO ] Creating a babylon scene');
+			this.m_mode = mode;
+			this.m_scene = this.createScene();
+		}
 
 		/* Display the game dialog
 		 * */
@@ -89,7 +111,12 @@ export class Game {
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
 
-		this.m_engine.runRenderLoop(() => this.updateRenderLoop());
+		/* If the list of active render loops is equal to zero,
+		 * start a new render loop
+		 * */
+		if (!this.m_engine.activeRenderLoops.length) {
+			this.m_engine.runRenderLoop(() => this.updateRenderLoop());
+		}
 
 		console.log('[ INFO ] Game is running...');
 
@@ -103,57 +130,58 @@ export class Game {
 				}), 1000);
 		}
 		else {
-			setTimeout(() =>
-				this.actuallyStart(), 1000);
+			setTimeout(() => {
+				this.m_ball.start();
+			}, 1000);
 		}
 	}
 
-	public actuallyStart() {
-		this.m_ball.start();
-		setTimeout(() => this.matchOver(), 1000);
-	}
+	public score(p0 : boolean, p1 : boolean) {
+		/* Increment the player score.
+		 * */
+		if (p0) { this.m_player0.score++ };
+		if (p1) { this.m_player1.score++ };
+		console.log('[ INFO ] Current score: p0:' + this.m_player0.score + ' | p1:' + this.m_player1.score);
 
-	// send the match info back to the frontend
-	// might need more fields later
-	private matchOver() {
+		/* Check if the someone passed the score threshold.
+		 * If so, the match is over!
+		 * */
+		if (this.m_player0.score >= g_gameScoreTotal ||
+			this.m_player1.score >= g_gameScoreTotal
+		) {
+			this.matchOver();
+			return;
+		}
+		
+		/* TODO(joleksia):
+		 *  The ball, in the 'reset()' function, should also set some sort of delay
+		 *  to wait before the actual match starts. It also must be in sync with other clients!
+		 *  @agarbacz
+		 * */
 		this.m_ball.reset();
-
-		const losingScore = Math.floor(Math.random() * 10);
-		if (0 == Math.floor(Math.random() * 2)) {
-			this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
-				detail: {
-					g1Score: 10,
-					g2Score: losingScore
-				}
-			}));
-		}
-		else {
-			this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
-				detail: {
-					g1Score: losingScore,
-					g2Score: 10
-				}
-			}));
-		}
-
-		// show "winner message" or something
-
-		// close the dialog
-		setTimeout(() => this.m_dialog.close(), 2000);
+		this.m_player0.reset();
+		this.m_player1.reset();
 	}
 
 	public dispose() {
+		console.log('[ INFO ] Disposing babylon scene');
+		this.m_scene.dispose();
+		this.m_sceneCreated = false;
+		
 		console.log('[ INFO ] Disposing babylon engine');
 		this.m_engine.stopRenderLoop();
 		this.m_engine.dispose();
+		this.m_engineCreated = false;
 
 		console.log('[ INFO ] Removing canvas object from dialog');
 		this.m_dialog.removeChild(this.m_canvas);
+		this.m_canvasCreated = false;
 
 		console.log('[ INFO ] Closing dialog');
 		this.m_dialog.close();
 
 		console.log('[ INFO ] Game is disposed...');
+		this.m_gameOver = true;
 	}
 
 	public get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
@@ -188,6 +216,23 @@ export class Game {
 
 		this.m_scene.render()
 	}
+	
+	// send the match info back to the frontend
+	// might need more fields later
+	private matchOver() {
+		this.m_ball.reset();
+
+		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+			detail: {
+				g1Score: this.m_player0.score,
+				g2Score: this.m_player1.score
+			}
+		}));
+
+		// show "winner message" or something
+		this.dispose();
+	}
+
 
 	private createScene() {
 		let scene = new BABYLON.Scene(this.m_engine);
@@ -211,13 +256,14 @@ export class Game {
 		 * */
 		this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
 		this.m_ball = new Ball(this.m_canvas, scene);
-		if (this.m_mode == GameMode.GAMEMODE_PVP) {
-			this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
-			this.m_player1 = new Player(this.m_canvas, scene, 1.0, 1.0);
-		}
-		if (this.m_mode == GameMode.GAMEMODE_AI) {
-			this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
-			this.m_player1 = new Player(this.m_canvas, scene, 1.0, 2.0);
+		this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
+		switch (this.m_mode) {
+			case (GameMode.GAMEMODE_PVP): {
+				this.m_player1 = new Player(this.m_canvas, scene, 1.0, 1.0);
+			} break;
+			case (GameMode.GAMEMODE_AI): {
+				this.m_player1 = new Player(this.m_canvas, scene, 1.0, 2.0);
+			} break;
 		}
 		return (scene);
 	}
@@ -230,5 +276,6 @@ export class Game {
  * */
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
+export const g_gameScoreTotal: number = 10.0;
 
 export var g_game: Game = new Game();

@@ -77,7 +77,10 @@ export function actuallyStartingMatch(user: User, message: Message) {
 	if (message.gameId != user.gameId)
 		return;
 
-	g_game.actuallyStart();
+	/* TODO(joleksia):
+	 *  @lwillis do we really need it here?
+	 * */
+	// g_game.actuallyStart();
 }
 
 // export async function gameReady(user: User, message: Message) {

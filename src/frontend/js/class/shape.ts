@@ -37,6 +37,15 @@ export class Shape {
 		this.m_vel = BABYLON.Vector2.Zero();
 	}
 
+	/* SECTION: Methods
+	 * */
+	public get	pos() { return (this.m_pos); }
+	public set	pos(vector : BABYLON.Vector2) { this.m_pos = vector; }
+	public get	vel() { return (this.m_vel); }
+	public set	vel(vector : BABYLON.Vector2) { this.m_vel = vector; }
+	public get	siz() { return (this.m_siz); }
+	public set	siz(vector : BABYLON.Vector3) { this.m_siz = vector; }
+
 	public	update() {
 		this.m_pos.x += this.m_vel.x * g_game.deltaTime * 4.0;
 		this.m_pos.y += this.m_vel.y * g_game.deltaTime * 4.0;
@@ -67,14 +76,6 @@ export class Shape {
 		this.m_box.position.z = this.m_pos.y;
 	}
 
-	/* SECTION: Methods
-	 * */
-	public get	pos() { return (this.m_pos); }
-	public set	pos(vector : BABYLON.Vector2) { this.m_pos = vector; }
-	public get	vel() { return (this.m_vel); }
-	public set	vel(vector : BABYLON.Vector2) { this.m_vel = vector; }
-	public get	siz() { return (this.m_siz); }
-	public set	siz(vector : BABYLON.Vector3) { this.m_siz = vector; }
 
 	public	createMesh() {
 		let light0 = new BABYLON.PointLight(this.m_name+'light0', new BABYLON.Vector3(0, this.m_siz.y, 0), this.m_scene)
