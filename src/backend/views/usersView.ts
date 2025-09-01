@@ -25,7 +25,7 @@ export function usersView(users: User[], user: User): string {
 					</div>
 					<div class="h-150 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
 						${usersHtml(users)}
-					</div>					
+					</div>
 				</div>
 			</div>
 		</div>
@@ -36,7 +36,7 @@ export function usersView(users: User[], user: User): string {
 
 function switcherHtml(): string {
 	return `
-		<div class="flex flex-row justify-center mb-2 gap-2">
+		<div class="flex flex-row justify-center items-center mb-2 gap-2">
 			<div class="disabled p-2 rounded-lg text-gray-600 bg-gray-800">All</div>
 			<div id="friendsButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Friends</div>
 			<div id="foesButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Foes</div>

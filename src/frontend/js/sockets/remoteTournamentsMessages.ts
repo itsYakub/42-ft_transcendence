@@ -1,4 +1,4 @@
-import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
+import { Message, MessageType, Result, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/tournament.js";
@@ -40,11 +40,11 @@ export function sendTournamentMessage(chat: string) {
 	A user has entered or left a tournament
 */
 export async function joinOrLeaveTournament(user: User, message: Message) {
-	if ("game" != currentPage())
+	if (!isMessageForMe(user, message))
 		return;
 
 	if (!user.gameId) {
-		navigate("/game");
+		navigate(window.location.href, false);
 		return;
 	}
 
@@ -53,8 +53,8 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 		if (tournamentDetailsContainer)
 			tournamentDetailsContainer.innerHTML = translate(getLanguage(), message.content);
 		const gamers = document.getElementsByClassName("tournamentGamer").length;
-		const tournamentTitle = document.querySelector("#tournamentTitle");
-		tournamentTitle.innerHTML = translate(getLanguage(), `%%TEXT_TOURNAMENT%% - ${gamers} / 4 %%TEXT_PLAYERS%%`);
+		const tournamentPlayersLegend = document.querySelector("#tournamentPlayersLegend");
+		tournamentPlayersLegend.innerHTML = translate(getLanguage(), `${gamers} / 4 %%TEXT_PLAYERS%%`);
 		tournamentListeners();
 	}
 }
@@ -63,7 +63,7 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 	A chat message has been sent to a tournament
 */
 export async function tournamentChat(user: User, message: Message) {
-	if ("game" != currentPage())
+	if (!isMessageForMe(user, message))
 		return;
 
 	if (user.gameId == message.gameId) {
@@ -78,34 +78,31 @@ export async function tournamentChat(user: User, message: Message) {
 }
 
 export async function updateTournamentDetails(user: User, message: Message) {
-	if ("game" == currentPage() && user.gameId == message.gameId) {
-		console.log("for me");
+	if (!isMessageForMe(user, message))
+		return;
 
-		const contentBox = await fetch("/api/tournament");
+	const contentBox = await fetch("/api/tournament");
 
-		const json = await contentBox.json();
-		if (Result.SUCCESS == json.result) {
-			const tournamentTitle = document.querySelector("#tournamentTitle");
-			if (tournamentTitle) {
-				if (3 == message.match?.matchNumber)
-					tournamentTitle.innerHTML = translate(getLanguage(), "%%TEXT_TOURNAMENT%% - %%TEXT_TOURNAMENT_FINAL%%");
-				else
-					tournamentTitle.innerHTML = translate(getLanguage(), "%%TEXT_TOURNAMENT%% - %%TEXT_TOURNAMENT_SEMI_FINALS%%");
-			}
+	const json = await contentBox.json();
+	if (Result.SUCCESS == json.result) {
+		const tournamentTitle = document.querySelector("#tournamentTitle");
+		if (tournamentTitle) {
+			if (3 == message.match?.matchNumber)
+				tournamentTitle.innerHTML = translate(getLanguage(), "%%TEXT_REMOTE_TOURNAMENT%% - %%TEXT_TOURNAMENT_FINAL%%");
+			else
+				tournamentTitle.innerHTML = translate(getLanguage(), "%%TEXT_REMOTE_TOURNAMENT%% - %%TEXT_TOURNAMENT_SEMI_FINALS%%");
+		}
 
-			const tournamentDetailsContainer = document.querySelector("#tournamentDetailsContainer");
-			if (tournamentDetailsContainer) {
-				tournamentDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
-				tournamentListeners();
-			}
+		const tournamentDetailsContainer = document.querySelector("#tournamentDetailsContainer");
+		if (tournamentDetailsContainer) {
+			tournamentDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
+			tournamentListeners();
 		}
 	}
-	else
-		console.log("not for me");
 }
 
 export async function tournamentMatchStart(user: User, message: Message) {
-	if ("game" != currentPage() || null == message.match)
+	if (!isMessageForMe(user, message) || null == message.match)
 		return;
 
 	const match = message.match;
@@ -142,7 +139,7 @@ export async function tournamentMatchStart(user: User, message: Message) {
 }
 
 export function tournamentOver(user: User, message: Message) {
-	if ("game" != currentPage() || user.gameId != message.gameId)
+	if (!isMessageForMe(user, message))
 		return;
 
 	const match = message.match;
@@ -156,4 +153,14 @@ export function tournamentOver(user: User, message: Message) {
 		navigate("/");
 	});
 	showAlert(`${translate(getLanguage(), "%%TEXT_CONGRATULATIONS%%")} ${gamer.nick}!`, false);
+}
+
+function isMessageForMe(user: User, message: Message) {
+	if (message.gameId != user.gameId)
+		return false;
+
+	if (UserType.GUEST != user.userType && "game" != currentPage())
+		return false;
+
+	return true;
 }

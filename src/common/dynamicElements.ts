@@ -6,8 +6,8 @@ import { MatchResult, User, UserChatMessage } from "./interfaces.js";
 export function profileActionbuttons(isfriend: boolean, isFoe: boolean, userId: number) {
 	if (!(isfriend || isFoe))
 		return `
-		<div id="addFriendButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_ADD_FRIEND%%</div>
-		<div id="addFoeButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_ADD_FOE%%</div>
+		<div id="addFriendButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 border border-gray-700 font-medium rounded-lg px-2 py-1">%%BUTTON_ADD_FRIEND%%</div>
+		<div id="addFoeButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 border border-gray-700 font-medium rounded-lg px-2 py-1">%%BUTTON_ADD_FOE%%</div>
 		`;
 
 	if (isfriend)

@@ -41,7 +41,7 @@ export function localTournamentListeners() {
 						})
 					});
 					if (Result.SUCCESS == await response.text())
-						navigate("/game");
+						navigate(window.location.href, false);
 				})
 			}
 			setTimeout(async () => {
@@ -75,7 +75,7 @@ export function localTournamentListeners() {
 					showAlert(Result.ERR_BAD_TOURNAMENT);
 					return;
 				}
-				navigate("/game");
+				navigate(window.location.href, false);
 			}
 		});
 	}

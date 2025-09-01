@@ -14,41 +14,43 @@ import { getLocalTournament } from '../db/localTournamentsDb.js';
 import { removeUserFromMatch } from '../db/userDB.js';
 
 export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => {
-		const user = request.user;
-		const language = request.language;
+	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => gamePageView(db, request, reply));
+}
 
-		// user is already in a game
-		if (user.gameId) {
-			const gameId = user.gameId;
+export function gamePageView(db: DatabaseSync, request: FastifyRequest, reply: FastifyReply) {
+	const user = request.user;
+	const language = request.language;
 
-			const tournamentBox = getTournament(db, gameId);
-			if (Result.SUCCESS == tournamentBox.result)
-				return (remoteTournament(db, tournamentBox.contents, request, reply));
+	// user is already in a game
+	if (user.gameId) {
+		const gameId = user.gameId;
 
-			const localTournamentBox = getLocalTournament(db, gameId);
-			if (Result.SUCCESS == localTournamentBox.result)
-				return localTournament(db, localTournamentBox.contents, request, reply);
+		const tournamentBox = getTournament(db, gameId);
+		if (Result.SUCCESS == tournamentBox.result)
+			return (remoteTournament(db, tournamentBox.contents, request, reply));
 
-			return lobby(db, request, reply);
-		}
+		const localTournamentBox = getLocalTournament(db, gameId);
+		if (Result.SUCCESS == localTournamentBox.result)
+			return localTournament(db, localTournamentBox.contents, request, reply);
 
-		const gamesBox = getGames(db);
+		return lobby(db, request, reply);
+	}
 
-		const params: FrameParams = {
-			page: request.url,
-			language,
-			user
-		};
+	const gamesBox = getGames(db);
 
-		if (Result.SUCCESS != gamesBox.result) {
-			params.result = gamesBox.result;
-			return reply.type("text/html").send(frameView(params));
-		}
+	const params: FrameParams = {
+		page: request.url,
+		language,
+		user
+	};
 
-		const frame = frameView(params, gameView(gamesBox.contents, user));
-		return reply.type("text/html").send(frame);
-	});
+	if (Result.SUCCESS != gamesBox.result) {
+		params.result = gamesBox.result;
+		return reply.type("text/html").send(frameView(params));
+	}
+
+	const frame = frameView(params, gameView(gamesBox.contents, user));
+	return reply.type("text/html").send(frame);
 }
 
 function localTournament(db: DatabaseSync, tournament: LocalTournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {

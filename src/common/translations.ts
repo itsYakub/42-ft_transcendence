@@ -37,10 +37,13 @@ export function translate(language: string, text: string): string {
 		"TEXT_CHANGE_AVATAR",
 		"TEXT_CHANGE_NICK",
 		"TEXT_CHANGE_PASSWORD",
+		"TEXT_CHAT",
 		"TEXT_CONGRATULATIONS",
-		"TEXT_CREATE",
+		"TEXT_CREATE_LOCAL",
+		"TEXT_CREATE_REMOTE",
 		"TEXT_CURRENT_PASSWORD",
 		"TEXT_EMAIL",
+		"TEXT_GUEST",
 		"TEXT_JOIN",
 		"TEXT_LOCAL_MATCH",
 		"TEXT_LOCAL_TOURNAMENT",
@@ -57,6 +60,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_PLAYER",
 		"TEXT_PLAYERS",
 		"TEXT_REMOTE_MATCH",
+		"TEXT_REMOTE_TOURNAMENT",
 		"TEXT_REMOVE_FOE",
 		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
@@ -113,7 +117,7 @@ function translateEnglish(text: string): string {
 		case "BUTTON_ACCOUNT": return "Account";
 		case "BUTTON_ADD_FOE": return "Add foe";
 		case "BUTTON_ADD_FRIEND": return "Add friend";
-		case "BUTTON_AI_MATCH": return "Vs AI";
+		case "BUTTON_AI_MATCH": return "AI match";
 		case "BUTTON_APP_TOTP": return "App";
 		case "BUTTON_BLOCK_USER": return "Block";
 		case "BUTTON_CHAT": return "Chat";
@@ -169,11 +173,14 @@ function translateEnglish(text: string): string {
 		case "TEXT_CHANGE_AVATAR": return "Change avatar";
 		case "TEXT_CHANGE_NICK": return "Change nickname";
 		case "TEXT_CHANGE_PASSWORD": return "Change password";
+		case "TEXT_CHAT": return "Chat";
 		case "TEXT_CONGRATULATIONS": return "Congratulations";
-		case "TEXT_CREATE": return "Or create...";
+		case "TEXT_CREATE_LOCAL": return "New local";
+		case "TEXT_CREATE_REMOTE": return "New remote";
 		case "TEXT_CURRENT_PASSWORD": return "Current password";
 		case "TEXT_EMAIL": return "Email";
-		case "TEXT_JOIN": return "Join...";
+		case "TEXT_GUEST": return "Guest";
+		case "TEXT_JOIN": return "In-progress";
 		case "TEXT_LOCAL_MATCH": return "Local match";
 		case "TEXT_LOCAL_TOURNAMENT": return "Local tournament";
 		case "TEXT_LOG_IN_OR_REGISTER": return "Log in or register";
@@ -189,6 +196,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_PLAYER": return "Player";
 		case "TEXT_PLAYERS": return "players";
 		case "TEXT_REMOTE_MATCH": return "Remote match";
+		case "TEXT_REMOTE_TOURNAMENT": return "Remote tournament";
 		case "TEXT_REMOVE_FOE": return "Remove from foes";
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";

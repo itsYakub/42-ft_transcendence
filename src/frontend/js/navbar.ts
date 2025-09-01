@@ -21,6 +21,13 @@ export function navbarFunctions() {
 		}, { once: true });
 	}
 
+	const accountButton = document.querySelector("#accountButton");
+	if (accountButton) {
+		accountButton.addEventListener("click", async () => {
+			await navigate("/account");
+		}, { once: true });
+	}
+
 	const gameButton = document.querySelector("#gameButton");
 	if (gameButton) {
 		gameButton.addEventListener("click", async () => {
@@ -39,13 +46,6 @@ export function navbarFunctions() {
 	if (chatButton) {
 		chatButton.addEventListener("click", async () => {
 			navigate("/chat");
-		}, { once: true });
-	}
-
-	const profileAvatar = document.querySelector("#accountAvatar");
-	if (profileAvatar) {
-		profileAvatar.addEventListener("click", async () => {
-			await navigate("/account");
 		}, { once: true });
 	}
 }

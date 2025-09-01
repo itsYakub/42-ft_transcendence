@@ -17,7 +17,8 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 				userId: request.user.userId,
 				nick: request.user.nick,
 				online: request.user.online,
-				gameId: request.user.gameId
+				gameId: request.user.gameId,
+				userType: request.user.userType,
 			}
 		});
 	});

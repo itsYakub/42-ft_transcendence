@@ -147,11 +147,11 @@ export function accountListeners() {
 	const radios = document.getElementsByClassName("totpSetting");
 	for (var i = 0; i < radios.length; i++) {
 		radios[i].addEventListener("click", async (e) => {
-			const type = TotpType[(<HTMLInputElement>e.target).value];
-			e.returnValue = false;
-e.cancelBubble = true;
-			var previousSelected =  <HTMLInputElement>document.querySelector("input[name=totpSetting]:checked");
-			switch (type) {
+			e.preventDefault();
+			e.stopPropagation();
+			var selected =  <HTMLInputElement>document.querySelector("input[name=totpSetting]:checked");
+
+			switch (TotpType[(<HTMLInputElement>e.target).value]) {
 				case TotpType.APP:
 					const enableToptResponse = await fetch("/account/enable-totp", {
 						method: "POST",
@@ -174,7 +174,7 @@ e.cancelBubble = true;
 					}
 					break;
 				case TotpType.DISABLED:
-					// password protect this!
+					//password protect this!
 					const disableToptResponse = await fetch("/account/disable-totp", {
 						method: "POST",
 						headers: {
@@ -193,12 +193,11 @@ e.cancelBubble = true;
 					}
 					break;
 				case TotpType.EMAIL:
+					setTimeout(() => {
+						selected.checked = true;
+					}, 2000);
 					break;
 			}
-			
-			console.log(previousSelected);
-			previousSelected.checked = true;
-			return false;
 		});
 	}
 

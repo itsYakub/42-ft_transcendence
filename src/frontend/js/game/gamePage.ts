@@ -29,7 +29,7 @@ export function gameFunctions() {
 	if (remoteMatchButton) {
 		remoteMatchButton.addEventListener("click", () => {
 			createRemoteMatch();
-			navigate(`/game`, false);
+			navigate(window.location.href, false);
 		});
 	}
 
@@ -37,14 +37,14 @@ export function gameFunctions() {
 	if (remoteTournamentButton)
 		remoteTournamentButton.addEventListener("click", () => {
 			createRemoteTournament();
-			navigate(`/game`, false);
+			navigate(window.location.href, false);
 		});
 
 	const joinMatchButtons = document.getElementsByClassName("joinMatchButton");
 	for (var i = 0; i < joinMatchButtons.length; i++) {
 		joinMatchButtons[i].addEventListener("click", function () {
 			joiningMatch(this.dataset.id)
-			navigate("/game", false);
+			navigate(window.location.href, false);
 		});
 	}
 
@@ -52,7 +52,7 @@ export function gameFunctions() {
 	for (var i = 0; i < joinTournamentButtons.length; i++) {
 		joinTournamentButtons[i].addEventListener("click", function () {
 			joiningTournament(this.dataset.id)
-			navigate("/game", false);
+			navigate(window.location.href, false);
 		});
 	}
 }

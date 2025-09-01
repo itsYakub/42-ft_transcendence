@@ -9,6 +9,7 @@ import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./user/userChats.js";
 import { tournamentListeners } from "./game/tournament.js";
+import { UserType } from "../../common/interfaces.js";
 
 /*
 	Simulates moving to a new page

@@ -10,7 +10,7 @@ export function tournamentListeners() {
 	if (leaveTournamentButton) {
 		leaveTournamentButton.addEventListener("click", () => {
 			tournamentGamerLeaving();
-			navigate("/game");
+			navigate(window.location.href, false);
 		});
 	}
 

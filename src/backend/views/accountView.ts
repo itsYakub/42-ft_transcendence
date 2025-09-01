@@ -4,8 +4,7 @@ import { enableTotpHtml } from "./dialogsView.js";
 export function accountView(user: User): string {
 	return `
 	<div class="w-8/10 m-auto h-full bg-gray-900">
-		<div class="py-8 pl-8 m-auto text-left">
-			<div class="text-gray-300 text-left text-xl mt-1">${user.nick}</div>					
+		<div class="py-8 m-auto text-left">				
 			<div class="flex flex-row my-4 gap-2">
 				<fieldset class="p-3 border border-gray-700 rounded-lg">
 					<legend class="text-gray-300">%%TEXT_CHANGE_AVATAR%%</legend>
@@ -67,16 +66,16 @@ function securityHtml(user: User): string {
 		<fieldset class="border border-gray-700 rounded-lg flex flex-col p-3 gap-6 pt-5">
 			<legend class="text-gray-300">%%TEXT_TOTP_TITLE%%</legend>
 			<div class="text-gray-300 text-lg cursor-[url(/images/pointer.png),pointer]">
-				<input type="radio" class="totpSetting" id="disableTotpButton" name="totpSetting" value="${TotpType.DISABLED}" ${TotpType.DISABLED == user.totpType ? "checked" : ""}/>
-				<label for="disableTotpButton">%%BUTTON_DISABLE_TOTP%%</label>
+				<input type="radio" cursor-[url(/images/pointer.png),pointer] class="totpSetting" id="disableTotpButton" name="totpSetting" value="${TotpType.DISABLED}" ${TotpType.DISABLED == user.totpType ? "checked" : ""}/>
+				<label for="disableTotpButton" class="cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</label>
 			</div>
 			<div class="text-gray-300 text-lg cursor-[url(/images/pointer.png),pointer]">
-				<input type="radio" class="totpSetting" id="enableAppTotpButton" name="totpSetting" value="${TotpType.APP}" ${TotpType.APP == user.totpType ? "checked" : ""}/>
-				<label for="enableAppTotpButton">%%BUTTON_APP_TOTP%%</label>
+				<input type="radio" class="totpSetting" cursor-[url(/images/pointer.png),pointer] id="enableAppTotpButton" name="totpSetting" value="${TotpType.APP}" ${TotpType.APP == user.totpType ? "checked" : ""}/>
+				<label for="enableAppTotpButton" class="cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</label>
 			</div>
 			<div class="text-gray-300 text-lg cursor-[url(/images/pointer.png),pointer]">
-				<input type="radio" class="totpSetting" id="enableEmailTotpButton" name="totpSetting" value="${TotpType.EMAIL}" ${TotpType.EMAIL == user.totpType ? "checked" : ""}/>
-				<label for="enableEmailTotpButton">%%BUTTON_EMAIL_TOTP%%</label>
+				<input type="radio" class="totpSetting" cursor-[url(/images/pointer.png),pointer] id="enableEmailTotpButton" name="totpSetting" value="${TotpType.EMAIL}" ${TotpType.EMAIL == user.totpType ? "checked" : ""}/>
+				<label for="enableEmailTotpButton" class="cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</label>
 			</div>
 		</fieldset>
 	</div>
