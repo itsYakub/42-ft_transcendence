@@ -10,6 +10,7 @@ TODO (Luke):
 - delete accessToken, check messages
 - block DMs
 - change logo file
+- AI name?
 
 TODO (Kuba):
 - synchronise game start on remote - start button?

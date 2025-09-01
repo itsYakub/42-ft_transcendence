@@ -1,8 +1,6 @@
-import { doesNotMatch } from "assert";
 import { Result, TotpType } from "../../../common/interfaces.js";
 import { navigate, showAlert } from "../index.js";
 import { closeSocket } from "../sockets/clientSocket.js";
-import { prePassVertex } from "babylonjs/Shaders/ShadersInclude/prePassVertex";
 
 /*
 	The buttons and events create by the /profile page
@@ -13,11 +11,8 @@ export function accountListeners() {
 	*/
 	const avatarUploadButton = <HTMLInputElement>document.querySelector("#avatarFilename");
 	const avatarImage = document.querySelector("#avatarImage");
-	if (avatarImage) {
-		avatarImage.addEventListener("click", () => {
-			avatarUploadButton.click();
-		})
-	}
+	if (avatarImage)
+		avatarImage.addEventListener("click", () =>  avatarUploadButton.click());
 
 	/*
 		Updates the user's avatar
@@ -42,7 +37,7 @@ export function accountListeners() {
 
 					avatar = replaceInvalidBase64Chars(avatar);
 
-					const response = await fetch("/account/avatar", {
+					const response = await fetch("/api/account/avatar", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
@@ -53,11 +48,11 @@ export function accountListeners() {
 						})
 					});
 
-					const message = await response.json();
-					if (!message.error)
+					const result = await response.text();
+					if (Result.SUCCESS == result)
 						navigate("/account");
 					else
-						showAlert(message.error);
+						showAlert(result);
 				}
 			}
 		});
@@ -71,7 +66,7 @@ export function accountListeners() {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
 			const newNick = changeNickForm.newNick.value;
-			const response = await fetch("/account/nick", {
+			const response = await fetch("/api/account/nick", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -81,9 +76,9 @@ export function accountListeners() {
 				})
 			});
 
-			const message = await response.json();
-			if (Result.SUCCESS != message.result) {
-				showAlert(message.error);
+			const result = await response.text();
+			if (Result.SUCCESS != result) {
+				showAlert(result);
 				return;
 			}
 
@@ -91,7 +86,7 @@ export function accountListeners() {
 			alertDialog.addEventListener("close", () => {
 				navigate("/account");
 			});
-			showAlert(Result.SUCCESS);
+			showAlert(Result.SUCCESS_NICK);
 		});
 	}
 
@@ -115,7 +110,7 @@ export function accountListeners() {
 				return;
 			}
 
-			const response = await fetch("/account/password", {
+			const response = await fetch("/api/account/password", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -126,20 +121,19 @@ export function accountListeners() {
 				})
 			});
 
-			const code = await response.json();
-			switch (code.result) {
+			const result = await response.text();
+			switch (result) {
 				case Result.SUCCESS:
 					const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-					alertDialog.addEventListener("close", () => {
-						navigate("/account");
-					});
-					showAlert(Result.SUCCESS);
+					alertDialog.addEventListener("close", () => navigate("/account"));
+					showAlert(Result.SUCCESS_PASSWORD);
 					break;
 				case Result.ERR_FORBIDDEN:
 					showAlert(Result.ERR_BAD_PASSWORD);
 					break;
 				case Result.ERR_DB:
-					showAlert(Result.ERR_DB);
+					showAlert(result);
+					break;
 			}
 		});
 	}
@@ -149,11 +143,18 @@ export function accountListeners() {
 		radios[i].addEventListener("click", async (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			var selected =  <HTMLInputElement>document.querySelector("input[name=totpSetting]:checked");
+			const userBoxResponse = await fetch("/api/user");
+			const userBox = await userBoxResponse.json();
+			if (Result.SUCCESS != userBox.result)
+				return;
 
-			switch (TotpType[(<HTMLInputElement>e.target).value]) {
+			var selected = TotpType[(<HTMLInputElement>e.target).value];
+			if (selected == userBox.contents.totpType)
+				return;
+
+			switch (selected) {
 				case TotpType.APP:
-					const enableToptResponse = await fetch("/account/enable-totp", {
+					const appTotpResponse = await fetch("/api/account/app-totp", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
@@ -161,13 +162,13 @@ export function accountListeners() {
 						body: JSON.stringify({})
 					});
 
-					const enableToptJson = await enableToptResponse.json();
-					if (Result.SUCCESS == enableToptJson.result) {
+					const appTotpJson = await appTotpResponse.json();
+					if (Result.SUCCESS == appTotpJson.result) {
 						const qrCode = document.querySelector("#totpQRCode");
-						qrCode.innerHTML = enableToptJson.contents.qrcode;
+						qrCode.innerHTML = appTotpJson.contents.qrcode;
 
 						const totpSecret = document.querySelector("#totpSecret");
-						totpSecret.innerHTML = enableToptJson.contents.secret;
+						totpSecret.innerHTML = appTotpJson.contents.secret;
 
 						const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
 						totpDialog.showModal();
@@ -175,7 +176,7 @@ export function accountListeners() {
 					break;
 				case TotpType.DISABLED:
 					//password protect this!
-					const disableToptResponse = await fetch("/account/disable-totp", {
+					const disableToptResponse = await fetch("/api/account/disable-totp", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
@@ -189,13 +190,23 @@ export function accountListeners() {
 						alertDialog.addEventListener("close", async () => {
 							navigate("/account");
 						});
-						showAlert(Result.SUCCESS);
+						showAlert(Result.SUCCESS_TOTP);
 					}
 					break;
 				case TotpType.EMAIL:
-					setTimeout(() => {
-						selected.checked = true;
-					}, 2000);
+					const emailTotpResponse = await fetch("/api/account/email-totp", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({})
+					});
+
+					const result = await emailTotpResponse.text();					
+					if (Result.SUCCESS == result) {
+						console.log("sent email");
+						// TODO finish
+					}
 					break;
 			}
 		});
@@ -219,7 +230,7 @@ export function accountListeners() {
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 			const code = totpForm.code.value;
 
-			const response = await fetch("/account/verify-totp", {
+			const response = await fetch("/api/account/verify-totp", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -229,12 +240,11 @@ export function accountListeners() {
 				})
 			});
 
-			const json = await response.json();
-			if (!json.error) {
+			const result = await response.text();
+			if (Result.SUCCESS == result) {
 				alertDialog.addEventListener("close", async () => {
-					const response = await fetch("/account/logout");
-					if (response.ok)
-						navigate("/");
+					await fetch("/api/account/logout");
+					navigate("/");
 				});
 				showAlert(Result.SUCCESS);
 				return;
@@ -254,7 +264,7 @@ export function accountListeners() {
 	const logoutButton = document.querySelector("#logoutButton");
 	if (logoutButton) {
 		logoutButton.addEventListener("click", async () => {
-			const response = await fetch("/account/logout");
+			const response = await fetch("/api/account/logout");
 			if (response.ok) {
 				closeSocket();
 				navigate("/");
@@ -268,7 +278,7 @@ export function accountListeners() {
 	const invalidateTokenButton = document.querySelector("#invalidateTokenButton");
 	if (invalidateTokenButton) {
 		invalidateTokenButton.addEventListener("click", async () => {
-			const response = await fetch("/account/invalidate-token", {
+			const response = await fetch("/api/account/invalidate-token", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"

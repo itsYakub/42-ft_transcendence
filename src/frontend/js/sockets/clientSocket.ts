@@ -23,7 +23,7 @@ export function initClientSocket(): Promise<void> {
 				return;
 
 			const message = JSON.parse(event.data);
-			handleServerMessage(userBox.user, message);
+			handleServerMessage(userBox.contents, message);
 		};
 
 		socket!.onerror = (err) => {

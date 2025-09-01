@@ -1,5 +1,5 @@
 import { TotpType, User, UserType } from "../../common/interfaces.js";
-import { enableTotpHtml } from "./dialogsView.js";
+import { appTotpDialogHtml } from "./dialogsView.js";
 
 export function accountView(user: User): string {
 	return `
@@ -34,13 +34,13 @@ export function accountView(user: User): string {
 			</div>
 		</div>
 	</div>
-	${enableTotpHtml()}
+	${appTotpDialogHtml()}
 	`;
 }
 
 function securityHtml(user: User): string {
-	return UserType.GOOGLE != user.userType ? "" :
-	`
+	//return UserType.GOOGLE == user.userType ? "" :
+	return `
 	<div class="flex flex-row my-4 gap-2">
 		<fieldset class="border border-gray-700 rounded-lg p-3 grow">
 			<legend class="text-gray-300">%%TEXT_CHANGE_PASSWORD%%</legend>

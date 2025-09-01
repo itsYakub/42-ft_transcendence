@@ -1,5 +1,5 @@
 import { Game, GameType, User } from "../../common/interfaces.js";
-import { gameHtml } from "./dialogsView.js";
+import { gameDialogHtml } from "./dialogsView.js";
 
 export function gameView(games: Game[], user: User): string {
 	return `
@@ -27,7 +27,7 @@ export function gameView(games: Game[], user: User): string {
 			</div>
 		</div>
 	</div>
-	${gameHtml()}
+	${gameDialogHtml()}
 	`;
 }
 
@@ -55,8 +55,8 @@ function gameButtonHtml(game: Game): string {
 	return GameType.TOURNAMENT == game.type ? `
 	<button class="joinTournamentButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-id="${gameID}"><span class="text-green-300">%%TEXT_TOURNAMENT%%</span>${gamersString}</button>
 	`
-	:
-	`
+		:
+		`
 	<button class="joinMatchButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-id="${gameID}"><span class="text-green-300">%%TEXT_MATCH%%</span>${gamersString}</button>
 	`;
 }

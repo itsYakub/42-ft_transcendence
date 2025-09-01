@@ -30,10 +30,17 @@ export function translate(language: string, text: string): string {
 		"BUTTON_TOURNAMENT",
 		"BUTTON_UPDATE",
 		"BUTTON_USERS",
+		"ERR_AVATAR_TOO_BIG",
+		"ERR_BAD_TOTP",
 		"ERR_DB",
+		"ERR_GOOGLE",
 		"ERR_FORBIDDEN",
 		"ERR_NOT_FOUND",
 		"ERR_UNIQUE",
+		"SUCCESS_NICK",
+		"SUCCESS_PASSWORD",
+		"SUCCESS_TOTP",
+		"TEXT_AI",
 		"TEXT_CHANGE_AVATAR",
 		"TEXT_CHANGE_NICK",
 		"TEXT_CHANGE_PASSWORD",
@@ -68,6 +75,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_TOTP_CODE",
 		"TEXT_TOTP_INPUT",
 		"TEXT_TOTP_SCAN",
+		"TEXT_TOTP_SUCCESS",
 		"TEXT_TOTP_TITLE",
 		"TEXT_TOURNAMENT",
 		"TEXT_TOURNAMENT_FINAL",
@@ -146,6 +154,7 @@ function translateEnglish(text: string): string {
 
 		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 100KiB max!";
 		case "ERR_BAD_PASSWORD": return "Incorrect password!";
+		case "ERR_BAD_TOTP": return "Incorrect code!";
 		case "ERR_DB": return "Database error!";
 		case "ERR_EMAIL_IN_USE": return "Email already registered!";
 		case "ERR_FORBIDDEN": return "Forbidden!";
@@ -166,10 +175,12 @@ function translateEnglish(text: string): string {
 
 		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
 		case "SUCCESS_DISABLED_TOTP": return "Disabled TOTP!";
-		case "SUCCESS_ENABLED_TOTP": return "Enabled TOTP - please log in again!";
+		case "SUCCESS_TOTP": return "Enabled TOTP - please log in again!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
-		case "SUCCESS_PASSWORD_CHANGED": return "Password changed!";
+		case "SUCCESS_NICK": return "Nickname changed!";
+		case "SUCCESS_PASSWORD": return "Password changed!";
 
+		case "TEXT_AI": return "AI";
 		case "TEXT_CHANGE_AVATAR": return "Change avatar";
 		case "TEXT_CHANGE_NICK": return "Change nickname";
 		case "TEXT_CHANGE_PASSWORD": return "Change password";
@@ -201,6 +212,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
 		case "TEXT_START": return "Start";
+		case "TEXT_SUCCESS": return "Start";
 		case "TEXT_TOTP_CODE": return "Code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
 		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";

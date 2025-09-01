@@ -1,5 +1,5 @@
 import { FrameParams, User, UserType } from "../../common/interfaces.js";
-import { alertString, totpString } from "./dialogsView.js";
+import { alertDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
 
 export function navbarView(params: FrameParams): string {
 	let languageSelect = englishHtml();
@@ -13,7 +13,7 @@ export function navbarView(params: FrameParams): string {
 			break;
 	}
 
-	let html: string = alertString();
+	let html: string = alertDialogHtml();
 
 	if (!params.user)
 		html += loggedOutHtml(languageSelect);
@@ -36,7 +36,7 @@ function loggedOutHtml(languageSelect: string): string {
 			</select>
 		</div>
 	</div>
-	${totpString()}
+	${totpLoginDialogHtml()}
 	`;
 }
 
@@ -64,6 +64,7 @@ function loggedInHtml(user: User, languageSelect: string, page: string): string 
 	`;
 }
 
+// TODO remove delete cookies button
 function guestHtml(user: User, languageSelect: string, page: string): string {
 	return `
 	<div class="h-full bg-gray-800">

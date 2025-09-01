@@ -22,7 +22,6 @@ export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 		refresh_token TEXT UNIQUE,
 		totp_type TEXT,
 		totp_secret TEXT,
-		totp_verified INTEGER NOT NULL DEFAULT 0,
 		type TEXT DEFAULT USER,
 		user_id INTEGER PRIMARY KEY AUTOINCREMENT
 		);`);
@@ -606,7 +605,6 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 		totpEmail: Boolean(sqlUser.totp_email as number),
 		totpType: sqlUser.totp_type ? TotpType[sqlUser.totp_type as number] : TotpType.DISABLED,
 		totpSecret: sqlUser.totp_secret as string,
-		totpVerified: Boolean(sqlUser.totp_verified as number),
 		userType: UserType[sqlUser.type as string],
 		userId: sqlUser.user_id as number
 	};

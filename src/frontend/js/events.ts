@@ -4,8 +4,8 @@ import { currentPage, initClientSocket, isConnected, sendMessageToServer } from 
 
 export async function navigated() {
 	const userResponse = await fetch("/api/user");
-	const json = await userResponse.json();
-	if (Result.SUCCESS == json.result) {
+	const userBox = await userResponse.json();
+	if (Result.SUCCESS == userBox.result) {
 		if (!isConnected()) {
 			try {
 				await initClientSocket();
@@ -18,7 +18,7 @@ export async function navigated() {
 		}
 
 		if ("game" != currentPage()) {
-			if (json.user.gameId?.startsWith("m"))
+			if (userBox.contents.gameId?.startsWith("m"))
 				sendMessageToServer({
 					type: MessageType.MATCH_LEAVE
 				});
@@ -33,20 +33,14 @@ export function registerEvents() {
 	/* 
 		Changes page on back/forward buttons
 	*/
-	window.addEventListener('popstate', function (event) {
-		navigate(window.location.pathname, false);
-	});
+	window.addEventListener('popstate', (event) => navigate(window.location.pathname, false));
 
 	/*
 		Registers the functions and also shows an error if Google sign-in/up was unsuccessful
 	*/
 	window.addEventListener("DOMContentLoaded", () => {
 		if (-1 != document.cookie.indexOf("googleautherror=true")) {
-			//const date = new Date();
-			//date.setDate(date.getDate() - 3);
-
 			showAlert(Result.ERR_GOOGLE);
-			//document.cookie = `googleautherror=false; expires=${date}; Path=/;`;
 			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
 		}
 		addListeners();

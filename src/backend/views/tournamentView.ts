@@ -1,5 +1,5 @@
 import { GameChatMessage, TournamentMatch, MatchGamer, Tournament, User } from "../../common/interfaces.js";
-import { gameHtml } from "./dialogsView.js";
+import { gameDialogHtml } from "./dialogsView.js";
 import { tournamentMessagesHtml } from "./tournamentLobbyView.js";
 
 export function tournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
@@ -29,7 +29,7 @@ export function tournamentView(tournament: Tournament, chats: GameChatMessage[],
 			</div>
 		</div>
 	</div>
-	${gameHtml()}
+	${gameDialogHtml()}
 	`;
 }
 
@@ -64,7 +64,7 @@ export function tournamentDetails(tournament: Tournament, user: User): string {
 		<div class="text-gray-300 text-lg text-center mb-2">Other match</div>
 		${secondaryMatchHtml(tournament.matches[1 == match.matchNumber ? 1 : 0])}
 	</div>
-	${gameHtml()}
+	${gameDialogHtml()}
 	`;
 
 	return html;
@@ -142,7 +142,7 @@ function finalHtml(match: TournamentMatch, user: User): string {
 				<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
 			</div>
 
-			${gameHtml()}
+			${gameDialogHtml()}
 		`;
 	else
 		return secondaryMatchHtml(match);

@@ -60,7 +60,7 @@ export function localTournamentListeners() {
 			const userBox = await userBoxResponse.json();
 			if (Result.SUCCESS == userBox.result) {
 				const names = [
-					userBox.user.nick,
+					userBox.contents.nick,
 					newTournamentForm.g2Nick.value,
 					newTournamentForm.g3Nick.value,
 					newTournamentForm.g4Nick.value

@@ -1,6 +1,6 @@
 import { getLanguage, navigate } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
-import { TournamentMatch, MatchGamer, Result } from "../../../common/interfaces.js";
+import { Result } from "../../../common/interfaces.js";
 import { createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
 import { createRemoteMatch, joiningMatch } from "../sockets/remoteMatchesMessages.js";
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
@@ -77,21 +77,22 @@ async function startLocalMatch() {
 	if (Result.SUCCESS == userBox.result) {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
+			const g2Nick = translate(getLanguage(), "%%TEXT_GUEST%%");
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 				const response = await fetch("/api/match-result/add", {
-						method: "POST",
-						headers: {
-							"content-type": "application/json"
-						},
-						body: JSON.stringify({
-							g2Nick: "Guest",
-							g1Score: e.detail["g1Score"],
-							g2Score: e.detail["g2Score"],
-						})
-					});
+					method: "POST",
+					headers: {
+						"content-type": "application/json"
+					},
+					body: JSON.stringify({
+						g2Nick,
+						g1Score: e.detail["g1Score"],
+						g2Score: e.detail["g2Score"],
+					})
+				});
 			});
 			g_game.setupElements(GameMode.GAMEMODE_PVP, userBox.contents, {
-				nick: "Guest"
+				nick: g2Nick
 			});
 		}
 	}
@@ -101,7 +102,26 @@ async function startAiMatch() {
 	const userBoxResponse = await fetch("/api/user");
 	const userBox = await userBoxResponse.json();
 	if (Result.SUCCESS == userBox.result) {
-		g_game.setupElements(GameMode.GAMEMODE_AI, userBox.contents);
+		const dialog = document.querySelector("#gameDialog");
+		if (dialog) {
+			const g2Nick = translate(getLanguage(), "%%TEXT_AI%%");
+			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+				const response = await fetch("/api/match-result/add", {
+					method: "POST",
+					headers: {
+						"content-type": "application/json"
+					},
+					body: JSON.stringify({
+						g2Nick,
+						g1Score: e.detail["g1Score"],
+						g2Score: e.detail["g2Score"],
+					})
+				});
+			});
+			g_game.setupElements(GameMode.GAMEMODE_AI, userBox.contents, {
+				nick: g2Nick
+			});
+		}
 	}
 }
 
@@ -109,22 +129,7 @@ async function createLocalTournament() {
 	const userBoxResponse = await fetch("/api/user");
 	const userBox = await userBoxResponse.json();
 	if (Result.SUCCESS == userBox.result) {
-		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(userBox.user));
+		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(userBox.contents));
 		localTournamentListeners();
 	}
-}
-
-/*
-	When the match ends with a definitive winner
-*/
-function endMatch(p1Score: number, p2Score: number, p2Name: string) {
-	document.dispatchEvent(new CustomEvent("matchOver", {
-		detail: {
-			p1Score,
-			p2Score,
-			p2Name
-		}
-	}));
-
-	g_game.dispose();
 }

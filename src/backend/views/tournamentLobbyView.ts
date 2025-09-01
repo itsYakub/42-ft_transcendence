@@ -1,5 +1,5 @@
 import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
-import { gameHtml } from "./dialogsView.js";
+import { gameDialogHtml } from "./dialogsView.js";
 
 export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
@@ -34,7 +34,7 @@ export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], u
 			</fieldset>
 		</div>
 	</div>
-	${gameHtml()}
+	${gameDialogHtml()}
 	`;
 }
 
@@ -43,7 +43,7 @@ export function tournamentGamersHtml(gamers: Gamer[]): string {
 	gamers.forEach(gamer => {
 		gamersString += tournamentGamerHtml(gamer);
 	});
-	
+
 	return `
 	<div class="flex flex-col gap-8">
 		${gamersString}

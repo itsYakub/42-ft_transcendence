@@ -5,20 +5,18 @@ import { Result } from '../../common/interfaces.js';
 
 export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	fastify.get("/api/user", async (request: FastifyRequest, reply: FastifyReply) => {
-		if (!request.user)
-			return reply.send({
-				result: Result.ERR_NO_USER
-			});
+		const user = request.user;
 
 		// Don't send all details to the frontend
 		return reply.send({
 			result: Result.SUCCESS,
-			user: {
-				userId: request.user.userId,
-				nick: request.user.nick,
-				online: request.user.online,
-				gameId: request.user.gameId,
-				userType: request.user.userType,
+			contents: {
+				userId: user.userId,
+				nick: user.nick,
+				online: user.online,
+				gameId: user.gameId,
+				totpType: user.totpType,
+				userType: user.userType,
 			}
 		});
 	});

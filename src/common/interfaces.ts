@@ -15,7 +15,10 @@ export enum Result {
 	ERR_PASSWORDS_DONT_MATCH = "ERR_PASSWORDS_DONT_MATCH",
 	ERR_SAME_EMAIL = "ERR_SAME_EMAIL",
 	ERR_UNIQUE = "ERR_UNIQUE",
-	SUCCESS = "SUCCESS"
+	SUCCESS = "SUCCESS",
+	SUCCESS_NICK = "SUCCESS_NICK",
+	SUCCESS_PASSWORD = "SUCCESS_PASSWORD",
+	SUCCESS_TOTP = "SUCCESS_TOTP"
 }
 
 export enum MessageType {
@@ -91,7 +94,6 @@ export interface User {
 	totpEmail: boolean,
 	totpType: TotpType,
 	totpSecret: string,
-	totpVerified: boolean,
 	userId: number,
 	userType: UserType
 }

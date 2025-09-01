@@ -1,5 +1,5 @@
 import { Gamer, User } from "../../common/interfaces.js";
-import { gameHtml } from "./dialogsView.js";
+import { gameDialogHtml } from "./dialogsView.js";
 
 export function matchLobbyView(gamers: Gamer[], user: User): string {
 	return `
@@ -11,7 +11,7 @@ export function matchLobbyView(gamers: Gamer[], user: User): string {
 			</div>
 		</div>		
 	</div>
-	${gameHtml()}
+	${gameDialogHtml()}
 	`;
 }
 

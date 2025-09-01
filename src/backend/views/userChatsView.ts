@@ -32,7 +32,7 @@ function userChatsHtml(partners: UserChatPartner[]): string {
 								<div id="usersDiv" class="grow w-60 flex flex-col pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 									${partnersHtml(partners)}
 								</div>
-								<div class="mx-auto"><i class="text-gray-300 hover:text-gray-800 fa-solid fa-plus"></i></div>
+								<div class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-gray-300 hover:text-gray-800 fa-solid fa-plus"></i></div>
 							</div>
 							<div class="bg-gray-700 w-0.5"></div>
 							<div class="flex flex-col grow pl-2">

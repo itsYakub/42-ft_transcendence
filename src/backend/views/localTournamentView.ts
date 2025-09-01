@@ -1,5 +1,5 @@
 import { LocalGamer, LocalMatch, LocalTournament, User } from '../../common/interfaces.js';
-import { gameHtml } from './dialogsView.js';
+import { gameDialogHtml } from './dialogsView.js';
 
 export function localTournamentView(tournament: LocalTournament, user: User): string {
 	return `
@@ -25,7 +25,7 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 			${nextMatchHtml(tournament)}
 		</div>
 	</div>
-	${gameHtml()}
+	${gameDialogHtml()}
 	`;
 }
 
