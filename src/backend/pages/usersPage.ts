@@ -23,7 +23,6 @@ export function usersPage(fastify: FastifyInstance, db: DatabaseSync) {
 		let text = usersView(usersBox.contents, user);
 		text = translate(language, text);
 
-		const frame = frameView({ user, language, page }, text);
-		return reply.type("text/html").send(frame);
+		return reply.type("text/html").send(frameView({ user, language, page }, text));
 	});
 }

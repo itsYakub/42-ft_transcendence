@@ -10,14 +10,13 @@ import { gamePageView } from './gamePage.js';
 */
 export function homePage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-		const params = {
-			user: request.user,
-			page: request.url,
-			language: request.language
-		};
-		if (UserType.GUEST == request.user.userType)
+		const user = request.user;
+		const language = request.language;
+		const page = request.url;
+
+		if (UserType.GUEST == user.userType)
 			return gamePageView(db, request, reply);
 		else
-			return reply.type("text/html").send(frameView(params, homeView(request.user)));
+			return reply.type("text/html").send(frameView({ user, language, page }, homeView(user)));
 	});
 }

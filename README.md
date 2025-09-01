@@ -2,17 +2,14 @@
 
 TODO (Luke):
 - sanitise git repo
-- clean up tailwind
 - delete tournaments when finished
-- tournament next-match gatekeeping
 - check and protect all responses
 - move scrollbar hiding to css file
 - 2FA emails
 - chat indicators - persist?
-- delete accessToken check messages
-- remove user.ready
+- delete accessToken, check messages
 - block DMs
-- tournamentView with and without messages
+- change logo file
 
 TODO (Kuba):
 - synchronise game start on remote - start button?

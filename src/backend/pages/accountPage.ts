@@ -7,12 +7,8 @@ export function accountPage(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/account', async (request: FastifyRequest, reply: FastifyReply) => {
 		const user = request.user;
 		const language = request.language;
+		const page = request.url;
 
-		const params = {
-			user,
-			language
-		};
-
-		return reply.type("text/html").send(frameView(params, accountView(user)));
+		return reply.type("text/html").send(frameView({ user, language, page }, accountView(user)));
 	});
 }

@@ -70,7 +70,13 @@ function guestHtml(user: User, languageSelect: string, page: string): string {
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<img id="homeButton" class="rounded-lg border border-gray-800 cursor-[url(/images/pointer.png),pointer] h-20 w-20"
 					src="/images/logo.jpg"/>
-			<div class="text-gray-300">${user.nick}</div>		
+			<div class="text-gray-300">${user.nick}</div>
+			
+				<button id="deleteCookiesButton"
+					class="mt-8 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+					Delete cookies
+				</button>	
+				
 			<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer] text-gray-300">
 				${languageSelect}
 			</select>
