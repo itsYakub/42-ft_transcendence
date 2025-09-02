@@ -40,16 +40,21 @@ export function translate(language: string, text: string): string {
 		"SUCCESS_NICK",
 		"SUCCESS_PASSWORD",
 		"SUCCESS_TOTP",
+		"TEXT_ACCOUNT_TITLE",
 		"TEXT_AI",
 		"TEXT_CHANGE_AVATAR",
 		"TEXT_CHANGE_NICK",
 		"TEXT_CHANGE_PASSWORD",
 		"TEXT_CHAT",
+		"TEXT_CHAT_TITLE",
 		"TEXT_CONGRATULATIONS",
 		"TEXT_CREATE_LOCAL",
 		"TEXT_CREATE_REMOTE",
 		"TEXT_CURRENT_PASSWORD",
 		"TEXT_EMAIL",
+		"TEXT_FOES_TITLE",
+		"TEXT_FRIENDS_TITLE",
+		"TEXT_GAME_TITLE",
 		"TEXT_GUEST",
 		"TEXT_JOIN",
 		"TEXT_LOCAL_MATCH",
@@ -72,6 +77,8 @@ export function translate(language: string, text: string): string {
 		"TEXT_REMOVE_FRIEND",
 		"TEXT_REPEAT_PASSWORD",
 		"TEXT_START",
+		"TEXT_TEAM",
+		"TEXT_TECH",
 		"TEXT_TOTP_CODE",
 		"TEXT_TOTP_CODE_TITLE",
 		"TEXT_TOTP_INPUT",
@@ -86,6 +93,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_TOURNAMENT_PLURAL",
 		"TEXT_TOURNAMENT_TBD",
 		"TEXT_USER_DECISION",
+		"TEXT_USERS_TITLE",
 		"TEXT_WELCOME",
 		"TEXT_WON"
 	];
@@ -181,16 +189,21 @@ function translateEnglish(text: string): string {
 		case "SUCCESS_NICK": return "Nickname changed!";
 		case "SUCCESS_PASSWORD": return "Password changed!";
 
+		case "TEXT_ACCOUNT_TITLE": return "Account details";
 		case "TEXT_AI": return "AI";
 		case "TEXT_CHANGE_AVATAR": return "Change avatar";
 		case "TEXT_CHANGE_NICK": return "Change nickname";
 		case "TEXT_CHANGE_PASSWORD": return "Change password";
 		case "TEXT_CHAT": return "Chat";
+		case "TEXT_CHAT_TITLE": return "Chat";
 		case "TEXT_CONGRATULATIONS": return "Congratulations";
 		case "TEXT_CREATE_LOCAL": return "New local";
 		case "TEXT_CREATE_REMOTE": return "New remote";
 		case "TEXT_CURRENT_PASSWORD": return "Current password";
 		case "TEXT_EMAIL": return "Email";
+		case "TEXT_FOES_TITLE": return "Foes";
+		case "TEXT_FRIENDS_TITLE": return "Friends";
+		case "TEXT_GAME_TITLE": return "Games";
 		case "TEXT_GUEST": return "Guest";
 		case "TEXT_JOIN": return "In-progress";
 		case "TEXT_LOCAL_MATCH": return "Local match";
@@ -214,6 +227,8 @@ function translateEnglish(text: string): string {
 		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
 		case "TEXT_START": return "Start";
 		case "TEXT_SUCCESS": return "Start";
+		case "TEXT_TEAM": return "The Team";
+		case "TEXT_TECH": return "Tech stack";
 		case "TEXT_TOTP_CODE": return "Code";
 		case "TEXT_TOTP_CODE_TITLE": return "Enter TOTP code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
@@ -227,6 +242,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
 		case "TEXT_TOURNAMENT_TBD": return "TBD";
 		case "TEXT_USER_DECISION": return "Please choose an option to continue";
+		case "TEXT_USERS_TITLE": return "Users";
 		case "TEXT_WELCOME": return "Welcome to Transcendence!";
 		case "TEXT_WON": return "Won";
 

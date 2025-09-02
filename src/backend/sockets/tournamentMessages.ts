@@ -122,11 +122,17 @@ function userMatch(tournament: Tournament, user: User): TournamentMatch {
 }
 
 export function tournamentLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
-	removeUserFromMatch(db, user.userId);
-	broadcastMessageToClients(fastify, {
-		type: MessageType.TOURNAMENT_LEAVE,
-		fromId: user.userId
-	})
+	if (Result.SUCCESS == removeUserFromMatch(db, user.userId)) {
+		const gamers = usersInTournament(db, user.gameId);
+		if (Result.SUCCESS == gamers.result) {
+			broadcastMessageToClients(fastify, {
+				type: MessageType.TOURNAMENT_LEAVE,
+				gameId: user.gameId,
+				fromId: user.userId,
+				content: remoteTournamentGamersHtml(gamers.contents)
+			});
+		}
+	}
 }
 
 function userGamer(match: TournamentMatch, user: User): MatchGamer {

@@ -1,7 +1,7 @@
 import { navbarFunctions } from "./navbar.js";
 import { accountListeners } from "./user/account.js";
 import { devButtons } from "./devButtons.js";
-import { gameFunctions } from "./game/gamePage.js";
+import { gameListeners } from "./game/gamePage.js";
 import { authFunctions } from "./user/loggedOut.js";
 import { usersFunctions } from "./users/users.js";
 import { registerEvents, navigated } from "./events.js";
@@ -39,7 +39,7 @@ registerEvents();
 export function addListeners() {
 	accountListeners();
 	authFunctions();
-	gameFunctions();
+	gameListeners();
 	navbarFunctions();
 	localTournamentListeners();
 	tournamentListeners();

@@ -2,12 +2,13 @@ import { getLanguage, navigate } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
 import { Result } from "../../../common/interfaces.js";
 import { createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
-import { createRemoteMatch, joiningMatch } from "../sockets/remoteMatchesMessages.js";
+import { createRemoteMatch, joiningMatch, matchGamerLeaving } from "../sockets/remoteMatchesMessages.js";
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
 import { localTournamentListeners } from "./localTournament.js";
+import { sendMessageToServer } from "../sockets/clientSocket.js";
 
-export function gameFunctions() {
+export function gameListeners() {
 	const localMatchButton = document.querySelector("#localMatchButton");
 	if (localMatchButton)
 		localMatchButton.addEventListener("click", () => startLocalMatch());
@@ -20,8 +21,6 @@ export function gameFunctions() {
 	if (localTournamentButton) {
 		localTournamentButton.addEventListener("click", () => {
 			createLocalTournament();
-
-			//navigate(`/game`, false);
 		});
 	}
 
@@ -45,6 +44,13 @@ export function gameFunctions() {
 		joinMatchButtons[i].addEventListener("click", function () {
 			joiningMatch(this.dataset.id)
 			navigate(window.location.href, false);
+		});
+	}
+
+	const leaveMatchButton = document.querySelector("#leaveMatchButton");
+	if (leaveMatchButton) {
+		leaveMatchButton.addEventListener("click", () => {
+			matchGamerLeaving();
 		});
 	}
 

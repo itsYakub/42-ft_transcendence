@@ -5,6 +5,7 @@ import { currentPage, initClientSocket, isConnected, sendMessageToServer } from 
 export async function navigated() {
 	const userResponse = await fetch("/api/user");
 	const userBox = await userResponse.json();
+	const user = userBox.contents;
 	if (Result.SUCCESS == userBox.result) {
 		if (!isConnected()) {
 			try {
@@ -18,8 +19,8 @@ export async function navigated() {
 		}
 
 		//TODO fix
-		if ("game" != currentPage() && userBox.contents.userType != UserType.GUEST) {
-			if (userBox.contents.gameId?.startsWith("m"))
+		if ("game" != currentPage() && user.userType != UserType.GUEST) {
+			if (user.gameId?.startsWith("m"))
 				sendMessageToServer({
 					type: MessageType.MATCH_LEAVE
 				});

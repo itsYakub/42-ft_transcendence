@@ -57,8 +57,8 @@ export function tournamentDetails() {
 
 export function localTournamentHtml(nicks: string[]): string {
 	return `
-	<div class="flex flex-col items-center">
-		<h1 class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 p-3 mx-auto">%%TEXT_LOCAL_TOURNAMENT%%</h1>
+	<div class="flex flex-col items-center gap-4">
+	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 		<div class="flex flex-col mx-auto text-center items-center content-center">
 			<form id="localTournamentForm" class="w-75">
 				<div class="text-gray-300 text-lg">${nicks[0]}</div>

@@ -40,6 +40,11 @@ export function sendTournamentMessage(chat: string) {
 	A user has entered or left a tournament
 */
 export async function joinOrLeaveTournament(user: User, message: Message) {
+	if (UserType.GUEST == user.userType && !user.gameId) {
+		navigate(window.location.href);
+		return;
+	}
+
 	if (!isMessageForMe(user, message))
 		return;
 
@@ -48,7 +53,7 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 		return;
 	}
 
-	if (user.gameId == message.gameId && user.userId != message.fromId) {
+	if (user.gameId == message.gameId) {
 		const tournamentDetailsContainer = document.querySelector("#tournamentDetailsContainer");
 		if (tournamentDetailsContainer)
 			tournamentDetailsContainer.innerHTML = translate(getLanguage(), message.content);

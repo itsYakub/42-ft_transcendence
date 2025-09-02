@@ -3,18 +3,16 @@ import { gameDialogHtml } from "./dialogsView.js";
 
 export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
-	<div class="flex flex-col items-center gap-4">
-		<h1 id="tournamentTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 p-3 mx-auto">%%TEXT_REMOTE_TOURNAMENT%%</h1>
-		<div class="flex flex-row h-120 items-stretch">
-			<div class="flex flex-col gap-2">
-				<fieldset class="grow border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
-					<legend id="tournamentPlayersLegend" class="text-fuchsia-800">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
-					<div id="tournamentDetailsContainer" class="flex flex-col w-75">
-						${remoteTournamentGamersHtml(gamers)}
-					</div>
-					<div id="leaveTournamentButton" class="text-gray-800 mt-4 mx-auto cursor-[url(/images/pointer.png),pointer] hover:text-fuchsia-800">%%BUTTON_LEAVE%%</div>
-				</fieldset>
-			</div>
+	<div class="flex flex-col w-full items-center gap-4">
+		<h1 id="tournamentTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1 mx-auto">%%TEXT_REMOTE_TOURNAMENT%%</h1>
+		<div class="flex flex-row h-120 w-full gap-2">
+			<fieldset class="w-80 flex flex-col gap-2 items-center h-full border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
+				<legend id="tournamentPlayersLegend" class="text-fuchsia-800">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
+				<div id="tournamentDetailsContainer" class="flex flex-col w-75">
+					${remoteTournamentGamersHtml(gamers)}
+				</div>
+				<div id="leaveTournamentButton" class="text-red-900 cursor-[url(/images/pointer.png),pointer] hover:text-fuchsia-800">%%BUTTON_LEAVE%%</div>
+			</fieldset>
 			<fieldset class="grow border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 ml-4">
 				<legend class="text-fuchsia-800">%%TEXT_CHAT%%</legend>			
 				<div class="flex flex-col h-full">

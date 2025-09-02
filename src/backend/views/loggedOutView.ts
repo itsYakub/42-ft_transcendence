@@ -1,8 +1,8 @@
 export function loggedOutView(): string {
 	return `
 	<div class="flex flex-col items-center">
-		<h1 class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 p-3 mx-auto">%%TEXT_USER_DECISION%%</h1>
-		<div class="flex flex-row gap-5 mt-12 justify-center">
+		<h1 class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1 mx-auto">%%TEXT_USER_DECISION%%</h1>
+		<div class="flex flex-row gap-2 mt-12 justify-center">
 			${loginOrRegisterHtml()}
 			<div class="flex flex-col justify-between">
 				${googleHtml()}
@@ -29,8 +29,8 @@ function loginOrRegisterHtml(): string {
 					required="true">
 			</div>
 			<div class="flex flex-row justify-end gap-4">
-				<button id="loginButton" type="submit" class="cursor-[url(/images/pointer.png),pointer] text-gray-900 hover:text-fuchsia-800">%%BUTTON_LOGIN%%</button>
-				<button id="registerButton" type="submit" class="cursor-[url(/images/pointer.png),pointer] text-gray-900 hover:text-fuchsia-800">%%BUTTON_REGISTER%%</button>
+				<button id="loginButton" type="submit" class="cursor-[url(/images/pointer.png),pointer] hover:text-gray-900 text-fuchsia-800">%%BUTTON_LOGIN%%</button>
+				<button id="registerButton" type="submit" class="cursor-[url(/images/pointer.png),pointer] hover:text-gray-900 text-fuchsia-800">%%BUTTON_REGISTER%%</button>
 			</div>
 			</form>
 	</fieldset>
@@ -41,7 +41,7 @@ function googleHtml(): string {
 	return `	
 	<fieldset class="rounded-lg border border-fuchsia-800 bg-red-200/20 p-3">
 		<legend class="text-fuchsia-800">Google</legend>
-		<button id="googleButton" class="w-60 cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GOOGLE%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
+		<button id="googleButton" class="w-60 cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-900 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GOOGLE%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
 	</fieldset>
 	`;
 }
@@ -50,7 +50,7 @@ function guestHtml(): string {
 	return `	
 	<fieldset class="rounded-lg border border-fuchsia-800 bg-red-200/20 p-3">
 		<legend class="text-fuchsia-800">%%TEXT_GUEST%%</legend>
-		<button id="guestButton" class="w-60 cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GUEST%%</button>
+		<button id="guestButton" class="w-60 cursor-[url(/images/pointer.png),pointer] border border-gray-700 bg-gray-900 text-gray-300 hover:bg-gray-700 font-medium rounded-lg py-2 px-4">%%BUTTON_GUEST%%</button>
 	</div>
 	`;
 }

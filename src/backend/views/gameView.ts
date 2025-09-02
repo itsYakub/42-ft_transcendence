@@ -1,11 +1,11 @@
 import { Game, GameType, User } from "../../common/interfaces.js";
 import { gameDialogHtml } from "./dialogsView.js";
 
-export function gameView(games: Game[], user: User): string {
+export function gameView(games: Game[]): string {
 	return `
-	<span id="data" data-id="${user.userId}"></span>
-	<div class="w-full h-full m-auto">
-		<div class="flex flex-row pt-8 justify-center gap-2">
+	<div class="flex flex-col items-center gap-4">
+		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_GAME_TITLE%%</div>
+		<div class="flex flex-row justify-center gap-2">
 			<fieldset class="w-100 h-107 flex flex-col gap-8 border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
 				<legend class="text-purple-800">%%TEXT_JOIN%%</legend>
 				<div class="flex flex-col  grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">

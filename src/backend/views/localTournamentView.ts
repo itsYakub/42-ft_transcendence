@@ -3,17 +3,17 @@ import { gameDialogHtml } from './dialogsView.js';
 
 export function localTournamentView(tournament: LocalTournament, user: User): string {
 	return `
-	<div class="w-full h-full m-auto text-center flex flex-col items-center">
-		<h1 class="text-gray-300 pt-4 mb-2 text-4xl">%%TEXT_LOCAL_TOURNAMENT%%</h1>
-		<div class="flex flex-row items-center mt-8">
+	<div class="w-full h-full m-auto text-center flex flex-col items-center gap-4">
+	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
+		<div class="flex flex-row items-center">
 			<div class="flex flex-col gap-20">
-				<fieldset class="w-70 h-40 border border-fuchsia-800 rounded-lg">
+				<fieldset class="w-70 h-40 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 					<legend class="text-fuchsia-800">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[0])}
 					</div>
 				</fieldset>
-				<fieldset class="w-70 h-40 border border-fuchsia-800 rounded-lg">
+				<fieldset class="w-70 h-40 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 					<legend class="text-fuchsia-800">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[1])}
@@ -21,8 +21,8 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 				</fieldset>
 			</div>
 			<div class="border border-fuchsia-800 border-l-0 w-30 h-60"></div>
-			<div class="border border-fuchsia-800 w-30 h-0.5"></div>
-			<fieldset class="w-70 h-40 border border-fuchsia-800 rounded-lg">
+			<div class="border border-fuchsia-800 w-30 h-0.25"></div>
+			<fieldset class="w-70 h-40 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800">Final</legend>
 				<div class="flex flex-col gap-1 justify-center items-center">
 					${matchHtml(tournament.matches[2])}

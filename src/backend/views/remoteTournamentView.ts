@@ -5,8 +5,8 @@ import { remoteTournamentMessagesHtml } from "./remoteTournamentLobbyView.js";
 export function remoteTournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
 	const title = isFinalReady(tournament) ? "TEXT_TOURNAMENT_FINAL" : "TEXT_TOURNAMENT_SEMI_FINALS";
 	return `
-	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-3xl text-center">%%TEXT_TOURNAMENT%% - %%${title}%%</h1>
+	<div class="w-full h-full">
+		<h1 id="gameTitle" class="text-gray-300 pt-4 mb-4 text-3xl text-center">%%TEXT_TOURNAMENT%% - %%${title}%%</h1>
 		<div class="flex flex-row h-150">
 			<div id="tournamentDetailsContainer" class="flex flex-col w-69">
 				${remoteTournamentDetails(tournament, user)}

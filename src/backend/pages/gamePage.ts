@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
-import { matchLobbyView } from '../views/matchLobbyView.js';
+import { remoteMatchLobbyView } from '../views/remoteMatchLobbyView.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, LocalTournament, Result, Tournament } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
@@ -49,7 +49,7 @@ export function gamePageView(request: FastifyRequest, reply: FastifyReply) {
 		return reply.type("text/html").send(frameView(params));
 	}
 
-	const frame = frameView(params, gameView(gamesBox.contents, user));
+	const frame = frameView(params, gameView(gamesBox.contents));
 	return reply.type("text/html").send(frame);
 }
 
@@ -91,7 +91,7 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 	}
 
 	if (user.gameId.startsWith("m"))
-		return reply.type("text/html").send(frameView(params, matchLobbyView(gamersBox.contents, user)));
+		return reply.type("text/html").send(frameView(params, remoteMatchLobbyView(gamersBox.contents, user)));
 
 	const chatsBox = gameChatsList(db, user.gameId);
 	if (Result.SUCCESS != chatsBox.result) {

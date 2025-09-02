@@ -102,6 +102,7 @@ function handleServerMessage(user: User, message: Message) {
 			joinOrLeaveTournament(user, message);
 			break;
 		case MessageType.TOURNAMENT_LEAVE:
+			joinOrLeaveTournament(user, message);
 			console.log("Lost game");
 			break;
 		case MessageType.TOURNAMENT_MATCH_START:
