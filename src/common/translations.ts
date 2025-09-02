@@ -73,6 +73,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_REPEAT_PASSWORD",
 		"TEXT_START",
 		"TEXT_TOTP_CODE",
+		"TEXT_TOTP_CODE_TITLE",
 		"TEXT_TOTP_INPUT",
 		"TEXT_TOTP_SCAN",
 		"TEXT_TOTP_SUCCESS",
@@ -214,6 +215,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_START": return "Start";
 		case "TEXT_SUCCESS": return "Start";
 		case "TEXT_TOTP_CODE": return "Code";
+		case "TEXT_TOTP_CODE_TITLE": return "Enter TOTP code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
 		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";
 		case "TEXT_TOTP_TITLE": return "TOTP";
@@ -229,7 +231,6 @@ function translateEnglish(text: string): string {
 		case "TEXT_WON": return "Won";
 
 
-		case "TEXT_TOTP_CODE_TITLE": return "Enter TOTP code";
 		case "TEXT_PLAYER_NAME_TITLE": return "Choose a name";
 		case "TEXT_PLAYER_NAME": return "Player name";
 		case "TEXT_PLAYER_NAME_SET": return "Set";

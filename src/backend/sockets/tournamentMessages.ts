@@ -4,7 +4,7 @@ import { broadcastMessageToClients } from './serverSocket.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User } from '../../common/interfaces.js';
 import { addTournament, getTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
-import { tournamentGamersHtml } from '../views/tournamentLobbyView.js';
+import { remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
 import { addMatchResult } from '../db/matchResultsDb.js';
 
@@ -37,7 +37,7 @@ export function tournamentJoinReceived(fastify: FastifyInstance, db: DatabaseSyn
 				return;
 			}
 			message.fromId = user.userId;
-			message.content = tournamentGamersHtml(gamers.contents);
+			message.content = remoteTournamentGamersHtml(gamers.contents);
 			broadcastMessageToClients(fastify, message);
 		}
 	}

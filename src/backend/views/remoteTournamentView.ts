@@ -1,20 +1,20 @@
 import { GameChatMessage, TournamentMatch, MatchGamer, Tournament, User } from "../../common/interfaces.js";
 import { gameDialogHtml } from "./dialogsView.js";
-import { tournamentMessagesHtml } from "./tournamentLobbyView.js";
+import { remoteTournamentMessagesHtml } from "./remoteTournamentLobbyView.js";
 
-export function tournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
+export function remoteTournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
 	const title = isFinalReady(tournament) ? "TEXT_TOURNAMENT_FINAL" : "TEXT_TOURNAMENT_SEMI_FINALS";
 	return `
 	<div class="w-full h-full bg-gray-900 m-auto">
 		<h1 id="gameTitle" class="text-white pt-4 mb-4 text-3xl text-center">%%TEXT_TOURNAMENT%% - %%${title}%%</h1>
 		<div class="flex flex-row h-150">
 			<div id="tournamentDetailsContainer" class="flex flex-col w-69">
-				${tournamentDetails(tournament, user)}
+				${remoteTournamentDetails(tournament, user)}
 			</div>
 			<div class="grow border border-gray-700 rounded-lg p-2">				
 				<div class="flex flex-col h-full">
 					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-						${tournamentMessagesHtml(chats, user)}
+						${remoteTournamentMessagesHtml(chats, user)}
 					</div>
 					<div class="mt-2">
 						<form id="sendMatchMessageForm">
@@ -33,7 +33,7 @@ export function tournamentView(tournament: Tournament, chats: GameChatMessage[],
 	`;
 }
 
-export function tournamentDetails(tournament: Tournament, user: User): string {
+export function remoteTournamentDetails(tournament: Tournament, user: User): string {
 	if (isFinalFinished(tournament.matches[2])) {
 		const match = tournament.matches[2];
 		const winner = match.g1.score > match.g2.score ? match.g1 : match.g2;

@@ -1,13 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import * as OTPAuth from "otpauth";
 import { addGoogleUser, addGuest, loginUser } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
-export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+export function authEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/api/auth/check-totp", async (request: FastifyRequest, reply: FastifyReply) => {
 		const params = request.body as any;
-		const userBox = loginUser(db, params);
+		const userBox = loginUser(request.db, params);
 		if (Result.SUCCESS != userBox.result)
 			return reply.send(userBox);
 
@@ -40,7 +39,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/api/guest/register", async (request: FastifyRequest, reply: FastifyReply) => {
-		const guestBox = addGuest(db);
+		const guestBox = addGuest(request.db);
 		if (Result.SUCCESS != guestBox.result)
 			return reply.send(guestBox);
 
@@ -85,7 +84,7 @@ export function authEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 			avatar: avatar,
 		}
 
-		const googleBox = addGoogleUser(db, userJSON);
+		const googleBox = addGoogleUser(request.db, userJSON);
 		if (Result.SUCCESS != googleBox.result)
 			return reply.header("Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
 

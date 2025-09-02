@@ -12,7 +12,7 @@ export function accountListeners() {
 	const avatarUploadButton = <HTMLInputElement>document.querySelector("#avatarFilename");
 	const avatarImage = document.querySelector("#avatarImage");
 	if (avatarImage)
-		avatarImage.addEventListener("click", () =>  avatarUploadButton.click());
+		avatarImage.addEventListener("click", () => avatarUploadButton.click());
 
 	/*
 		Updates the user's avatar
@@ -194,19 +194,23 @@ export function accountListeners() {
 					}
 					break;
 				case TotpType.EMAIL:
-					const emailTotpResponse = await fetch("/api/account/email-totp", {
-						method: "POST",
-						headers: {
-							"content-type": "application/json"
-						},
-						body: JSON.stringify({})
-					});
+					// const emailTotpResponse = await fetch("/api/account/email-totp", {
+					// 	method: "POST",
+					// 	headers: {
+					// 		"content-type": "application/json"
+					// 	},
+					// 	body: JSON.stringify({})
+					// });
 
-					const result = await emailTotpResponse.text();					
-					if (Result.SUCCESS == result) {
-						console.log("sent email");
-						// TODO finish
-					}
+					// const result = await emailTotpResponse.text();					
+					// if (Result.SUCCESS == result) {
+					// 	console.log("sent email");
+					// 	// TODO finish
+					// }
+
+					const totpDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
+					totpCodeForm.code.value = "";
+					totpDialog.showModal();
 					break;
 			}
 		});
@@ -215,20 +219,18 @@ export function accountListeners() {
 	/*
 		Checks the entered TOTP code
 	*/
-	const totpForm = <HTMLFormElement>document.querySelector("#totpForm");
-	if (totpForm) {
-		totpForm.code.addEventListener("keydown", (e: any) => {
+	const totpCodeForm = <HTMLFormElement>document.querySelector("#totpCodeForm");
+	if (totpCodeForm) {
+		totpCodeForm.code.addEventListener("keydown", (e: any) => {
 			if (!("Escape" == e.key || "Enter" == e.key || "Backspace" == e.key || "Delete" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key) && isNaN(e.key))
 				e.preventDefault();
 		});
 
-		totpForm.addEventListener("submit", async (e) => {
-			if ("cancelTOTPButton" == e.submitter.id)
-				return;
-
+		totpCodeForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
+			console.log(totpCodeForm.code.value);
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-			const code = totpForm.code.value;
+			const code = totpCodeForm.code.value;
 
 			const response = await fetch("/api/account/verify-totp", {
 				method: "POST",
@@ -251,8 +253,8 @@ export function accountListeners() {
 			}
 
 			alertDialog.addEventListener("close", () => {
-				totpForm.code.value = "";
-				totpForm.code.focus();
+				totpCodeForm.code.value = "";
+				totpCodeForm.code.focus();
 			});
 			showAlert(Result.ERR_BAD_TOTP);
 		});

@@ -3,25 +3,34 @@ import { gameDialogHtml } from './dialogsView.js';
 
 export function localTournamentView(tournament: LocalTournament, user: User): string {
 	return `
-	<div class="w-full h-full bg-gray-900 m-auto text-center flex flex-col items-center">
+	<div class="w-full h-full m-auto text-center flex flex-col items-center">
 		<h1 class="text-gray-300 pt-4 mb-2 text-4xl">%%TEXT_LOCAL_TOURNAMENT%%</h1>
 		<div class="flex flex-row items-center mt-8">
 			<div class="flex flex-col gap-20">
-				<div class="w-70 h-40 border border-gray-400 rounded-lg flex flex-col gap-1 justify-center items-center">
-					${matchHtml(tournament.matches[0])}
-				</div>
-				<div class="w-70 h-40 border border-gray-400 rounded-lg flex flex-col gap-1 justify-center items-center">
-					${matchHtml(tournament.matches[1])}
-				</div>
+				<fieldset class="w-70 h-40 border border-fuchsia-800 rounded-lg">
+					<legend class="text-fuchsia-800">Semi-final</legend>
+					<div class="flex flex-col gap-1 justify-center items-center">
+						${matchHtml(tournament.matches[0])}
+					</div>
+				</fieldset>
+				<fieldset class="w-70 h-40 border border-fuchsia-800 rounded-lg">
+					<legend class="text-fuchsia-800">Semi-final</legend>
+					<div class="flex flex-col gap-1 justify-center items-center">
+						${matchHtml(tournament.matches[1])}
+					<div>
+				</fieldset>
 			</div>
-			<div class="border border-gray-400 border-l-0 w-30 h-60"></div>
-			<div class="border border-gray-400 w-30 h-0.5"></div>
-			<div class="w-70 h-40 border border-gray-400 flex flex-col rounded-lg gap-1 justify-center items-center">
-				${matchHtml(tournament.matches[2])}
-			</div>
+			<div class="border border-fuchsia-800 border-l-0 w-30 h-60"></div>
+			<div class="border border-fuchsia-800 w-30 h-0.5"></div>
+			<fieldset class="w-70 h-40 border border-fuchsia-800 rounded-lg">
+				<legend class="text-fuchsia-800">Final</legend>
+				<div class="flex flex-col gap-1 justify-center items-center">
+					${matchHtml(tournament.matches[2])}
+				</div>
+			</fieldset>
 		</div>
 			
-		<div class="mt-8 border border-gray-400 rounded-lg p-4 px-8 mx-auto flex flex-row items-center justify-center">
+		<div class="mt-8 border border-fuchsia-800 rounded-lg p-4 px-8 mx-auto flex flex-row items-center justify-center">
 			${nextMatchHtml(tournament)}
 		</div>
 	</div>

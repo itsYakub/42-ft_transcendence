@@ -1,13 +1,13 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { addFriend, friendsList, removeFriend } from '../db/friendsDb.js';
 import { getUserByEmail } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { friendsView } from '../views/friendsView.js';
 
-export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
+export function friendsEndpoints(fastify: FastifyInstance) {
 	fastify.get("/api/friends", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 		const language = request.language;
 
@@ -22,6 +22,7 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	});
 
 	fastify.post("/api/friends/add", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 
 		const { friendId } = request.body as any;
@@ -29,6 +30,7 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	});
 
 	fastify.post("/api/friends/remove", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 
 		const { friendId } = request.body as any;
@@ -36,6 +38,7 @@ export function friendsEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	});
 
 	fastify.post("/api/friends/find", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 
 		const json = request.body as any;

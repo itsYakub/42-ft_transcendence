@@ -3,7 +3,7 @@ import { Foe, User } from "../../common/interfaces.js";
 export function foesView(foes: Foe[]): string {
 	if (0 == foes.length) {
 		return `
-		<div class="w-full h-full pt-8 bg-gray-900">
+		<div class="w-full h-full pt-8">
 			${switcherHtml()}
 			<div class="text-gray-300 pt-8 text-center">%%TEXT_NO_FOES%%</div>
 		</div>
@@ -24,17 +24,11 @@ export function foesHtml(foes: Foe[]) {
 
 function foesViewHtml(foes: Foe[]): string {
 	return `
-	<div class="w-full h-full bg-gray-900">
-		<div class="h-full m-auto text-center flex flex-row">
-			<div class="grow bg-gray-900">
-				<div class="flex flex-col h-full py-8 text-center">
-					${switcherHtml()}
-					<div class="h-150 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
-						${foesHtml(foes)}
-					</div>					
-				</div>
-			</div>
-		</div>
+	<div class="flex flex-col h-full py-8 items-center">
+		${switcherHtml()}
+		<div class="h-150 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
+			${foesHtml(foes)}
+		</div>					
 	</div>
 	`;
 }

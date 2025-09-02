@@ -1,25 +1,25 @@
 import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
 import { gameDialogHtml } from "./dialogsView.js";
 
-export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
+export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
-	<div class="w-full h-full bg-gray-900 m-auto">
-		<h1 id="tournamentTitle" class="text-white pt-4 mb-4 text-3xl text-center">%%TEXT_REMOTE_TOURNAMENT%%</h1>
-		<div class="flex flex-row h-120">
+	<div class="flex flex-col items-center gap-4">
+		<h1 id="tournamentTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 p-3 mx-auto">%%TEXT_REMOTE_TOURNAMENT%%</h1>
+		<div class="flex flex-row h-120 items-stretch">
 			<div class="flex flex-col gap-2">
-				<fieldset class="border border-gray-700 rounded-lg p-3 pb-5">
-					<legend id="tournamentPlayersLegend" class="text-gray-300">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
+				<fieldset class="grow border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
+					<legend id="tournamentPlayersLegend" class="text-fuchsia-800">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
 					<div id="tournamentDetailsContainer" class="flex flex-col w-75">
-						${tournamentGamersHtml(gamers)}
+						${remoteTournamentGamersHtml(gamers)}
 					</div>
+					<div id="leaveTournamentButton" class="text-gray-800 mt-4 mx-auto cursor-[url(/images/pointer.png),pointer] hover:text-fuchsia-800">%%BUTTON_LEAVE%%</div>
 				</fieldset>
-				<div id="leaveTournamentButton" class="text-red-300 mt-4 mx-auto cursor-[url(/images/pointer.png),pointer] py-1 px-2 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</div>
 			</div>
-			<fieldset class="grow border border-gray-700 rounded-lg p-3 ml-4">
-				<legend class="text-gray-300">%%TEXT_CHAT%%</legend>			
+			<fieldset class="grow border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 ml-4">
+				<legend class="text-fuchsia-800">%%TEXT_CHAT%%</legend>			
 				<div class="flex flex-col h-full">
 					<div id="tournamentMessagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-						${tournamentMessagesHtml(chats, user)}
+						${remoteTournamentMessagesHtml(chats, user)}
 					</div>
 					<div class="mt-2">
 						<form id="sendTournamentMessageForm">
@@ -38,7 +38,7 @@ export function tournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], u
 	`;
 }
 
-export function tournamentGamersHtml(gamers: Gamer[]): string {
+export function remoteTournamentGamersHtml(gamers: Gamer[]): string {
 	let gamersString = "";
 	gamers.forEach(gamer => {
 		gamersString += tournamentGamerHtml(gamer);
@@ -51,19 +51,19 @@ export function tournamentGamersHtml(gamers: Gamer[]): string {
 	`;
 }
 
-function tournamentGamerHtml(gamer: Gamer) {
-	return `
-	<div class="tournamentGamer py-2 w-full border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
-	`;
-}
-
-export function tournamentMessagesHtml(chats: GameChatMessage[], user: User): string {
+export function remoteTournamentMessagesHtml(chats: GameChatMessage[], user: User): string {
 	let messageList = "";
 	for (var key in chats) {
 		messageList += tournamentMessageHtml(user.userId, chats[key]);
 	}
 
 	return messageList;
+}
+
+function tournamentGamerHtml(gamer: Gamer) {
+	return `
+	<div class="tournamentGamer py-2 w-full border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
+	`;
 }
 
 function tournamentMessageHtml(userId: number, chat: GameChatMessage) {

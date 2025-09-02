@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { getUserById } from '../db/userDB.js';
@@ -8,8 +7,9 @@ import { friendsList } from '../db/friendsDb.js';
 import { foesList } from '../db/foesDb.js';
 import { profileView } from '../../common/dynamicElements.js';
 
-export function profileEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
+export function profileEndpoints(fastify: FastifyInstance) {
 	fastify.post("/api/profile", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const { userId } = request.body as any;
 		const userBox = getUserById(db, userId);
 		if (Result.SUCCESS != userBox.result)

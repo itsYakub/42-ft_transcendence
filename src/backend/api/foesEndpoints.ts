@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { addFoe, foesList, removeFoe } from '../db/foesDb.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { foesView } from '../views/foesView.js';
 
-export function foesEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+export function foesEndpoints(fastify: FastifyInstance): void {
 	fastify.get('/api/foes', async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 		const language = request.language;
 
@@ -21,6 +21,7 @@ export function foesEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/api/foes/add", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 
 		const { foeId } = request.body as any;
@@ -28,6 +29,7 @@ export function foesEndpoints(fastify: FastifyInstance, db: DatabaseSync): void 
 	});
 
 	fastify.post("/api/foes/remove", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 
 		const { foeId } = request.body as any;

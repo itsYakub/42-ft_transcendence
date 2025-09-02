@@ -1,4 +1,4 @@
-import { MessageType, Result } from "../../common/interfaces.js";
+import { MessageType, Result, UserType } from "../../common/interfaces.js";
 import { addListeners, navigate, showAlert } from "./index.js";
 import { currentPage, initClientSocket, isConnected, sendMessageToServer } from "./sockets/clientSocket.js";
 
@@ -17,7 +17,8 @@ export async function navigated() {
 			}
 		}
 
-		if ("game" != currentPage()) {
+		//TODO fix
+		if ("game" != currentPage() && userBox.contents.userType != UserType.GUEST) {
 			if (userBox.contents.gameId?.startsWith("m"))
 				sendMessageToServer({
 					type: MessageType.MATCH_LEAVE

@@ -49,7 +49,7 @@ export function appTotpDialogHtml(): string {
 
 export function totpLoginDialogHtml(): string {
 	return `
-	<dialog id="totpCodeDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-120 bg-gray-900 border-gray-100 text-center items-center">
+	<dialog id="totpCodeDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-80 bg-gray-900 border-gray-100 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-white">
 				%%TEXT_TOTP_CODE_TITLE%%
@@ -57,19 +57,10 @@ export function totpLoginDialogHtml(): string {
 			<form id="totpCodeForm">
 				<div>
 					<input type="text" placeholder="%%TEXT_TOTP_CODE%%" name="code" minlength="6" maxlength="6"
-						class="my-2 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
+						class="border w-40 h-7 text-center rounded-lg mx-auto my-2 p-1.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white"
 						required="true">
 				</div>
-				<input type="submit" class="hidden" />
-
-				<div class="grid grid-cols-2 justify-between my-4">
-					<button id="cancelTotpCodeButton" type="submit" formmethod="dialog" formnovalidate
-						class="hover:bg-gray-700 text-gray-400 w-10 h-10 rounded-full my-auto">
-						<i class="fa-solid fa-arrow-left "></i>
-					</button>
-					<button type="submit"
-						class="ml-auto cursor-[url(/images/pointer.png),pointer] text-white hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4 py-2">%%TEXT_TOTP_CODE_VERIFY%%</button>
-				</div>
+				<input type="submit" class="hidden"/>
 			</form>
 		</div>
 	</dialog>

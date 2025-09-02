@@ -62,7 +62,7 @@ export class Game {
 	get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
 	get ball() { return (this.m_ball); }
 
-	public setupElements(mode: GameMode, player1: GamePlayer, player2?: GamePlayer) {
+	public setupElements(mode: GameMode, player1: GamePlayer, player2: GamePlayer) {
 		this.m_gameOver = false;
 
 		/* Get the dialog element from the document

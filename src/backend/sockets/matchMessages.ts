@@ -7,8 +7,10 @@ import { gamersHtml } from '../views/matchLobbyView.js';
 
 export function matchJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
 	const gameId = message.gameId;
+	console.log("MATCH JOIN");
 	if (Result.SUCCESS == addUserToMatch(db, gameId, user)) {
 		const gamers = usersInMatch(db, gameId);
+		console.log(gamers);
 		if (Result.SUCCESS == gamers.result) {
 			if (2 == gamers.contents.length) {
 				broadcastMessageToClients(fastify, {
@@ -16,7 +18,7 @@ export function matchJoinReceived(fastify: FastifyInstance, db: DatabaseSync, us
 					gameId
 				});
 			}
-
+console.log("BROADCASTING");
 			broadcastMessageToClients(
 				fastify, {
 				type: MessageType.MATCH_UPDATE,
@@ -28,6 +30,7 @@ export function matchJoinReceived(fastify: FastifyInstance, db: DatabaseSync, us
 }
 
 export function matchLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+	console.log("MATCH LEAVE");
 	const gameId = user.gameId;
 	const response = removeUserFromMatch(db, user.userId);
 

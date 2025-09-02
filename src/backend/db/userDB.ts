@@ -226,8 +226,8 @@ export function addGuest(db: DatabaseSync): Box<string> {
 		if (Result.SUCCESS != stringBox.result)
 			return stringBox;
 
-		const insert = db.prepare('INSERT INTO users (nick, type, avatar) VALUES (?, ?, ?)');
-		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST], defaultAvatar);
+		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
+		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST]);
 		const id: number = statementSync.lastInsertRowid as number;
 		removeUserFromMatch(db, id);
 		return {
@@ -569,7 +569,7 @@ export function allOtherUsers(db: DatabaseSync, user: User): Box<User[]> {
 	}
 }
 
-function getNickname(db: DatabaseSync): Box<string> {
+export function getNickname(db: DatabaseSync): Box<string> {
 	const response = allNicknames(db);
 	if (Result.SUCCESS != response.result)
 		return {
@@ -586,7 +586,7 @@ function getNickname(db: DatabaseSync): Box<string> {
 	};
 }
 
-function generateNickname(): string {
+export function generateNickname(): string {
 	const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
 	const animal = animals[Math.floor(Math.random() * animals.length)];
 

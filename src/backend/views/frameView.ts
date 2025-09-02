@@ -27,7 +27,7 @@ function frameString(navbar: string, content: string): string {
 		</head>
 
 		<body>
-			<div class="h-screen w-screen bg-gray-900 flex flex-col grow">
+			<div class="h-screen w-screen bg-[url(/images/bg.png)] bg-cover bg-center flex flex-col grow">
 				<div id="navbar" class="h-32">${navbar}</div>
 				<div class="w-200 mx-auto grow">
 					<div class="flex flex-row grow h-full">

@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { addUser, getUserByEmail, loginUser } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
-export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
+export function userEndpoints(fastify: FastifyInstance) {
 	fastify.get("/api/user", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 
 		// Don't send all details to the frontend
@@ -22,6 +22,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	});
 
 	fastify.post("/api/user/register", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const checkResponse = getUserByEmail(db, (request.body as any).email);
 		if (Result.ERR_NO_USER != checkResponse.result)
 			return reply.send({
@@ -44,6 +45,7 @@ export function userEndpoints(fastify: FastifyInstance, db: DatabaseSync) {
 	});
 
 	fastify.post("/api/user/login", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const userBox = loginUser(db, request.body as any);
 		if (Result.SUCCESS != userBox.result) {
 			const date = "Thu, 01 Jan 1970 00:00:00 UTC";

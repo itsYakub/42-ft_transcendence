@@ -1,13 +1,13 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
 import { usersView } from '../views/usersView.js';
 import { translate } from '../../common/translations.js';
 import { allOtherUsers } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
-export function usersPage(fastify: FastifyInstance, db: DatabaseSync) {
+export function usersPage(fastify: FastifyInstance) {
 	fastify.get("/users", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 		const language = request.language;
 		const page = request.url;

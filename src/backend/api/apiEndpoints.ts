@@ -1,16 +1,15 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { allNicknames, isUserOnline } from '../db/userDB.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { translate } from '../../common/translations.js';
 import { Box, Result } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
-import { tournamentMessagesHtml } from '../views/tournamentLobbyView.js';
+import { remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
 
-export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+export function apiEndpoints(fastify: FastifyInstance): void {
 
 	fastify.get('/api/nicknames', async (request: FastifyRequest, reply: FastifyReply) => {
-		const users = allNicknames(db);
+		const users = allNicknames(request.db);
 		return reply.send(users);
 	});
 
@@ -32,9 +31,9 @@ export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	// });
 
 	fastify.get('/api/game-chats', async (request: FastifyRequest, reply: FastifyReply) => {
-		const messagesBox = gameChatsList(db, request.user.gameId);
+		const messagesBox = gameChatsList(request.db, request.user.gameId);
 		if (Result.SUCCESS == messagesBox.result) {
-			const html = tournamentMessagesHtml(messagesBox.contents, request.user);
+			const html = remoteTournamentMessagesHtml(messagesBox.contents, request.user);
 			return reply.send({
 				result: Result.SUCCESS,
 				value: html
@@ -76,7 +75,7 @@ export function apiEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
 	fastify.get('/api/is-online/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
 		const { userId } = request.params as any;
 
-		const onlineResponse = isUserOnline(db, userId);
+		const onlineResponse = isUserOnline(request.db, userId);
 		return onlineResponse;
 	});
 }

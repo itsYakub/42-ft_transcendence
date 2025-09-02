@@ -1,4 +1,4 @@
-import { Gamer, Message, MessageType, Result, User } from "../../../common/interfaces.js";
+import { Gamer, Message, MessageType, Result, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { getLanguage, navigate } from "../index.js";
@@ -23,7 +23,16 @@ export function matchGamerLeaving() {
 }
 
 export async function updateMatchDetails(user: User, message: Message) {
-	if ("game" == currentPage() && user.gameId == message.gameId) {
+	console.log("MATCH READY");
+	console.log(user);
+	// if (UserType.GUEST == user.userType && !user.gameId) {
+	// 	console.log("match update");
+	// 	console.log(user.gameId);
+	// 	console.log("on page");
+	// 	navigate(window.location.href);
+	// 	return;
+	// }
+	if (user.gameId == message.gameId) {
 		console.log("for me");
 		const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
 		if (matchLobbyDetailsContainer)

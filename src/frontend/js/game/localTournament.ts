@@ -46,7 +46,9 @@ export function localTournamentListeners() {
 			}
 			setTimeout(async () => {
 				g_game.setupElements(GameMode.GAMEMODE_PVP, {
-					nick: "John"
+					nick: this.dataset.g1
+				}, {
+					nick: this.dataset.g2
 				});
 			}, 1000);
 		});

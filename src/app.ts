@@ -33,6 +33,7 @@ import { initTournamentsDb } from "./backend/db/tournamentsDb.js";
 import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
 import { initMatchesDb } from "./backend/db/matchesDb.js";
 import { initLocalTournamentsDb } from "./backend/db/localTournamentsDb.js";
+import { totpEndpoints } from "./backend/api/totpEndpoints.js";
 
 const __dirname = import.meta.dirname;
 
@@ -65,6 +66,7 @@ await fastify.register(fastifyStatic, {
 */
 declare module 'fastify' {
 	interface FastifyRequest {
+		db: DatabaseSync
 		isPage: boolean,
 		user: User,
 		language: string
@@ -112,6 +114,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 			});
 	}
 
+	request.db = db;
 	request.user = userBox.contents;
 	request.language = language;
 	done();
@@ -173,27 +176,28 @@ try {
 	initUserChatsDb(db, mockData.mockUserChats);
 	initUsersDb(db);
 
-	accountPage(fastify, db);
-	gamePage(fastify, db);
-	homePage(fastify, db);
-	userChatsPage(fastify, db);
-	usersPage(fastify, db);
+	accountPage(fastify);
+	gamePage(fastify);
+	homePage(fastify);
+	userChatsPage(fastify);
+	usersPage(fastify);
 
-	accountEndpoints(fastify, db);
-	apiEndpoints(fastify, db);
-	authEndpoints(fastify, db);
-	foesEndpoints(fastify, db);
-	friendsEndpoints(fastify, db);
-	matchResultsEndpoints(fastify, db);
-	profileEndpoints(fastify, db);
-	tournamentEndpoints(fastify, db);
-	userChatsEndpoints(fastify, db);
-	userEndpoints(fastify, db);
+	accountEndpoints(fastify);
+	apiEndpoints(fastify);
+	authEndpoints(fastify);
+	foesEndpoints(fastify);
+	friendsEndpoints(fastify);
+	matchResultsEndpoints(fastify);
+	profileEndpoints(fastify);
+	totpEndpoints(fastify);
+	tournamentEndpoints(fastify);
+	userChatsEndpoints(fastify);
+	userEndpoints(fastify);
 
-	serverSocket(fastify, db);
+	serverSocket(fastify);
 
 	// Remove!
-	devEndpoints(fastify, db);
+	devEndpoints(fastify);
 
 	fastify.listen({
 		host: "0.0.0.0",

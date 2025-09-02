@@ -8,8 +8,9 @@ import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchStartReceived } from './matchMessages.js';
 
-export function serverSocket(fastify: FastifyInstance, db: DatabaseSync): void {
+export function serverSocket(fastify: FastifyInstance): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
+		const db = request.db;
 		socket?.on("message", (data: string | Buffer) => {
 			const user = request.user;
 			const message = JSON.parse(data as string);

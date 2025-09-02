@@ -16,19 +16,13 @@ export function usersHtml(users: User[]) {
 
 export function usersView(users: User[], user: User): string {
 	return `
-	<div class="w-full h-full bg-gray-900">
-		<div class="h-full m-auto text-center flex flex-row">
-			<div class="grow bg-gray-900">
-				<div class="flex flex-col h-full py-8 text-center">
-					${switcherHtml()}
-					<div class="userButton w-80 mx-auto cursor-[url(/images/pointer.png),pointer] p-2 mb-4 mt-2 border border-gray-700 rounded-lg bg-gray-700 text-gray-300" data-id="${user.userId}">
-						${user.nick}
-					</div>
-					<div class="h-150 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
-						${usersHtml(users)}
-					</div>
-				</div>
-			</div>
+	<div class="flex flex-col h-full py-8 items-center">
+		${switcherHtml()}
+		<div class="userButton w-80 mx-auto cursor-[url(/images/pointer.png),pointer] p-2 mb-4 mt-2 border border-gray-700 rounded-lg bg-gray-700 text-gray-300" data-id="${user.userId}">
+			${user.nick}
+		</div>
+		<div class="h-150 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
+			${usersHtml(users)}
 		</div>
 	</div>
 	${profileDialogHtml()}

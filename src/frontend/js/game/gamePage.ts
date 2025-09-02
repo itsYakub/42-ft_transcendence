@@ -72,12 +72,12 @@ export function gameFunctions() {
 // }
 
 async function startLocalMatch() {
-	const userBoxResponse = await fetch("/api/user");
-	const userBox = await userBoxResponse.json();
-	if (Result.SUCCESS == userBox.result) {
+	const nicksResponse = await fetch("/api/match/nicks");
+	const nicksBox = await nicksResponse.json();
+	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
-			const g2Nick = translate(getLanguage(), "%%TEXT_GUEST%%");
+			const g2Nick = nicksBox.contents[1];
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 				const response = await fetch("/api/match-result/add", {
 					method: "POST",
@@ -91,7 +91,9 @@ async function startLocalMatch() {
 					})
 				});
 			});
-			g_game.setupElements(GameMode.GAMEMODE_PVP, userBox.contents, {
+			g_game.setupElements(GameMode.GAMEMODE_PVP, {
+				nick: nicksBox.contents[0]
+			}, {
 				nick: g2Nick
 			});
 		}
@@ -99,12 +101,12 @@ async function startLocalMatch() {
 }
 
 async function startAiMatch() {
-	const userBoxResponse = await fetch("/api/user");
-	const userBox = await userBoxResponse.json();
-	if (Result.SUCCESS == userBox.result) {
+	const nicksResponse = await fetch("/api/match/nicks");
+	const nicksBox = await nicksResponse.json();
+	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
-			const g2Nick = translate(getLanguage(), "%%TEXT_AI%%");
+			const g2Nick = nicksBox.contents[1];
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 				const response = await fetch("/api/match-result/add", {
 					method: "POST",
@@ -118,7 +120,9 @@ async function startAiMatch() {
 					})
 				});
 			});
-			g_game.setupElements(GameMode.GAMEMODE_AI, userBox.contents, {
+			g_game.setupElements(GameMode.GAMEMODE_AI, {
+				nick: nicksBox.contents[0]
+			}, {
 				nick: g2Nick
 			});
 		}
@@ -126,10 +130,10 @@ async function startAiMatch() {
 }
 
 async function createLocalTournament() {
-	const userBoxResponse = await fetch("/api/user");
-	const userBox = await userBoxResponse.json();
-	if (Result.SUCCESS == userBox.result) {
-		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(userBox.contents));
+	const nicks = await fetch("/api/tournament/nicks");
+	const nicksBox = await nicks.json();
+	if (Result.SUCCESS == nicksBox.result) {
+		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(nicksBox.contents));
 		localTournamentListeners();
 	}
 }

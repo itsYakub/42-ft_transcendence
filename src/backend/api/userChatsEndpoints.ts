@@ -1,11 +1,11 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { Result } from '../../common/interfaces.js';
 import { partnerChats } from '../db/userChatsDb.js';
 import { userChatsMessages } from '../../common/dynamicElements.js';
 
-export function userChatsEndpoints(fastify: FastifyInstance, db: DatabaseSync): void {
+export function userChatsEndpoints(fastify: FastifyInstance): void {
 	fastify.post('/api/chats', async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
 		const user = request.user;
 		const { partnerId } = request.body as any;
 

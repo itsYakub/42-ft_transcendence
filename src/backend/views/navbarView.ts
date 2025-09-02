@@ -25,7 +25,7 @@ export function navbarView(params: FrameParams): string {
 
 function loggedOutHtml(languageSelect: string): string {
 	return `
-	<div class="h-full bg-gray-800">
+	<div class="h-full bg-gray-900">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<div class="mr-auto flex flex-row gap-4 items-center">
 				<img class="rounded-lg border border-gray-800 h-20 w-20" src="/images/logo.jpg"/>
@@ -42,7 +42,7 @@ function loggedOutHtml(languageSelect: string): string {
 
 function loggedInHtml(user: User, languageSelect: string, page: string): string {
 	return `
-	<div class="h-full bg-gray-800">
+	<div class="h-full bg-gray-900">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<img id="homeButton" class="rounded-lg border border-gray-800 cursor-[url(/images/pointer.png),pointer] h-20 w-20"
 				src="/images/logo.jpg"/>
@@ -67,16 +67,18 @@ function loggedInHtml(user: User, languageSelect: string, page: string): string 
 // TODO remove delete cookies button
 function guestHtml(user: User, languageSelect: string, page: string): string {
 	return `
-	<div class="h-full bg-gray-800">
+	<div class="h-full bg-gray-900">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<img id="homeButton" class="rounded-lg border border-gray-800 cursor-[url(/images/pointer.png),pointer] h-20 w-20"
 					src="/images/logo.jpg"/>
-			<div class="text-gray-300">${user.nick}</div>
-			
+
+			<div class="flex flex-col items-center gap-2">
+				<div class="text-gray-300">${user.nick}</div>
 				<button id="deleteCookiesButton"
-					class="mt-8 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
+					class="cursor-[url(/images/pointer.png),pointer] text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
 					Delete cookies
 				</button>	
+			</div>				
 				
 			<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer] text-gray-300">
 				${languageSelect}

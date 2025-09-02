@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { DatabaseSync } from "node:sqlite";
 import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
 import { matchLobbyView } from '../views/matchLobbyView.js';
@@ -7,17 +6,18 @@ import { gameView } from '../views/gameView.js';
 import { FrameParams, LocalTournament, Result, Tournament } from '../../common/interfaces.js';
 import { gameChatsList } from '../db/gameChatsDb.js';
 import { getTournament } from '../db/tournamentsDb.js';
-import { tournamentView } from '../views/tournamentView.js';
-import { tournamentLobbyView } from '../views/tournamentLobbyView.js';
+import { remoteTournamentView } from '../views/remoteTournamentView.js';
+import { remoteTournamentLobbyView } from '../views/remoteTournamentLobbyView.js';
 import { localTournamentView } from '../views/localTournamentView.js';
 import { getLocalTournament } from '../db/localTournamentsDb.js';
 import { removeUserFromMatch } from '../db/userDB.js';
 
-export function gamePage(fastify: FastifyInstance, db: DatabaseSync): void {
-	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => gamePageView(db, request, reply));
+export function gamePage(fastify: FastifyInstance): void {
+	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => gamePageView(request, reply));
 }
 
-export function gamePageView(db: DatabaseSync, request: FastifyRequest, reply: FastifyReply) {
+export function gamePageView(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 
@@ -27,13 +27,13 @@ export function gamePageView(db: DatabaseSync, request: FastifyRequest, reply: F
 
 		const tournamentBox = getTournament(db, gameId);
 		if (Result.SUCCESS == tournamentBox.result)
-			return (remoteTournament(db, tournamentBox.contents, request, reply));
+			return (remoteTournament(tournamentBox.contents, request, reply));
 
 		const localTournamentBox = getLocalTournament(db, gameId);
 		if (Result.SUCCESS == localTournamentBox.result)
-			return localTournament(db, localTournamentBox.contents, request, reply);
+			return localTournament(localTournamentBox.contents, request, reply);
 
-		return lobby(db, request, reply);
+		return lobby(request, reply);
 	}
 
 	const gamesBox = getGames(db);
@@ -53,7 +53,8 @@ export function gamePageView(db: DatabaseSync, request: FastifyRequest, reply: F
 	return reply.type("text/html").send(frame);
 }
 
-function localTournament(db: DatabaseSync, tournament: LocalTournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+function localTournament(tournament: LocalTournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 
@@ -72,7 +73,8 @@ function localTournament(db: DatabaseSync, tournament: LocalTournament, request:
 	return reply.type("text/html").send(frameView(params, localTournamentView(tournament, user)));
 }
 
-function lobby(db: DatabaseSync, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
+	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 
@@ -97,10 +99,11 @@ function lobby(db: DatabaseSync, request: FastifyRequest, reply: FastifyReply): 
 		return reply.type("text/html").send(frameView(params));
 	}
 
-	return reply.type("text/html").send(frameView(params, tournamentLobbyView(gamersBox.contents, chatsBox.contents, user)));
+	return reply.type("text/html").send(frameView(params, remoteTournamentLobbyView(gamersBox.contents, chatsBox.contents, user)));
 }
 
-function remoteTournament(db: DatabaseSync, tournament: Tournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+function remoteTournament(tournament: Tournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {
+	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 
@@ -121,7 +124,7 @@ function remoteTournament(db: DatabaseSync, tournament: Tournament, request: Fas
 		params.result = chatsBox.result;
 		return reply.type("text/html").send(frameView(params));
 	}
-	const frame = frameView(params, tournamentView(tournament, chatsBox.contents, user));
+	const frame = frameView(params, remoteTournamentView(tournament, chatsBox.contents, user));
 	return reply.type("text/html").send(frame);
 
 }
