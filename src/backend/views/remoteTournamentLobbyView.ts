@@ -24,7 +24,7 @@ export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessag
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" hidden>
-								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-gray-300 fa-solid fa-play"></i></button>
+								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-fuchsia-800 fa-solid fa-play"></i></button>
 							</div>
 						</form>
 					</div>
@@ -66,13 +66,13 @@ function tournamentGamerHtml(gamer: Gamer) {
 
 function tournamentMessageHtml(userId: number, chat: GameChatMessage) {
 	return userId == chat.fromId ?
-		`
-	<div class="bg-green-700 ml-auto py-2 rounded-lg">
+	`
+	<div class="bg-green-700 ml-auto px-4 py-2 rounded-lg">
 		<div class="text-gray-300">${chat.chat}</div>
 	</div>	
 	`
-		:
-		`
+	:
+	`
 	<div class="bg-blue-700 mr-auto px-4 py-2 rounded-lg">
 		<div class="text-white font-bold">${chat.nick}</div>
 		<div class="text-gray-300">${chat.chat}</div>

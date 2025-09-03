@@ -76,7 +76,7 @@ export function profileView(matchResults: MatchResult[], isfriend: boolean, isFo
 	const actionButtons = profileUser.userId == user.userId ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
 	return `
 	<div class="w-120 h-120 flex flex-col p-2">
-		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-white hover:text-gray-800 fa fa-xmark"></i></div>
+		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
 		<div class="text-white mb-2 text-lg">${profileUser.nick}</div>
 		<div id="actionButtonsContainer" class="flex flex-row mx-auto gap-4">
 			${actionButtons}

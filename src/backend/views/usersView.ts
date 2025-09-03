@@ -31,9 +31,9 @@ export function usersView(users: User[], user: User): string {
 function switcherHtml(): string {
 	return `
 		<div class="flex flex-row justify-center items-center mb-2 gap-2">
-			<div class="disabled p-2 rounded-lg text-gray-600 bg-gray-800 px-3 py-1">All</div>
-			<div id="friendsButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Friends</div>
-			<div id="foesButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Foes</div>
+			<div class="disabled p-2 rounded-lg bg-fuchsia-800 text-gray-300 px-3 py-1">All</div>
+			<div id="friendsButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-900 hover:bg-gray-800">Friends</div>
+			<div id="foesButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-900 hover:bg-gray-800">Foes</div>
 		</div>
 	`;
 }

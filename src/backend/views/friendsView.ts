@@ -42,9 +42,9 @@ function friendsViewHtml(friends: Friend[]): string {
 function switcherHtml(): string {
 	return `
 		<div class="flex flex-row justify-center items-center mb-2 gap-2">
-			<div id="allButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">All</div>
-			<div class="disabled p-2 rounded-lg text-gray-600 bg-gray-800 px-3 py-1">Friends</div>
-			<div id="foesButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-600 hover:bg-gray-800">Foes</div>
+			<div id="allButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-900 hover:bg-gray-800">All</div>
+			<div class="disabled p-2 rounded-lg text-gray-300 bg-fuchsia-800 px-3 py-1">Friends</div>
+			<div id="foesButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-900 hover:bg-gray-800">Foes</div>
 		</div>
 	`;
 }

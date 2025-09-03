@@ -14,7 +14,7 @@ export function alertDialogHtml(): string {
 }
 
 export function profileDialogHtml(): string {
-	return `<dialog id="profileDialog" class="mx-auto mt-40 text-center content-center rounded-lg shadow border bg-gray-900 border-gray-100"></dialog>`;
+	return `<dialog id="profileDialog" class="mx-auto mt-40 text-center content-center rounded-lg shadow border bg-gray-900 border-fuchsia-800"></dialog>`;
 }
 
 export function appTotpDialogHtml(): string {
