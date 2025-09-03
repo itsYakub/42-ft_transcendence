@@ -17,18 +17,21 @@ export function joiningMatch(gameId: string) {
 	});
 }
 
+export function matchFinishing(user: User, message: Message) {
+
+}
+
 export function matchGamerLeaving() {
 	sendMessageToServer({
 		type: MessageType.MATCH_LEAVE
 	});
 }
 
-export async function updateMatchDetails(user: User, message: Message) {
+export async function updateMatchLobby(user: User, message: Message) {
 	if (!user.gameId && (UserType.GUEST == user.userType || "game" == currentPage())) {
 		navigate(window.location.href);
 		return;
 	}
-
 	if (user.gameId == message.gameId) {
 		console.log("for me");
 		const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
@@ -56,23 +59,24 @@ export async function startingMatch(user: User, message: Message) {
 		if (dialog) {
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 				sendMessageToServer({
-					type: MessageType.MATCH_LEAVE
+					type: MessageType.MATCH_OVER,
+					gameId: message.gameId
 				});
-				if (gamers[0].userId == user.userId && e.detail["g1Score"] > e.detail["g2Score"]) {
-					console.log("sending result");
-					const response = await fetch("/api/match-result/add", {
-						method: "POST",
-						headers: {
-							"content-type": "application/json"
-						},
-						body: JSON.stringify({
-							g2Nick: gamers[0].nick == user.nick ? gamers[1].nick : gamers[0].nick,
-							g1Score: e.detail["g1Score"],
-							g2Score: e.detail["g2Score"],
-						})
-					});
-				}
-				navigate(window.location.href);
+				// if (gamers[0].userId == user.userId && e.detail["g1Score"] > e.detail["g2Score"]) {
+				// 	console.log("sending result");
+				// 	const response = await fetch("/api/match-result/add", {
+				// 		method: "POST",
+				// 		headers: {
+				// 			"content-type": "application/json"
+				// 		},
+				// 		body: JSON.stringify({
+				// 			g2Nick: gamers[0].nick == user.nick ? gamers[1].nick : gamers[0].nick,
+				// 			g1Score: e.detail["g1Score"],
+				// 			g2Score: e.detail["g2Score"],
+				// 		})
+				// 	});
+				// }
+				navigate(window.location.href, false);
 			});
 		}
 

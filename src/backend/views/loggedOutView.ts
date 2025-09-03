@@ -15,12 +15,12 @@ function loginOrRegisterHtml(): string {
 		<legend class="text-fuchsia-800">%%TEXT_LOG_IN_OR_REGISTER%%</legend>			
 		<form id="userForm" class="flex flex-col gap-2">
 			<div>
-				<input type="email" name="email" placeholder="%%TEXT_EMAIL%%" autocomplete="email"
+				<input type="email" name="email" placeholder="%%TEXT_EMAIL%%" autocomplete="email" value="coldandtired2@gmail.com"
 					class="rounded-lg block w-full p-2.5 bg-gray-900 placeholder-gray-600 text-gray-300"
 					required="true">
 			</div>
 			<div>
-				<input type="password" name="password" minlength="8" placeholder="%%TEXT_PASSWORD%%" autocomplete="current-password"
+				<input type="password" value="12345678" name="password" minlength="8" placeholder="%%TEXT_PASSWORD%%" autocomplete="current-password"
 					class="rounded-lg block w-full p-2.5 bg-gray-900 placeholder-gray-600 text-gray-300"
 					required="true">
 			</div>

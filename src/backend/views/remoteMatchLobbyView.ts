@@ -17,8 +17,11 @@ export function remoteMatchLobbyView(gamers: Gamer[], user: User): string {
 }
 
 export function gamersHtml(gamers: Gamer[]): string {
-	if (1 == gamers.length) {
-		return `
+	switch (gamers.length) {
+		case 0:
+			return "";
+		case 1:
+			return `
 		<div class="flex flex-row gap-8 mx-auto">
 			<div class="flex flex-col gap-3">
 				${gamerHtml(gamers[0], true)}
@@ -28,9 +31,9 @@ export function gamersHtml(gamers: Gamer[]): string {
 			<div class="text-gray-300 text-center my-auto pb-16 text-9xl">?</div>
 		</div>
 		`;
-	}
-	else {
-		return `
+
+		default:
+			return `
 		<div class="flex flex-row gap-8 mx-auto">
 			${gamerHtml(gamers[0], true)}	
 			${spinnerHtml(gamers)}			
@@ -51,8 +54,8 @@ function gamerHtml(gamer: Gamer, isGamer1: boolean) {
 	`;
 }
 
-function spinnerHtml(gamer: Gamer[]) {
-	return gamer.length != 2 ? `
+function spinnerHtml(gamers: Gamer[]) {
+	return gamers.length != 2 ? `
 	<div class="text-gray-300 text-5xl mx-8 pb-20 my-auto">vs</div>`
 		:
 		`

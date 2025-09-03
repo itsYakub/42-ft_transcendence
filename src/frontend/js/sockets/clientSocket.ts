@@ -1,5 +1,5 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { startingMatch, updateMatchDetails } from "./remoteMatchesMessages.js";
+import { matchFinishing, startingMatch, updateMatchLobby } from "./remoteMatchesMessages.js";
 import { joinOrLeaveTournament, tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
@@ -17,6 +17,7 @@ export function initClientSocket(): Promise<void> {
 		socket!.onopen = () => resolve();
 
 		socket!.onmessage = async (event) => {
+			console.log(JSON.parse(event.data));
 			const userResponse = await fetch("/api/user");
 			const userBox = await userResponse.json();
 			if (Result.SUCCESS != userBox.result)
@@ -57,58 +58,56 @@ export function sendMessageToServer(message: Message) {
 
 export function currentPage(): string {
 	const split = window.location.pathname.split("/").filter(n => n);
-	return split[0];
+	return split[0] ?? "/";
 }
 
 /*
 	Deals with a socket message from the server
 */
 function handleServerMessage(user: User, message: Message) {
-	console.log(message.type);
 	switch (message.type) {
-		case MessageType.USER_CONNECT://
+		case MessageType.USER_CONNECT:
 		case MessageType.USER_DISCONNECT:
 			userConnectOrDisconnect(user, message);
 			break;
-		// case MessageType.GAME_READY:
-		// 	gameReady(user, message);
-		// 	break;
 		case MessageType.USER_INVITE:
 			userInvite(user, message);
 			break;
-		// case MessageType.USER_READY:
-		// case MessageType.USER_UNREADY:
-		// 	userReadyorUnready(user, message);
-		// 	break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChat(user, message);
 			break;
 
 		// Match  messages
+		// 1 or 2 players are in the lobby
+		case MessageType.MATCH_LOBBY:
+			updateMatchLobby(user, message);
+			break;
+		// The match is finished
+		case MessageType.MATCH_OVER:
+			matchFinishing(user, message);
+			break;
+		// The match is about to start
 		case MessageType.MATCH_READY:
 			startingMatch(user, message);
 			break;
-		case MessageType.MATCH_UPDATE://
-			updateMatchDetails(user, message);
-			break;
 
 		// Tournament messages
-		case MessageType.TOURNAMENT_CHAT://
+		case MessageType.TOURNAMENT_CHAT:
 			tournamentChat(user, message);
 			break;
-		case MessageType.TOURNAMENT_JOIN://
+		case MessageType.TOURNAMENT_JOIN:
 			joinOrLeaveTournament(user, message);
 			break;
-		case MessageType.TOURNAMENT_LEAVE://
+		case MessageType.TOURNAMENT_LEAVE:
 			joinOrLeaveTournament(user, message);
 			break;
-		case MessageType.TOURNAMENT_MATCH_START://
+		case MessageType.TOURNAMENT_MATCH_START:
 			tournamentMatchStart(user, message);
 			break;
 		case MessageType.TOURNAMENT_OVER:
 			tournamentOver(user, message);
 			break;
-		case MessageType.TOURNAMENT_UPDATE://
+		case MessageType.TOURNAMENT_UPDATE:
 			updateTournamentDetails(user, message);
 			break;
 	}

@@ -6,7 +6,7 @@ import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from 
 import { getUser, markUserOffline } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
-import { matchJoinReceived, matchLeaveReceived, matchStartReceived } from './matchMessages.js';
+import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived } from './matchMessages.js';
 
 export function serverSocket(fastify: FastifyInstance): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -45,7 +45,6 @@ export function broadcastMessageToClients(fastify: FastifyInstance, message: Mes
 	Deals with a socket message from a client
 */
 function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
-	console.log(message.type);
 	switch (message.type) {
 		case MessageType.USER_CONNECT:
 			userLoginReceived(fastify, db, user, message);
@@ -63,12 +62,19 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 			break;
 
 		// Match messages
-		case MessageType.MATCH_JOIN://
+		// User has joined a new or existing match
+		case MessageType.MATCH_JOIN:
 			matchJoinReceived(fastify, db, user, message);
 			break;
+		// User has left a match lobby
 		case MessageType.MATCH_LEAVE:
 			matchLeaveReceived(fastify, db, user, message);
 			break;
+		// A match has finished
+		case MessageType.MATCH_OVER:
+			matchOverReceived(fastify, db, user, message);
+			break;
+		// The game is about to start
 		case MessageType.MATCH_START:
 			matchStartReceived(fastify, db, user, message);
 			break;

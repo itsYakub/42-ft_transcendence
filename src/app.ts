@@ -160,7 +160,7 @@ const mockData = {
 		number: 2,
 		start: 1,
 		end: 2,
-		id: 6
+		id: 11
 	}
 
 }
@@ -174,7 +174,7 @@ try {
 	initMatchResultsDb(db, mockData.mockMatchResults);
 	initTournamentsDb(db);
 	initUserChatsDb(db, mockData.mockUserChats);
-	initUsersDb(db);
+	initUsersDb(db, 10);
 
 	accountPage(fastify);
 	gamePage(fastify);

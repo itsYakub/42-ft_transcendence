@@ -1,23 +1,23 @@
-import { MatchResult, User, UserChatMessage } from "./interfaces.js";
+import { MatchResult, ShortUser, User, UserChatMessage, UserType } from "./interfaces.js";
 
 /*
 	The add/remove friend/foe buttons in the profile dialog
 */
-export function profileActionbuttons(isfriend: boolean, isFoe: boolean, userId: number) {
+export function profileActionbuttons(isfriend: boolean, isFoe: boolean, profileUserId: number) {
 	if (!(isfriend || isFoe))
 		return `
-		<div id="addFriendButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 border border-gray-700 font-medium rounded-lg px-2 py-1">%%BUTTON_ADD_FRIEND%%</div>
-		<div id="addFoeButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 border border-gray-700 font-medium rounded-lg px-2 py-1">%%BUTTON_ADD_FOE%%</div>
+		<div id="addFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-green-900">%%BUTTON_ADD_FRIEND%%</div>
+		<div id="addFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-red-900">%%BUTTON_ADD_FOE%%</div>
 		`;
 
 	if (isfriend)
 		return `
-		<div id="removeFriendButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_REMOVE_FRIEND%%</div>
+		<div id="removeFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_REMOVE_FRIEND%%</div>
 		`;
 
 	if (isFoe)
 		return `
-		<div id="removeFoeButton" data-id="${userId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_REMOVE_FOE%%</div>
+		<div id="removeFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_REMOVE_FOE%%</div>
 		`;
 
 	return "";
@@ -72,8 +72,21 @@ export function localTournamentHtml(nicks: string[]): string {
 	`;
 }
 
+export function chatsView(users: ShortUser[]): string {
+	let userList = "";
+	for (var key in users)
+		userList += chatUserHtml(users[key]);
+
+	return `
+	<div class="w-80 h-80 flex flex-col p-2 gap-2">
+		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
+		<div class="flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">${userList}</div>
+	</div>
+	`;
+}
+
 export function profileView(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, profileUser: User, user: User): string {
-	const actionButtons = profileUser.userId == user.userId ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
+	const actionButtons = (profileUser.userId == user.userId || UserType.GUEST == profileUser.userType) ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
 	return `
 	<div class="w-120 h-120 flex flex-col p-2">
 		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
@@ -87,6 +100,15 @@ export function profileView(matchResults: MatchResult[], isfriend: boolean, isFo
 		<div class="text-gray-300">
 			${stats(matchResults)}
 		</div>
+	</div>
+	`;
+}
+
+function chatUserHtml(user: ShortUser): string {
+	return `
+	<div class="flex flex-row gap-2 p-1 items-center rounded-lg bg-gray-700 cursor-[url(/images/pointer.png),pointer]">
+		<img class="w-10 h-10 rounded-lg" src="${user.avatar}"/>
+		<div class="text-gray-300">${user.nick}</div>
 	</div>
 	`;
 }

@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { Result } from '../../common/interfaces.js';
 import { partnerChats } from '../db/userChatsDb.js';
 import { userChatsMessages } from '../../common/dynamicElements.js';
+import { allChattableUsers } from '../db/userDB.js';
 
 export function userChatsEndpoints(fastify: FastifyInstance): void {
 	fastify.post('/api/chats', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -17,5 +18,12 @@ export function userChatsEndpoints(fastify: FastifyInstance): void {
 			result: Result.SUCCESS,
 			value: userChatsMessages(chatsBox.contents, partnerId)
 		});
+	});
+
+	fastify.get("/api/chats/users", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
+		const user = request.user;
+
+		return reply.send(allChattableUsers(db, user));
 	});
 }

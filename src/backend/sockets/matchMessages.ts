@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { broadcastMessageToClients } from './serverSocket.js';
-import { addUserToMatch, removeUserFromMatch, usersInMatch } from '../db/userDB.js';
+import { addUserToMatch, removeUserFromMatch, removeUsersFromMatch, usersInMatch } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { gamersHtml } from '../views/remoteMatchLobbyView.js';
 
@@ -19,7 +19,7 @@ export function matchJoinReceived(fastify: FastifyInstance, db: DatabaseSync, us
 
 			broadcastMessageToClients(
 				fastify, {
-				type: MessageType.MATCH_UPDATE,
+				type: MessageType.MATCH_LOBBY,
 				gameId,
 				content: gamersHtml(gamers.contents)
 			});
@@ -33,15 +33,26 @@ export function matchLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, u
 
 	if (Result.SUCCESS == response && gameId) {
 		const gamers = usersInMatch(db, gameId);
+		console.log(gamers);
 		if (Result.SUCCESS == gamers.result) {
 			broadcastMessageToClients(
 				fastify, {
-				type: MessageType.MATCH_UPDATE,
+				type: MessageType.MATCH_LOBBY,
 				gameId,
 				content: gamersHtml(gamers.contents)
 			});
 		}
 	}
+}
+
+export function matchOverReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+	const response = removeUsersFromMatch(db, message.gameId);
+	// add match-result here, only once per match!
+		broadcastMessageToClients(
+			fastify, {
+			type: MessageType.MATCH_OVER,
+			gameId: message.gameId
+	});
 }
 
 export function matchStartReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {

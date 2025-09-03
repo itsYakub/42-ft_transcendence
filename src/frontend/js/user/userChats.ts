@@ -1,3 +1,4 @@
+import { chatsView } from "../../../common/dynamicElements.js";
 import { MessageType, Result } from "../../../common/interfaces.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 
@@ -25,6 +26,20 @@ export function userChatsFunctions() {
 				const userChatsContainer = document.querySelector("#userChatsContainer");
 				if (userChatsContainer)
 					userChatsContainer.innerHTML = json.value;
+			}
+		});
+	}
+
+	const addUserChatButton = document.querySelector("#addUserChatButton");
+	if (addUserChatButton) {
+		addUserChatButton.addEventListener("click", async () => {
+			const response = await (fetch("/api/chats/users"));
+			const json = await response.json();
+			console.log(json);
+			const chatUsersDialog = <HTMLDialogElement>document.querySelector("#chatUsersDialog");
+			if (chatUsersDialog) {
+				chatUsersDialog.innerHTML = chatsView(json.contents);
+				chatUsersDialog.showModal();
 			}
 		});
 	}

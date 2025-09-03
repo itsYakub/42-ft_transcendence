@@ -128,7 +128,7 @@ export async function tournamentMatchStart(user: User, message: Message) {
 							g2Score: e.detail["g2Score"],
 						})
 					});
-					navigate("/");
+					navigate(window.location.href);
 				});
 			}
 

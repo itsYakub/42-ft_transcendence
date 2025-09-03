@@ -34,6 +34,8 @@ export enum MessageType {
 	// Match message types
 	MATCH_JOIN = "MATCH_JOIN",
 	MATCH_LEAVE = "MATCH_LEAVE",
+	MATCH_LOBBY = "MATCH_LOBBY",
+	MATCH_OVER = "MATCH_OVER",
 	MATCH_READY = "MATCH_READY",
 	MATCH_START = "MATCH_START",
 	MATCH_UPDATE = "MATCH_UPDATE",
@@ -96,6 +98,12 @@ export interface User {
 	totpSecret: string,
 	userId: number,
 	userType: UserType
+}
+
+export interface ShortUser {
+	avatar: string,
+	nick: string,
+	userId: number
 }
 
 export interface Game {

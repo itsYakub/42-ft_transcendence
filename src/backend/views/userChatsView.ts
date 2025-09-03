@@ -1,4 +1,5 @@
 import { User, UserChatPartner } from "../../common/interfaces.js";
+import { chatUsersHtml } from "./dialogsView.js";
 
 export function userChatsView(partners: UserChatPartner[], user: User): string {
 	return userChatsHtml(partners);
@@ -29,8 +30,17 @@ function userChatsHtml(partners: UserChatPartner[]): string {
 				<legend class="text-fuchsia-800">Users</legend>
 				<div id="usersDiv" class="grow flex flex-col pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 					${partnersHtml(partners)}
+					${chatUsersHtml()}
 				</div>
-				<div class="mx-auto mt-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa-solid fa-plus"></i></div>
+				<!--div class="relative group">
+						<button class="cursor-[url(/images/pointer.png),pointer]"></data><i class="text-red-300 fa-solid fa-minus"></i></button>
+						<div class="absolute bottom-full left-1/2 hover-opacity-0
+                       transform -translate-x-1/2 mb-2 
+                       w-max px-2 py-1 text-sm text-white
+                       bg-gray-700 rounded shadow-lg 
+                       opacity-0 group-hover:opacity-100">aaa</div>
+					</div-->
+				<div id="addUserChatButton" class="mx-auto mt-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa-solid fa-plus"></i></div>
 			</fieldset>
 			<fieldset class="grow border h-full flex flex-col justify-end border-fuchsia-800 bg-red-200/20 rounded-lg p-3">
 				<legend class="text-fuchsia-800">Messages</legend>
@@ -46,6 +56,6 @@ function userChatsHtml(partners: UserChatPartner[]): string {
 				</div>
 			</fieldset>
 		</div>
-	</div>
+	</div>	
 	`;
 }
