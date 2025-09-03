@@ -36,7 +36,6 @@ export async function updateMatchDetails(user: User, message: Message) {
             matchLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
         gameListeners();
 
-        // Only pass network messages to game if they contain key data
         if (message.content && message.content.includes('"kind":"KEY"')) {
             g_game.netOnMessage(message);
         }

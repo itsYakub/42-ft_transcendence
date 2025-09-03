@@ -18,6 +18,7 @@ export enum GameMode {
 }
 
 type NetKeyPayload = { kind: "KEY"; action: "UP" | "DOWN"; pressed: boolean; playerId: number };
+type NetGameEndPayload = { kind: "GAME_END"; p0Score: number; p1Score: number };
 
 function isNetKeyPayload(x: any): x is NetKeyPayload {
     return (
@@ -26,6 +27,15 @@ function isNetKeyPayload(x: any): x is NetKeyPayload {
         (x.action === "UP" || x.action === "DOWN") &&
         typeof x.pressed === "boolean" &&
         typeof x.playerId === "number"
+    );
+}
+
+function isNetGameEndPayload(x: any): x is NetGameEndPayload {
+    return (
+        x &&
+        x.kind === "GAME_END" &&
+        typeof x.p0Score === "number" &&
+        typeof x.p1Score === "number"
     );
 }
 
@@ -182,8 +192,8 @@ export class Game {
 
         // networked matches wait for MATCH_START; locals start immediately
         if (this.m_networked) {
+            console.log('[ INFO ] Networked game - waiting for MATCH_START message...');
             // wait for actuallyStart() when MATCH_START arrives
-            console.log('[ INFO ] Waiting for MATCH_START in networked game...');
         } else if (GameMode.GAMEMODE_NONE == mode) {
             setTimeout(() =>
                 sendMessageToServer({
@@ -198,9 +208,11 @@ export class Game {
         }
     }
 
+
     public actuallyStart() {
         if (this.m_gameOver || this.m_started) return;
         console.log('[ INFO ] Actually starting networked game - ball should move now');
+
         this.m_ball.start();
         this.m_started = true;
     }
@@ -216,20 +228,32 @@ export class Game {
         } catch {
             return;
         }
-        if (!isNetKeyPayload(parsed)) return;
 
-        const payload = parsed as NetKeyPayload;
+        if (isNetKeyPayload(parsed)) {
+            const payload = parsed as NetKeyPayload;
 
-        // Don't process our own key presses
-        if (payload.playerId === this.m_localIndex) return;
+            // don't process our own key presses
+            if (payload.playerId === this.m_localIndex) return;
 
-        // Map remote player's arrow key presses to their paddle's keys
-        // Player 0 (purple paddle) uses w/s, Player 1 (yellow paddle) uses arrows
-        const keyToUpdate = payload.playerId === 0
-            ? payload.action === "UP" ? "w" : "s"           // Purple paddle (left)
-            : payload.action === "UP" ? "ArrowUp" : "ArrowDown";  // Yellow paddle (right)
+            // arrow presses to paddles mapping
+            const keyToUpdate = payload.playerId === 0
+                ? payload.action === "UP" ? "w" : "s"           // purple paddle (left)
+                : payload.action === "UP" ? "ArrowUp" : "ArrowDown";  // yellow paddle (right)
 
-        Game.keys[keyToUpdate] = payload.pressed;
+            Game.keys[keyToUpdate] = payload.pressed;
+
+        } else if (isNetGameEndPayload(parsed)) {
+            const payload = parsed as NetGameEndPayload;
+
+            // sync scores
+            this.m_player0.score = payload.p0Score;
+            this.m_player1.score = payload.p1Score;
+
+            // end game
+            if (!this.m_gameOver) {
+                this.matchOver();
+            }
+        }
     }
 
     public dispose() {
@@ -251,7 +275,7 @@ export class Game {
         console.log('[ INFO ] Closing dialog');
         this.m_dialog.close();
 
-        // remove local key listeners if any
+        // rm local key listeners if any
         if (this.onLocalKeyBound) {
             window.removeEventListener("keydown", this.onLocalKeyBound, true);
             window.removeEventListener("keyup", this.onLocalKeyBound, true);
@@ -264,7 +288,7 @@ export class Game {
         console.log('[ INFO ] Game is disposed...');
     }
 
-    public score(p0 : boolean, p1 : boolean) {
+    public score(p0: boolean, p1: boolean) {
         /* Increment the player score. */
         if (p0) { this.m_player0.score++ };
         if (p1) { this.m_player1.score++ };
@@ -274,6 +298,21 @@ export class Game {
         if (this.m_player0.score >= g_gameScoreTotal ||
             this.m_player1.score >= g_gameScoreTotal
         ) {
+            // Send game end event to synchronize match end
+            if (this.m_networked && this.m_gameId) {
+                const gameEndPayload = {
+                    kind: "GAME_END",
+                    p0Score: this.m_player0.score,
+                    p1Score: this.m_player1.score
+                };
+
+                sendMessageToServer({
+                    type: MessageType.MATCH_UPDATE,
+                    gameId: this.m_gameId,
+                    content: JSON.stringify(gameEndPayload),
+                });
+            }
+
             this.matchOver();
             return;
         }
@@ -285,6 +324,7 @@ export class Game {
     }
 
     /* SECTION: Private Methods */
+
 
     private updateRenderLoop() {
         /* SECTION: Update */
@@ -302,7 +342,6 @@ export class Game {
         this.m_ball.update();
 
         /* SECTION: Render */
-
         /* Resize the canvas to the size of the dialog */
         this.m_canvas.width = this.m_dialog.clientWidth;
         this.m_canvas.height = this.m_dialog.clientHeight;

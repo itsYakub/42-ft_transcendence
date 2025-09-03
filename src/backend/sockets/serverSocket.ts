@@ -15,26 +15,26 @@ import {
 import {matchJoinReceived, matchLeaveReceived, matchStartReceived, matchUpdateReceived} from './matchMessages.js';
 
 export function serverSocket(fastify: FastifyInstance): void {
-	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
-		const db = request.db;
-		socket?.on("message", (data: string | Buffer) => {
-			const user = request.user;
-			const message = JSON.parse(data as string);
-			handleClientMessage(fastify, db, user, message)
-		});
+    fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
+        const db = request.db;
+        socket?.on("message", (data: string | ArrayBuffer) => {
+            const user = request.user;
+            const message = JSON.parse(data as string);
+            handleClientMessage(fastify, db, user, message)
+        });
 
-		socket?.on("close", () => {
-			const user = request.user
-			markUserOffline(db, user.userId);
-			broadcastMessageToClients(fastify, {
-				type: MessageType.MATCH_JOIN,
-				fromId: user.userId,
-			});
-			//if (user.gameID)
-			//	leaveRoom(db, user);
-			// too sensitive
-		});
-	});
+        socket?.on("close", () => {
+            const user = request.user
+            markUserOffline(db, user.userId);
+            broadcastMessageToClients(fastify, {
+                type: MessageType.MATCH_JOIN,
+                fromId: user.userId,
+            });
+            //if (user.gameID)
+            //	leaveRoom(db, user);
+            // too sensitive
+        });
+    });
 }
 
 /*
@@ -67,7 +67,6 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.USER_READY:
 			break;
 
-		// Match messages
 		case MessageType.MATCH_JOIN:
 			matchJoinReceived(fastify, db, user, message);
 			break;
@@ -77,7 +76,7 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.MATCH_START:
 			matchStartReceived(fastify, db, user, message);
 			break;
-        case MessageType.MATCH_UPDATE:
+        case MessageType.MATCH_UPDATE: // added for remote sync
             matchUpdateReceived(fastify, db, user, message);
             break;
 
