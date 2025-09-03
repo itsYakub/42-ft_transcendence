@@ -8,7 +8,7 @@ import { registerEvents, navigated } from "./events.js";
 import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./user/userChats.js";
-import { tournamentListeners } from "./game/tournament.js";
+import { tournamentListeners } from "./game/remoteTournament.js";
 import { UserType } from "../../common/interfaces.js";
 
 /*

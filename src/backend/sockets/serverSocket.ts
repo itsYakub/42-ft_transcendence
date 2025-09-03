@@ -21,7 +21,7 @@ export function serverSocket(fastify: FastifyInstance): void {
 			const user = request.user
 			markUserOffline(db, user.userId);
 			broadcastMessageToClients(fastify, {
-				type: MessageType.MATCH_JOIN,
+				type: MessageType.MATCH_LEAVE,
 				fromId: user.userId,
 			});
 			//if (user.gameID)
@@ -45,6 +45,7 @@ export function broadcastMessageToClients(fastify: FastifyInstance, message: Mes
 	Deals with a socket message from a client
 */
 function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+	console.log(message.type);
 	switch (message.type) {
 		case MessageType.USER_CONNECT:
 			userLoginReceived(fastify, db, user, message);
@@ -62,7 +63,7 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 			break;
 
 		// Match messages
-		case MessageType.MATCH_JOIN:
+		case MessageType.MATCH_JOIN://
 			matchJoinReceived(fastify, db, user, message);
 			break;
 		case MessageType.MATCH_LEAVE:

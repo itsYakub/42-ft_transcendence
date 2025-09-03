@@ -1,7 +1,7 @@
 import { Message, MessageType, Result, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
-import { tournamentListeners } from "../game/tournament.js";
+import { tournamentListeners } from "../game/remoteTournament.js";
 import { getLanguage, navigate, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
@@ -45,13 +45,13 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 		return;
 	}
 
-	if (!isMessageForMe(user, message))
-		return;
-
 	if (!user.gameId) {
 		navigate(window.location.href, false);
 		return;
 	}
+
+	if (!isMessageForMe(user, message))
+		return;
 
 	if (user.gameId == message.gameId) {
 		const tournamentDetailsContainer = document.querySelector("#tournamentDetailsContainer");
