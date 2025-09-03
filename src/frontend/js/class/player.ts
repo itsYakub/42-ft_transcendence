@@ -103,6 +103,7 @@ export class Player extends Shape {
 	public update() {
 		let	up : boolean;
 		let down : boolean;
+		let round_precision : number = 10.0;
 
 		if (g_game.gameOver) { return; }
 		
@@ -119,8 +120,13 @@ export class Player extends Shape {
 				 *  Implement AI
 				 * */
 				this.aiBehaviour();
-				up = this.pos.y < this.m_aiDest.y;
-				down = this.pos.y > this.m_aiDest.y;
+				/* NOTE(joleksia):
+				 *  This one is for dealing with floating-point precision.
+				 *  We could simply just round the values to the nearest integer but it would cause an important data loss.
+				 *  Insteas, we multiply the data by the desired precision and then round to the nearest int. 
+				 * */
+				up = Math.round(this.pos.y * round_precision) < Math.round(this.m_aiDest.y * round_precision);
+				down = Math.round(this.pos.y * round_precision) > Math.round(this.m_aiDest.y * round_precision);
 			} break;
 		}
 		this.movePlayer(up, down);
@@ -142,7 +148,8 @@ export class Player extends Shape {
 		 * */
 		let	dir : number = 0.0;
 		if (up) { dir = 1.0; }
-		else if (down) { dir = -1.0 };
+		else if (down) { dir = -1.0; }
+		else { dir = 0.0; }
 
 		this.vel.y = dir;
 	}
@@ -155,8 +162,7 @@ export class Player extends Shape {
 		if (this.m_aiTimerElapsed >= 1.0) {
 			this.m_aiTimerElapsed = 0.0;
 
-			this.m_aiDest = g_game.ball.simulatePosition();
-
+			this.m_aiDest = g_game.ball.simulateNextBounce();
 			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
 			console.log('[ INFO ] Current pallet position: ' + this.pos);
 		}
