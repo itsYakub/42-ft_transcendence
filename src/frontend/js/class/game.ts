@@ -222,37 +222,37 @@ export class Game {
             return;
         if (!message.content) return;
 
-        let parsed: unknown;
         try {
-            parsed = JSON.parse(message.content);
-        } catch {
-            return;
-        }
+            const payload = JSON.parse(message.content);
 
-        if (isNetKeyPayload(parsed)) {
-            const payload = parsed as NetKeyPayload;
+            if (payload.kind === "KEY" && typeof payload.pressed === "boolean") {
+                if (payload.player === this.m_localIndex) return;
 
-            // don't process our own key presses
-            if (payload.playerId === this.m_localIndex) return;
+                Game.keys[payload.key] = payload.pressed;
 
-            // arrow presses to paddles mapping
-            const keyToUpdate = payload.playerId === 0
-                ? payload.action === "UP" ? "w" : "s"           // purple paddle (left)
-                : payload.action === "UP" ? "ArrowUp" : "ArrowDown";  // yellow paddle (right)
+            } else if (payload.kind === "GOAL") {
+                this.m_player0.score = payload.p0Score;
+                this.m_player1.score = payload.p1Score;
 
-            Game.keys[keyToUpdate] = payload.pressed;
+                console.log('[ INFO ] Goal scored! Synced scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
 
-        } else if (isNetGameEndPayload(parsed)) {
-            const payload = parsed as NetGameEndPayload;
+                if (payload.p0Score < g_gameScoreTotal && payload.p1Score < g_gameScoreTotal) {
+                    this.resetRound();
+                }
 
-            // sync scores
-            this.m_player0.score = payload.p0Score;
-            this.m_player1.score = payload.p1Score;
+            } else if (payload.kind === "GAME_END") {
+                this.m_player0.score = payload.p0Score;
+                this.m_player1.score = payload.p1Score;
 
-            // end game
-            if (!this.m_gameOver) {
+                console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
                 this.matchOver();
+
+            } else if (payload.kind === "RESET") {
+                console.log('[ INFO ] Round reset synced');
+                this.resetRound();
             }
+        } catch (e) {
+            console.warn('Invalid network message:', e);
         }
     }
 
@@ -289,27 +289,42 @@ export class Game {
     }
 
     public score(p0: boolean, p1: boolean) {
-        /* Increment the player score. */
         if (p0) { this.m_player0.score++ };
         if (p1) { this.m_player1.score++ };
         console.log('[ INFO ] Current score: p0:' + this.m_player0.score + ' | p1:' + this.m_player1.score);
 
-        /* Check if someone passed the score threshold. If so, the match is over! */
+        // Send goal event to sync both clients (only Player 0 sends to avoid duplicates)
+        if (this.m_networked && this.m_gameId && this.m_localIndex === 0) {
+            const goalPayload = {
+                kind: "GOAL",
+                p0Score: this.m_player0.score,
+                p1Score: this.m_player1.score,
+                p0Scored: p0,
+                p1Scored: p1
+            };
+
+            sendMessageToServer({
+                type: MessageType.MATCH_GOAL,
+                gameId: this.m_gameId,
+                content: JSON.stringify(goalPayload),
+            });
+        }
+
+        /* check if someone passed the score threshold to end the game if so */
         if (this.m_player0.score >= g_gameScoreTotal ||
             this.m_player1.score >= g_gameScoreTotal
         ) {
-            // Send game end event to synchronize match end
-            if (this.m_networked && this.m_gameId) {
-                const gameEndPayload = {
+            if (this.m_networked && this.m_gameId && this.m_localIndex === 0) {
+                const endPayload = {
                     kind: "GAME_END",
                     p0Score: this.m_player0.score,
                     p1Score: this.m_player1.score
                 };
 
                 sendMessageToServer({
-                    type: MessageType.MATCH_UPDATE,
+                    type: MessageType.MATCH_END,
                     gameId: this.m_gameId,
-                    content: JSON.stringify(gameEndPayload),
+                    content: JSON.stringify(endPayload),
                 });
             }
 
@@ -317,15 +332,27 @@ export class Game {
             return;
         }
 
+        // reset event to sync paddle/ball reset
+        if (this.m_networked && this.m_gameId && this.m_localIndex === 0) {
+            sendMessageToServer({
+                type: MessageType.MATCH_RESET,
+                gameId: this.m_gameId,
+                content: JSON.stringify({ kind: "RESET" }),
+            });
+        }
+
         /* Reset round */
+        this.resetRound();
+    }
+
+    private resetRound() {
         this.m_player0.reset();
         this.m_player1.reset();
         this.m_ball.reset();
     }
 
+
     /* SECTION: Private Methods */
-
-
     private updateRenderLoop() {
         /* SECTION: Update */
         if (this.gameOver) {

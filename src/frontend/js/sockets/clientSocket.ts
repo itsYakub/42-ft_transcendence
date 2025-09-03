@@ -93,6 +93,15 @@ function handleServerMessage(user: User, message: Message) {
 		case MessageType.MATCH_UPDATE:
 			updateMatchDetails(user, message);
 			break;
+        case MessageType.MATCH_GOAL:
+            updateMatchDetails(user, message);
+            break;
+        case MessageType.MATCH_RESET:
+            updateMatchDetails(user, message);
+            break;
+        case MessageType.MATCH_END:
+            updateMatchDetails(user, message);
+            break;
 
 		// Tournament messages
 		case MessageType.TOURNAMENT_CHAT:

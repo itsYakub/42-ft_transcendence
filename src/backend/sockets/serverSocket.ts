@@ -76,7 +76,16 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.MATCH_START:
 			matchStartReceived(fastify, db, user, message);
 			break;
-        case MessageType.MATCH_UPDATE: // added for remote sync
+        case MessageType.MATCH_UPDATE:
+            matchUpdateReceived(fastify, db, user, message);
+            break;
+        case MessageType.MATCH_GOAL:
+            matchUpdateReceived(fastify, db, user, message);
+            break;
+        case MessageType.MATCH_RESET:
+            matchUpdateReceived(fastify, db, user, message);
+            break;
+        case MessageType.MATCH_END:
             matchUpdateReceived(fastify, db, user, message);
             break;
 

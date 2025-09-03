@@ -31,12 +31,17 @@ export async function updateMatchDetails(user: User, message: Message) {
 
     if (user.gameId == message.gameId) {
         console.log("for me");
-        const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
-        if (matchLobbyDetailsContainer)
-            matchLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
-        gameListeners();
 
-        if (message.content && message.content.includes('"kind":"KEY"')) {
+        // Handle lobby updates
+        if (message.content && !message.content.includes('"kind"')) {
+            const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
+            if (matchLobbyDetailsContainer)
+                matchLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
+            gameListeners();
+        }
+
+        // Handle game events (keys, goals, resets, etc.)
+        if (message.content && message.content.includes('"kind"')) {
             g_game.netOnMessage(message);
         }
     }
