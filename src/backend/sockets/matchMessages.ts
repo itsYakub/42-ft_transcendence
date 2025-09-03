@@ -45,9 +45,21 @@ export function matchLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, u
 }
 
 export function matchStartReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
-	broadcastMessageToClients(
-		fastify, {
-		type: MessageType.MATCH_START,
-		gameId: message.gameId
-	});
+    broadcastMessageToClients(
+        fastify, {
+            type: MessageType.MATCH_START,
+            gameId: message.gameId
+        });
+}
+
+export function matchUpdateReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+    // Forward game updates to all clients in the same match
+    if (message.gameId && user.gameId === message.gameId) {
+        broadcastMessageToClients(fastify, {
+            type: MessageType.MATCH_UPDATE,
+            gameId: message.gameId,
+            fromId: user.userId,
+            content: message.content
+        });
+    }
 }

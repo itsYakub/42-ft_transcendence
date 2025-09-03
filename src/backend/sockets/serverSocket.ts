@@ -1,12 +1,18 @@
-import { FastifyInstance, FastifyRequest } from 'fastify';
-import type { WebSocket } from "@fastify/websocket";
-import { DatabaseSync } from "node:sqlite";
-import { userGameLeaveReceived, tournamentChatReceived } from './gameMessages.js';
-import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from './userMessages.js';
-import { getUser, markUserOffline } from '../db/userDB.js';
-import { Message, MessageType, Result, User } from '../../common/interfaces.js';
-import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
-import { matchJoinReceived, matchLeaveReceived, matchStartReceived } from './matchMessages.js';
+import {FastifyInstance, FastifyRequest} from 'fastify';
+import type {WebSocket} from "@fastify/websocket";
+import {DatabaseSync} from "node:sqlite";
+import {tournamentChatReceived, userGameLeaveReceived} from './gameMessages.js';
+import {userInviteReceived, userLoginReceived, userSendUserChatReceived} from './userMessages.js';
+import {markUserOffline} from '../db/userDB.js';
+import {Message, MessageType, User} from '../../common/interfaces.js';
+import {
+    tournamentGamerReadyReceived,
+    tournamentJoinReceived,
+    tournamentLeaveReceived,
+    tournamentMatchEndReceived,
+    tournamentOverReceived
+} from './tournamentMessages.js';
+import {matchJoinReceived, matchLeaveReceived, matchStartReceived, matchUpdateReceived} from './matchMessages.js';
 
 export function serverSocket(fastify: FastifyInstance): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -71,6 +77,9 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.MATCH_START:
 			matchStartReceived(fastify, db, user, message);
 			break;
+        case MessageType.MATCH_UPDATE:
+            matchUpdateReceived(fastify, db, user, message);
+            break;
 
 		// Tournament messsages
 		case MessageType.TOURNAMENT_CHAT:

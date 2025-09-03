@@ -24,20 +24,25 @@ export function matchGamerLeaving() {
 }
 
 export async function updateMatchDetails(user: User, message: Message) {
-	if (UserType.GUEST == user.userType && !user.gameId) {
-		navigate(window.location.href);
-		return;
-	}
+    if (UserType.GUEST == user.userType && !user.gameId) {
+        navigate(window.location.href);
+        return;
+    }
 
-	if (user.gameId == message.gameId) {
-		console.log("for me");
-		const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
-		if (matchLobbyDetailsContainer)
-			matchLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
-		gameListeners();
-	}
-	else
-		console.log("not for me");
+    if (user.gameId == message.gameId) {
+        console.log("for me");
+        const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
+        if (matchLobbyDetailsContainer)
+            matchLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
+        gameListeners();
+
+        // Only pass network messages to game if they contain key data
+        if (message.content && message.content.includes('"kind":"KEY"')) {
+            g_game.netOnMessage(message);
+        }
+    }
+    else
+        console.log("not for me");
 }
 
 export async function startingMatch(user: User, message: Message) {
@@ -51,7 +56,10 @@ export async function startingMatch(user: User, message: Message) {
 			return;
 
 		const gamers: Gamer[] = json.contents;
-		const dialog = document.querySelector("#gameDialog");
+
+        const localIndex = gamers[0].userId === user.userId ? 0 : 1;
+
+        const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 				sendMessageToServer({
@@ -72,22 +80,22 @@ export async function startingMatch(user: User, message: Message) {
 			});
 		}
 
-		g_game.setupElements(GameMode.GAMEMODE_PVP, {
-			nick: gamers[0].nick
-		}, {
-			nick: gamers[1].nick
-		});
+        g_game.setupElements(GameMode.GAMEMODE_PVP, {
+            nick: gamers[0].nick
+        }, {
+            nick: gamers[1].nick
+        }, {
+            networked: true,
+            gameId: user.gameId,
+            localIndex: localIndex as 0 | 1
+        });
 	}, 2000);
 }
 
 export function actuallyStartingMatch(user: User, message: Message) {
 	if (message.gameId != user.gameId)
 		return;
-
-	/* TODO(joleksia):
-	 *  @lwillis do we really need it here?
-	 * */
-	// g_game.actuallyStart();
+	g_game.actuallyStart();
 }
 
 // export async function gameReady(user: User, message: Message) {
