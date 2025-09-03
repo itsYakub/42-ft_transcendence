@@ -7,7 +7,7 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 		<div class="flex flex-row items-center">
 			<div class="flex flex-col gap-20">
-				<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
+				<fieldset class="w-70 h-31 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 					<legend class="text-fuchsia-800">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[0])}
@@ -58,7 +58,7 @@ function matchHtml(match: LocalMatch): string {
 	return `
 		<div class="${gamer1Colour} text-lg">${match.g1.nick ?? "?"}</div>
 		<span class="text-white text-lg">vs</span>
-		<div class="${gamer2Colour} text-lg mb-2">${match.g2.nick ?? "?"}</div>	
+		<div class="${gamer2Colour} text-lg mb-1">${match.g2.nick ?? "?"}</div>	
 	`;
 }
 
