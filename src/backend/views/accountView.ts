@@ -3,7 +3,7 @@ import { appTotpDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
 
 export function accountView(user: User): string {
 	return `
-	<div class="flex flex-col items-center gap-4">
+	<div class="w-150 flex flex-col justify-center mx-auto items-center gap-2">
 		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_ACCOUNT_TITLE%%</div>		
 		<div class="flex flex-row w-full gap-2">
 			<fieldset class="p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
@@ -37,7 +37,7 @@ export function accountView(user: User): string {
 function securityHtml(user: User): string {
 	//return UserType.GOOGLE == user.userType ? "" :
 	return `
-	<div class="flex flex-row w-full my-4 gap-2">
+	<div class="flex flex-row w-full gap-2">
 		<fieldset class="border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 grow">
 			<legend class="text-fuchsia-800">%%TEXT_CHANGE_PASSWORD%%</legend>
 			<form id="changePasswordForm" class="flex flex-col gap-2">
@@ -53,19 +53,37 @@ function securityHtml(user: User): string {
 		</fieldset>
 		<fieldset class="border border-fuchsia-800 rounded-lg bg-red-200/20 flex flex-col p-3 gap-6 pt-5">
 			<legend class="text-fuchsia-800">%%TEXT_TOTP_TITLE%%</legend>
-			<div class="text-gray-900 text-lg cursor-[url(/images/pointer.png),pointer]">
-				<input type="radio" cursor-[url(/images/pointer.png),pointer] class="totpSetting" id="disableTotpButton" name="totpSetting" value="${TotpType.DISABLED}" ${TotpType.DISABLED == user.totpType ? "checked" : ""}/>
-				<label for="disableTotpButton" class="cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</label>
-			</div>
-			<div class="text-gray-900 text-lg cursor-[url(/images/pointer.png),pointer]">
-				<input type="radio" class="totpSetting" cursor-[url(/images/pointer.png),pointer] id="enableAppTotpButton" name="totpSetting" value="${TotpType.APP}" ${TotpType.APP == user.totpType ? "checked" : ""}/>
-				<label for="enableAppTotpButton" class="cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</label>
-			</div>
-			<div class="text-gray-900 text-lg cursor-[url(/images/pointer.png),pointer]">
-				<input type="radio" class="totpSetting" cursor-[url(/images/pointer.png),pointer] id="enableEmailTotpButton" name="totpSetting" value="${TotpType.EMAIL}" ${TotpType.EMAIL == user.totpType ? "checked" : ""}/>
-				<label for="enableEmailTotpButton" class="cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</label>
-			</div>
+			${totpHtml(user)}
 		</fieldset>
 	</div>
 	`;
+}
+
+function totpHtml(user: User): string {
+	switch (user.totpType) {
+		case TotpType.APP:
+			return `
+			<div class="flex flex-col gap-2">
+				<div class="text-green-900">%%BUTTON_APP_TOTP%%</div>
+				<button id="totpEmailButton" class="rounded-lg bg-green-900 text-gray-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
+				<button id="totpDisableButton" class="rounded-lg bg-red-900 text-gray-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
+			</div>
+			`;
+		case TotpType.DISABLED:
+			return `
+			<div class="flex flex-col gap-2">
+				<div class="text-red-900 mb-4">%%BUTTON_DISABLE_TOTP%%</div>
+				<button id="totpAppButton" class="rounded-lg bg-green-900 text-gray-300 py-2 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
+				<button id="totpEmailButton" class="rounded-lg bg-green-900 text-gray-300 mt-2 py-2 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
+			</div>
+			`;
+		case TotpType.EMAIL:
+			return `
+			<div class="flex flex-col gap-2">
+				<div class="text-green-900">%%BUTTON_EMAIL_TOTP%%</div>
+				<button id="totpEmailButton" class="rounded-lg bg-green-900 text-gray-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
+				<button id="totpDisableButton" class="rounded-lg bg-red-900 text-gray-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
+			</div>
+			`;
+	}
 }

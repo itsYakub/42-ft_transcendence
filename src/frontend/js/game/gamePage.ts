@@ -6,7 +6,6 @@ import { createRemoteMatch, joiningMatch, matchGamerLeaving } from "../sockets/r
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
 import { localTournamentListeners } from "./localTournament.js";
-import { sendMessageToServer } from "../sockets/clientSocket.js";
 
 export function gameListeners() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -42,7 +41,7 @@ export function gameListeners() {
 	const joinMatchButtons = document.getElementsByClassName("joinMatchButton");
 	for (var i = 0; i < joinMatchButtons.length; i++) {
 		joinMatchButtons[i].addEventListener("click", function () {
-			joiningMatch(this.dataset.id)
+			joiningMatch(this.dataset.id);
 			navigate(window.location.href, false);
 		});
 	}
@@ -51,13 +50,14 @@ export function gameListeners() {
 	if (leaveMatchButton) {
 		leaveMatchButton.addEventListener("click", () => {
 			matchGamerLeaving();
+			navigate(window.location.href, false);
 		});
 	}
 
 	const joinTournamentButtons = document.getElementsByClassName("joinTournamentButton");
 	for (var i = 0; i < joinTournamentButtons.length; i++) {
 		joinTournamentButtons[i].addEventListener("click", function () {
-			joiningTournament(this.dataset.id)
+			joiningTournament(this.dataset.id);
 			navigate(window.location.href, false);
 		});
 	}

@@ -1183,7 +1183,6 @@ const adjectives = [
 	"Paralyzed",
 	"Paramount",
 	"Parental",
-	"Parted",
 	"Partisan",
 	"Passive",
 	"Pastel",

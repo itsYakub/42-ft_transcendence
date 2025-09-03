@@ -73,8 +73,9 @@ export function localTournamentListeners() {
 					return;
 				}
 
-				if (Result.SUCCESS != await generateTournament(names)) {
-					showAlert(Result.ERR_BAD_TOURNAMENT);
+				const result = await generateTournament(names);
+				if (Result.SUCCESS != result) {
+					showAlert(result);
 					return;
 				}
 				navigate(window.location.href, false);

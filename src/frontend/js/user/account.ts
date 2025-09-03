@@ -138,63 +138,35 @@ export function accountListeners() {
 		});
 	}
 
-	const radios = document.getElementsByClassName("totpSetting");
-	for (var i = 0; i < radios.length; i++) {
-		radios[i].addEventListener("click", async (e) => {
-			e.preventDefault();
-			e.stopPropagation();
-			const userBoxResponse = await fetch("/api/user");
-			const userBox = await userBoxResponse.json();
-			if (Result.SUCCESS != userBox.result)
-				return;
+	const totpAppButton = document.querySelector("#totpAppButton");
+	if (totpAppButton) {
+		totpAppButton.addEventListener("click", async () => {
+			const appTotpResponse = await fetch("/api/totp/app", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({})
+			});
 
-			var selected = TotpType[(<HTMLInputElement>e.target).value];
-			if (selected == userBox.contents.totpType)
-				return;
+			const appTotpJson = await appTotpResponse.json();
+			if (Result.SUCCESS == appTotpJson.result) {
+				const qrCode = document.querySelector("#totpQRCode");
+				qrCode.innerHTML = appTotpJson.contents.qrcode;
 
-			switch (selected) {
-				case TotpType.APP:
-					const appTotpResponse = await fetch("/api/account/app-totp", {
-						method: "POST",
-						headers: {
-							"content-type": "application/json"
-						},
-						body: JSON.stringify({})
-					});
+				const totpSecret = document.querySelector("#totpSecret");
+				totpSecret.innerHTML = appTotpJson.contents.secret;
 
-					const appTotpJson = await appTotpResponse.json();
-					if (Result.SUCCESS == appTotpJson.result) {
-						const qrCode = document.querySelector("#totpQRCode");
-						qrCode.innerHTML = appTotpJson.contents.qrcode;
+				const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
+				totpDialog.showModal();
+			}
+		});
+	}
 
-						const totpSecret = document.querySelector("#totpSecret");
-						totpSecret.innerHTML = appTotpJson.contents.secret;
-
-						const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
-						totpDialog.showModal();
-					}
-					break;
-				case TotpType.DISABLED:
-					//password protect this!
-					const disableToptResponse = await fetch("/api/account/disable-totp", {
-						method: "POST",
-						headers: {
-							"content-type": "application/json"
-						},
-						body: JSON.stringify({})
-					});
-
-					const disableToptJson = await disableToptResponse.json();
-					if (Result.SUCCESS == disableToptJson.result) {
-						const alertDialog = document.querySelector("#alertDialog");
-						alertDialog.addEventListener("close", async () => {
-							navigate("/account");
-						});
-						showAlert(Result.SUCCESS_TOTP);
-					}
-					break;
-				case TotpType.EMAIL:
-					// const emailTotpResponse = await fetch("/api/account/email-totp", {
+	const totpEmailButton = document.querySelector("#totpEmailButton");
+	if (totpEmailButton) {
+		totpEmailButton.addEventListener("click", async () => {
+					// const emailTotpResponse = await fetch("/api/totp/email", {
 					// 	method: "POST",
 					// 	headers: {
 					// 		"content-type": "application/json"
@@ -211,7 +183,27 @@ export function accountListeners() {
 					const totpDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
 					totpCodeForm.code.value = "";
 					totpDialog.showModal();
-					break;
+		});
+	}
+
+	const totpDisableButton = document.querySelector("#totpDisableButton");
+	if (totpDisableButton) {
+		totpDisableButton.addEventListener("click", async () => {
+			const disableToptResponse = await fetch("/api/totp/disable", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({})
+			});
+
+			const disableToptJson = await disableToptResponse.json();
+			if (Result.SUCCESS == disableToptJson.result) {
+				const alertDialog = document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", async () => {
+					navigate("/account");
+				});
+				showAlert(Result.SUCCESS_TOTP);
 			}
 		});
 	}

@@ -208,7 +208,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_JOIN": return "In-progress";
 		case "TEXT_LOCAL_MATCH": return "Local match";
 		case "TEXT_LOCAL_TOURNAMENT": return "Local tournament";
-		case "TEXT_LOG_IN_OR_REGISTER": return "Log in or register";
+		case "TEXT_LOG_IN_OR_REGISTER": return "User";
 		case "TEXT_MATCH": return "Match";
 		case "TEXT_MATCH_SINGULAR": return "match";
 		case "TEXT_MATCH_PLURAL": return "matches";

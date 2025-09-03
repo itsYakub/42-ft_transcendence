@@ -24,23 +24,15 @@ export function appTotpDialogHtml(): string {
 			<h1 class="text-xl font-bold text-white mb-2 text-center">
 				%%TEXT_TOTP_TITLE%%
 			</h1>
-			<div id="totpQRCode" class="bg-white h-86 w-86 mx-auto"></div>
+			<div id="totpQRCode" class="bg-white h-86 w-86 mx-auto rounded-lg"></div>
 			<div class="text-gray-300 text-wrap text-center my-2">%%TEXT_TOTP_SCAN%%</div>
 			<div id="totpSecret" class="text-white text-center"></div>
 			<div class="text-gray-300 text-wrap text-center my-2">%%TEXT_TOTP_INPUT%%</div>
-			<form id="totpForm">
+			<form id="totpForm" class="mt-2 mx-auto text-center">
 				<input type="submit" class="hidden" />				
-				<div class="flex flex-row justify-between items-center mt-4">
-					<button id="cancelTOTPButton" type="submit" formmethod="dialog" formnovalidate
-						class="hover:bg-gray-700 text-gray-400 w-8 h-8 rounded-full my-auto cursor-[url(/images/pointer.png),pointer]">
-						<i class="fa-solid fa-arrow-left "></i>
-					</button>
-					<input type="text" name="code" placeholder="%%TEXT_TOTP_CODE%%" minlength="6" maxlength="6"
-						class="border text-center rounded-lg w-30 p-1.5 dark:bg-gray-700 border-gray-600 placeholder-gray-600 text-gray-300"
-						required="true">
-					<button id="verifyTOTPButton" type="submit"
-						class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 border border-gray-700 bg-gray-800 font-medium rounded-lg py-1 px-2 text-center">%%BUTTON_TOTP_VERIFY%%</button>
-				</div>
+				<input type="text" name="code" placeholder="%%TEXT_TOTP_CODE%%" minlength="6" maxlength="6"
+						class="border mx-auto text-center rounded-lg w-30 h-7 p-1.5 dark:bg-gray-700 border-gray-600 placeholder-gray-600 text-gray-300"
+						required="true">	
 			</form>
 		</div>
 	</dialog>

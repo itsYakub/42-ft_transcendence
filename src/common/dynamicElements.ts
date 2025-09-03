@@ -60,11 +60,11 @@ export function localTournamentHtml(nicks: string[]): string {
 	<div class="flex flex-col items-center gap-4">
 	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 		<div class="flex flex-col mx-auto text-center items-center content-center">
-			<form id="localTournamentForm" class="w-75">
+			<form id="localTournamentForm" class="w-75 text-center">
 				<div class="text-gray-300 text-lg">${nicks[0]}</div>
-				<input type="text" name="g2Nick" value="${nicks[1]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-gray-300">
-				<input type="text" name="g3Nick" value="${nicks[2]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 3" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-gray-300">
-				<input type="text" name="g4Nick" value="${nicks[3]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 4" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-gray-300">
+				<input type="text" name="g2Nick" value="${nicks[1]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-900 border-gray-700 placeholder-gray-600 text-gray-300">
+				<input type="text" name="g3Nick" value="${nicks[2]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 3" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-900 border-gray-700 placeholder-gray-600 text-gray-300">
+				<input type="text" name="g4Nick" value="${nicks[3]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 4" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-900 border-gray-700 placeholder-gray-600 text-gray-300">
 				<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%TEXT_START%%</button>
 			</form>
 		</div>

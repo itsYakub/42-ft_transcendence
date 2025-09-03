@@ -7,13 +7,13 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 		<div class="flex flex-row items-center">
 			<div class="flex flex-col gap-20">
-				<fieldset class="w-70 h-40 border border-fuchsia-800 bg-red-200/20 rounded-lg">
+				<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 					<legend class="text-fuchsia-800">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[0])}
 					</div>
 				</fieldset>
-				<fieldset class="w-70 h-40 border border-fuchsia-800 bg-red-200/20 rounded-lg">
+			<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 					<legend class="text-fuchsia-800">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[1])}
@@ -22,7 +22,7 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 			</div>
 			<div class="border border-fuchsia-800 border-l-0 w-30 h-60"></div>
 			<div class="border border-fuchsia-800 w-30 h-0.25"></div>
-			<fieldset class="w-70 h-40 border border-fuchsia-800 bg-red-200/20 rounded-lg">
+			<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800">Final</legend>
 				<div class="flex flex-col gap-1 justify-center items-center">
 					${matchHtml(tournament.matches[2])}
@@ -30,9 +30,10 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 			</fieldset>
 		</div>
 			
-		<div class="mt-8 border border-fuchsia-800 rounded-lg p-4 px-8 mx-auto flex flex-row items-center justify-center">
+		<div class="mt-8 border border-fuchsia-800 bg-red-200/20 rounded-lg py-2 px-8 mx-auto flex flex-row items-center justify-center">
 			${nextMatchHtml(tournament)}
 		</div>
+		<div id="leaveTournamentButton" class="text-red-900 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_LEAVE%%</div>
 	</div>
 	${gameDialogHtml()}
 	`;
@@ -43,8 +44,8 @@ function matchHtml(match: LocalMatch): string {
 	let gamer2Colour: string;
 
 	if (0 == match.g1.score && 0 == match.g2.score) {
-		gamer1Colour = "text-gray-300";
-		gamer2Colour = "text-gray-300";
+		gamer1Colour = "text-gray-9300";
+		gamer2Colour = "text-gray-900";
 	}
 	else if (match.g1.score > match.g2.score) {
 		gamer1Colour = "text-green-300";
@@ -56,8 +57,8 @@ function matchHtml(match: LocalMatch): string {
 	}
 	return `
 		<div class="${gamer1Colour} text-lg">${match.g1.nick ?? "?"}</div>
-		<span class="text-gray-300 text-lg">Vs</span>
-		<div class="${gamer2Colour} text-lg">${match.g2.nick ?? "?"}</div>	
+		<span class="text-white text-lg">vs</span>
+		<div class="${gamer2Colour} text-lg mb-2">${match.g2.nick ?? "?"}</div>	
 	`;
 }
 
@@ -65,18 +66,35 @@ function nextMatchHtml(tournament: LocalTournament) {
 	const m1 = tournament.matches[0];
 	const m2 = tournament.matches[1];
 	const m3 = tournament.matches[2];
+	let g1: LocalGamer;
+	let g2: LocalGamer;
 
-	if (0 == m1.g1.score && 0 == m1.g2.score)
-		return `<div class="text-gray-300 text-lg">${m1.g1.nick} vs ${m1.g2.nick}</div>${nextMatchButtonHtml(m1.g1, m1.g2, 1)}`;
+	if (m3.g1.score > m3.g2.score) {
+		const winner = m3.g1.score > m3.g2.score ? m3.g1.nick : m3.g2.nick;
+		return `<div class="text-green-300 text-lg">%%TEXT_CONGRATULATIONS%% ${winner}!</div>`;
+	}
 
-	if (0 == m2.g1.score && 0 == m2.g2.score)
-		return `<div class="text-gray-300 text-lg">${m2.g1.nick} vs ${m2.g2.nick}</div>${nextMatchButtonHtml(m2.g1, m2.g2, 2)}`;
+	if (0 == m1.g1.score && 0 == m1.g2.score) {
+		g1 = m1.g1;
+		g2 = m1.g2;
+	}
+	else if (0 == m2.g1.score && 0 == m2.g2.score) {
+		g1 = m2.g1;
+		g2 = m2.g2;
+	}
+	else if (0 == m3.g1.score && 0 == m3.g2.score) {
+		g1 = m3.g1;
+		g2 = m3.g2;
+	}
 
-	if (0 == m3.g1.score && 0 == m3.g2.score)
-		return `<div class="text-gray-300 text-lg">${m3.g1.nick} vs ${m3.g2.nick}</div>${nextMatchButtonHtml(m3.g1, m3.g2, 3)}`;
+	return `
+	<div class="flex flex-row justify-center items-center gap-2">
+		<div class="text-gray-900 text-lg">${g1.nick}</div>
+		<span class="text-white text-lg"> vs </span>
+		<div class="text-gray-900 text-lg">${g2.nick}</div>${nextMatchButtonHtml(g1, g2, 1)}
+	</div>
+	`;
 
-	const winner = m3.g1.score > m3.g2.score ? m3.g1.nick : m3.g2.nick;
-	return `<div class="text-green-300 text-lg">%%TEXT_CONGRATULATIONS%% ${winner}!</div>`;
 }
 
 function nextMatchButtonHtml(g1: LocalGamer, g2: LocalGamer, matchNumber: number) {
