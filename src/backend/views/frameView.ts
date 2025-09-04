@@ -43,8 +43,8 @@ function frameString(navbar: string, content: string): string {
 */
 function errorString(params: FrameParams) {
 	return `
-	<div class="h-full bg-gray-900 content-center text-center">
-		<div class="text-white">%%${params.result}%%</div>
+	<div class="flex flex-col items-center">
+		<div class="text-gray-300 mt-8 mb-4 text-center text-3xl mx-auto rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%${params.result}%%</div>
 	</div>
 	`;
 }

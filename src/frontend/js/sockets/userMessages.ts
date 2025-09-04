@@ -8,25 +8,32 @@ export async function userSendUserChat(user: User, message: Message) {
 	if (user.userId != message.fromId && user.userId != message.toId)
 		return;
 
-	const partnerIdHolder = <HTMLElement>document.querySelector("#chatPartnerIdHolder");
-	if (partnerIdHolder) {
-		const partnerId = parseInt(partnerIdHolder.dataset.id);
+	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
+	if (chatPartnerContainer) {
+		const partnerId = parseInt(chatPartnerContainer.dataset.id);
 		if (partnerId == message.fromId || partnerId == message.toId) {
 			// user is chatting with this partner
 			const node = document.createElement("span");
 			node.innerHTML = chatString(message.chat, user.userId == message.toId);
 			const container = document.querySelector("#userChatsContainer");
-			container.insertBefore(node.firstElementChild, container.firstChild);
+			if (node.firstElementChild)
+				container.insertBefore(node.firstElementChild, container.firstChild);
+			else
+				container.appendChild(node);
 		}
 		else if ("chat" == currentPage()) {
 			// user is chatting with another partner
 			console.log("another partner");
 		}
 	}
-
-	else
+	else {
 		// user is on another page
 		console.log("another page");
+		const chatButton = document.querySelector("#chatButton");
+		if (chatButton) {
+			chatButton.classList.replace("text-gray-300", "text-green-300");
+		}
+	}
 }
 
 /*

@@ -44,16 +44,16 @@ function matchHtml(match: LocalMatch): string {
 	let gamer2Colour: string;
 
 	if (0 == match.g1.score && 0 == match.g2.score) {
-		gamer1Colour = "text-gray-9300";
+		gamer1Colour = "text-gray-900";
 		gamer2Colour = "text-gray-900";
 	}
 	else if (match.g1.score > match.g2.score) {
-		gamer1Colour = "text-green-300";
-		gamer2Colour = "text-red-300";
+		gamer1Colour = "text-green-900";
+		gamer2Colour = "text-red-900";
 	}
 	else {
-		gamer1Colour = "text-red-300";
-		gamer2Colour = "text-green-300";
+		gamer1Colour = "text-red-900";
+		gamer2Colour = "text-green-900";
 	}
 	return `
 		<div class="${gamer1Colour} text-lg">${match.g1.nick ?? "?"}</div>

@@ -382,14 +382,14 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): 
 }
 
 // Finds the user in the DB by email
-export function getUserById(db: DatabaseSync, userId: number): Box<User> {
+export function getUserById(db: DatabaseSync, userId: number): Box<ShortUser> {
 	try {
 		const select = db.prepare("SELECT * FROM users WHERE user_id = ?");
 		const user = select.get(userId);
 		if (user) {
 			return {
 				result: Result.SUCCESS,
-				contents: sqlToUser(user)
+				contents: sqlToShortUser(user)
 			}
 		}
 		return {
@@ -639,7 +639,8 @@ function sqlToShortUser(sqlUser: Record<string, SQLOutputValue>): ShortUser {
 	return {
 		avatar: sqlUser.avatar as string,
 		nick: sqlUser.nick as string,
-		userId: sqlUser.user_id as number
+		userId: sqlUser.user_id as number,
+		userType: UserType[sqlUser.type as string]
 	};
 }
 
@@ -923,7 +924,6 @@ const adjectives = [
 	"Exonerated",
 	"Exorbitant",
 	"Exponential",
-	"Export",
 	"Exultant",
 	"Exulting",
 	"Facsimile",

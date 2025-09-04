@@ -19,10 +19,6 @@ export function homeView(): string {
 			<img src="/images/typescript.svg" class="h-10 w-10"/>			
 			<img src="/images/vim.svg" class="h-10 w-10"/>
 		</div>
-		<button id="addMockHistoryButton"
-			class="block mx-auto mt-8 cursor-[url(/images/pointer.png),pointer] text-center text-yellow-600 p-2 rounded-lg hover:bg-gray-700">
-			Add mock history
-		</button>
 	</div>
 	`;
 }

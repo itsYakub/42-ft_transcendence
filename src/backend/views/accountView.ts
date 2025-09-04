@@ -7,14 +7,14 @@ export function accountView(user: User): string {
 		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_ACCOUNT_TITLE%%</div>		
 		<div class="flex flex-row w-full gap-2">
 			<fieldset class="p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
-				<legend class="text-fuchsia-800">%%TEXT_CHANGE_AVATAR%%</legend>
+				<legend class="text-fuchsia-800 text-center">%%TEXT_CHANGE_AVATAR%%</legend>
 				<div>
 					<img class="w-20 h-20 mx-auto cursor-[url(/images/pointer.png),pointer] rounded-lg" src="${user.avatar}" id="avatarImage" />
 					<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
 				</div>
 			</fieldset>
 			<fieldset class="grow p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
-				<legend class="text-fuchsia-800">%%TEXT_CHANGE_NICK%%</legend>
+				<legend class="text-fuchsia-800 text-center">%%TEXT_CHANGE_NICK%%</legend>
 				<form id="changeNickForm" class="flex flex-col">
 					<input type="text" maxlength="25" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
 						class="border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-white">
@@ -24,9 +24,9 @@ export function accountView(user: User): string {
 			</fieldset>
 		</div>
 		${securityHtml(user)}		
-		<div class="flex flex-row w-full justify-end gap-4">
-			<button id="logoutButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-fuchsia-800">%%BUTTON_LOGOUT%%</button>
-			<button id="invalidateTokenButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-fuchsia-800">%%BUTTON_INVALIDATE_TOKEN%%</button>
+		<div class="w-full flex flex-row justify-center border border-fuchsia-800 bg-red-200/20 rounded-lg px-2 gap-4">
+			<button id="logoutButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-gray-900">%%BUTTON_LOGOUT%%</button>
+			<button id="invalidateTokenButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-gray-900">%%BUTTON_INVALIDATE_TOKEN%%</button>
 		</div>
 	</div>
 	${appTotpDialogHtml()}
@@ -35,11 +35,11 @@ export function accountView(user: User): string {
 }
 
 function securityHtml(user: User): string {
-	//return UserType.GOOGLE == user.userType ? "" :
-	return `
+	return UserType.GOOGLE == user.userType ? "" :
+	`
 	<div class="flex flex-row w-full gap-2">
 		<fieldset class="border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 grow">
-			<legend class="text-fuchsia-800">%%TEXT_CHANGE_PASSWORD%%</legend>
+			<legend class="text-fuchsia-800 text-center">%%TEXT_CHANGE_PASSWORD%%</legend>
 			<form id="changePasswordForm" class="flex flex-col gap-2">
 				<input type="password" id="currentPassword" maxlength="32" placeholder="%%TEXT_CURRENT_PASSWORD%%" required="true"
 					class="border rounded-lg block w-full p-2.5 bg-gray-800 border-gray-700 placeholder-gray-600 text-gray-300">
@@ -52,7 +52,7 @@ function securityHtml(user: User): string {
 			</form>
 		</fieldset>
 		<fieldset class="border border-fuchsia-800 rounded-lg bg-red-200/20 flex flex-col p-3 gap-6 pt-5">
-			<legend class="text-fuchsia-800">%%TEXT_TOTP_TITLE%%</legend>
+			<legend class="text-fuchsia-800 text-center">%%TEXT_TOTP_TITLE%%</legend>
 			${totpHtml(user)}
 		</fieldset>
 	</div>

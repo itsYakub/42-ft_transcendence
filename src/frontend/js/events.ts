@@ -32,20 +32,22 @@ export async function navigated() {
 }
 
 export function registerEvents() {
-	/* 
-		Changes page on back/forward buttons
-	*/
-	window.addEventListener('popstate', (event) => navigate(window.location.pathname, false));
+	if (typeof window !== "undefined") {
+		/* 
+			Changes page on back/forward buttons
+		*/
+		window.addEventListener('popstate', (event) => navigate(window.location.pathname, false));
 
-	/*
-		Registers the functions and also shows an error if Google sign-in/up was unsuccessful
-	*/
-	window.addEventListener("DOMContentLoaded", () => {
-		if (-1 != document.cookie.indexOf("googleautherror=true")) {
-			showAlert(Result.ERR_GOOGLE);
-			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
-		}
-		addListeners();
-		navigated();
-	});
+		/*
+			Registers the functions and also shows an error if Google sign-in/up was unsuccessful
+		*/
+		window.addEventListener("DOMContentLoaded", () => {
+			if (-1 != document.cookie.indexOf("googleautherror=true")) {
+				showAlert(Result.ERR_GOOGLE);
+				document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
+			}
+			addListeners();
+			navigated();
+		});
+	}
 }

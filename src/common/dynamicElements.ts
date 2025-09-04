@@ -1,4 +1,6 @@
-import { MatchResult, ShortUser, User, UserChatMessage, UserType } from "./interfaces.js";
+import { getLanguage } from "../frontend/js/index.js";
+import { MatchResult, ShortUser, User, UserChatMessage, UserNotification, UserType } from "./interfaces.js";
+import { translate } from "./translations.js";
 
 /*
 	The add/remove friend/foe buttons in the profile dialog
@@ -8,16 +10,18 @@ export function profileActionbuttons(isfriend: boolean, isFoe: boolean, profileU
 		return `
 		<div id="addFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-green-900">%%BUTTON_ADD_FRIEND%%</div>
 		<div id="addFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-red-900">%%BUTTON_ADD_FOE%%</div>
+		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:green-red-900">%%BUTTON_INVITE%%</div>
 		`;
 
 	if (isfriend)
 		return `
-		<div id="removeFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_REMOVE_FRIEND%%</div>
+		<div id="removeFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-gray-700">%%BUTTON_REMOVE_FRIEND%%</div>
+		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:green-red-900">%%BUTTON_INVITE%%</div>
 		`;
 
 	if (isFoe)
 		return `
-		<div id="removeFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-gray-300 hover:bg-gray-700 bg-gray-800 border border-gray-700 font-medium rounded-lg px-4">%%BUTTON_REMOVE_FOE%%</div>
+		<div id="removeFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-gray-700">%%BUTTON_REMOVE_FOE%%</div>
 		`;
 
 	return "";
@@ -33,15 +37,27 @@ export function userChatsMessages(chats: UserChatMessage[], partnerId: number): 
 	return chatHtml;
 }
 
+export function chatPartner(partner: ShortUser): string {
+	return `
+	<div>${partner.nick}</div>
+	`;
+}
+
 /*
 	The chat message itself, blue for incoming, green for outgoing
 */
 export function chatString(message: string, isPartner: boolean): string {
+
+	if ("%%MESSAGE_INVITATION%%" == message) {
+		return isPartner ? `<div class="text-gray-300 bg-blue-700 mr-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">${translate(getLanguage(), message)}</div>`
+		: "";
+	}
+
 	return isPartner ?
-	`
+		`
 	<div class="text-gray-300 bg-blue-700 mr-auto px-4 py-2 rounded-lg">${message}</div>
 	` :
-	`
+		`
 	<div class="text-gray-300 bg-green-700 ml-auto px-4 py-2 rounded-lg">${message}</div>
 	`;
 }
@@ -72,24 +88,24 @@ export function localTournamentHtml(nicks: string[]): string {
 	`;
 }
 
-export function chatsView(users: ShortUser[]): string {
+export function addChatPartnerView(users: ShortUser[]): string {
 	let userList = "";
 	for (var key in users)
 		userList += chatUserHtml(users[key]);
 
 	return `
 	<div class="w-80 h-80 flex flex-col p-2 gap-2">
-		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
+		<div id="closeAddChatPartnerButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
 		<div class="flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">${userList}</div>
 	</div>
 	`;
 }
 
-export function profileView(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, profileUser: User, user: User): string {
+export function profileView(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, profileUser: ShortUser, user: User): string {
 	const actionButtons = (profileUser.userId == user.userId || UserType.GUEST == profileUser.userType) ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
 	return `
 	<div class="w-120 h-120 flex flex-col p-2">
-		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
+		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-700 fa fa-xmark"></i></div>
 		<div class="text-white mb-2 text-lg">${profileUser.nick}</div>
 		<div id="actionButtonsContainer" class="flex flex-row mx-auto gap-4">
 			${actionButtons}
@@ -104,9 +120,22 @@ export function profileView(matchResults: MatchResult[], isfriend: boolean, isFo
 	`;
 }
 
+export function notificationsHtml(notifications: UserNotification[]): string {
+	let notificationsList = "";
+	for (var key in notifications) {
+		notificationsList += notificationHtml(notifications[key]);
+	}
+
+	return notificationsList;
+}
+
+function notificationHtml(notification: UserNotification): string {
+	return notification.type;
+}
+
 function chatUserHtml(user: ShortUser): string {
 	return `
-	<div class="flex flex-row gap-2 p-1 items-center rounded-lg bg-gray-700 cursor-[url(/images/pointer.png),pointer]">
+	<div class="addChatPartnerButton flex flex-row gap-2 p-1 items-center rounded-lg bg-gray-700 cursor-[url(/images/pointer.png),pointer]" data-id="${user.userId}" data-nick="${user.nick}">
 		<img class="w-10 h-10 rounded-lg" src="${user.avatar}"/>
 		<div class="text-gray-300">${user.nick}</div>
 	</div>

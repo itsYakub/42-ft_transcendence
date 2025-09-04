@@ -5,7 +5,6 @@ import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { initFriendsDb } from "./backend/db/friendsDb.js";
 import { initMatchResultsDb } from "./backend/db/matchResultsDb.js";
-import { devEndpoints } from "./backend/devTools.js";
 import { homePage } from "./backend/pages/homePage.js";
 import { usersPage } from "./backend/pages/usersPage.js";
 import { initUserChatsDb } from "./backend/db/userChatsDb.js";
@@ -20,7 +19,7 @@ import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { authEndpoints } from "./backend/api/authEndpoints.js";
 import { accountEndpoints } from "./backend/api/accountEndpoints.js";
 import { translate } from "./common/translations.js";
-import { Result, User } from "./common/interfaces.js";
+import { Result, User, UserType } from "./common/interfaces.js";
 import { initGameChatsDb } from "./backend/db/gameChatsDb.js";
 import { foesEndpoints } from "./backend/api/foesEndpoints.js";
 import { friendsEndpoints } from "./backend/api/friendsEndpoints.js";
@@ -34,6 +33,7 @@ import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
 import { initMatchesDb } from "./backend/db/matchesDb.js";
 import { initLocalTournamentsDb } from "./backend/db/localTournamentsDb.js";
 import { totpEndpoints } from "./backend/api/totpEndpoints.js";
+import { initNotificationsDb } from "./backend/db/notificationsDb.js";
 
 const __dirname = import.meta.dirname;
 
@@ -87,7 +87,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 	// 	// 	return done();
 
 	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-	request.isPage = ["/", "/game", "/account", "/history", "/users", "/friends", "/foes", "/profile"].includes(request.url);
+	request.isPage = ["/", "/game", "/account", "/users", "/chat"].includes(request.url);
 	const language = request.cookies.language ?? "english";
 
 	if (Result.ERR_DB == userBox.result) {
@@ -114,6 +114,15 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 			});
 	}
 
+	if (UserType.GUEST == userBox.contents?.userType && request.isPage && "/" != request.url) {
+		const params = {
+			page: request.url,
+			language,
+			result: Result.ERR_NOT_FOUND
+		};
+		return reply.type("text/html").send(frameView(params));
+	}
+
 	request.db = db;
 	request.user = userBox.contents;
 	request.language = language;
@@ -134,7 +143,8 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 	return reply.type("text/html").send(frame);
 });
 
-const db = new DatabaseSync("../data/transcendence.db");
+//const db = new DatabaseSync("../data/transcendence.db");
+const db = new DatabaseSync(":memory:");
 
 const mockData = {
 	mockUsers: 0,
@@ -172,6 +182,7 @@ try {
 	initLocalTournamentsDb(db);
 	initMatchesDb(db);
 	initMatchResultsDb(db, mockData.mockMatchResults);
+	initNotificationsDb(db);
 	initTournamentsDb(db);
 	initUserChatsDb(db, mockData.mockUserChats);
 	initUsersDb(db, 10);
@@ -195,9 +206,6 @@ try {
 	userEndpoints(fastify);
 
 	serverSocket(fastify);
-
-	// Remove!
-	devEndpoints(fastify);
 
 	fastify.listen({
 		host: "0.0.0.0",

@@ -9,7 +9,6 @@ import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./user/userChats.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
-import { UserType } from "../../common/interfaces.js";
 
 /*
 	Simulates moving to a new page
@@ -67,7 +66,7 @@ export function showAlert(text: string, shouldTranslate: boolean = true) {
 }
 
 export function getLanguage(): string {
-	let language = document.cookie
+	let language = document?.cookie
 		.split("; ")
 		.find((row) => row.startsWith("language="))
 		?.split("=")[1];

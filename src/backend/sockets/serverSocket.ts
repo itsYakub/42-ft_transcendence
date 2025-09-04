@@ -7,6 +7,7 @@ import { getUser, markUserOffline } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived } from './matchMessages.js';
+import { notificationInviteReceived } from './notificationMessages.js';
 
 export function serverSocket(fastify: FastifyInstance): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -58,6 +59,11 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChatReceived(fastify, db, user, message);
 			break;
+
+		case MessageType.NOTIFICATION_INVITE:
+			notificationInviteReceived(fastify, db, user, message);
+			break;
+
 		case MessageType.USER_READY:
 			break;
 
