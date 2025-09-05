@@ -76,21 +76,16 @@ function handleServerMessage(user: User, message: Message) {
 			userSendUserChat(user, message);
 			break;
 
-		// Match messages
-		// A match has changed its status
 		case MessageType.GAME_LIST_CHANGED:
 			updateMatchList(user);
 			break;
 
-		// 1 or 2 players are in the lobby
 		case MessageType.MATCH_LOBBY_CHANGED:
 			updateMatchLobby(user, message);
 			break;
-		// The match is finished
 		case MessageType.MATCH_OVER:
 			matchFinishing(user, message);
 			break;
-		// The match is about to start
 		case MessageType.MATCH_READY:
 			startingMatch(user);
 			break;

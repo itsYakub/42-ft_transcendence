@@ -1,4 +1,4 @@
-import * as BABYLON from 'babylonjs'
+import * as BABYLON from '@babylonjs/core/Legacy/legacy';
 
 import { g_game, g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';

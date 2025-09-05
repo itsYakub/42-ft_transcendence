@@ -1,4 +1,4 @@
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from '@babylonjs/core/Legacy/legacy';
 
 import { Shape } from './shape.js';
 import { Game, GameMode, g_game } from './game.js';

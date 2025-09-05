@@ -47,7 +47,8 @@ export function matchLeaveReceived(db: DatabaseSync, user: ShortUser, message: M
 	}
 }
 
-export function matchOverReceived(db: DatabaseSync, user: ShortUser) {
+export function matchOverReceived(db: DatabaseSync, user: ShortUser, message: Message) {
+	console.log(message);
 	const response = removeUsersFromMatch(db, user.gameId);
 	// add match-result here, only once per match!
 	// 	broadcastMessageToClients(

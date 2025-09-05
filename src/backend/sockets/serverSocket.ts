@@ -122,7 +122,7 @@ function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message
 			break;
 		// A match has finished
 		case MessageType.MATCH_OVER:
-			matchOverReceived(db, user);
+			matchOverReceived(db, user, message);
 			break;
 		// The game is about to start
 		case MessageType.MATCH_START:

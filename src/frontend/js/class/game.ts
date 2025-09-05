@@ -1,12 +1,11 @@
-import * as BABYLON from 'babylonjs'
+import * as BABYLON from '@babylonjs/core/Legacy/legacy';
 
 import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { Ground } from './ground.js';
 import { GamePlayer, MessageType } from '../../../common/interfaces.js';
 import { sendMessageToServer } from '../sockets/clientSocket.js';
-
-
+import * as GUI from '@babylonjs/gui';
 
 /* SECTION:
  *  Classes
@@ -50,9 +49,9 @@ export class Game {
 	private m_ball: Ball;
 	private m_ground: Ground;
 
-	private	m_canvasCreated: boolean = false;
-	private	m_engineCreated: boolean = false;
-	private	m_sceneCreated: boolean = false;
+	private m_canvasCreated: boolean = false;
+	private m_engineCreated: boolean = false;
+	private m_sceneCreated: boolean = false;
 
 	/* TODO(joleksia):
 	 *  This variable is here to tell every game object to no update anymore.
@@ -61,7 +60,7 @@ export class Game {
 	 *  If false: update normally;
 	 *  This also should be in sync between clients.
 	 * */
-	private	m_stateMachine : StateMachine;
+	private m_stateMachine: StateMachine;
 
 	public static keys: boolean[];
 
@@ -72,7 +71,7 @@ export class Game {
 	get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
 	get ball() { return (this.m_ball); }
 
-	public setupElements(mode: GameMode, p0: GamePlayer, p1: GamePlayer) {
+	public async setupElements(mode: GameMode, p0: GamePlayer, p1: GamePlayer) {
 		/* Get the dialog element from the document
 		 * */
 		console.log('[ INFO ] Referencing the modal dialog');
@@ -121,7 +120,7 @@ export class Game {
 		this.m_dialog.showModal();
 
 		/* Resize the canvas to the size of the dialog
-		 * */		
+		 * */
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
 
@@ -140,7 +139,7 @@ export class Game {
 		console.log('[ INFO ] Disposing babylon scene');
 		this.m_scene.dispose();
 		this.m_sceneCreated = false;
-		
+
 		console.log('[ INFO ] Disposing babylon engine');
 		this.m_engine.stopRenderLoop();
 		this.m_engine.dispose();
@@ -157,7 +156,7 @@ export class Game {
 	}
 
 
-	public score(p0 : boolean, p1 : boolean) {
+	public score(p0: boolean, p1: boolean) {
 		/* Increment the player score.
 		 * */
 		if (p0) { this.m_player0.score++ };
@@ -192,9 +191,9 @@ export class Game {
 				 *  The state machine, even tho it was updated, still called the conent of setTimeout
 				 * */
 				if (this.m_mode == GameMode.GAMEMODE_REMOTE) {
-					sendMessageToServer( {
-						type: MessageType.MATCH_START, gameId: this.m_player0.gameID 
-					} );
+					sendMessageToServer({
+						type: MessageType.MATCH_START, gameId: this.m_player0.gameID
+					});
 					console.log('[ INFO ] Match type: remote');
 				}
 				else {
@@ -226,7 +225,7 @@ export class Game {
 				this.m_player0.reset();
 				this.m_player1.reset();
 				this.m_ball.reset();
-				
+
 				this.m_stateMachine = StateMachine.STATE_START;
 			} break;
 
@@ -247,18 +246,18 @@ export class Game {
 		 * */
 		this.m_scene.render()
 	}
-	
+
 	// send the match info back to the frontend
 	// might need more fields later
 	private matchOver() {
 		// @joleksia this should be changed to communicate directly with the socket.
 		// You'll need to add name, gameId, and userId fields to the players so you don't have to pass them around
-		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
-			detail: {
-				g1Score: this.m_player0.score,
-				g2Score: this.m_player1.score
-			}
-		}));
+		// this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+		// 	detail: {
+		// 		g1Score: this.m_player0.score,
+		// 		g2Score: this.m_player1.score
+		// 	}
+		// }));
 
 		sendMessageToServer({
 			type: MessageType.MATCH_OVER,
@@ -286,7 +285,7 @@ export class Game {
 	}
 
 
-	private createScene(p0 : GamePlayer, p1 : GamePlayer) {
+	private createScene(p0: GamePlayer, p1: GamePlayer) {
 		let scene = new BABYLON.Scene(this.m_engine);
 
 		/* SECTION:
@@ -317,11 +316,29 @@ export class Game {
 				this.m_player1 = new Player(this.m_canvas, scene, p1, 1.0, 2.0);
 			} break;
 		}
+
+		// This is adapted from the docs
+		var plane = BABYLON.MeshBuilder.CreatePlane("plane", {
+			size: 2,
+			width: 10,
+			height: 5
+		});
+		plane.position.y = 2;
+		var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
+		var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
+		button1.width = 1;
+		button1.height = 0.4;
+		button1.color = "white";
+		button1.fontSize = 50;
+		button1.background = "green";
+		button1.onPointerUpObservable.add(function () {
+			alert("Shitty Babylonjs");
+		});
+		advancedTexture.addControl(button1);
+
 		return (scene);
 	}
 }
-
-
 
 /* SECTION:
  *  Global game object
@@ -331,3 +348,5 @@ export var g_gameTime: number = 0.0;
 export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
 
 export var g_game: Game = new Game();
+
+

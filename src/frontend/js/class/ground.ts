@@ -1,4 +1,4 @@
-import * as BABYLON from 'babylonjs'
+import * as BABYLON from '@babylonjs/core/Legacy/legacy';
 import * as SIMPLEX from 'simplex-noise';
 
 import { g_game, g_gameTime, g_gamePlayableArea } from './game.js';
