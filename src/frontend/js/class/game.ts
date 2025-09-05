@@ -62,7 +62,7 @@ export class Game {
 	get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
 	get ball() { return (this.m_ball); }
 
-	public setupElements(mode: GameMode, player1: GamePlayer, player2: GamePlayer) {
+	public setupElements(mode: GameMode, p0: GamePlayer, p1: GamePlayer) {
 		this.m_gameOver = false;
 
 		/* Get the dialog element from the document
@@ -104,7 +104,7 @@ export class Game {
 		if (!this.m_sceneCreated) {
 			console.log('[ INFO ] Creating a babylon scene');
 			this.m_mode = mode;
-			this.m_scene = this.createScene();
+			this.m_scene = this.createScene(p0, p1);
 		}
 
 		/* Display the game dialog
@@ -132,7 +132,7 @@ export class Game {
 			setTimeout(() =>
 				sendMessageToServer({
 					type: MessageType.MATCH_START,
-					gameId: player1.gameId
+					gameId: p0.gameId
 				}), 1000);
 		}
 		else {
@@ -241,31 +241,33 @@ export class Game {
 			}
 		}));
 
-		/*
 		sendMessageToServer({
 			type: MessageType.MATCH_OVER,
-			gameId: this.m_player0.gameId,
+			gameId: this.m_player0.gameID,
 			match: {
 				g1: {
 					nick: this.m_player0.nick,
 					score: this.m_player0.score,
-					userId: this.m_player0.userId
+					userId: this.m_player0.userID
 				},
 				g2: {
 					nick: this.m_player1.nick,
 					score: this.m_player1.score,
-					userId: this.m_player1.userId
-				}
+					userId: this.m_player1.userID
+				},
+				/* NOTE(joleksia):
+				 *  Temporary solution for compilation error (@lwillis)
+				 * */
+				matchNumber: 0.0
 			}
 		});
-		*/
 
 		// show "winner message" or something
 		this.dispose();
 	}
 
 
-	private createScene() {
+	private createScene(p0 : GamePlayer, p1 : GamePlayer) {
 		let scene = new BABYLON.Scene(this.m_engine);
 
 		/* SECTION:
@@ -287,13 +289,13 @@ export class Game {
 		 * */
 		this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
 		this.m_ball = new Ball(this.m_canvas, scene);
-		this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
+		this.m_player0 = new Player(this.m_canvas, scene, p0, 0.0, 1.0);
 		switch (this.m_mode) {
 			case (GameMode.GAMEMODE_PVP): {
-				this.m_player1 = new Player(this.m_canvas, scene, 1.0, 1.0);
+				this.m_player1 = new Player(this.m_canvas, scene, p1, 1.0, 1.0);
 			} break;
 			case (GameMode.GAMEMODE_AI): {
-				this.m_player1 = new Player(this.m_canvas, scene, 1.0, 2.0);
+				this.m_player1 = new Player(this.m_canvas, scene, p1, 1.0, 2.0);
 			} break;
 		}
 		return (scene);
