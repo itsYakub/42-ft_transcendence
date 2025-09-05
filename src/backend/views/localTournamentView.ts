@@ -4,7 +4,7 @@ import { gameDialogHtml } from './dialogsView.js';
 export function localTournamentView(tournament: LocalTournament, user: User): string {
 	return `
 	<div class="w-full h-full m-auto text-center flex flex-col items-center gap-4">
-	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
+	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 		<div class="flex flex-row items-center">
 			<div class="flex flex-col gap-20">
 				<fieldset class="w-70 h-31 border border-fuchsia-800 bg-red-200/20 rounded-lg">

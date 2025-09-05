@@ -143,8 +143,7 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 	return reply.type("text/html").send(frame);
 });
 
-//const db = new DatabaseSync("../data/transcendence.db");
-const db = new DatabaseSync(":memory:");
+const db = new DatabaseSync("../data/transcendence.db");
 
 const mockData = {
 	mockUsers: 0,

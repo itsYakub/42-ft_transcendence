@@ -1,5 +1,5 @@
 import { getLanguage } from "../frontend/js/index.js";
-import { MatchResult, ShortUser, User, UserChatMessage, UserNotification, UserType } from "./interfaces.js";
+import { MatchResult, MessageType, ShortUser, User, UserChatMessage, UserNotification, UserType } from "./interfaces.js";
 import { translate } from "./translations.js";
 
 /*
@@ -8,20 +8,20 @@ import { translate } from "./translations.js";
 export function profileActionbuttons(isfriend: boolean, isFoe: boolean, profileUserId: number) {
 	if (!(isfriend || isFoe))
 		return `
-		<div id="addFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-green-900">%%BUTTON_ADD_FRIEND%%</div>
-		<div id="addFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-red-900">%%BUTTON_ADD_FOE%%</div>
-		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:green-red-900">%%BUTTON_INVITE%%</div>
+		<div id="addFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_ADD_FRIEND%%</div>
+		<div id="addFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-red-300">%%BUTTON_ADD_FOE%%</div>
+		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_INVITE%%</div>
 		`;
 
 	if (isfriend)
 		return `
-		<div id="removeFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-gray-700">%%BUTTON_REMOVE_FRIEND%%</div>
-		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:green-red-900">%%BUTTON_INVITE%%</div>
+		<div id="removeFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-red-300">%%BUTTON_REMOVE_FRIEND%%</div>
+		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_INVITE%%</div>
 		`;
 
 	if (isFoe)
 		return `
-		<div id="removeFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-fuchsia-800 hover:text-gray-700">%%BUTTON_REMOVE_FOE%%</div>
+		<div id="removeFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-red-300">%%BUTTON_REMOVE_FOE%%</div>
 		`;
 
 	return "";
@@ -37,6 +37,21 @@ export function userChatsMessages(chats: UserChatMessage[], partnerId: number): 
 	return chatHtml;
 }
 
+export function userNotificationsMessages(notifications: UserNotification[]): string {
+	let notificationsHtml = "";
+	notifications.forEach(notification => notificationsHtml += userNotificationMessage(notification));
+	return notificationsHtml;
+}
+
+function userNotificationMessage(notification: UserNotification): string {
+	switch (notification.type) {
+		case MessageType.NOTIFICATION_INVITE:
+			return `<div class="text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">invite</div>`;
+		case MessageType.NOTIFICATION_TOURNAMENT:
+			return `<div class="text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">tournament</div>`;
+	}
+}
+
 export function chatPartner(partner: ShortUser): string {
 	return `
 	<div>${partner.nick}</div>
@@ -50,7 +65,7 @@ export function chatString(message: string, isPartner: boolean): string {
 
 	if ("%%MESSAGE_INVITATION%%" == message) {
 		return isPartner ? `<div class="text-gray-300 bg-blue-700 mr-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">${translate(getLanguage(), message)}</div>`
-		: "";
+			: "";
 	}
 
 	return isPartner ?
@@ -59,6 +74,16 @@ export function chatString(message: string, isPartner: boolean): string {
 	` :
 		`
 	<div class="text-gray-300 bg-green-700 ml-auto px-4 py-2 rounded-lg">${message}</div>
+	`;
+}
+
+export function chatMessageForm(): string {
+	return `
+	<div class="flex flex-row gap-1 mt-2">
+		<input type="text" name="message" class="outline-hidden px-2 py-1 text-stone-700 grow bg-red-300/50 rounded-lg">
+		<input type="submit" hidden>
+		<button type="submit" class="outline-hidden px-2 pt-1 text-center items-center content-center cursor-[url(/images/pointer.png),pointer] hover:bg-red-300 rounded-lg bg-red-300/50"><i class="text-fuchsia-800 m-auto fa-solid fa-play"></i></button>
+	</div>
 	`;
 }
 
@@ -73,18 +98,18 @@ export function tournamentDetails() {
 
 export function localTournamentHtml(nicks: string[]): string {
 	return `
-	<div class="flex flex-col items-center gap-4">
-	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
-		<div class="flex flex-col mx-auto text-center items-center content-center">
-			<form id="localTournamentForm" class="w-75 text-center">
-				<div class="text-gray-300 text-lg">${nicks[0]}</div>
-				<input type="text" name="g2Nick" value="${nicks[1]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 2" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-900 border-gray-700 placeholder-gray-600 text-gray-300">
-				<input type="text" name="g3Nick" value="${nicks[2]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 3" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-900 border-gray-700 placeholder-gray-600 text-gray-300">
-				<input type="text" name="g4Nick" value="${nicks[3]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 4" class="my-4 border rounded-lg block w-full p-2.5 bg-gray-900 border-gray-700 placeholder-gray-600 text-gray-300">
-				<button type="submit" class="text-gray-300 mt-4 bg-gray-800 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-gray-700">%%TEXT_START%%</button>
-			</form>
+	<form id="localTournamentForm">
+		<div class="flex flex-col items-center gap-4">
+			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
+			<div class="text-stone-700 text-lg mt-8">${nicks[0]}</div>
+			<div class="flex flex-row gap-2 justify center">
+				<input type="text" name="g2Nick" value="${nicks[1]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 2" class="w-80 outline-hidden rounded-lg p-2.5 bg-red-300/50 text-center placeholder-stone-400 text-stone-700">
+				<input type="text" name="g3Nick" value="${nicks[2]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 3" class="w-80 outline-hidden rounded-lg p-2.5 bg-red-300/50 text-center placeholder-stone-400 text-stone-700">
+			</div>
+			<input type="text" name="g4Nick" value="${nicks[3]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 4" class="w-80 outline-hidden rounded-lg mx-auto p-2.5 bg-red-300/50 text-center placeholder-stone-400 text-stone-700">
+			<div id="startLocalTournamentButton" class="text-stone-700 mt-8 bg-red-300/50 mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%TEXT_START%%</div>
 		</div>
-	</div>
+	</form>
 	`;
 }
 
@@ -95,7 +120,7 @@ export function addChatPartnerView(users: ShortUser[]): string {
 
 	return `
 	<div class="w-80 h-80 flex flex-col p-2 gap-2">
-		<div id="closeAddChatPartnerButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-900 fa fa-xmark"></i></div>
+		<div id="closeAddChatPartnerButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-red-300/50 hover:text-red-300 fa fa-xmark"></i></div>
 		<div class="flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">${userList}</div>
 	</div>
 	`;
@@ -105,8 +130,8 @@ export function profileView(matchResults: MatchResult[], isfriend: boolean, isFo
 	const actionButtons = (profileUser.userId == user.userId || UserType.GUEST == profileUser.userType) ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
 	return `
 	<div class="w-120 h-120 flex flex-col p-2">
-		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-fuchsia-800 hover:text-gray-700 fa fa-xmark"></i></div>
-		<div class="text-white mb-2 text-lg">${profileUser.nick}</div>
+		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-red-300/50 hover:text-red-300 fa fa-xmark"></i></div>
+		<div class="text-gray-300 mb-2 text-lg">${profileUser.nick}</div>
 		<div id="actionButtonsContainer" class="flex flex-row mx-auto gap-4">
 			${actionButtons}
 		</div>
@@ -120,24 +145,11 @@ export function profileView(matchResults: MatchResult[], isfriend: boolean, isFo
 	`;
 }
 
-export function notificationsHtml(notifications: UserNotification[]): string {
-	let notificationsList = "";
-	for (var key in notifications) {
-		notificationsList += notificationHtml(notifications[key]);
-	}
-
-	return notificationsList;
-}
-
-function notificationHtml(notification: UserNotification): string {
-	return notification.type;
-}
-
 function chatUserHtml(user: ShortUser): string {
 	return `
-	<div class="addChatPartnerButton flex flex-row gap-2 p-1 items-center rounded-lg bg-gray-700 cursor-[url(/images/pointer.png),pointer]" data-id="${user.userId}" data-nick="${user.nick}">
+	<div class="addChatPartnerButton flex flex-row gap-2 p-1 items-center rounded-lg bg-red-300/50 cursor-[url(/images/pointer.png),pointer]" data-id="${user.userId}" data-nick="${user.nick}">
 		<img class="w-10 h-10 rounded-lg" src="${user.avatar}"/>
-		<div class="text-gray-300">${user.nick}</div>
+		<div class="text-stone-700">${user.nick}</div>
 	</div>
 	`;
 }

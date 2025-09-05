@@ -4,7 +4,7 @@ export function friendsView(friends: Friend[]): string {
 	if (0 == friends.length) {
 		return `
 		<div class="flex flex-col items-center gap-4">
-			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
+			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
 			${switcherHtml()}
 			<div class="text-gray-300 pt-8 text-center">%%TEXT_NO_FRIENDS%%</div>
 		</div>
@@ -30,7 +30,7 @@ export function friendsHtml(friends: Friend[]) {
 function friendsViewHtml(friends: Friend[]): string {
 	return `
 	<div class="flex flex-col items-center gap-4">
-		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
+		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
 		${switcherHtml()}
 		<div class="h-100 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
 			${friendsHtml(friends)}
@@ -52,7 +52,7 @@ function switcherHtml(): string {
 function friendHtml(friend: Friend): string {
 	const onlineString: string = friend.online ? `<div><i class="text-green-300 fa-solid fa-circle"></i></div>` :
 		`<div><i class="text-red-300 fa-solid fa-circle"></i></div>`;
-	
+
 	return `
 	<div class="friendButton w-7/10 border p-2.5 rounded-lg border-gray-700 mx-auto bg-gray-800 text-gray-300">
 		<div class="flex flex-row gap-4">

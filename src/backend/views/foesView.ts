@@ -4,7 +4,7 @@ export function foesView(foes: Foe[]): string {
 	if (0 == foes.length) {
 		return `
 		<div class="flex flex-col items-center gap-4">
-			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
+			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
 			${switcherHtml()}
 			<div class="text-gray-300 pt-8 text-center">%%TEXT_NO_FOES%%</div>
 		</div>
@@ -26,7 +26,7 @@ export function foesHtml(foes: Foe[]) {
 function foesViewHtml(foes: Foe[]): string {
 	return `
 	<div class="flex flex-col items-center gap-4">
-		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
+		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
 		${switcherHtml()}
 		<div class="h-100 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
 			${foesHtml(foes)}

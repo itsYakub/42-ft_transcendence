@@ -1,4 +1,4 @@
-import { addChatPartnerView, chatPartner, notificationsHtml } from "../../../common/dynamicElements.js";
+import { addChatPartnerView, chatMessageForm, chatPartner, userNotificationsMessages } from "../../../common/dynamicElements.js";
 import { MessageType, Result } from "../../../common/interfaces.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 import { profileFunctions } from "../users/profile.js";
@@ -20,7 +20,11 @@ export function userChatsFunctions() {
 			const json = await chatsBox.json();
 			if (Result.SUCCESS == json.result) {
 				resetChatPartnerButtons();
-				(this as HTMLElement).classList.replace("hover:bg-gray-700", "bg-fuchsia-800");
+				(this as HTMLElement).classList.add("bg-red-400");
+				(this as HTMLElement).classList.remove("bg-red-300/50");
+				(this as HTMLElement).classList.remove("cursor-[url(/images/pointer.png),pointer]");
+				(this as HTMLElement).classList.remove("hover:bg-red-300");
+
 				const userChatsContainer = document.querySelector("#userChatsContainer");
 				if (userChatsContainer) {
 					const messages = json.contents.messages;
@@ -29,12 +33,7 @@ export function userChatsFunctions() {
 					chatPartnerContainer.innerHTML = chatPartner(partner);
 					chatPartnerContainer.dataset.id = partner.userId;
 					userChatsContainer.innerHTML = messages;
-					document.querySelector("#sendUserChatForm").innerHTML =
-						`<div class="flex flex-row gap-1 mt-2">
-						<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
-						<input type="submit" hidden>
-						<button type="submit" class="border border-gray-700 py-1 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-fuchsia-800 fa-solid fa-play"></i></button>
-					</div>`
+					document.querySelector("#sendUserChatForm").innerHTML = chatMessageForm();
 				}
 			}
 		});
@@ -102,9 +101,15 @@ export function userChatsFunctions() {
 				const userChatsContainer = document.querySelector("#userChatsContainer");
 				if (userChatsContainer) {
 					resetChatPartnerButtons();
+					const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
+					chatPartnerContainer.innerHTML = "";
+					notificationsButton.classList.add("bg-red-400");
+					notificationsButton.classList.remove("bg-red-300/50");
+					notificationsButton.classList.remove("cursor-[url(/images/pointer.png),pointer]");
+					notificationsButton.classList.remove("hover:bg-red-300");
 					const messages = notifications.contents;
-					userChatsContainer.innerHTML = notificationsHtml(messages);
-					console.log(messages);
+					userChatsContainer.innerHTML = userNotificationsMessages(messages);
+					document.querySelector("#sendUserChatForm").innerHTML = "";
 				}
 			}
 		});
@@ -131,6 +136,18 @@ export function userChatsFunctions() {
 
 function resetChatPartnerButtons() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
-	for (var j = 0; j < chatPartnerButtons.length; j++)
-		chatPartnerButtons[j].classList.replace("bg-fuchsia-800", "hover:bg-gray-700");
+	for (var j = 0; j < chatPartnerButtons.length; j++) {
+		chatPartnerButtons[j].classList.remove("bg-red-400");
+		chatPartnerButtons[j].classList.add("bg-red-300/50");
+		chatPartnerButtons[j].classList.add("cursor-[url(/images/pointer.png),pointer]");
+		chatPartnerButtons[j].classList.add("hover:bg-red-300");
+	}
+
+	const notificationsButton = document.querySelector("#notificationsButton");
+	if (notificationsButton) {
+		notificationsButton.classList.remove("bg-red-400");
+		notificationsButton.classList.add("bg-red-300/50");
+		notificationsButton.classList.add("cursor-[url(/images/pointer.png),pointer]");
+		notificationsButton.classList.add("hover:bg-red-300");
+	}
 }

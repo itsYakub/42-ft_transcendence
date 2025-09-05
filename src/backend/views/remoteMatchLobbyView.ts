@@ -5,7 +5,7 @@ import { gameDialogHtml } from "./dialogsView.js";
 export function remoteMatchLobbyView(gamers: Gamer[], user: User): string {
 	return `
 	<div class="flex flex-col items-center">
-		<h1 id="gameTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1 mx-auto">%%TEXT_REMOTE_MATCH%%</h1>
+		<h1 id="gameTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_REMOTE_MATCH%%</h1>
 		<div class="flex flex-row h-150">
 			<div id="matchLobbyDetailsContainer" class="mt-8 mx-auto">
 				${gamersHtml(gamers)}

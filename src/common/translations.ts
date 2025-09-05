@@ -22,6 +22,7 @@ export function translate(language: string, text: string): string {
 		"BUTTON_LOGIN",
 		"BUTTON_LOGOUT",
 		"BUTTON_MATCH",
+		"BUTTON_NOTIFICATIONS",
 		"BUTTON_READY",
 		"BUTTON_REGISTER",
 		"BUTTON_REMOVE_FOE",
@@ -65,6 +66,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_MATCH",
 		"TEXT_MATCH_SINGULAR",
 		"TEXT_MATCH_PLURAL",
+		"TEXT_MESSAGES",
 		"TEXT_NEW_NICK",
 		"TEXT_NEW_PASSWORD",
 		"TEXT_NO_FRIENDS",
@@ -93,6 +95,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_TOURNAMENT_SINGULAR",
 		"TEXT_TOURNAMENT_PLAY",
 		"TEXT_TOURNAMENT_PLURAL",
+		"TEXT_USERS",
 		"TEXT_USER_DECISION",
 		"TEXT_USERS_TITLE",
 		"TEXT_WELCOME",
@@ -152,6 +155,7 @@ function translateEnglish(text: string): string {
 		case "BUTTON_GUEST": return "Continue as a guest";
 		case "BUTTON_LOGOUT": return "Log out";
 		case "BUTTON_MATCH": return "Match";
+		case "BUTTON_NOTIFICATIONS": return "Notifications";
 		case "BUTTON_READY": return "Ready";
 		case "BUTTON_LEAVE": return "Leave";
 		case "BUTTON_REGISTER": return "Register";
@@ -199,7 +203,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_CHANGE_NICK": return "Change nickname";
 		case "TEXT_CHANGE_PASSWORD": return "Change password";
 		case "TEXT_CHAT": return "Chat";
-		case "TEXT_CHAT_TITLE": return "Chat";
+		case "TEXT_CHAT_TITLE": return "Direct messages";
 		case "TEXT_CONGRATULATIONS": return "Congratulations";
 		case "TEXT_CREATE_LOCAL": return "New local";
 		case "TEXT_CREATE_REMOTE": return "New remote";
@@ -216,6 +220,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_MATCH": return "Match";
 		case "TEXT_MATCH_SINGULAR": return "match";
 		case "TEXT_MATCH_PLURAL": return "matches";
+		case "TEXT_MESSAGES": return "Messages";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
 		case "TEXT_NO_FRIENDS": return "No friends!";
@@ -234,16 +239,17 @@ function translateEnglish(text: string): string {
 		case "TEXT_TEAM": return "The Team";
 		case "TEXT_TECH": return "Tech stack";
 		case "TEXT_TOTP_CODE": return "Code";
-		case "TEXT_TOTP_CODE_TITLE": return "Enter TOTP code";
+		case "TEXT_TOTP_CODE_TITLE": return "Enter code";
 		case "TEXT_TOTP_INPUT": return "And input the code below";
 		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";
-		case "TEXT_TOTP_TITLE": return "TOTP";
+		case "TEXT_TOTP_TITLE": return "2FA";
 		case "TEXT_TOURNAMENT": return "Tournament";
 		case "TEXT_TOURNAMENT_FINAL": return "Final";
 		case "TEXT_TOURNAMENT_SEMI_FINALS": return "Semi-finals";
 		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
 		case "TEXT_TOURNAMENT_PLAY": return "Play";
 		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
+		case "TEXT_USERS": return "Users";
 		case "TEXT_USER_DECISION": return "Please choose an option to continue";
 		case "TEXT_USERS_TITLE": return "Users";
 		case "TEXT_WELCOME": return "Welcome to Transcendence!";

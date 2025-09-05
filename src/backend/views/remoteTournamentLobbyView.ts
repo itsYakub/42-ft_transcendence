@@ -4,7 +4,7 @@ import { gameDialogHtml } from "./dialogsView.js";
 export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
 	<div class="flex flex-col w-full items-center gap-4">
-		<h1 id="tournamentTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-gray-900 border-gray-900 px-3 py-1 mx-auto">%%TEXT_REMOTE_TOURNAMENT%%</h1>
+		<h1 id="tournamentTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_REMOTE_TOURNAMENT%%</h1>
 		<div class="flex flex-row h-120 w-full gap-2">
 			<fieldset class="w-80 flex flex-col gap-2 items-center h-full border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
 				<legend id="tournamentPlayersLegend" class="text-fuchsia-800 text-center">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
@@ -66,13 +66,13 @@ function tournamentGamerHtml(gamer: Gamer) {
 
 function tournamentMessageHtml(userId: number, chat: GameChatMessage) {
 	return userId == chat.fromId ?
-	`
+		`
 	<div class="bg-green-700 ml-auto px-4 py-2 rounded-lg">
 		<div class="text-gray-300">${chat.chat}</div>
 	</div>	
 	`
-	:
-	`
+		:
+		`
 	<div class="bg-blue-700 mr-auto px-4 py-2 rounded-lg">
 		<div class="text-white font-bold">${chat.nick}</div>
 		<div class="text-gray-300">${chat.chat}</div>

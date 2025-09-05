@@ -25,7 +25,7 @@ export function navbarView(params: FrameParams): string {
 
 function loggedOutHtml(languageSelect: string): string {
 	return `
-	<div class="h-full bg-gray-900">
+	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<div class="mr-auto flex flex-row gap-4 items-center">
 				<img class="h-20 w-20" src="/images/icon.png"/>
@@ -42,7 +42,7 @@ function loggedOutHtml(languageSelect: string): string {
 
 function loggedInHtml(user: User, languageSelect: string, page: string): string {
 	return `
-	<div class="h-full bg-gray-900">
+	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<img id="homeButton" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
 
@@ -66,7 +66,7 @@ function loggedInHtml(user: User, languageSelect: string, page: string): string 
 // TODO remove delete cookies button
 function guestHtml(user: User, languageSelect: string, page: string): string {
 	return `
-	<div class="h-full bg-gray-900">
+	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<img id="homeButton" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
 
@@ -91,7 +91,7 @@ function accountButtonHtml(page: string) {
 
 	return `
 	<button id="accountButton"
-		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-gray-700">
+		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-stone-800">
 		%%BUTTON_ACCOUNT%%
 	</button>
 	`;
@@ -102,7 +102,7 @@ function gameButtonHtml(page: string) {
 
 	return `
 	<button id="gameButton"
-		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-gray-700">
+		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-stone-800">
 		%%BUTTON_GAME%%
 	</button>
 	`;
@@ -113,7 +113,7 @@ function usersButtonHtml(page: string) {
 
 	return `
 	<button id="usersButton"
-		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-gray-700">
+		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-stone-800">
 		%%BUTTON_USERS%%
 	</button>
 	`;
@@ -125,7 +125,7 @@ function chatButtonHtml(page: string, chatsWaiting: boolean = false) {
 
 	return `
 	<button id="chatButton"
-		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} ${textColour} px-2 py-1 rounded-lg hover:bg-gray-700">
+		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} ${textColour} px-2 py-1 rounded-lg hover:bg-stone-800">
 		%%BUTTON_CHAT%%
 	</button>
 	`;

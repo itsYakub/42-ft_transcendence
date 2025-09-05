@@ -28,9 +28,9 @@ function frameString(navbar: string, content: string): string {
 
 		<body>
 			<div class="h-screen w-screen bg-[url(/images/bg.png)] bg-cover bg-center flex flex-col">
-				<div id="navbar" class="h-32">${navbar}</div>
+				<div id="navbar" class="h-32 font-mono">${navbar}</div>
 				<div class="w-200 mx-auto grow">
-					<div id="content" class="grow">${content}</div>
+					<div id="content" class="grow font-mono">${content}</div>
 				</div>
 			</div>
 		</body>
@@ -44,7 +44,7 @@ function frameString(navbar: string, content: string): string {
 function errorString(params: FrameParams) {
 	return `
 	<div class="flex flex-col items-center">
-		<div class="text-gray-300 mt-8 mb-4 text-center text-3xl mx-auto rounded-lg border bg-gray-900 border-gray-900 px-3 py-1">%%${params.result}%%</div>
+		<div class="text-gray-300 mt-8 mb-4 text-center text-3xl mx-auto rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%${params.result}%%</div>
 	</div>
 	`;
 }

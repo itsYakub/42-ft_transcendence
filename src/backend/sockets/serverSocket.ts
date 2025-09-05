@@ -9,18 +9,22 @@ import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEn
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived } from './matchMessages.js';
 import { notificationInviteReceived } from './notificationMessages.js';
 
+const gamers = new Map<number, WebSocket>();
+
 export function serverSocket(fastify: FastifyInstance): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
 		const db = request.db;
+		const user = request.user;
+		gamers.set(user.userId, socket);
+	
 		socket?.on("message", (data: string | Buffer) => {
-			const user = request.user;
 			const message = JSON.parse(data as string);
 			handleClientMessage(fastify, db, user, message)
 		});
 
 		socket?.on("close", () => {
-			const user = request.user
 			markUserOffline(db, user.userId);
+			gamers.delete(user.userId);
 			broadcastMessageToClients(fastify, {
 				type: MessageType.MATCH_LEAVE,
 				fromId: user.userId,
@@ -36,10 +40,14 @@ export function serverSocket(fastify: FastifyInstance): void {
 	Sends the message to all connected clients, who have to decide if it's relevant
 */
 export function broadcastMessageToClients(fastify: FastifyInstance, message: Message) {
-	fastify.websocketServer.clients.forEach((client: any) => {
-		if (1 === client.readyState)
-			client.send(JSON.stringify(message));
+	gamers.forEach((v, k) => {
+		if (1 === v.readyState)
+			v.send(JSON.stringify(message));
 	});
+	// fastify.websocketServer.clients.forEach((client: WebSocket) => {
+	// 	if (1 === client.readyState)
+	// 		client.send(JSON.stringify(message));
+	// });
 }
 
 /*

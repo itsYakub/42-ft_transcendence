@@ -8,17 +8,18 @@ export function initNotificationsDb(db: DatabaseSync): void {
 		CREATE TABLE IF NOT EXISTS notifications (
 		from_id INTEGER NOT NULL,
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		type TEXT NOT NULL,
+		notification_type TEXT NOT NULL,
 		sent_at TEXT NOT NULL,
 		to_id INTEGER NOT NULL
 		);`);
 
-	db.exec(`INSERT INTO notifications (from_id, type, to_id, sent_at) VALUES (4, 'MESSAGE_INVITE',  11, '${new Date().toISOString()}');`);
+	db.exec(`INSERT INTO notifications (from_id, notification_type, to_id, sent_at) VALUES (4, 'NOTIFICATION_INVITE',  11, '${new Date().toISOString()}');`);
+	db.exec(`INSERT INTO notifications (from_id, notification_type, to_id, sent_at) VALUES (4, 'NOTIFICATION_TOURNAMENT',  11, '${new Date().toISOString()}');`);
 }
 
 export function notificationsList(db: DatabaseSync, userId: number): Box<UserNotification[]> {
 	try {
-		const select = db.prepare(`SELECT *, nick FROM notifications INNER JOIN users ON users.user_id = from_id WHERE to_id = ? ORDER BY sent_at`);
+		const select = db.prepare(`SELECT sent_at, notification_type, nick FROM notifications INNER JOIN users ON users.user_id = from_id WHERE to_id = ? ORDER BY sent_at DESC`);
 		const notifications = select.all(userId).map(chat => sqlToNotification(chat));
 		return {
 			result: Result.SUCCESS,
@@ -47,6 +48,6 @@ function sqlToNotification(userChatMessage: Record<string, SQLOutputValue>): Use
 	return {
 		nick: userChatMessage.nick as string,
 		sentAt: new Date(userChatMessage.sent_at as string),
-		type: MessageType[userChatMessage.message as string]
+		type: MessageType[userChatMessage.notification_type as string]
 	};
 }
