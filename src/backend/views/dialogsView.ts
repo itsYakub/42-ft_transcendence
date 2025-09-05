@@ -23,7 +23,7 @@ export function profileDialogHtml(): string {
 
 export function appTotpDialogHtml(): string {
 	return `
-	<dialog id="totpDialog" class="backdrop:bg-black backdrop:opacity-70 m-auto w-100 content-center rounded-lg shadow border bg-stone-700 border-gray-300">
+	<dialog id="totpDialog" class="backdrop:bg-black backdrop:opacity-70 m-auto w-100 content-center rounded-lg border bg-stone-700 border-red-300/50">
 		<div class="p-3">
 			<h1 class="text-xl font-bold text-gray-300 mb-2 text-center">
 				%%TEXT_TOTP_TITLE%%
@@ -45,7 +45,7 @@ export function appTotpDialogHtml(): string {
 
 export function totpLoginDialogHtml(): string {
 	return `
-	<dialog id="totpCodeDialog" class="px-4 py-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-80 bg-stone-700 border-gray-300 text-center items-center">
+	<dialog id="totpCodeDialog" class="px-4 py-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg border w-80 bg-stone-700 border-red-300/50 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-gray-300">
 				%%TEXT_TOTP_CODE_TITLE%%
@@ -68,6 +68,6 @@ export function totpLoginDialogHtml(): string {
 */
 export function gameDialogHtml(): string {
 	return `
-	<dialog id="gameDialog" class="w-8/10 h-8/10 m-auto text-center content-center rounded-lg shadow border bg-stone-700 border-gray-100"></dialog>
+	<dialog id="gameDialog" class="w-8/10 h-8/10 m-auto text-center content-center rounded-lg border bg-stone-700 border-red-300/50"></dialog>
 	`;
 }

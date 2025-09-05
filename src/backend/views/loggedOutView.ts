@@ -11,7 +11,7 @@ export function loggedOutView(): string {
 
 function loginOrRegisterHtml(): string {
 	return `	
-	<fieldset class="rounded-lg border bg-red-200/20 border-fuchsia-800 p-3 w-90">
+	<fieldset class="rounded-lg border bg-red-200/20 border-red-300 p-3 w-90">
 		<legend class="text-fuchsia-800 text-center">%%TEXT_LOG_IN_OR_REGISTER%%</legend>			
 		<form id="userForm" class="flex flex-col gap-2">
 			<div>

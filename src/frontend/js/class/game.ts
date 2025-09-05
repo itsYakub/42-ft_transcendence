@@ -248,39 +248,28 @@ export class Game {
 	}
 
 	// send the match info back to the frontend
-	// might need more fields later
 	private matchOver() {
-		// @joleksia this should be changed to communicate directly with the socket.
-		// You'll need to add name, gameId, and userId fields to the players so you don't have to pass them around
-		// this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
-		// 	detail: {
-		// 		g1Score: this.m_player0.score,
-		// 		g2Score: this.m_player1.score
-		// 	}
-		// }));
+		// show "winner message" or something, or leave it to the frontend
 
-		sendMessageToServer({
-			type: MessageType.MATCH_OVER,
-			gameId: this.m_player0.gameID,
-			match: {
-				g1: {
-					nick: this.m_player0.nick,
-					score: this.m_player0.score,
-					userId: this.m_player0.userID
-				},
-				g2: {
-					nick: this.m_player1.nick,
-					score: this.m_player1.score,
-					userId: this.m_player1.userID
-				},
-				/* NOTE(joleksia):
-				 *  Temporary solution for compilation error (@lwillis)
-				 * */
-				matchNumber: 0.0
-			}
-		});
+		// @joleksia this is so it's only sent once per match
+		if (this.m_player0.score > this.m_player1.score || this.m_mode == GameMode.GAMEMODE_AI) {
+			sendMessageToServer({
+				type: MessageType.MATCH_OVER,
+				match: {
+					g1: {
+						nick: this.m_player0.nick,
+						score: this.m_player0.score,
+						userId: this.m_player0.userID
+					},
+					g2: {
+						nick: this.m_player1.nick,
+						score: this.m_player1.score,
+						userId: this.m_player1.userID
+					}
+				}
+			});
+		}
 
-		// show "winner message" or something
 		this.dispose();
 	}
 

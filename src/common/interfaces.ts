@@ -61,7 +61,7 @@ export interface Message {
 	content?: string
 	fromId?: number,
 	gameId?: string,
-	match?: TournamentMatch,
+	match?: Match,
 	toId?: number,
 	type: MessageType
 }
@@ -232,18 +232,13 @@ export interface MatchGamer {
 
 export interface Match {
 	g1: MatchGamer,
-	g2?: MatchGamer
-}
-
-export interface TournamentMatch {
-	g1: MatchGamer,
-	g2: MatchGamer,
-	matchNumber: number
+	g2?: MatchGamer,
+	matchNumber?: number
 }
 
 export interface Tournament {
 	finished: boolean,
-	matches: TournamentMatch[]
+	matches: Match[]
 }
 
 export interface Box<T> {

@@ -64,44 +64,16 @@ export function gameListeners() {
 	}
 }
 
-
-// export function startMatch(match: TournamentMatch) {
-// 	// The tournament page has a dialog ready to go. Replace the contents in backend/game/game.ts with whatever you need
-// 	const dialog = <HTMLDialogElement>document.querySelector("#gameDialog");
-// 	dialog.addEventListener("keydown", (e) => {
-// 		if ("Escape" == e.key) {
-// 			console.log("Escape pressed");
-// 			//e.preventDefault();
-// 		}
-// 	});
-
-// 	//g_game.setupElements(GameMode.GAMEMODE_PVP);
-// }
-
 async function startLocalMatch() {
 	const nicksResponse = await fetch("/api/match/nicks");
 	const nicksBox = await nicksResponse.json();
 	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
-		if (dialog) {
-			const g2Nick = nicksBox.contents[1];
-			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				const response = await fetch("/api/match-result/add", {
-					method: "POST",
-					headers: {
-						"content-type": "application/json"
-					},
-					body: JSON.stringify({
-						g2Nick,
-						g1Score: e.detail["g1Score"],
-						g2Score: e.detail["g2Score"],
-					})
-				});
-			});
+		if (dialog) {			
 			g_game.setupElements(GameMode.GAMEMODE_PVP, {
 				nick: nicksBox.contents[0]
 			}, {
-				nick: g2Nick
+				nick: nicksBox.contents[1]
 			});
 		}
 	}
@@ -113,24 +85,10 @@ async function startAiMatch() {
 	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
-			const g2Nick = nicksBox.contents[1];
-			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				const response = await fetch("/api/match-result/add", {
-					method: "POST",
-					headers: {
-						"content-type": "application/json"
-					},
-					body: JSON.stringify({
-						g2Nick,
-						g1Score: e.detail["g1Score"],
-						g2Score: e.detail["g2Score"],
-					})
-				});
-			});
 			g_game.setupElements(GameMode.GAMEMODE_AI, {
 				nick: nicksBox.contents[0]
 			}, {
-				nick: g2Nick
+				nick: nicksBox.contents[1]
 			});
 		}
 	}

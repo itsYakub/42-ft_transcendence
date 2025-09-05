@@ -3,7 +3,7 @@ export function homeView(): string {
 	<div class="flex flex-col items-center gap-4">
 		<div class="text-gray-300 mt-8 mb-4 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_WELCOME%%</div>
 		<div>
-			<img class="w-80 h-80 opacity-80 outline-fuchsia-800 outline-2 outline-offset-2 rounded-lg" src="/images/team.jpg"/>
+			<img class="w-80 h-80 opacity-80 outline-red-300 outline-2 outline-offset-1 rounded-lg" src="/images/team.jpg"/>
 			<div class="text-gray-300 mt-1 text-center">%%TEXT_TEAM%%</div>
 		</div>
 		<div class="text-gray-300 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_TECH%%</div>

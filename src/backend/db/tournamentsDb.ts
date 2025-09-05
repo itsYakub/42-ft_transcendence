@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Gamer, TournamentMatch, MatchGamer, Result, Tournament, User, ShortUser } from "../../common/interfaces.js";
+import { Box, Gamer, Match, MatchGamer, Result, Tournament, User, ShortUser } from "../../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 
 export function initTournamentsDb(db: DatabaseSync) {
@@ -91,7 +91,7 @@ export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournamen
 	}
 }
 
-export function updateTournamentMatchResult(db: DatabaseSync, gameId: string, match: TournamentMatch): Result {
+export function updateTournamentMatchResult(db: DatabaseSync, gameId: string, match: Match): Result {
 	try {
 		const select = db.prepare(`UPDATE tournaments SET m${match.matchNumber}_g1_score = ?, m${match.matchNumber}_g2_score = ? WHERE game_id = ?;`);
 		select.run(match.g1.score, match.g2.score, gameId);
@@ -102,7 +102,7 @@ export function updateTournamentMatchResult(db: DatabaseSync, gameId: string, ma
 	}
 }
 
-export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: TournamentMatch[]): Result {
+export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
 	try {
 		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
 			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
@@ -120,7 +120,7 @@ export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches:
 	}
 }
 
-function whichMatchIsUserIn(tournament: Tournament, user: ShortUser): TournamentMatch {
+function whichMatchIsUserIn(tournament: Tournament, user: ShortUser): Match {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
@@ -135,7 +135,7 @@ function sqlToTournament(tournament: Record<string, SQLOutputValue>): Tournament
 	}
 }
 
-function sqlToMatch(tournament: Record<string, SQLOutputValue>, matchNumber: number): TournamentMatch {
+function sqlToMatch(tournament: Record<string, SQLOutputValue>, matchNumber: number): Match {
 	return {
 		g1: sqlToMatchGamer(tournament, matchNumber, 1),
 		g2: sqlToMatchGamer(tournament, matchNumber, 2),

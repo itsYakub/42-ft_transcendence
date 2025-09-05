@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import fastifyStatic from "@fastify/static";
 import cookie from '@fastify/cookie'
 import fastifyWebsocket from "@fastify/websocket";
@@ -13,7 +13,6 @@ import { apiEndpoints } from "./backend/api/apiEndpoints.js";
 import { gamePage } from "./backend/pages/gamePage.js";
 import { initFoesDb } from "./backend/db/foesDb.js";
 import { getUser, initUsersDb } from "./backend/db/userDB.js";
-import { frameView } from "./backend/views/frameView.js";
 import { accountPage } from "./backend/pages/accountPage.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { authEndpoints } from "./backend/api/authEndpoints.js";
@@ -34,11 +33,14 @@ import { initMatchesDb } from "./backend/db/matchesDb.js";
 import { initLocalTournamentsDb } from "./backend/db/localTournamentsDb.js";
 import { totpEndpoints } from "./backend/api/totpEndpoints.js";
 import { initNotificationsDb } from "./backend/db/notificationsDb.js";
+import { frameView } from "./backend/views/frameView.js";
 
 const __dirname = import.meta.dirname;
 
 const fastify = Fastify({
-	ignoreTrailingSlash: true,
+	routerOptions: {
+		ignoreTrailingSlash: true
+	},
 	trustProxy: true
 });
 
@@ -82,9 +84,6 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 		"/api/user/login",
 		"/api/user/register"
 	];
-
-	// 	// if (request.url.includes(".") || request.url.startsWith("/auth/google"))
-	// 	// 	return done();
 
 	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 	request.isPage = ["/", "/game", "/account", "/users", "/chat"].includes(request.url);
@@ -145,45 +144,25 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 
 const db = new DatabaseSync("../data/transcendence.db");
 
-const mockData = {
-	mockUsers: 0,
-	mockMessages: {
-		number: 5,
-		start: 1,
-		end: 6
-	},
-	mockMatchResults: {
-		number: 10,
-		start: 1,
-		end: 6
-	},
-	mockFriends: {
-		number: 3,
-		id: 6
-	},
-	mockFoes: {
-		number: 3,
-		id: 6
-	},
-	mockUserChats: {
-		number: 2,
-		start: 1,
-		end: 2,
-		id: 11
-	}
-
-}
-
 try {
 	initFoesDb(db);
 	initFriendsDb(db);
 	initGameChatsDb(db);
 	initLocalTournamentsDb(db);
 	initMatchesDb(db);
-	initMatchResultsDb(db, mockData.mockMatchResults);
+	initMatchResultsDb(db, {
+		number: 10,
+		start: 1,
+		end: 6
+	});
 	initNotificationsDb(db);
 	initTournamentsDb(db);
-	initUserChatsDb(db, mockData.mockUserChats);
+	initUserChatsDb(db, {
+		number: 2,
+		start: 1,
+		end: 2,
+		id: 11
+	});
 	initUsersDb(db, 10);
 
 	accountPage(fastify);

@@ -87,7 +87,7 @@ function guestHtml(user: User, languageSelect: string, page: string): string {
 }
 
 function accountButtonHtml(page: string) {
-	const bgColour = "/account" == page ? "bg-gray-700" : "";
+	const bgColour = "/account" == page ? "bg-stone-800" : "";
 
 	return `
 	<button id="accountButton"
@@ -98,7 +98,7 @@ function accountButtonHtml(page: string) {
 }
 
 function gameButtonHtml(page: string) {
-	const bgColour = "/game" == page ? "bg-gray-700" : "";
+	const bgColour = "/game" == page ? "bg-stone-800" : "";
 
 	return `
 	<button id="gameButton"
@@ -109,7 +109,7 @@ function gameButtonHtml(page: string) {
 }
 
 function usersButtonHtml(page: string) {
-	const bgColour = "/users" == page ? "bg-gray-700" : "";
+	const bgColour = "/users" == page ? "bg-stone-800" : "";
 
 	return `
 	<button id="usersButton"
@@ -120,7 +120,7 @@ function usersButtonHtml(page: string) {
 }
 
 function chatButtonHtml(page: string, chatsWaiting: boolean = false) {
-	const bgColour = "/chat" == page ? "bg-gray-700" : "";
+	const bgColour = "/chat" == page ? "bg-stone-800" : "";
 	const textColour = chatsWaiting ? "text-green-300" : "text-gray-300";
 
 	return `

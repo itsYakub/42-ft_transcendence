@@ -1,4 +1,4 @@
-import { GameChatMessage, TournamentMatch, MatchGamer, Tournament, User } from "../../common/interfaces.js";
+import { GameChatMessage, Match, MatchGamer, Tournament, User } from "../../common/interfaces.js";
 import { gameDialogHtml } from "./dialogsView.js";
 import { remoteTournamentMessagesHtml } from "./remoteTournamentLobbyView.js";
 
@@ -70,7 +70,7 @@ export function remoteTournamentDetails(tournament: Tournament, user: User): str
 	return html;
 }
 
-function secondaryMatchHtml(match: TournamentMatch): string {
+function secondaryMatchHtml(match: Match): string {
 	let statusString = "";
 	let g1Score = "";
 	let g2Score = "";
@@ -107,15 +107,15 @@ function gamerScore(gamer: MatchGamer, opponent: MatchGamer): string {
 	`;
 }
 
-function whichMatchIsUserIn(tournament: Tournament, user: User): TournamentMatch {
+function whichMatchIsUserIn(tournament: Tournament, user: User): Match {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
-function whichGamerIsUser(match: TournamentMatch, user: User): MatchGamer {
+function whichGamerIsUser(match: Match, user: User): MatchGamer {
 	return match.g1.userId == user.userId ? match.g1 : match.g2;
 }
 
-function whichOpponentHasUser(match: TournamentMatch, user: User): MatchGamer {
+function whichOpponentHasUser(match: Match, user: User): MatchGamer {
 	return match.g1.userId == user.userId ? match.g2 : match.g1;
 }
 
@@ -125,11 +125,11 @@ function isFinalReady(tournament: Tournament): boolean {
 	return match1Count > 0 && match2Count > 0;
 }
 
-function isFinalFinished(match: TournamentMatch): boolean {
+function isFinalFinished(match: Match): boolean {
 	return match.g1.score + match.g2.score > 0;
 }
 
-function finalHtml(match: TournamentMatch, user: User): string {
+function finalHtml(match: Match, user: User): string {
 	if (match.g1.userId == user.userId || match.g2.userId == user.userId)
 		return `
 			<div class="flex flex-col gap-2">

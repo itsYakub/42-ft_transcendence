@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { gamePlayers } from '../db/gameDb.js';
-import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
+import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
 import { addTournament, getTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
 import { remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
@@ -115,7 +115,7 @@ export function tournamentOverReceived(db: DatabaseSync, user: ShortUser, messag
 	removeUserFromMatch(db, user.userId);
 }
 
-function userMatch(tournament: Tournament, user: ShortUser): TournamentMatch {
+function userMatch(tournament: Tournament, user: ShortUser): Match {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
@@ -133,11 +133,11 @@ export function tournamentLeaveReceived(db: DatabaseSync, user: ShortUser, messa
 	}
 }
 
-function userGamer(match: TournamentMatch, user: ShortUser): MatchGamer {
+function userGamer(match: Match, user: ShortUser): MatchGamer {
 	return match.g1.userId == user.userId ? match.g1 : match.g2;
 }
 
-function userOpponent(match: TournamentMatch, user: ShortUser): MatchGamer {
+function userOpponent(match: Match, user: ShortUser): MatchGamer {
 	return match.g1.userId == user.userId ? match.g2 : match.g1;
 }
 

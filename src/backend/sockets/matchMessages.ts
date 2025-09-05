@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { addUserToMatch, removeUserFromMatch, removeUsersFromMatch, usersByGameId } from '../db/userDB.js';
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
 import { gamersHtml } from '../views/remoteMatchLobbyView.js';
-import { sendMessageToGameIdUsers, sendMessageToUsers } from "./serverSocket.js";
+import { sendMessageToGameIdUsers, sendMessageToOtherGameIdUsers, sendMessageToUsers } from "./serverSocket.js";
 
 export function matchJoinReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	const gameId = message.gameId;
@@ -49,13 +49,14 @@ export function matchLeaveReceived(db: DatabaseSync, user: ShortUser, message: M
 
 export function matchOverReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	console.log(message);
-	const response = removeUsersFromMatch(db, user.gameId);
+	sendMessageToGameIdUsers(message, user.gameId);
 	// add match-result here, only once per match!
 	// 	broadcastMessageToClients(
 	// 		fastify, {
 	// 		type: MessageType.MATCH_OVER,
 	// 		gameId: message.gameId
 	// });
+	const response = removeUsersFromMatch(db, user.gameId);
 }
 
 export function matchStartReceived(db: DatabaseSync, user: ShortUser, message: Message) {
