@@ -62,14 +62,11 @@ export class Ball extends Shape {
 	public reset() {
 		this.pos.x = this.pos.y = 0.0;
 		this.vel.x = this.vel.y = 0.0;
-		setTimeout(() => {
-			this.start();
-		}, 1000);
+		
+		super.update();
 	}
 
 	public update() {
-		if (g_game.gameOver) { return; }
-		
 		this.playerBounceCheck();
 		this.wallBounceCheck();
 

@@ -108,6 +108,9 @@ export class Player extends Shape {
 	public reset() {
 		this.pos.y = 0.0;
 		this.vel.x = this.vel.y = 0.0;
+		this.m_aiTimerElapsed = 0.0;
+
+		super.update();
 	}
 
 	public update() {
@@ -115,7 +118,6 @@ export class Player extends Shape {
 		let down : boolean;
 		let round_precision : number = 10.0;
 
-		if (g_game.gameOver) { return; }
 		switch (this.m_mode) {
 			case (PlayerMode.PLAYERMODE_HUMAN): {
 				up = Game.keys[this.m_keyUp];

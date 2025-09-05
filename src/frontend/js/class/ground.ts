@@ -58,8 +58,6 @@ export class Ground {
 		const	_time_scale : number = 0.1;
 		const	_value_offset : number = 0.2;
 
-		if (g_game.gameOver) { return; }
-
 		/* NOTE(joleksia):
 		 *  We can mess around with those values to get even better noise effects
 		 * */

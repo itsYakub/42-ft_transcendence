@@ -16,7 +16,18 @@ export enum GameMode {
 	GAMEMODE_NONE = 0,
 	GAMEMODE_PVP,
 	GAMEMODE_AI,
+	GAMEMODE_REMOTE,
 	GAMEMODE_COUNT
+}
+
+export enum StateMachine {
+	STATE_NONE = 0,
+	STATE_START,		/* State when the game is being preapred */
+	STATE_UPDATE,		/* State when the game is being updated */
+	STATE_PAUSED,		/* State for when the game should be paused */
+	STATE_RESTART,		/* State invoked most likely by someone scoring a point */
+	STATE_GAMEOVER,		/* GameOver state; the game should be closed soon, there can be a game over window, etc. */
+	STATE_COUNT
 }
 
 export class Game {
@@ -50,7 +61,7 @@ export class Game {
 	 *  If false: update normally;
 	 *  This also should be in sync between clients.
 	 * */
-	private	m_gameOver: boolean = false;
+	private	m_stateMachine : StateMachine;
 
 	public static keys: boolean[];
 
@@ -58,13 +69,10 @@ export class Game {
 	 *  Public Methods
 	 * */
 
-	get	gameOver() { return (this.m_gameOver); }
 	get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
 	get ball() { return (this.m_ball); }
 
 	public setupElements(mode: GameMode, p0: GamePlayer, p1: GamePlayer) {
-		this.m_gameOver = false;
-
 		/* Get the dialog element from the document
 		 * */
 		console.log('[ INFO ] Referencing the modal dialog');
@@ -124,22 +132,8 @@ export class Game {
 			this.m_engine.runRenderLoop(() => this.updateRenderLoop());
 		}
 
+		this.m_stateMachine = StateMachine.STATE_START;
 		console.log('[ INFO ] Game is running...');
-
-		// ready to show
-		// only for remote matches
-		if (GameMode.GAMEMODE_NONE == mode) {
-			setTimeout(() =>
-				sendMessageToServer({
-					type: MessageType.MATCH_START,
-					gameId: p0.gameId
-				}), 1000);
-		}
-		else {
-			setTimeout(() => {
-				this.m_ball.start();
-			}, 1000);
-		}
 	}
 
 	public dispose() {
@@ -160,7 +154,6 @@ export class Game {
 		this.m_dialog.close();
 
 		console.log('[ INFO ] Game is disposed...');
-		this.m_gameOver = true;
 	}
 
 
@@ -177,18 +170,11 @@ export class Game {
 		if (this.m_player0.score >= g_gameScoreTotal ||
 			this.m_player1.score >= g_gameScoreTotal
 		) {
-			this.matchOver();
-			return;
+			this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 		}
-		
-		/* TODO(joleksia):
-		 *  The ball, in the 'reset()' function, should also set some sort of delay
-		 *  to wait before the actual match starts. It also must be in sync with other clients!
-		 *  @agarbacz
-		 * */
-		this.m_player0.reset();
-		this.m_player1.reset();
-		this.m_ball.reset();
+		else {
+			this.m_stateMachine = StateMachine.STATE_RESTART;
+		}
 	}
 
 	/* SECTION:
@@ -196,42 +182,75 @@ export class Game {
 	 * */
 
 	private updateRenderLoop() {
-		/* SECTION: Update
+		/* StateMachine - dependent code
 		 * */
-		if (this.gameOver) {
-			return;
+		switch (this.m_stateMachine) {
+			case (StateMachine.STATE_START): {
+				/* NOTE(joleksia):
+				 *  I've removed the setTimeout added by @lwillis
+				 *  It had some issues with the curremt state machine
+				 *  The state machine, even tho it was updated, still called the conent of setTimeout
+				 * */
+				if (this.m_mode == GameMode.GAMEMODE_REMOTE) {
+					sendMessageToServer( {
+						type: MessageType.MATCH_START, gameId: this.m_player0.gameID 
+					} );
+					console.log('[ INFO ] Match type: remote');
+				}
+				else {
+					this.m_ball.start();
+					console.log('[ INFO ] Match type: local');
+				}
+				this.m_stateMachine = StateMachine.STATE_UPDATE;
+				console.log('[ INFO ] Match start!');
+			} break;
+
+			case (StateMachine.STATE_UPDATE): {
+				this.m_player0.update();
+				this.m_player1.update();
+				this.m_ball.update();
+			} break;
+
+			case (StateMachine.STATE_PAUSED): {
+				/* NOTE(joleksia):
+				 *  For now you shouldn't be able to enter this state
+				 * */
+			} break;
+
+			case (StateMachine.STATE_RESTART): {
+				/* TODO(joleksia):
+				 *  The ball, in the 'reset()' function, should also set some sort of delay
+				 *  to wait before the actual match starts. It also must be in sync with other clients!
+				 *  @agarbacz
+				 * */
+				this.m_player0.reset();
+				this.m_player1.reset();
+				this.m_ball.reset();
+				
+				this.m_stateMachine = StateMachine.STATE_START;
+			} break;
+
+			case (StateMachine.STATE_GAMEOVER): {
+				this.matchOver();
+				return;
+			} break;
+
+			default: { } break;
 		}
 
-		/* Update game time
+		/* StateMachine - independent code
 		 * */
 		g_gameTime += this.deltaTime;
-
-		/* Update game components
-		 * */
 		this.m_ground.update();
-		this.m_player0.update();
-		this.m_player1.update();
-		this.m_ball.update();
 
-		/* SECTION: Render
+		/* Render the scene...
 		 * */
-
-		/* Resize the canvas to the size of the dialog
-		 * */
-
-		// only need to do this once, I think?
-		//this.m_canvas.width = this.m_dialog.clientWidth;
-		//this.m_canvas.height = this.m_dialog.clientHeight;
-
 		this.m_scene.render()
 	}
 	
 	// send the match info back to the frontend
 	// might need more fields later
 	private matchOver() {
-		this.m_ball.reset();
-
-
 		// @joleksia this should be changed to communicate directly with the socket.
 		// You'll need to add name, gameId, and userId fields to the players so you don't have to pass them around
 		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
