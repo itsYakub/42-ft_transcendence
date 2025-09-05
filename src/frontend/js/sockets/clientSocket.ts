@@ -1,5 +1,5 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { matchFinishing, startingMatch, updateMatchLobby } from "./remoteMatchesMessages.js";
+import { matchFinishing, startingMatch, updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
 import { joinOrLeaveTournament, tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
@@ -17,7 +17,6 @@ export function initClientSocket(): Promise<void> {
 		socket!.onopen = () => resolve();
 
 		socket!.onmessage = async (event) => {
-			console.log(JSON.parse(event.data));
 			const userResponse = await fetch("/api/user");
 			const userBox = await userResponse.json();
 			if (Result.SUCCESS != userBox.result)
@@ -77,9 +76,14 @@ function handleServerMessage(user: User, message: Message) {
 			userSendUserChat(user, message);
 			break;
 
-		// Match  messages
+		// Match messages
+		// A match has changed its status
+		case MessageType.GAME_LIST_CHANGED:
+			updateMatchList(user);
+			break;
+
 		// 1 or 2 players are in the lobby
-		case MessageType.MATCH_LOBBY:
+		case MessageType.MATCH_LOBBY_CHANGED:
 			updateMatchLobby(user, message);
 			break;
 		// The match is finished
@@ -88,7 +92,7 @@ function handleServerMessage(user: User, message: Message) {
 			break;
 		// The match is about to start
 		case MessageType.MATCH_READY:
-			startingMatch(user, message);
+			startingMatch(user);
 			break;
 
 		// Tournament messages

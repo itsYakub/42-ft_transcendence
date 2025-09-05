@@ -1,70 +1,68 @@
-import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { broadcastMessageToClients } from './serverSocket.js';
 import { gamePlayers } from '../db/gameDb.js';
-import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User } from '../../common/interfaces.js';
+import { TournamentMatch, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
 import { addTournament, getTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
 import { remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
 import { addMatchResult } from '../db/matchResultsDb.js';
 
-export function generateTournament(fastify: FastifyInstance, db: DatabaseSync, user: User) {
+export function generateTournament(db: DatabaseSync, user: ShortUser) {
 	const gamersBox = gamePlayers(db, user.gameId);
 	if (Result.SUCCESS == gamersBox.result) {
 		const shuffled = shuffleGamers(gamersBox.contents);
 		if (Result.SUCCESS == addTournament(db, user.gameId, shuffled)) {
-			broadcastMessageToClients(fastify, {
-				type: MessageType.TOURNAMENT_UPDATE,
-				gameId: user.gameId
-			});
+			// broadcastMessageToClients(fastify, {
+			// 	type: MessageType.TOURNAMENT_UPDATE,
+			// 	gameId: user.gameId
+			// });
 		}
 	}
 }
 
-export function tournamentJoinReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentJoinReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	const gameId = message.gameId;
 	if (Result.SUCCESS == joinTournament(db, gameId, user)) {
 		const gamers = usersInTournament(db, gameId);
 		if (Result.SUCCESS == gamers.result) {
 			if (4 == gamers.contents.length) {
 				if (addTournament(db, gameId, gamers.contents))
-					broadcastMessageToClients(
-						fastify, {
-						type: MessageType.TOURNAMENT_UPDATE,
-						gameId
-					}
-					);
+					// broadcastMessageToClients(
+					// 	fastify, {
+					// 	type: MessageType.TOURNAMENT_UPDATE,
+					// 	gameId
+					// }
+					// );
 				return;
 			}
 			message.fromId = user.userId;
 			message.content = remoteTournamentGamersHtml(gamers.contents);
-			broadcastMessageToClients(fastify, message);
+			//broadcastMessageToClients(fastify, message);
 		}
 	}
 }
 
-export function tournamentGamerReadyReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentGamerReadyReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	const tournament = getTournament(db, user.gameId);
 	if (Result.SUCCESS == tournament.result) {
 		const match = userMatch(tournament.contents, user);
 		markTournamentGamerReady(db, tournament.contents, user);
-		broadcastMessageToClients(fastify, {
-			type: MessageType.TOURNAMENT_UPDATE,
-			gameId: user.gameId,
-			match
-		});
+		// broadcastMessageToClients(fastify, {
+		// 	type: MessageType.TOURNAMENT_UPDATE,
+		// 	gameId: user.gameId,
+		// 	match
+		// });
 
 		if (userOpponent(match, user).ready) {
 			console.log(`starting match between ${match.g1.nick} and ${match.g2.nick}`);
-			broadcastMessageToClients(fastify, {
-				type: MessageType.TOURNAMENT_MATCH_START,
-				match
-			});
+			// broadcastMessageToClients(fastify, {
+			// 	type: MessageType.TOURNAMENT_MATCH_START,
+			// 	match
+			// });
 		}
 	}
 }
 
-export function tournamentMatchEndReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentMatchEndReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	const match = message.match;
 	// Only handle the message once per match
 	if (match.g1.userId != user.userId)
@@ -90,11 +88,11 @@ export function tournamentMatchEndReceived(fastify: FastifyInstance, db: Databas
 
 			if (3 == match.matchNumber) {
 				if (match.g1.score > 0 && match.g2.score > 0) {
-					broadcastMessageToClients(fastify, {
-						type: MessageType.TOURNAMENT_OVER,
-						gameId: user.gameId,
-						match
-					});
+					// broadcastMessageToClients(fastify, {
+					// 	type: MessageType.TOURNAMENT_OVER,
+					// 	gameId: user.gameId,
+					// 	match
+					// });
 					return;
 				}
 			}
@@ -104,42 +102,42 @@ export function tournamentMatchEndReceived(fastify: FastifyInstance, db: Databas
 					updateTournamentFinal(db, user.gameId, matches);
 				match.matchNumber = 3;
 			}
-			broadcastMessageToClients(fastify, {
-				type: MessageType.TOURNAMENT_UPDATE,
-				gameId: user.gameId,
-				match
-			});
+			// broadcastMessageToClients(fastify, {
+			// 	type: MessageType.TOURNAMENT_UPDATE,
+			// 	gameId: user.gameId,
+			// 	match
+			// });
 		}
 	}
 }
 
-export function tournamentOverReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentOverReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	removeUserFromMatch(db, user.userId);
 }
 
-function userMatch(tournament: Tournament, user: User): TournamentMatch {
+function userMatch(tournament: Tournament, user: ShortUser): TournamentMatch {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
-export function tournamentLeaveReceived(fastify: FastifyInstance, db: DatabaseSync, user: User, message: Message) {
+export function tournamentLeaveReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	if (Result.SUCCESS == removeUserFromMatch(db, user.userId)) {
 		const gamers = usersInTournament(db, user.gameId);
 		if (Result.SUCCESS == gamers.result) {
-			broadcastMessageToClients(fastify, {
-				type: MessageType.TOURNAMENT_LEAVE,
-				gameId: user.gameId,
-				fromId: user.userId,
-				content: remoteTournamentGamersHtml(gamers.contents)
-			});
+			// broadcastMessageToClients(fastify, {
+			// 	type: MessageType.TOURNAMENT_LEAVE,
+			// 	gameId: user.gameId,
+			// 	fromId: user.userId,
+			// 	content: remoteTournamentGamersHtml(gamers.contents)
+			// });
 		}
 	}
 }
 
-function userGamer(match: TournamentMatch, user: User): MatchGamer {
+function userGamer(match: TournamentMatch, user: ShortUser): MatchGamer {
 	return match.g1.userId == user.userId ? match.g1 : match.g2;
 }
 
-function userOpponent(match: TournamentMatch, user: User): MatchGamer {
+function userOpponent(match: TournamentMatch, user: ShortUser): MatchGamer {
 	return match.g1.userId == user.userId ? match.g2 : match.g1;
 }
 

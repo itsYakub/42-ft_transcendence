@@ -27,6 +27,11 @@ export function matchGamerLeaving() {
 	});
 }
 
+export async function updateMatchList(user: User) {
+	if ((UserType.GUEST == user.userType && !user.gameId) || "game" == currentPage())
+		navigate(window.location.href);
+}
+
 export async function updateMatchLobby(user: User, message: Message) {
 	if (!user.gameId && (UserType.GUEST == user.userType || "game" == currentPage())) {
 		navigate(window.location.href);
@@ -44,10 +49,7 @@ export async function updateMatchLobby(user: User, message: Message) {
 }
 
 // There are 2 players in the lobby
-export async function startingMatch(user: User, message: Message) {
-	if (message.gameId != user.gameId)
-		return;
-
+export async function startingMatch(user: User) {
 	setTimeout(async () => {
 		const gamersBox = await fetch("/api/match/gamers");
 		const json = await gamersBox.json();
@@ -59,9 +61,9 @@ export async function startingMatch(user: User, message: Message) {
 		if (dialog) {
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 				sendMessageToServer({
-					type: MessageType.MATCH_OVER,
-					gameId: message.gameId
+					type: MessageType.MATCH_OVER
 				});
+				
 				// if (gamers[0].userId == user.userId && e.detail["g1Score"] > e.detail["g2Score"]) {
 				// 	console.log("sending result");
 				// 	const response = await fetch("/api/match-result/add", {

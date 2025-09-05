@@ -31,13 +31,15 @@ export enum MessageType {
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
 	USER_UNREADY = "USER_UNREADY",
 
+	GAME_LIST_CHANGED = "GAME_LIST_CHANGED",		// the list of current games needs to be updated
+
 	NOTIFICATION_INVITE = "NOTIFICATION_INVITE",
 	NOTIFICATION_TOURNAMENT = "NOTIFICATION_TOURNAMENT",
-	
+
 	// Match message types
 	MATCH_JOIN = "MATCH_JOIN",
 	MATCH_LEAVE = "MATCH_LEAVE",
-	MATCH_LOBBY = "MATCH_LOBBY",
+	MATCH_LOBBY_CHANGED = "MATCH_LOBBY_CHANGED",	// a player has joined or left a lobby another player is in
 	MATCH_OVER = "MATCH_OVER",
 	MATCH_READY = "MATCH_READY",
 	MATCH_START = "MATCH_START",
@@ -76,6 +78,7 @@ export enum UserType {
 	GUEST = "GUEST",
 	USER = "USER"
 }
+
 export enum GameType {
 	MATCH = "MATCH",
 	TOURNAMENT = "TOURNAMENT"
@@ -105,6 +108,7 @@ export interface User {
 
 export interface ShortUser {
 	avatar: string,
+	gameId: string,
 	nick: string,
 	userType: UserType,
 	userId: number

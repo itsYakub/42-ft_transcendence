@@ -1,7 +1,7 @@
 export function loggedOutView(): string {
 	return `
-	<div class="flex flex-col items-center">
-		<h1 class="text-gray-300 my-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_USER_DECISION%%</h1>
+	<div class="flex flex-col items-center gap-2">
+		<h1 class="text-gray-300 my-6 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_USER_DECISION%%</h1>
 		${loginOrRegisterHtml()}
 		${googleHtml()}
 		${guestHtml()}

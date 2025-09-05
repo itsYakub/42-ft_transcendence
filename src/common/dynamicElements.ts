@@ -100,7 +100,7 @@ export function localTournamentHtml(nicks: string[]): string {
 	return `
 	<form id="localTournamentForm">
 		<div class="flex flex-col items-center gap-4">
-			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
+			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 			<div class="text-stone-700 text-lg mt-8">${nicks[0]}</div>
 			<div class="flex flex-row gap-2 justify center">
 				<input type="text" name="g2Nick" value="${nicks[1]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 2" class="w-80 outline-hidden rounded-lg p-2.5 bg-red-300/50 text-center placeholder-stone-400 text-stone-700">

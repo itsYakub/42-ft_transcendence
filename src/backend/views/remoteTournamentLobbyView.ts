@@ -60,7 +60,7 @@ export function remoteTournamentMessagesHtml(chats: GameChatMessage[], user: Use
 
 function tournamentGamerHtml(gamer: Gamer) {
 	return `
-	<div class="tournamentGamer py-2 w-full border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
+	<div class="tournamentGamer py-2 w-full rounded-lg bg-red-300/50 text-stone-700 text-center">${gamer.nick}</div>
 	`;
 }
 

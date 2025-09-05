@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Gamer, TournamentMatch, MatchGamer, Result, Tournament, User } from "../../common/interfaces.js";
+import { Box, Gamer, TournamentMatch, MatchGamer, Result, Tournament, User, ShortUser } from "../../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 
 export function initTournamentsDb(db: DatabaseSync) {
@@ -62,7 +62,7 @@ export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[])
 	}
 }
 
-export function joinTournament(db: DatabaseSync, gameId: string, user: User): Result {
+export function joinTournament(db: DatabaseSync, gameId: string, user: ShortUser): Result {
 	try {
 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
@@ -78,7 +78,7 @@ export function joinTournament(db: DatabaseSync, gameId: string, user: User): Re
 	}
 }
 
-export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournament, user: User): Result {
+export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournament, user: ShortUser): Result {
 	const match = whichMatchIsUserIn(tournament, user);
 	const player = match.g1.userId == user.userId ? 1 : 2;
 	try {
@@ -120,7 +120,7 @@ export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches:
 	}
 }
 
-function whichMatchIsUserIn(tournament: Tournament, user: User): TournamentMatch {
+function whichMatchIsUserIn(tournament: Tournament, user: ShortUser): TournamentMatch {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 

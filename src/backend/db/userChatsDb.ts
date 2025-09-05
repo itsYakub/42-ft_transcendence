@@ -101,6 +101,7 @@ export function addUserChat(db: DatabaseSync, message: Message): any {
 function sqlToUserChatPartner(userChatPartner: Record<string, SQLOutputValue>): ShortUser {
 	return {
 		avatar: userChatPartner.avatar as string,
+		gameId: userChatPartner.game_id as string,
 		nick: userChatPartner.nick as string,
 		userId: userChatPartner.partner_id as number,
 		userType: UserType[userChatPartner.type as string]

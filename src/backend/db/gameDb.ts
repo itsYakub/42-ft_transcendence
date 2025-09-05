@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Game, GameType, MatchGamer, Result, User } from "../../common/interfaces.js";
+import { Box, Game, GameType, MatchGamer, Result, ShortUser, User } from "../../common/interfaces.js";
 
 export function getGames(db: DatabaseSync): Box<Game[]> {
 	try {
@@ -34,7 +34,7 @@ export function gamePlayers(db: DatabaseSync, gameId: string): Box<MatchGamer[]>
 	}
 }
 
-export function updateGameId(db: DatabaseSync, user: User): Result {
+export function updateGameId(db: DatabaseSync, user: ShortUser): Result {
 	try {
 		const select = db.prepare(`UPDATE users SET game_id = ? WHERE user_id = ?;`);
 		select.run(user.gameId, user.userId);

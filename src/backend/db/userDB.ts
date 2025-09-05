@@ -33,7 +33,7 @@ export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
 	}
 }
 
-export function usersInMatch(db: DatabaseSync, gameId: string): Box<Gamer[]> {
+export function usersByGameId(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 	try {
 		const select = db.prepare("SELECT user_id, nick, avatar from users WHERE game_id = ?");
 		const gamers = select.all(gameId).map(gamer => sqlToGamer(gamer));;
@@ -65,7 +65,7 @@ export function usersInTournament(db: DatabaseSync, gameId: string): Box<Gamer[]
 	}
 }
 
-export function addUserToMatch(db: DatabaseSync, gameId: string, user: User): Result {
+export function addUserToMatch(db: DatabaseSync, gameId: string, user: ShortUser): Result {
 	try {
 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
@@ -638,6 +638,7 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 function sqlToShortUser(sqlUser: Record<string, SQLOutputValue>): ShortUser {
 	return {
 		avatar: sqlUser.avatar as string,
+		gameId: sqlUser.game_id as string,
 		nick: sqlUser.nick as string,
 		userId: sqlUser.user_id as number,
 		userType: UserType[sqlUser.type as string]
