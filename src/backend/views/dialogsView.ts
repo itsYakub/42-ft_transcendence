@@ -13,6 +13,10 @@ export function alertDialogHtml(): string {
 	`;
 }
 
+export function chatUsersHtml(): string {
+	return `<dialog id="chatUsersDialog" class="relative mx-auto mt-80 text-center content-center rounded-lg shadow border bg-gray-900 border-fuchsia-800"></dialog>`;
+}
+
 export function profileDialogHtml(): string {
 	return `<dialog id="profileDialog" class="mx-auto mt-40 text-center content-center rounded-lg shadow border bg-gray-900 border-fuchsia-800"></dialog>`;
 }
@@ -41,7 +45,7 @@ export function appTotpDialogHtml(): string {
 
 export function totpLoginDialogHtml(): string {
 	return `
-	<dialog id="totpCodeDialog" class="px-4 pt-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-80 bg-gray-900 border-gray-100 text-center items-center">
+	<dialog id="totpCodeDialog" class="px-4 py-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg shadow border w-80 bg-gray-900 border-gray-100 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-white">
 				%%TEXT_TOTP_CODE_TITLE%%

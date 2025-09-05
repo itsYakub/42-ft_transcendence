@@ -1,7 +1,8 @@
 import { profileActionbuttons } from "../../../common/dynamicElements.js";
-import { Result } from "../../../common/interfaces.js";
+import { MessageType, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { getLanguage } from "../index.js";
+import { sendMessageToServer } from "../sockets/clientSocket.js";
 
 export function profileFunctions() {
 	const closeProfileButton = document.querySelector("#closeProfileButton");
@@ -98,6 +99,33 @@ export function profileFunctions() {
 				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
 			}
+		});
+	}
+
+	const inviteButton = document.querySelector("#inviteButton");
+	if (inviteButton) {
+		inviteButton.addEventListener("click", async function () {
+			console.log("invite");
+			sendMessageToServer({
+				type: MessageType.NOTIFICATION_INVITE,
+				toId: parseInt(this.dataset.id)
+			});
+			// const response = await fetch("/api/foes/add", {
+			// 	method: "POST",
+			// 	headers: {
+			// 		"content-type": "application/json"
+			// 	},
+			// 	body: JSON.stringify({
+			// 		foeId: parseInt(this.dataset.id)
+			// 	})
+			// });
+
+			// if (Result.SUCCESS == await response.text()) {
+			// 	const actionButtons = profileActionbuttons(false, true, parseInt(this.dataset.id));
+			// 	const language = getLanguage();
+			// 	document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
+			// 	profileFunctions();
+			// }
 		});
 	}
 }

@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer';
 import { addTotpSecret, confirmAppTotp, disableTotp } from '../db/accountDb.js';
 import encodeQR from 'qr';
 import { Result } from '../../common/interfaces.js';
+import { translate } from '../../common/translations.js';
 
 export function totpEndpoints(fastify: FastifyInstance): void {
 
@@ -41,7 +42,7 @@ export function totpEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/api/totp/email", async (request: FastifyRequest, reply: FastifyReply) => {
 		const db = request.db;
 		const user = request.user;
-		//change email!
+
 		const secret = Math.floor(100000 + Math.random() * 900000).toString();
 		const result = addTotpSecret(db, secret, user.userId);
 		if (Result.SUCCESS != result)
@@ -55,8 +56,7 @@ export function totpEndpoints(fastify: FastifyInstance): void {
 			}
 		});
 
-		//translate, make two versions
-		const text = `${secret}`;
+		const text = translate(request.language, "%%MESSAGE_TOTP%%");
 
 		let mailOptions = {
 			host: "smtp.gmail.com",
@@ -66,10 +66,10 @@ export function totpEndpoints(fastify: FastifyInstance): void {
 				minVersion: "TLSv1.2"
 			},
 			from: '"Transcendence Team" <transcen42dence@gmail.com>',
-			to: 'coldandtired@gmail.com',
+			to: user.email,
 			subject: 'Transcendence TOTP',
-			text,
-			html: `<b>${secret}</b>`
+			text: `${text}: ${secret}`,
+			html: `${text}: <b>${secret}</b>`
 		};
 
 		transporter.sendMail(mailOptions, function (error, info) {
@@ -80,7 +80,7 @@ export function totpEndpoints(fastify: FastifyInstance): void {
 		});
 	});
 
-	fastify.post("/api/totp/verify", async (request: FastifyRequest, reply: FastifyReply) => {
+	fastify.post("/api/totp/app/verify", async (request: FastifyRequest, reply: FastifyReply) => {
 		const db = request.db;
 		const user = request.user;
 
@@ -93,16 +93,24 @@ export function totpEndpoints(fastify: FastifyInstance): void {
 			secret: user.totpSecret,
 		});
 
-		const params = request.body as any;
+		const { code } = request.body as any;
 
-		console.log("params", params);
-
-		console.log("totp", totp.validate({ token: params.code, window: 1 }));
-
-		if (null != totp.validate({ token: params.code, window: 1 })) {
+		if (null != totp.validate({ token: code, window: 1 })) {
 			confirmAppTotp(db, user.userId);
 			return reply.send(Result.SUCCESS);
 		}
+
+		return reply.send(Result.ERR_BAD_TOTP);
+	});
+
+	fastify.post("/api/totp/email/verify", async (request: FastifyRequest, reply: FastifyReply) => {
+		const db = request.db;
+		const user = request.user;
+
+		const { code } = request.body as any;
+		console.log(code);
+		if (code == user.totpSecret)
+			return reply.send(Result.SUCCESS_TOTP);
 
 		return reply.send(Result.ERR_BAD_TOTP);
 	});

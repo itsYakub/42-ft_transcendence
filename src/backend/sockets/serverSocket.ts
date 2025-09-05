@@ -6,7 +6,8 @@ import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from 
 import { getUser, markUserOffline } from '../db/userDB.js';
 import { Message, MessageType, Result, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
-import { matchJoinReceived, matchLeaveReceived, matchStartReceived } from './matchMessages.js';
+import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived } from './matchMessages.js';
+import { notificationInviteReceived } from './notificationMessages.js';
 
 export function serverSocket(fastify: FastifyInstance): void {
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => {
@@ -21,7 +22,7 @@ export function serverSocket(fastify: FastifyInstance): void {
 			const user = request.user
 			markUserOffline(db, user.userId);
 			broadcastMessageToClients(fastify, {
-				type: MessageType.MATCH_JOIN,
+				type: MessageType.MATCH_LEAVE,
 				fromId: user.userId,
 			});
 			//if (user.gameID)
@@ -58,16 +59,28 @@ function handleClientMessage(fastify: FastifyInstance, db: DatabaseSync, user: U
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChatReceived(fastify, db, user, message);
 			break;
+
+		case MessageType.NOTIFICATION_INVITE:
+			notificationInviteReceived(fastify, db, user, message);
+			break;
+
 		case MessageType.USER_READY:
 			break;
 
 		// Match messages
+		// User has joined a new or existing match
 		case MessageType.MATCH_JOIN:
 			matchJoinReceived(fastify, db, user, message);
 			break;
+		// User has left a match lobby
 		case MessageType.MATCH_LEAVE:
 			matchLeaveReceived(fastify, db, user, message);
 			break;
+		// A match has finished
+		case MessageType.MATCH_OVER:
+			matchOverReceived(fastify, db, user, message);
+			break;
+		// The game is about to start
 		case MessageType.MATCH_START:
 			matchStartReceived(fastify, db, user, message);
 			break;

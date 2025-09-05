@@ -113,7 +113,7 @@ export class Game {
 		this.m_dialog.showModal();
 
 		/* Resize the canvas to the size of the dialog
-		 * */
+		 * */		
 		this.m_canvas.width = this.m_dialog.clientWidth;
 		this.m_canvas.height = this.m_dialog.clientHeight;
 
@@ -218,8 +218,10 @@ export class Game {
 
 		/* Resize the canvas to the size of the dialog
 		 * */
-		this.m_canvas.width = this.m_dialog.clientWidth;
-		this.m_canvas.height = this.m_dialog.clientHeight;
+
+		// only need to do this once, I think?
+		//this.m_canvas.width = this.m_dialog.clientWidth;
+		//this.m_canvas.height = this.m_dialog.clientHeight;
 
 		this.m_scene.render()
 	}
@@ -229,12 +231,34 @@ export class Game {
 	private matchOver() {
 		this.m_ball.reset();
 
+
+		// @joleksia this should be changed to communicate directly with the socket.
+		// You'll need to add name, gameId, and userId fields to the players so you don't have to pass them around
 		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
 			detail: {
 				g1Score: this.m_player0.score,
 				g2Score: this.m_player1.score
 			}
 		}));
+
+		/*
+		sendMessageToServer({
+			type: MessageType.MATCH_OVER,
+			gameId: this.m_player0.gameId,
+			match: {
+				g1: {
+					nick: this.m_player0.nick,
+					score: this.m_player0.score,
+					userId: this.m_player0.userId
+				},
+				g2: {
+					nick: this.m_player1.nick,
+					score: this.m_player1.score,
+					userId: this.m_player1.userId
+				}
+			}
+		});
+		*/
 
 		// show "winner message" or something
 		this.dispose();

@@ -74,6 +74,7 @@ export function localTournamentListeners() {
 				}
 
 				const result = await generateTournament(names);
+				//TODO show 403 error
 				if (Result.SUCCESS != result) {
 					showAlert(result);
 					return;

@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Message, Result, UserChatMessage, UserChatPartner } from "../../common/interfaces.js";
+import { Box, Message, Result, ShortUser, UserChatMessage, UserType } from "../../common/interfaces.js";
 
 export function initUserChatsDb(db: DatabaseSync, { number, start, end, id }): void {
 	db.exec(`DROP TABLE IF EXISTS user_chats;`);
@@ -24,14 +24,14 @@ export function initUserChatsDb(db: DatabaseSync, { number, start, end, id }): v
 /*
 	Gets a list of ids that are in a private chat with the user
 */
-export function outgoingChatsList(db: DatabaseSync, userId: number): Box<UserChatPartner[]> {
+export function outgoingChatsList(db: DatabaseSync, userId: number): Box<ShortUser[]> {
 	try {
-		const select = db.prepare(`SELECT to_id AS partner_id, sent_at, message, nick FROM user_chats INNER JOIN users ON users.user_id = user_chats.to_id WHERE from_id = ? ORDER BY nick`);
+		const select = db.prepare(`SELECT to_id AS partner_id, sent_at, message, avatar, type, nick FROM user_chats INNER JOIN users ON users.user_id = user_chats.to_id WHERE from_id = ? ORDER BY nick`);
 		const partners = select.all(userId).map(chat => sqlToUserChatPartner(chat));
 		const partnerIds = new Set();
 		return {
 			result: Result.SUCCESS,
-			contents: partners.filter(({ partnerId }) => !partnerIds.has(partnerId) && partnerIds.add(partnerId))
+			contents: partners.filter(({ userId }) => !partnerIds.has(userId) && partnerIds.add(userId))
 		};
 	}
 	catch (e) {
@@ -44,14 +44,14 @@ export function outgoingChatsList(db: DatabaseSync, userId: number): Box<UserCha
 /*
 	Gets a list of ids that are in a private chat with the user
 */
-export function incomingChatsList(db: DatabaseSync, userId: number): Box<UserChatPartner[]> {
+export function incomingChatsList(db: DatabaseSync, userId: number): Box<ShortUser[]> {
 	try {
-		const select = db.prepare(`SELECT from_id AS partner_id, sent_at, message, nick FROM user_chats INNER JOIN users ON users.user_id = user_chats.from_id WHERE to_id = ? ORDER BY nick`);
+		const select = db.prepare(`SELECT from_id AS partner_id, sent_at, message, avatar, type, nick FROM user_chats INNER JOIN users ON users.user_id = user_chats.from_id WHERE to_id = ? ORDER BY nick`);
 		const partners = select.all(userId).map(chat => sqlToUserChatPartner(chat));
 		const partnerIds = new Set();
 		return {
 			result: Result.SUCCESS,
-			contents: partners.filter(({ partnerId }) => !partnerIds.has(partnerId) && partnerIds.add(partnerId))
+			contents: partners.filter(({ userId }) => !partnerIds.has(userId) && partnerIds.add(userId))
 		};
 	}
 	catch (e) {
@@ -98,10 +98,12 @@ export function addUserChat(db: DatabaseSync, message: Message): any {
 	}
 }
 
-function sqlToUserChatPartner(userChatPartner: Record<string, SQLOutputValue>): UserChatPartner {
+function sqlToUserChatPartner(userChatPartner: Record<string, SQLOutputValue>): ShortUser {
 	return {
-		partnerId: userChatPartner.partner_id as number,
-		partnerNick: userChatPartner.nick as string
+		avatar: userChatPartner.avatar as string,
+		nick: userChatPartner.nick as string,
+		userId: userChatPartner.partner_id as number,
+		userType: UserType[userChatPartner.type as string]
 	};
 }
 

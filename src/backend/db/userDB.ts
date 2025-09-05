@@ -2,7 +2,7 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
 import { defaultAvatar } from "./defaultAvatar.js";
-import { Result, User, UserType, Box, Gamer, TotpType } from "../../common/interfaces.js";
+import { Result, User, UserType, Box, Gamer, TotpType, ShortUser } from "../../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 
 /*
@@ -85,12 +85,17 @@ export function removeUserFromMatch(db: DatabaseSync, userId: number): Result {
 	try {
 		let select = db.prepare(`UPDATE users SET game_id = NULL WHERE user_id = ?`);
 		select.run(userId);
-		//select = db.prepare("SELECT COUNT(game_id) as gameCount FROM Users WHERE game_id = ?");
-		//const { gameCount } = select.get(gameID);
-		// if (0 == gameCount) {
-		// 	select = db.prepare("DELETE FROM Messages Where ToID = ?");
-		// 	select.run(gameID);
-		// }
+		return Result.SUCCESS;
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+export function removeUsersFromMatch(db: DatabaseSync, gameId: string): Result {
+	try {
+		let select = db.prepare(`UPDATE users SET game_id = NULL WHERE game_id = ?`);
+		select.run(gameId);
 		return Result.SUCCESS;
 	}
 	catch (e) {
@@ -377,14 +382,14 @@ export function loginUserWithTOTP(db: DatabaseSync, { email, password, code }): 
 }
 
 // Finds the user in the DB by email
-export function getUserById(db: DatabaseSync, userId: number): Box<User> {
+export function getUserById(db: DatabaseSync, userId: number): Box<ShortUser> {
 	try {
 		const select = db.prepare("SELECT * FROM users WHERE user_id = ?");
 		const user = select.get(userId);
 		if (user) {
 			return {
 				result: Result.SUCCESS,
-				contents: sqlToUser(user)
+				contents: sqlToShortUser(user)
 			}
 		}
 		return {
@@ -544,9 +549,6 @@ export function allUsers(db: DatabaseSync): Box<string[]> {
 	}
 }
 
-/*
-	Returns a list of all nicknames currently in the DB
-*/
 export function allOtherUsers(db: DatabaseSync, user: User): Box<User[]> {
 	if (UserType.GUEST == user.userType) {
 		return {
@@ -568,6 +570,29 @@ export function allOtherUsers(db: DatabaseSync, user: User): Box<User[]> {
 		};
 	}
 }
+
+export function allChattableUsers(db: DatabaseSync, user: User): Box<ShortUser[]> {
+	if (UserType.GUEST == user.userType) {
+		return {
+			result: Result.ERR_FORBIDDEN
+		};
+	}
+	try {
+		const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'GUEST' ORDER BY nick");
+		const users = select.all(user.userId).map(user => sqlToShortUser(user));
+
+		return {
+			result: Result.SUCCESS,
+			contents: users
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB
+		};
+	}
+}
+
 
 export function getNickname(db: DatabaseSync): Box<string> {
 	const response = allNicknames(db);
@@ -607,6 +632,15 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 		totpSecret: sqlUser.totp_secret as string,
 		userType: UserType[sqlUser.type as string],
 		userId: sqlUser.user_id as number
+	};
+}
+
+function sqlToShortUser(sqlUser: Record<string, SQLOutputValue>): ShortUser {
+	return {
+		avatar: sqlUser.avatar as string,
+		nick: sqlUser.nick as string,
+		userId: sqlUser.user_id as number,
+		userType: UserType[sqlUser.type as string]
 	};
 }
 
@@ -890,7 +924,6 @@ const adjectives = [
 	"Exonerated",
 	"Exorbitant",
 	"Exponential",
-	"Export",
 	"Exultant",
 	"Exulting",
 	"Facsimile",

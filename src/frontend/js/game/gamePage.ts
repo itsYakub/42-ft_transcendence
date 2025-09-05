@@ -49,6 +49,7 @@ export function gameListeners() {
 	const leaveMatchButton = document.querySelector("#leaveMatchButton");
 	if (leaveMatchButton) {
 		leaveMatchButton.addEventListener("click", () => {
+			console.log("clicked");
 			matchGamerLeaving();
 			navigate(window.location.href, false);
 		});

@@ -166,23 +166,23 @@ export function accountListeners() {
 	const totpEmailButton = document.querySelector("#totpEmailButton");
 	if (totpEmailButton) {
 		totpEmailButton.addEventListener("click", async () => {
-					// const emailTotpResponse = await fetch("/api/totp/email", {
-					// 	method: "POST",
-					// 	headers: {
-					// 		"content-type": "application/json"
-					// 	},
-					// 	body: JSON.stringify({})
-					// });
+			const emailTotpResponse = await fetch("/api/totp/email", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({})
+			});
 
-					// const result = await emailTotpResponse.text();					
-					// if (Result.SUCCESS == result) {
-					// 	console.log("sent email");
-					// 	// TODO finish
-					// }
+			const result = await emailTotpResponse.text();					
+			if (Result.SUCCESS == result) {
+				console.log("sent email");
+				
+			}
 
-					const totpDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
-					totpCodeForm.code.value = "";
-					totpDialog.showModal();
+			const totpDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
+			totpCodeForm.code.value = "";
+			totpDialog.showModal();
 		});
 	}
 
@@ -214,9 +214,17 @@ export function accountListeners() {
 	const totpCodeForm = <HTMLFormElement>document.querySelector("#totpCodeForm");
 	if (totpCodeForm) {
 		totpCodeForm.code.addEventListener("keydown", (e: any) => {
+			if ("v" == e.key && e.ctrlKey)
+				return;
+
 			if (!("Escape" == e.key || "Enter" == e.key || "Backspace" == e.key || "Delete" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key) && isNaN(e.key))
 				e.preventDefault();
 		});
+
+		// totpCodeForm.code.addEventListener("paste", (e) => {
+		// 	let paste = e.clipboardData.getData("text");
+		// 	totpCodeForm.code.value = paste;
+		// })
 
 		totpCodeForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
@@ -224,7 +232,7 @@ export function accountListeners() {
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
 			const code = totpCodeForm.code.value;
 
-			const response = await fetch("/api/account/verify-totp", {
+			const response = await fetch("/api/totp/email/verify", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"

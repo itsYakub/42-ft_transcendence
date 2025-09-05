@@ -1,5 +1,5 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
-import { actuallyStartingMatch, startingMatch, updateMatchDetails } from "./remoteMatchesMessages.js";
+import { matchFinishing, startingMatch, updateMatchLobby } from "./remoteMatchesMessages.js";
 import { joinOrLeaveTournament, tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
 import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
 
@@ -17,6 +17,7 @@ export function initClientSocket(): Promise<void> {
 		socket!.onopen = () => resolve();
 
 		socket!.onmessage = async (event) => {
+			console.log(JSON.parse(event.data));
 			const userResponse = await fetch("/api/user");
 			const userBox = await userResponse.json();
 			if (Result.SUCCESS != userBox.result)
@@ -57,7 +58,7 @@ export function sendMessageToServer(message: Message) {
 
 export function currentPage(): string {
 	const split = window.location.pathname.split("/").filter(n => n);
-	return split[0];
+	return split[0] ?? "/";
 }
 
 /*
@@ -69,29 +70,25 @@ function handleServerMessage(user: User, message: Message) {
 		case MessageType.USER_DISCONNECT:
 			userConnectOrDisconnect(user, message);
 			break;
-		// case MessageType.GAME_READY:
-		// 	gameReady(user, message);
-		// 	break;
 		case MessageType.USER_INVITE:
 			userInvite(user, message);
-			break;
-		case MessageType.USER_READY:
-		case MessageType.USER_UNREADY:
-			userReadyorUnready(user, message);
 			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChat(user, message);
 			break;
 
 		// Match  messages
+		// 1 or 2 players are in the lobby
+		case MessageType.MATCH_LOBBY:
+			updateMatchLobby(user, message);
+			break;
+		// The match is finished
+		case MessageType.MATCH_OVER:
+			matchFinishing(user, message);
+			break;
+		// The match is about to start
 		case MessageType.MATCH_READY:
 			startingMatch(user, message);
-			break;
-		case MessageType.MATCH_START:
-			actuallyStartingMatch(user, message);
-			break;
-		case MessageType.MATCH_UPDATE:
-			updateMatchDetails(user, message);
 			break;
 
 		// Tournament messages
@@ -103,7 +100,6 @@ function handleServerMessage(user: User, message: Message) {
 			break;
 		case MessageType.TOURNAMENT_LEAVE:
 			joinOrLeaveTournament(user, message);
-			console.log("Lost game");
 			break;
 		case MessageType.TOURNAMENT_MATCH_START:
 			tournamentMatchStart(user, message);

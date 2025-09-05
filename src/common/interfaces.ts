@@ -31,9 +31,13 @@ export enum MessageType {
 	USER_SEND_USER_CHAT = "USER_SEND_USER_CHAT",
 	USER_UNREADY = "USER_UNREADY",
 
+	NOTIFICATION_INVITE = "NOTIFICATION_INVITE",
+
 	// Match message types
 	MATCH_JOIN = "MATCH_JOIN",
 	MATCH_LEAVE = "MATCH_LEAVE",
+	MATCH_LOBBY = "MATCH_LOBBY",
+	MATCH_OVER = "MATCH_OVER",
 	MATCH_READY = "MATCH_READY",
 	MATCH_START = "MATCH_START",
 	MATCH_UPDATE = "MATCH_UPDATE",
@@ -98,6 +102,13 @@ export interface User {
 	userType: UserType
 }
 
+export interface ShortUser {
+	avatar: string,
+	nick: string,
+	userType: UserType,
+	userId: number
+}
+
 export interface Game {
 	gameId: string,
 	nicks: string,
@@ -130,12 +141,13 @@ export interface MatchResult {
 export interface UserChatMessage {
 	fromId: number,
 	message: string,
-	sentAt: Date,
+	sentAt: Date
 }
 
-export interface UserChatPartner {
-	partnerId: number,
-	partnerNick: string
+export interface UserNotification {
+	nick: string,
+	sentAt: Date,
+	type: MessageType
 }
 
 export interface Friend {

@@ -15,9 +15,9 @@ export function translate(language: string, text: string): string {
 		"BUTTON_GAME",
 		"BUTTON_GOOGLE",
 		"BUTTON_GUEST",
-		"BUTTON_HISTORY",
 		"BUTTON_HOME",
 		"BUTTON_INVALIDATE_TOKEN",
+		"BUTTON_INVITE",
 		"BUTTON_LEAVE",
 		"BUTTON_LOGIN",
 		"BUTTON_LOGOUT",
@@ -37,6 +37,8 @@ export function translate(language: string, text: string): string {
 		"ERR_FORBIDDEN",
 		"ERR_NOT_FOUND",
 		"ERR_UNIQUE",
+		"MESSAGE_INVITATION",
+		"MESSAGE_TOTP",
 		"SUCCESS_NICK",
 		"SUCCESS_PASSWORD",
 		"SUCCESS_TOTP",
@@ -91,7 +93,6 @@ export function translate(language: string, text: string): string {
 		"TEXT_TOURNAMENT_SINGULAR",
 		"TEXT_TOURNAMENT_PLAY",
 		"TEXT_TOURNAMENT_PLURAL",
-		"TEXT_TOURNAMENT_TBD",
 		"TEXT_USER_DECISION",
 		"TEXT_USERS_TITLE",
 		"TEXT_WELCOME",
@@ -143,9 +144,9 @@ function translateEnglish(text: string): string {
 		case "BUTTON_FOES": return "Foes";
 		case "BUTTON_FRIENDS": return "Friends";
 		case "BUTTON_GAME": return "Game";
-		case "BUTTON_HISTORY": return "History";
 		case "BUTTON_HOME": return "Home";
 		case "BUTTON_INVALIDATE_TOKEN": return "Invalidate token";
+		case "BUTTON_INVITE": return "Invite";
 		case "BUTTON_LOGIN": return "Log in";
 		case "BUTTON_GOOGLE": return "Continue with Google";
 		case "BUTTON_GUEST": return "Continue as a guest";
@@ -175,16 +176,19 @@ function translateEnglish(text: string): string {
 		case "ERR_PASSWORDS_DONT_MATCH": return "Please repeat the password!";
 		case "ERR_SAME_EMAIL": return "You can't add yourself!";
 		case "ERR_SAME_NAME": return "Names must be unique!";
-		case "ERR_TOTP_CODE": return "Incorrect TOTP code!";
+		case "ERR_TOTP_CODE": return "Incorrect code!";
 		case "ERR_UNIQUE": return "Names must be unique!";
 		case "ERR_USER_OFFLINE": return "User offline!";
 
+		case "MESSAGE_INVITATION": return "Join my tournament!";
+		case "MESSAGE_TOTP": return "Your 2FA code";
+
 		case "PROMPT_TEXT_EMAIL": return "Friend's email";
-		case "PROMPT_TOTP_CODE": return "TOTP code";
+		case "PROMPT_TOTP_CODE": return "2FA code";
 
 		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
-		case "SUCCESS_DISABLED_TOTP": return "Disabled TOTP!";
-		case "SUCCESS_TOTP": return "Enabled TOTP - please log in again!";
+		case "SUCCESS_DISABLED_TOTP": return "Disabled 2FA!";
+		case "SUCCESS_TOTP": return "Enabled 2FA - please log in again!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
 		case "SUCCESS_NICK": return "Nickname changed!";
 		case "SUCCESS_PASSWORD": return "Password changed!";
@@ -240,7 +244,6 @@ function translateEnglish(text: string): string {
 		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
 		case "TEXT_TOURNAMENT_PLAY": return "Play";
 		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
-		case "TEXT_TOURNAMENT_TBD": return "TBD";
 		case "TEXT_USER_DECISION": return "Please choose an option to continue";
 		case "TEXT_USERS_TITLE": return "Users";
 		case "TEXT_WELCOME": return "Welcome to Transcendence!";
