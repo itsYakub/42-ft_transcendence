@@ -47,8 +47,6 @@ export class Shape {
 	public set	siz(vector : BABYLON.Vector3) { this.m_siz = vector; }
 
 	public	update() {
-		if (g_game.gameOver) { return; }
-		
 		this.m_pos.x += this.m_vel.x * g_game.deltaTime * 4.0;
 		this.m_pos.y += this.m_vel.y * g_game.deltaTime * 4.0;
 		

@@ -20,7 +20,8 @@ export default defineConfig({
 		},
 
 		target: 'esnext',
-		emptyOutDir: false
+		emptyOutDir: false,
+		minify: false
 	},
 	publicDir: path.resolve(__dirname, 'src/frontend/images'),
 });

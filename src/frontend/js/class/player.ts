@@ -4,6 +4,7 @@ import { Shape } from './shape.js';
 import { Game, GameMode, g_game } from './game.js';
 import { g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';
+import { GamePlayer } from './../../../common/interfaces.js';
 
 
 /* SECTION:
@@ -27,7 +28,10 @@ export class Player extends Shape {
 	private	m_mode : PlayerMode;
 	private	m_keyUp : string;
 	private	m_keyDown : string;
+
+	private	m_interface : GamePlayer;
 	private	m_score : number;
+
 
 	/* AI Section
 	 * */
@@ -38,7 +42,7 @@ export class Player extends Shape {
 	 *  Constructor
 	 * */
 
-	public constructor(canvas : HTMLCanvasElement, scene : BABYLON.Scene, side : number, mode : number) {
+	public constructor(canvas : HTMLCanvasElement, scene : BABYLON.Scene, int : GamePlayer, side : number, mode : number) {
 		/* Base constructor
 		 * */
 		super(scene, new BABYLON.Vector2(g_playerCenterOffset, 0.0), new BABYLON.Vector3(0.2, 0.2, 1.0), BABYLON.Color3.White());
@@ -76,9 +80,10 @@ export class Player extends Shape {
 		 * */
 		this.createMesh();
 
-		/* Reset the player's score
+		/* Set the player score and interface
 		 * */
 		this.m_score = 0.0;
+		this.m_interface = int;
 
 		/* Set the AI data
 		 * */
@@ -95,32 +100,38 @@ export class Player extends Shape {
 	get	score() { return (this.m_score); }
 	set score(val : number) { this.m_score = val; }
 
+	get	nick() { return (this.m_interface.nick); }
+	get	userID() { return (this.m_interface.userId); }
+	get	gameID() { return (this.m_interface.gameId); }
+	get	online() { return (this.m_interface.online); }
+
 	public reset() {
 		this.pos.y = 0.0;
 		this.vel.x = this.vel.y = 0.0;
+		this.m_aiTimerElapsed = 0.0;
+
+		super.update();
 	}
 
 	public update() {
 		let	up : boolean;
 		let down : boolean;
+		let round_precision : number = 10.0;
 
-		if (g_game.gameOver) { return; }
-		
-		/* TODO(joleksia):
-		 *  Create a basic player/ai behaviour
-		 * */
 		switch (this.m_mode) {
 			case (PlayerMode.PLAYERMODE_HUMAN): {
 				up = Game.keys[this.m_keyUp];
 				down = Game.keys[this.m_keyDown];
 			} break;
 			case (PlayerMode.PLAYERMODE_AI): {
-				/* TODO(joleksia):
-				 *  Implement AI
-				 * */
 				this.aiBehaviour();
-				up = this.pos.y < this.m_aiDest.y;
-				down = this.pos.y > this.m_aiDest.y;
+				/* NOTE(joleksia):
+				 *  This one is for dealing with floating-point precision.
+				 *  We could simply just round the values to the nearest integer but it would cause an important data loss.
+				 *  Insteas, we multiply the data by the desired precision and then round to the nearest int. 
+				 * */
+				up = Math.round(this.pos.y * round_precision) < Math.round(this.m_aiDest.y * round_precision);
+				down = Math.round(this.pos.y * round_precision) > Math.round(this.m_aiDest.y * round_precision);
 			} break;
 		}
 		this.movePlayer(up, down);
@@ -142,7 +153,8 @@ export class Player extends Shape {
 		 * */
 		let	dir : number = 0.0;
 		if (up) { dir = 1.0; }
-		else if (down) { dir = -1.0 };
+		else if (down) { dir = -1.0; }
+		else { dir = 0.0; }
 
 		this.vel.y = dir;
 	}
@@ -155,8 +167,7 @@ export class Player extends Shape {
 		if (this.m_aiTimerElapsed >= 1.0) {
 			this.m_aiTimerElapsed = 0.0;
 
-			this.m_aiDest = g_game.ball.simulatePosition();
-
+			this.m_aiDest = g_game.ball.simulateNextBounce();
 			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
 			console.log('[ INFO ] Current pallet position: ' + this.pos);
 		}

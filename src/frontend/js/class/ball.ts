@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs';
 
 import { Shape } from './shape.js';
+import { g_playerCenterOffset } from './player.js';
 import { g_game, g_gamePlayableArea } from './game.js';
 import { g_boundCellSize } from './ground.js';
 
@@ -55,20 +56,17 @@ export class Ball extends Shape {
 
 		/* Simple position-prediction for the ball
 		 * */
-		this.simulatePosition();
+		this.simulateNextBounce();
 	}
 
 	public reset() {
 		this.pos.x = this.pos.y = 0.0;
 		this.vel.x = this.vel.y = 0.0;
-		setTimeout(() => {
-			this.start();
-		}, 1000);
+		
+		super.update();
 	}
 
 	public update() {
-		if (g_game.gameOver) { return; }
-		
 		this.playerBounceCheck();
 		this.wallBounceCheck();
 
@@ -80,7 +78,7 @@ export class Ball extends Shape {
 	/* NOTE(joleksia):
 	 *  This function simulates the future ball position after the bounce
 	 * */
-	public simulatePosition() : BABYLON.Vector2 {
+	public simulateNextBounce() : BABYLON.Vector2 {
 		let	pos : BABYLON.Vector2 = new BABYLON.Vector2(this.pos.x, this.pos.y);
 		let	vel : BABYLON.Vector2 = new BABYLON.Vector2(this.vel.x, this.vel.y);
 		/* This is kept here for safety purposes to avoid infinite loops
@@ -93,8 +91,12 @@ export class Ball extends Shape {
 			) {
 				vel.y *= -1.0;
 			}
-			else if (/* Bounce: LEFT */  (pos.x - this.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
-					 /* Bounce: RIGHT */ (pos.x + this.siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
+			else if (/* Bounce: LEFT */  (pos.x - this.siz.x / 2.0) <=
+											(-g_gamePlayableArea.x + g_boundCellSize / 2.0) +
+												(g_gamePlayableArea.x - g_playerCenterOffset) ||
+					 /* Bounce: RIGHT */ (pos.x + this.siz.x / 2.0) >=
+											(g_gamePlayableArea.x - g_boundCellSize / 2.0) -
+												(g_gamePlayableArea.x - g_playerCenterOffset)
 			) {
 				break;
 			}
