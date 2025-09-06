@@ -524,18 +524,10 @@ export function allNicknames(db: DatabaseSync): Box<string[]> {
 /*
 	Returns a list of all nicknames currently in the DB
 */
-export function allUsers(db: DatabaseSync): Box<string[]> {
+export function allUsers(db: DatabaseSync): Box<ShortUser[]> {
 	try {
 		const select = db.prepare("SELECT user_id, nick FROM users");
-		const list = select.all();
-
-		let users = [];
-		list.forEach((user) => {
-			users.push({
-				id: user.UserID,
-				nick: user.Nick
-			});
-		});
+		const users = select.all().map(user => sqlToShortUser(user));
 
 		return {
 			result: Result.SUCCESS,
@@ -549,7 +541,7 @@ export function allUsers(db: DatabaseSync): Box<string[]> {
 	}
 }
 
-export function allOtherUsers(db: DatabaseSync, user: User): Box<User[]> {
+export function allOtherUsers(db: DatabaseSync, user: User): Box<ShortUser[]> {
 	if (UserType.GUEST == user.userType) {
 		return {
 			result: Result.ERR_FORBIDDEN
@@ -557,7 +549,7 @@ export function allOtherUsers(db: DatabaseSync, user: User): Box<User[]> {
 	}
 	try {
 		const select = db.prepare("SELECT * FROM users WHERE ? != user_id ORDER BY nick");
-		const users = select.all(user.userId).map(user => sqlToUser(user));
+		const users = select.all(user.userId).map(user => sqlToShortUser(user));
 
 		return {
 			result: Result.SUCCESS,

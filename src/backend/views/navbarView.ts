@@ -1,5 +1,5 @@
 import { FrameParams, User, UserType } from "../../common/interfaces.js";
-import { alertDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
+import { alertDialogHtml, profileDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
 
 export function navbarView(params: FrameParams): string {
 	let languageSelect = englishHtml();
@@ -44,7 +44,7 @@ function loggedInHtml(user: User, languageSelect: string, page: string): string 
 	return `
 	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
-			<img id="homeButton" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
+			<img id="homeButton" data-id="${user.userId}" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
 
 			<div class="flex flex-col items-center gap-2">
 				<div class="text-gray-300">${user.nick}</div>
@@ -60,6 +60,7 @@ function loggedInHtml(user: User, languageSelect: string, page: string): string 
 			</select>
 		</div>
 	</div>
+	${profileDialogHtml()}
 	`;
 }
 
@@ -68,7 +69,7 @@ function guestHtml(user: User, languageSelect: string, page: string): string {
 	return `
 	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
-			<img id="homeButton" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
+			<img id="homeButton" data-id="${user.userId}" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
 
 			<div class="flex flex-col items-center gap-2">
 				<div class="text-gray-300">${user.nick}</div>
@@ -78,11 +79,12 @@ function guestHtml(user: User, languageSelect: string, page: string): string {
 				</button>	
 			</div>				
 				
-			<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer] text-gray-300">
+			<select id="languageSelect" class="outline-hidden cursor-[url(/images/pointer.png),pointer] text-gray-300">
 				${languageSelect}
 			</select>
 		</div>
 	</div>
+	${profileDialogHtml()}
 	`;
 }
 
@@ -133,24 +135,24 @@ function chatButtonHtml(page: string, chatsWaiting: boolean = false) {
 
 function englishHtml(): string {
 	return `
-	<option class="bg-gray-800" value="english" selected>English</option>
-	<option class="bg-gray-800" value="dutch">Nederlands</option>
-	<option class="bg-gray-800" value="polish">Polski</option>
+	<option class="bg-stone-700" value="english" selected>English</option>
+	<option class="bg-stone-700" value="dutch">Nederlands</option>
+	<option class="bg-stone-700" value="polish">Polski</option>
 	`;
 }
 
 function dutchHtml(): string {
 	return `
-	<option class="bg-gray-800" value="english">English</option>
-	<option class="bg-gray-800" value="dutch" selected>Nederlands</option>
-	<option class="bg-gray-800" value="polish">Polski</option>
+	<option class="bg-stone-700" value="english">English</option>
+	<option class="bg-stone-700" value="dutch" selected>Nederlands</option>
+	<option class="bg-stone-700" value="polish">Polski</option>
 	`;
 }
 
 function polishHtml(): string {
 	return `
-	<option class="bg-gray-800" value="english">English</option>
-	<option class="bg-gray-800" value="dutch">Nederlands</option>
-	<option class="bg-gray-800" value="polish" selected>Polski</option>
+	<option class="bg-stone-700" value="english">English</option>
+	<option class="bg-stone-700" value="dutch">Nederlands</option>
+	<option class="bg-stone-700" value="polish" selected>Polski</option>
 	`;
 }

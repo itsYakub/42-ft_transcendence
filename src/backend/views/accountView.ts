@@ -13,7 +13,7 @@ export function accountView(user: User): string {
 					<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
 				</div>
 			</fieldset>
-			<fieldset class="grow p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
+			<fieldset class="grow p-3 border border-red-300 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800 text-center">%%TEXT_CHANGE_NICK%%</legend>
 				<form id="changeNickForm" class="flex flex-col">
 					<input type="text" maxlength="25" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
@@ -24,7 +24,7 @@ export function accountView(user: User): string {
 			</fieldset>
 		</div>
 		${securityHtml(user)}		
-		<div class="w-full flex flex-row justify-center border border-fuchsia-800 bg-red-200/20 rounded-lg px-2 gap-4">
+		<div class="w-full flex flex-row justify-center border pt-1 border-red-300 bg-red-200/20 rounded-lg px-2 gap-4">
 			<button id="logoutButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-stone-700">%%BUTTON_LOGOUT%%</button>
 			<button id="invalidateTokenButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-stone-700">%%BUTTON_INVALIDATE_TOKEN%%</button>
 		</div>

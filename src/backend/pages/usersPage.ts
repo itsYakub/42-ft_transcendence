@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
 import { usersView } from '../views/usersView.js';
 import { translate } from '../../common/translations.js';
-import { allOtherUsers } from '../db/userDB.js';
+import { allUsers } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
 export function usersPage(fastify: FastifyInstance) {
@@ -12,7 +12,7 @@ export function usersPage(fastify: FastifyInstance) {
 		const language = request.language;
 		const page = request.url;
 
-		const usersBox = allOtherUsers(db, user);
+		const usersBox = allUsers(db);
 		if (Result.SUCCESS != usersBox.result)
 			return reply.type("text/html").send(frameView({
 				user,
@@ -20,7 +20,7 @@ export function usersPage(fastify: FastifyInstance) {
 				result: usersBox.result
 			}));
 
-		let text = usersView(usersBox.contents, user);
+		let text = usersView(usersBox.contents);
 		text = translate(language, text);
 
 		return reply.type("text/html").send(frameView({ user, language, page }, text));

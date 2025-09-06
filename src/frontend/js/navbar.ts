@@ -1,4 +1,6 @@
+import { Result } from "../../common/interfaces.js";
 import { navigate } from "./index.js";
+import { profileFunctions } from "./users/profile.js";
 
 /*
 	The functions that change the page from the navbar
@@ -16,9 +18,28 @@ export function navbarFunctions() {
 
 	const homeButton = document.querySelector("#homeButton");
 	if (homeButton) {
-		homeButton.addEventListener("click", () => {
-			navigate("/");
-		}, { once: true });
+		homeButton.addEventListener("click", async function() {
+			const profileBox = await fetch("/api/profile", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					userId: this.dataset.id
+				})
+			});
+
+			const json = await profileBox.json();
+			if (Result.SUCCESS != json.result)
+				return;
+
+			const dialog = <HTMLDialogElement>document.querySelector("#profileDialog");
+			dialog.innerHTML = json.value;
+			profileFunctions();
+			if (document.activeElement instanceof HTMLElement)
+				document.activeElement.blur();
+			dialog.showModal();
+		});
 	}
 
 	const accountButton = document.querySelector("#accountButton");
