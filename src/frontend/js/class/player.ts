@@ -167,7 +167,7 @@ export class Player extends Shape {
 		if (this.m_aiTimerElapsed >= 1.0) {
 			this.m_aiTimerElapsed = 0.0;
 
-			this.m_aiDest = g_game.ball.simulateNextBounce();
+			this.m_aiDest = g_game.ball.simulatePosition();
 			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
 			console.log('[ INFO ] Current pallet position: ' + this.pos);
 		}
@@ -176,7 +176,6 @@ export class Player extends Shape {
 		}
 	}
 }
-
 
 
 /* SECTION:
