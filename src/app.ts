@@ -5,24 +5,13 @@ import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { homePage } from "./backend/pages/homePage.js";
 import { usersPage } from "./backend/pages/usersPage.js";
-import { serverSocket } from "./backend/sockets/serverSocket.js";
-import { apiEndpoints } from "./backend/api/apiEndpoints.js";
 import { gamePage } from "./backend/pages/gamePage.js";
 import { getUser } from "./backend/db/userDB.js";
 import { accountPage } from "./backend/pages/accountPage.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
-import { authEndpoints } from "./backend/api/authEndpoints.js";
-import { accountEndpoints } from "./backend/api/accountEndpoints.js";
 import { translate } from "./common/translations.js";
 import { Result, User, UserType } from "./common/interfaces.js";
-import { foesEndpoints } from "./backend/api/foesEndpoints.js";
-import { friendsEndpoints } from "./backend/api/friendsEndpoints.js";
-import { userEndpoints } from "./backend/api/userEndpoints.js";
 import { userChatsPage } from "./backend/pages/userChatsPage.js";
-import { matchResultsEndpoints } from "./backend/api/matchResultsEndpoints.js";
-import { profileEndpoints } from "./backend/api/profileEndpoints.js";
-import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
-import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
 import { frameView } from "./backend/views/frameView.js";
 import { registerEndpoints } from "./backend/api/endpoints.js";
 import { initDbTables } from "./backend/db/initDbTables.js";
@@ -145,19 +134,6 @@ try {
 	homePage(fastify);
 	userChatsPage(fastify);
 	usersPage(fastify);
-
-	accountEndpoints(fastify);
-	apiEndpoints(fastify);
-	authEndpoints(fastify);
-	foesEndpoints(fastify);
-	friendsEndpoints(fastify);
-	matchResultsEndpoints(fastify);
-	profileEndpoints(fastify);
-	tournamentEndpoints(fastify);
-	userChatsEndpoints(fastify);
-	userEndpoints(fastify);
-
-	serverSocket(fastify);
 
 	fastify.listen({
 		host: "0.0.0.0",

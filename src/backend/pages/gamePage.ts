@@ -4,8 +4,8 @@ import { getGames, gamePlayers } from '../db/gameDb.js';
 import { remoteMatchLobbyView } from '../views/remoteMatchLobbyView.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, LocalTournament, Result, Tournament } from '../../common/interfaces.js';
-import { gameChatsList } from '../db/TournamentChatsDb.js';
-import { getTournament } from '../db/tournamentsDb.js';
+import { readTournamentChats } from '../db/TournamentChatsDb.js';
+import { readTournament } from '../db/tournamentsDb.js';
 import { remoteTournamentView } from '../views/remoteTournamentView.js';
 import { remoteTournamentLobbyView } from '../views/remoteTournamentLobbyView.js';
 import { localTournamentView } from '../views/localTournamentView.js';
@@ -25,7 +25,7 @@ export function gamePageView(request: FastifyRequest, reply: FastifyReply) {
 	if (user.gameId) {
 		const gameId = user.gameId;
 
-		const tournamentBox = getTournament(db, gameId);
+		const tournamentBox = readTournament(db, gameId);
 		if (Result.SUCCESS == tournamentBox.result)
 			return (remoteTournament(tournamentBox.contents, request, reply));
 
@@ -93,7 +93,7 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 	if (user.gameId.startsWith("m"))
 		return reply.type("text/html").send(frameView(params, remoteMatchLobbyView(gamersBox.contents, user)));
 
-	const chatsBox = gameChatsList(db, user.gameId);
+	const chatsBox = readTournamentChats(db, user.gameId);
 	if (Result.SUCCESS != chatsBox.result) {
 		params.result = chatsBox.result;
 		return reply.type("text/html").send(frameView(params));
@@ -119,7 +119,7 @@ function remoteTournament(tournament: Tournament, request: FastifyRequest, reply
 			return reply.type("text/html").send(frameView(params));
 	}
 
-	const chatsBox = gameChatsList(db, user.gameId);
+	const chatsBox = readTournamentChats(db, user.gameId);
 	if (Result.SUCCESS != chatsBox.result) {
 		params.result = chatsBox.result;
 		return reply.type("text/html").send(frameView(params));

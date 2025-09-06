@@ -1,74 +1,69 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { allNicknames } from '../db/userDB.js';
-import { gamePlayers } from '../db/gameDb.js';
-import { translate } from '../../common/translations.js';
-import { Box, Result } from '../../common/interfaces.js';
-import { gameChatsList } from '../db/TournamentChatsDb.js';
+import { Result } from '../../common/interfaces.js';
+import { readTournamentChats } from '../db/TournamentChatsDb.js';
 import { remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
 
-export function apiEndpoints(fastify: FastifyInstance): void {
+export function nicknames(request: FastifyRequest, reply: FastifyReply) {
+	const users = allNicknames(request.db);
+	return reply.send(users);
+}
 
-	fastify.get('/api/nicknames', async (request: FastifyRequest, reply: FastifyReply) => {
-		const users = allNicknames(request.db);
-		return reply.send(users);
-	});
+// fastify.get('/api/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
+// 	const gamersBox = gamePlayers(db, request.user.gameId);
+// 	if (Result.SUCCESS == gamersBox.result) {
+// 		let text = gamersString(gamersBox.contents, request.user);
+// 		text = translate(request.language, text);
 
-	// fastify.get('/api/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
-	// 	const gamersBox = gamePlayers(db, request.user.gameId);
-	// 	if (Result.SUCCESS == gamersBox.result) {
-	// 		let text = gamersString(gamersBox.contents, request.user);
-	// 		text = translate(request.language, text);
+// 		return reply.send({
+// 			result: Result.SUCCESS,
+// 			value: text
+// 		});
+// 	}
+// 	else
+// 		return reply.send({
+// 			result: Result.ERR_NOT_FOUND
+// 		});
+// });
 
-	// 		return reply.send({
-	// 			result: Result.SUCCESS,
-	// 			value: text
-	// 		});
-	// 	}
-	// 	else
-	// 		return reply.send({
-	// 			result: Result.ERR_NOT_FOUND
-	// 		});
+export function tournamentChats(request: FastifyRequest, reply: FastifyReply) {
+	const messagesBox = readTournamentChats(request.db, request.user.gameId);
+	if (Result.SUCCESS == messagesBox.result) {
+		const html = remoteTournamentMessagesHtml(messagesBox.contents, request.user);
+		return reply.send({
+			result: Result.SUCCESS,
+			value: html
+		});
+	}
+	else
+		return reply.send({
+			result: Result.ERR_NOT_FOUND,
+		});
+}
+
+export function userChats(request: FastifyRequest, reply: FastifyReply) {
+	// const user = request.user;
+	// const { otherUserId } = request.params as any;
+
+	// const usersResponse = allOtherUsers(db, user.userId);
+	// const messagesResponse = userMessages(db, {
+	// 	userId: user.userId,
+	// 	otherUserId
 	// });
 
-	fastify.get('/api/game-chats', async (request: FastifyRequest, reply: FastifyReply) => {
-		const messagesBox = gameChatsList(request.db, request.user.gameId);
-		if (Result.SUCCESS == messagesBox.result) {
-			const html = remoteTournamentMessagesHtml(messagesBox.contents, request.user);
-			return reply.send({
-				result: Result.SUCCESS,
-				value: html
-			});
-		}
-		else
-			return reply.send({
-				result: Result.ERR_NOT_FOUND,
-			});
-	});
+	// const messageSendersResponse = getMessageSenders(db, user);
+	// if (Result.SUCCESS == messagesResponse.result) {
+	// 	const usersHtml = userListString(usersResponse.users, [], messageSendersResponse.ids, otherUserId);
+	// 	const messagesHtml = privateMessageListString(user.userId, messagesResponse.messages, otherUserId);
 
-	fastify.get('/api/user-chats/:otherUserId', async (request: FastifyRequest, reply: FastifyReply) => {
-		// const user = request.user;
-		// const { otherUserId } = request.params as any;
-
-		// const usersResponse = allOtherUsers(db, user.userId);
-		// const messagesResponse = userMessages(db, {
-		// 	userId: user.userId,
-		// 	otherUserId
-		// });
-
-		// const messageSendersResponse = getMessageSenders(db, user);
-		// if (Result.SUCCESS == messagesResponse.result) {
-		// 	const usersHtml = userListString(usersResponse.users, [], messageSendersResponse.ids, otherUserId);
-		// 	const messagesHtml = privateMessageListString(user.userId, messagesResponse.messages, otherUserId);
-
-		// 	return reply.send({
-		// 		result: Result.SUCCESS,
-		// 		usersHtml,
-		// 		messagesHtml
-		// 	});
-		// }
-		// else
-		// 	return reply.send({
-		// 		result: Result.ERR_NOT_FOUND,
-		// 	});
-	});
+	// 	return reply.send({
+	// 		result: Result.SUCCESS,
+	// 		usersHtml,
+	// 		messagesHtml
+	// 	});
+	// }
+	// else
+	// 	return reply.send({
+	// 		result: Result.ERR_NOT_FOUND,
+	// 	});
 }

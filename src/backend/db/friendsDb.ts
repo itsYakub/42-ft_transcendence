@@ -4,7 +4,7 @@ import { Box, Friend, Result } from "../../common/interfaces.js";
 /*
 	Gets all the user's friends
 */
-export function friendsList(db: DatabaseSync, userId: number): Box<Friend[]> {
+export function readFriends(db: DatabaseSync, userId: number): Box<Friend[]> {
 	try {
 		const select = db.prepare("SELECT *, nick, game_id FROM friends INNER JOIN users ON users.user_id = friends.friend_id WHERE friends.user_id = ? ORDER BY nick");
 		const friends = select.all(userId).map(friend => sqlToFriend(friend));
@@ -23,7 +23,7 @@ export function friendsList(db: DatabaseSync, userId: number): Box<Friend[]> {
 /*
 	Adds a friend to a user's list
 */
-export function addFriend(db: DatabaseSync, userId: number, friendId: number): Result {
+export function createFriend(db: DatabaseSync, userId: number, friendId: number): Result {
 	try {
 		console.log(`inserting ${userId} ${friendId}`);
 		const select = db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)");
@@ -38,7 +38,7 @@ export function addFriend(db: DatabaseSync, userId: number, friendId: number): R
 /*
 	Removes a friend from a user's list
 */
-export function removeFriend(db: DatabaseSync, userId: number, friendId: number): Result {
+export function deleteFriend(db: DatabaseSync, userId: number, friendId: number): Result {
 	try {
 		const select = db.prepare("DELETE FROM friends WHERE user_id = ? AND friend_id = ?");
 		select.run(userId, friendId);

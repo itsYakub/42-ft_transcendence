@@ -2,7 +2,7 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Gamer, Match, MatchGamer, Result, Tournament, User, ShortUser } from "../../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 
-export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
+export function readTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
 	try {
 		const select = db.prepare("SELECT * FROM tournaments WHERE game_id = ?");
 		const tournament = sqlToTournament(select.get(gameId));
@@ -18,7 +18,7 @@ export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament>
 	}
 }
 
-export function addTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
+export function createTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
 	try {
 		const select = db.prepare("INSERT INTO tournaments (game_id, m1_g1_user_id, m1_g2_user_id, m2_g1_user_id, m2_g2_user_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		select.run(gameId, gamers[0].userId, gamers[1].userId, gamers[2].userId, gamers[3].userId, gamers[0].nick, gamers[1].nick, gamers[2].nick, gamers[3].nick);

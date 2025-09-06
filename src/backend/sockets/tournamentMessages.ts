@@ -1,16 +1,16 @@
 import { DatabaseSync } from "node:sqlite";
 import { gamePlayers } from '../db/gameDb.js';
 import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
-import { addTournament, getTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
+import { createTournament, readTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
 import { remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
-import { addMatchResult } from '../db/matchResultsDb.js';
+import { createMatchResult } from '../db/matchResultsDb.js';
 
 export function generateTournament(db: DatabaseSync, user: ShortUser) {
 	const gamersBox = gamePlayers(db, user.gameId);
 	if (Result.SUCCESS == gamersBox.result) {
 		const shuffled = shuffleGamers(gamersBox.contents);
-		if (Result.SUCCESS == addTournament(db, user.gameId, shuffled)) {
+		if (Result.SUCCESS == createTournament(db, user.gameId, shuffled)) {
 			// broadcastMessageToClients(fastify, {
 			// 	type: MessageType.TOURNAMENT_UPDATE,
 			// 	gameId: user.gameId
@@ -25,7 +25,7 @@ export function tournamentJoinReceived(db: DatabaseSync, user: ShortUser, messag
 		const gamers = usersInTournament(db, gameId);
 		if (Result.SUCCESS == gamers.result) {
 			if (4 == gamers.contents.length) {
-				if (addTournament(db, gameId, gamers.contents))
+				if (createTournament(db, gameId, gamers.contents))
 					// broadcastMessageToClients(
 					// 	fastify, {
 					// 	type: MessageType.TOURNAMENT_UPDATE,
@@ -42,7 +42,7 @@ export function tournamentJoinReceived(db: DatabaseSync, user: ShortUser, messag
 }
 
 export function tournamentGamerReadyReceived(db: DatabaseSync, user: ShortUser, message: Message) {
-	const tournament = getTournament(db, user.gameId);
+	const tournament = readTournament(db, user.gameId);
 	if (Result.SUCCESS == tournament.result) {
 		const match = userMatch(tournament.contents, user);
 		markTournamentGamerReady(db, tournament.contents, user);
@@ -70,19 +70,19 @@ export function tournamentMatchEndReceived(db: DatabaseSync, user: ShortUser, me
 
 	if (match.g1.userId == user.userId) {
 		const tournamentWin = 3 == match.matchNumber && match.g1.score > match.g2.score;
-		const result = addMatchResult(db, user.userId, match.g2.nick, match.g1.score, match.g2.score, tournamentWin);
+		const result = createMatchResult(db, user.userId, match.g2.nick, match.g1.score, match.g2.score, tournamentWin);
 		if (Result.SUCCESS != result)
 			return;
 	}
 	else if (match.g2.userId == user.userId) {
 		const tournamentWin = 3 == match.matchNumber && match.g2.score > match.g1.score;
-		const result = addMatchResult(db, user.userId, match.g1.nick, match.g2.score, match.g1.score, tournamentWin);
+		const result = createMatchResult(db, user.userId, match.g1.nick, match.g2.score, match.g1.score, tournamentWin);
 		if (Result.SUCCESS != result)
 			return;
 	}
 
 	if (Result.SUCCESS == updateTournamentMatchResult(db, user.gameId, match)) {
-		const tournament = getTournament(db, user.gameId);
+		const tournament = readTournament(db, user.gameId);
 		if (Result.SUCCESS == tournament.result) {
 			const matches = tournament.contents.matches;
 

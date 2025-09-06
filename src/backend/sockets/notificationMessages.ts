@@ -7,11 +7,11 @@ import { generateTournament } from './tournamentMessages.js';
 import { gamersHtml } from '../views/remoteMatchLobbyView.js';
 import { translate } from '../../common/translations.js';
 import { getMatch, markMatchGamerReady } from '../db/matchesDb.js';
-import { addInviteNotification } from '../db/notificationsDb.js';
+import { createInviteNotification } from '../db/notificationsDb.js';
 
 export function notificationInviteReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	message.fromId = user.userId;
-	const result = addInviteNotification(db, message);
+	const result = createInviteNotification(db, message);
 
 	// if (Result.SUCCESS == result)
 	// 	broadcastMessageToClients(message);

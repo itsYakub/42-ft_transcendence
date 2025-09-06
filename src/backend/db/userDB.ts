@@ -274,7 +274,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): Box<string[]
 /*
 	Gets a user from the DB after an email/password login
 */
-export function loginUser(db: DatabaseSync, { email, password }): Box<User> {
+export function loginUserdb(db: DatabaseSync, { email, password }): Box<User> {
 	try {
 		const userBox = getUserByEmail(db, email);
 		if (Result.SUCCESS != userBox.result)
@@ -408,7 +408,7 @@ export function updateRefreshtoken(db: DatabaseSync, { userId, refreshToken }): 
 	}
 }
 
-export function invalidateToken(db: DatabaseSync, userId: number): Result {
+export function deleteToken(db: DatabaseSync, userId: number): Result {
 	try {
 		const select = db.prepare("UPDATE users SET refresh_token = NULL WHERE user_id = ?");
 		select.run(userId);

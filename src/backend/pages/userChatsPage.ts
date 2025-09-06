@@ -3,7 +3,7 @@ import { frameView } from '../views/frameView.js';
 import { userChatsView } from '../views/userChatsView.js';
 import { incomingChatsList, outgoingChatsList } from '../db/userChatsDb.js';
 import { Result } from '../../common/interfaces.js';
-import { foesList } from '../db/foesDb.js';
+import { readFoes } from '../db/foesDb.js';
 
 export function userChatsPage(fastify: FastifyInstance): void {
 	fastify.get('/chat', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -36,7 +36,7 @@ export function userChatsPage(fastify: FastifyInstance): void {
 
 		outgoingChatsBox.contents.sort((a, b) => a.nick.localeCompare(b.nick));
 
-		const foesBox = foesList(db, user.userId);
+		const foesBox = readFoes(db, user.userId);
 		if (Result.SUCCESS != foesBox.result)
 			return reply.type("text/html").send(frameView({
 				user,

@@ -4,7 +4,7 @@ import { Box, Foe, Result } from "../../common/interfaces.js";
 /*
 	Gets all the user's blocked ids
 */
-export function foesList(db: DatabaseSync, userId: number): Box<Foe[]> {
+export function readFoes(db: DatabaseSync, userId: number): Box<Foe[]> {
 	try {
 		//const select = db.prepare("SELECT foes.user_id, foe_id, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY online DESC, nick");
 		const select = db.prepare("SELECT *, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY nick");
@@ -24,7 +24,7 @@ export function foesList(db: DatabaseSync, userId: number): Box<Foe[]> {
 /*
 	Adds somebody to the foe list
 */
-export function addFoe(db: DatabaseSync, userId: number, foeId: number): Result {
+export function createFoe(db: DatabaseSync, userId: number, foeId: number): Result {
 	try {
 		const select = db.prepare("INSERT INTO foes (user_id, foe_id) VALUES (?, ?)");
 		select.run(userId, foeId);
@@ -38,7 +38,7 @@ export function addFoe(db: DatabaseSync, userId: number, foeId: number): Result 
 /*
 	Unblocks someone from a user's list
 */
-export function removeFoe(db: DatabaseSync, userId: number, foeId: number): Result {
+export function deleteFoe(db: DatabaseSync, userId: number, foeId: number): Result {
 	try {
 		const select = db.prepare("DELETE FROM foes WHERE user_id = ? AND foe_id = ?");
 		select.run(userId, foeId);
