@@ -1,12 +1,13 @@
 import { Result } from "../../../common/interfaces.js";
-import { navigate, showFoesPage, showFriendsPage } from "../index.js";
+import { navigate, showFoesPage, showFriendsPage, showUsersPage } from "../index.js";
 import { profileFunctions } from "./profile.js";
 
 export function usersFunctions() {
 	const allButton = document.querySelector("#allButton");
 	if (allButton) {
 		allButton.addEventListener("click", async () => {
-			navigate("/users", false);
+			//navigate("/users", false);
+			showUsersPage();
 		});
 	}
 

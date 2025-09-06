@@ -1,5 +1,5 @@
 import { MessageType, Result, UserType } from "../../common/interfaces.js";
-import { addListeners, navigate, showAlert, showFoesPage, showFriendsPage } from "./index.js";
+import { addListeners, navigate, showAlert, showFoesPage, showFriendsPage, showUsersPage } from "./index.js";
 import { initClientSocket, isConnected, sendMessageToServer } from "./sockets/clientSocket.js";
 
 export async function navigated() {
@@ -36,13 +36,17 @@ export function registerEvents() {
 		/* 
 			Changes page on back/forward buttons
 		*/
-		window.addEventListener('popstate', (event) => {
+		window.addEventListener
+		('popstate', (event) => {
 			switch (history.state) {
 				case "foes":
-					showFoesPage();
+					showFoesPage(false);
 					break;
 				case "friends":
-					showFriendsPage();
+					showFriendsPage(false);
+					break;
+				case "users":
+					showUsersPage(false);
 					break;
 			}
 			//navigate(window.location.pathname, false);
