@@ -132,15 +132,39 @@ export class Game {
                 Game.keys[e.key] = false;
             });
         } else {
-            // Networked games: both players use arrow keys locally
+            // Networked games: each player only handles their own keys
             window.addEventListener("keydown", (e) => {
-                if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                    Game.keys[e.key] = true;
+                if (this.m_localIndex === 0) {
+                    // Player 0 uses arrow keys but maps to w/s internally
+                    if (e.key === "ArrowUp") {
+                        Game.keys["w"] = true;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["s"] = true;
+                    }
+                } else {
+                    // Player 1 uses arrow keys directly
+                    if (e.key === "ArrowUp") {
+                        Game.keys["ArrowUp"] = true;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["ArrowDown"] = true;
+                    }
                 }
             });
             window.addEventListener("keyup", (e) => {
-                if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                    Game.keys[e.key] = false;
+                if (this.m_localIndex === 0) {
+                    // Player 0 uses arrow keys but maps to w/s internally
+                    if (e.key === "ArrowUp") {
+                        Game.keys["w"] = false;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["s"] = false;
+                    }
+                } else {
+                    // Player 1 uses arrow keys directly
+                    if (e.key === "ArrowUp") {
+                        Game.keys["ArrowUp"] = false;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["ArrowDown"] = false;
+                    }
                 }
             });
         }
@@ -238,8 +262,16 @@ export class Game {
             if (payload.kind === "KEY" && typeof payload.pressed === "boolean") {
                 if (payload.playerId === this.m_localIndex) return;
 
-                // Both players use arrow keys in networked games
-                const remoteKey = payload.action === "UP" ? "ArrowUp" : "ArrowDown";
+                // Map remote player's actions to their specific paddle keys
+                let remoteKey: string;
+                if (payload.playerId === 0) {
+                    // Remote Player 0 (purple paddle) uses w/s keys internally
+                    remoteKey = payload.action === "UP" ? "w" : "s";
+                } else {
+                    // Remote Player 1 (yellow paddle) uses arrow keys internally
+                    remoteKey = payload.action === "UP" ? "ArrowUp" : "ArrowDown";
+                }
+
                 Game.keys[remoteKey] = payload.pressed;
 
             } else if (payload.kind === "BALL_UPDATE") {
@@ -425,13 +457,6 @@ export class Game {
         this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
         this.m_ball = new Ball(this.m_canvas, scene);
         this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
-
-        // In networked games, both players should use arrow keys
-        if (this.m_networked) {
-            // Override Player 0's keys to use arrows in networked games
-            (this.m_player0 as any).m_keyUp = 'ArrowUp';
-            (this.m_player0 as any).m_keyDown = 'ArrowDown';
-        }
 
         switch (this.m_mode) {
             case (GameMode.GAMEMODE_PVP): {
