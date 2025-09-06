@@ -78,7 +78,8 @@ export function sendMessageToOtherGameIdUsers(message: Message, gameId: string) 
 	Sends the message to a specific user
 */
 export function sendMessageToUser(message: Message, userId: number) {
-
+	if (gamers.has(userId))
+		sendMessage(gamers[userId], message);
 }
 
 function sendMessage(socket: WebSocket, message: Message) {

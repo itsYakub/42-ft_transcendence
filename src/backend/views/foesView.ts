@@ -1,20 +1,23 @@
 import { Foe, User } from "../../common/interfaces.js";
 
 export function foesView(foes: Foe[]): string {
-	if (0 == foes.length) {
-		return `
-		<div class="flex flex-col items-center gap-4">
-			<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
-			${switcherHtml()}
-			<div class="text-gray-300 pt-8 text-center">%%TEXT_NO_FOES%%</div>
-		</div>
-		`;
-	}
-
-	return foesViewHtml(foes);
+	return `
+	<div class="flex flex-col items-center gap-4">
+		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
+		<fieldset class="border border-fuchsia-800 w-90 rounded-lg bg-red-200/20 p-2">
+			<legend class="mx-auto text-center">${switcherHtml()}</legend>
+			<div class="h-100 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
+				${foesHtml(foes)}
+			</div>
+		</fieldset>			
+	</div>
+	`;
 }
 
 export function foesHtml(foes: Foe[]) {
+	if (0 == foes.length)
+		return `<div class="text-stone-700 pt-8 text-center">%%TEXT_NO_FOES%%</div>`;
+
 	let userList = "";
 	for (var key in foes) {
 		userList += foeHtml(foes[key]);
@@ -23,40 +26,18 @@ export function foesHtml(foes: Foe[]) {
 	return userList;
 }
 
-function foesViewHtml(foes: Foe[]): string {
-	return `
-	<div class="flex flex-col items-center gap-4">
-		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
-		${switcherHtml()}
-		<div class="h-100 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
-			${foesHtml(foes)}
-		</div>					
-	</div>
-	`;
-}
-
 function switcherHtml(): string {
 	return `
-		<div class="flex flex-row justify-center items-center mb-2 gap-2">
-			<div id="allButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-900 hover:bg-fuchsia-800">All</div>
-			<div id="friendsButton" class="cursor-[url(/images/pointer.png),pointer] px-3 py-1 rounded-lg text-gray-900 hover:bg-fuchsia-800">Friends</div>
-			<div class="disabled p-2 rounded-lg text-gray-300 bg-fuchsia-800 px-3 py-1">Foes</div>
-		</div>
+	<div class="flex flex-row justify-center items-center mb-2 gap-2">
+		<div id="allButton" class="cursor-[url(/images/pointer.png),pointer] px-2 pt-1 pb-0 rounded-lg text-fuchsia-800 hover:bg-text-stone-700">All</div>
+		<div id="friendsButton" class="cursor-[url(/images/pointer.png),pointer] px-2 pt-1 pb-0 rounded-lg text-fuchsia-800 hover:bg-text-stone-700">Friends</div>
+		<div class="disabled rounded-lg text-gray-300 bg-fuchsia-800 px-2 pt-1 pb-0">Foes</div>
+	</div>
 	`;
 }
 
 function foeHtml(foe: Foe): string {
 	return `
-	<div class="foeButton border w-7/10 p-2.5 rounded-lg border-gray-700 mx-auto bg-gray-800 text-gray-300">
-		<div class="flex flex-row gap-4">
-			<div class="grow">${foe.nick}</div>
-			<div class="text-right my-auto">
-				<div class="relative group">
-					<button class="removeFoeButton cursor-[url(/images/pointer.png),pointer]" data-id="${foe.foeId}"></data><i class="text-red-300 fa-solid fa-minus"></i></button>
-					<div class="absolute right-full top-1/2 transform hover:opacity-0 -translate-y-1/2 mr-2 w-max px-2 py-1 text-sm text-white bg-gray-700 rounded shadow-lg opacity-0 group-hover:opacity-100">%%TEXT_REMOVE_FOE%%</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<div class="userButton w-80 cursor-[url(/images/pointer.png),pointer] rounded-lg bg-red-300/50 hover:bg-red-300 text-center text-stone-700 mx-auto p-2" data-id="${foe.userId}">${foe.nick}</div>
 	`;
 }
