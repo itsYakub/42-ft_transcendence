@@ -6,6 +6,8 @@ import { remoteTournamentDetails } from '../views/remoteTournamentView.js';
 import { addLocalTournament, updateLocalTournament } from '../db/localTournamentsDb.js';
 import { generateNickname } from '../db/userDB.js';
 import { createMatchResult } from '../db/matchResultsDb.js';
+import { readTournamentChats } from '../db/TournamentChatsDb.js';
+import { remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
 
 export function getTournamentGamers(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -110,3 +112,35 @@ export function updateTournment(request: FastifyRequest, reply: FastifyReply) {
 	}
 	return reply.send(updateLocalTournament(db, user.gameId, match));
 }
+
+export function tournamentChats(request: FastifyRequest, reply: FastifyReply) {
+	const messagesBox = readTournamentChats(request.db, request.user.gameId);
+	if (Result.SUCCESS == messagesBox.result) {
+		const html = remoteTournamentMessagesHtml(messagesBox.contents, request.user);
+		return reply.send({
+			result: Result.SUCCESS,
+			value: html
+		});
+	}
+	else
+		return reply.send({
+			result: Result.ERR_NOT_FOUND,
+		});
+}
+
+// fastify.get('/api/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
+// 	const gamersBox = gamePlayers(db, request.user.gameId);
+// 	if (Result.SUCCESS == gamersBox.result) {
+// 		let text = gamersString(gamersBox.contents, request.user);
+// 		text = translate(request.language, text);
+
+// 		return reply.send({
+// 			result: Result.SUCCESS,
+// 			value: text
+// 		});
+// 	}
+// 	else
+// 		return reply.send({
+// 			result: Result.ERR_NOT_FOUND
+// 		});
+// });

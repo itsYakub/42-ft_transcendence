@@ -1,17 +1,17 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
-import { usersView } from '../views/usersView.js';
 import { translate } from '../../common/translations.js';
-import { allUsers } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
+import { readFriends } from '../db/friendsDb.js';
+import { friendsView } from '../views/friendsView.js';
 
-export function getUsersPage(request: FastifyRequest, reply: FastifyReply) {
+export function getFriendsPage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 	const page = request.url;
 
-	const usersBox = allUsers(db);
+	const usersBox = readFriends(db, user.userId);
 	if (Result.SUCCESS != usersBox.result)
 		return reply.type("text/html").send(frameView({
 			user,
@@ -19,7 +19,7 @@ export function getUsersPage(request: FastifyRequest, reply: FastifyReply) {
 			result: usersBox.result
 		}));
 
-	let text = usersView(usersBox.contents);
+	let text = friendsView(usersBox.contents);
 	text = translate(language, text);
 
 	return reply.type("text/html").send(frameView({ user, language, page }, text));

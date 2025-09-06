@@ -1,5 +1,5 @@
 import { Result } from "../../../common/interfaces.js";
-import { navigate } from "../index.js";
+import { navigate, showFoesPage, showFriendsPage } from "../index.js";
 import { profileFunctions } from "./profile.js";
 
 export function usersFunctions() {
@@ -13,26 +13,28 @@ export function usersFunctions() {
 	const friendsButton = document.querySelector("#friendsButton");
 	if (friendsButton) {
 		friendsButton.addEventListener("click", async () => {
-			const response = await fetch("/api/friends");
-			const text = await response.text();
-			const json = JSON.parse(text);
-			if (Result.SUCCESS == json.result) {
-				document.querySelector("#content").innerHTML = json.value;
-				usersFunctions();
-			}
+			// const response = await fetch("/api/friends");
+			// const text = await response.text();
+			// const json = JSON.parse(text);
+			// if (Result.SUCCESS == json.result) {
+			// 	document.querySelector("#content").innerHTML = json.value;
+			// 	usersFunctions();
+			// }
+			showFriendsPage();
 		});
 	}
 
 	const foesButton = document.querySelector("#foesButton");
 	if (foesButton) {
 		foesButton.addEventListener("click", async () => {
-			const response = await fetch("/api/foes");
-			const text = await response.text();
-			const json = JSON.parse(text);
-			if (Result.SUCCESS == json.result) {
-				document.querySelector("#content").innerHTML = json.value;
-				usersFunctions();
-			}
+			// const response = await fetch("/api/foes");
+			// const text = await response.text();
+			// const json = JSON.parse(text);
+			// if (Result.SUCCESS == json.result) {
+			// 	document.querySelector("#content").innerHTML = json.value;
+			// 	usersFunctions();
+			// }
+			showFoesPage();
 		});
 	}
 

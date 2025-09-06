@@ -6,7 +6,6 @@ import { Box, Foe, Result } from "../../common/interfaces.js";
 */
 export function readFoes(db: DatabaseSync, userId: number): Box<Foe[]> {
 	try {
-		//const select = db.prepare("SELECT foes.user_id, foe_id, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY online DESC, nick");
 		const select = db.prepare("SELECT *, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY nick");
 		const foes = select.all(userId).map(foe => sqlToFoe(foe));
 		return {

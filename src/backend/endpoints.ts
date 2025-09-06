@@ -1,18 +1,32 @@
 import type { WebSocket } from "@fastify/websocket"; import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { addTotpApp, addTotpEmail, checkTotp, disableTotp, verifyEmailTotp, verifyTotpApp } from "./totpApi.js";
-import { changeAvatar, changeNick, changePassword, invalidateToken, logout } from "./accountApi.js";
-import { nicknames, tournamentChats, userChats } from "./apiEndpoints.js";
-import { connectToServerSocket } from "../sockets/serverSocket.js";
-import { googleSignIn, registerGuest } from "./authApi.js";
-import { addFoe, foesList, removeFoe } from "./foesApi.js";
-import { addFriend, findFriend, friendsList, removeFriend } from "./friendsApi.js";
-import { addMatchResult } from "./matchResultsApi.js";
-import { getProfile } from "./profileApi.js";
-import { addTournament, getTournament, getTournamentGamers, matchGamers, matchNicks, tournamentNicks, updateTournment } from "./tournamentApi.js";
-import { chatsList, getChats, notificationsList } from "./userChatsApi.js";
-import { loginUser, registerUser, usersList } from "./userApi.js";
+import { addTotpApp, addTotpEmail, checkTotp, disableTotp, verifyEmailTotp, verifyTotpApp } from "./api/totpApi.js";
+import { changeAvatar, changeNick, changePassword, invalidateToken, logout } from "./api/accountApi.js";
+import { connectToServerSocket } from "./sockets/serverSocket.js";
+import { googleSignIn, registerGuest } from "./api/authApi.js";
+import { addFoe, foesList, removeFoe } from "./api/foesApi.js";
+import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsApi.js";
+import { addMatchResult } from "./api/matchResultsApi.js";
+import { getProfile } from "./api/profileApi.js";
+import { addTournament, getTournament, getTournamentGamers, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateTournment } from "./api/tournamentApi.js";
+import { chatsList, getChats, notificationsList, userChats } from "./api/userChatsApi.js";
+import { loginUser, nicknames, registerUser, usersList } from "./api/userApi.js";
+import { getUsersPage } from "./pages/usersPage.js";
+import { getAccountPage } from "./pages/accountPage.js";
+import { getGamePage } from "./pages/gamePage.js";
+import { getHomePage } from "./pages/homePage.js";
+import { getChatPage } from "./pages/userChatsPage.js";
+import { getFriendsPage } from "./pages/friendsPage.js";
+import { getFoesPage } from "./pages/foesPage.js";
 
 export function registerEndpoints(fastify: FastifyInstance): void {
+	fastify.get("/", async (request: FastifyRequest, reply: FastifyReply) => getHomePage(request, reply));
+	fastify.get("/account", async (request: FastifyRequest, reply: FastifyReply) => getAccountPage(request, reply));
+	fastify.get("/chat", async (request: FastifyRequest, reply: FastifyReply) => getChatPage(request, reply));
+	fastify.get("/foes", async (request: FastifyRequest, reply: FastifyReply) => getFoesPage(request, reply));
+	fastify.get("/friends", async (request: FastifyRequest, reply: FastifyReply) => getFriendsPage(request, reply));
+	fastify.get("/game", async (request: FastifyRequest, reply: FastifyReply) => getGamePage(request, reply));
+	fastify.get("/users", async (request: FastifyRequest, reply: FastifyReply) => getUsersPage(request, reply));
+
 	fastify.get("/ws", { websocket: true }, (socket: WebSocket, request: FastifyRequest) => connectToServerSocket(socket, request));
 	fastify.post("/api/totp/app", (request: FastifyRequest, reply: FastifyReply) => addTotpApp(request, reply));
 	fastify.post("/api/totp/email", (request: FastifyRequest, reply: FastifyReply) => addTotpEmail(request, reply));

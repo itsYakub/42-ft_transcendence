@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
 import { getGames, gamePlayers } from '../db/gameDb.js';
 import { remoteMatchLobbyView } from '../views/remoteMatchLobbyView.js';
@@ -12,11 +12,7 @@ import { localTournamentView } from '../views/localTournamentView.js';
 import { getLocalTournament } from '../db/localTournamentsDb.js';
 import { removeUserFromMatch } from '../db/userDB.js';
 
-export function gamePage(fastify: FastifyInstance): void {
-	fastify.get('/game', async (request: FastifyRequest, reply: FastifyReply) => gamePageView(request, reply));
-}
-
-export function gamePageView(request: FastifyRequest, reply: FastifyReply) {
+export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;

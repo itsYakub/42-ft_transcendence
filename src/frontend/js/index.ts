@@ -27,6 +27,43 @@ export async function navigate(page: string, updateHistory: boolean = true): Pro
 	navigated();
 }
 
+export function showHomePage() {
+
+}
+
+export async function showFoesPage() {
+	history.pushState("foes", null, "/");
+	const response = await fetch("/foes");
+	const body = await response.text();
+	const start = body.indexOf("<body>");
+	const end = body.indexOf("</body>") + 7;
+
+	document.querySelector('body').innerHTML = body.substring(start, end);
+	addListeners();
+}
+
+export async function showFriendsPage() {
+	history.pushState("friends", null, "/");
+	const response = await fetch("/friends");
+	const body = await response.text();
+	const start = body.indexOf("<body>");
+	const end = body.indexOf("</body>") + 7;
+
+	document.querySelector('body').innerHTML = body.substring(start, end);
+	addListeners();
+}
+
+export async function showUsersPage() {
+	history.pushState("users", null, "/");
+	const response = await fetch("/users");
+	const body = await response.text();
+	const start = body.indexOf("<body>");
+	const end = body.indexOf("</body>") + 7;
+
+	document.querySelector('body').innerHTML = body.substring(start, end);
+	addListeners();
+}
+
 /*
 	Hooks up the window events
 */

@@ -71,3 +71,30 @@ export function chatsList(request: FastifyRequest, reply: FastifyReply) {
 		contents: output
 	});
 }
+
+export function userChats(request: FastifyRequest, reply: FastifyReply) {
+	// const user = request.user;
+	// const { otherUserId } = request.params as any;
+
+	// const usersResponse = allOtherUsers(db, user.userId);
+	// const messagesResponse = userMessages(db, {
+	// 	userId: user.userId,
+	// 	otherUserId
+	// });
+
+	// const messageSendersResponse = getMessageSenders(db, user);
+	// if (Result.SUCCESS == messagesResponse.result) {
+	// 	const usersHtml = userListString(usersResponse.users, [], messageSendersResponse.ids, otherUserId);
+	// 	const messagesHtml = privateMessageListString(user.userId, messagesResponse.messages, otherUserId);
+
+	// 	return reply.send({
+	// 		result: Result.SUCCESS,
+	// 		usersHtml,
+	// 		messagesHtml
+	// 	});
+	// }
+	// else
+	// 	return reply.send({
+	// 		result: Result.ERR_NOT_FOUND,
+	// 	});
+}

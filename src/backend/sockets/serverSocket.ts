@@ -1,4 +1,3 @@
-
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";

@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { addUser, getUserByEmail, loginUserdb } from '../db/userDB.js';
+import { addUser, allNicknames, getUserByEmail, loginUserdb } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
 export function usersList(request: FastifyRequest, reply: FastifyReply) {
@@ -70,4 +70,9 @@ export function loginUser(request: FastifyRequest, reply: FastifyReply) {
 				result: Result.SUCCESS,
 				totpEnabled: false
 			});
+}
+
+export function nicknames(request: FastifyRequest, reply: FastifyReply) {
+	const users = allNicknames(request.db);
+	return reply.send(users);
 }

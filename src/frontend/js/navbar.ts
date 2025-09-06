@@ -1,5 +1,5 @@
 import { Result } from "../../common/interfaces.js";
-import { navigate } from "./index.js";
+import { navigate, showUsersPage } from "./index.js";
 import { profileFunctions } from "./users/profile.js";
 
 /*
@@ -59,7 +59,8 @@ export function navbarFunctions() {
 	const usersButton = document.querySelector("#usersButton");
 	if (usersButton) {
 		usersButton.addEventListener("click", async () => {
-			navigate("/users");
+			//navigate("/users");
+			showUsersPage();
 		}, { once: true });
 	}
 

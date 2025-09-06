@@ -1,5 +1,5 @@
 import { MessageType, Result, UserType } from "../../common/interfaces.js";
-import { addListeners, navigate, showAlert } from "./index.js";
+import { addListeners, navigate, showAlert, showFoesPage, showFriendsPage } from "./index.js";
 import { initClientSocket, isConnected, sendMessageToServer } from "./sockets/clientSocket.js";
 
 export async function navigated() {
@@ -36,7 +36,17 @@ export function registerEvents() {
 		/* 
 			Changes page on back/forward buttons
 		*/
-		window.addEventListener('popstate', (event) => navigate(window.location.pathname, false));
+		window.addEventListener('popstate', (event) => {
+			switch (history.state) {
+				case "foes":
+					showFoesPage();
+					break;
+				case "friends":
+					showFriendsPage();
+					break;
+			}
+			//navigate(window.location.pathname, false);
+		});
 
 		/*
 			Registers the functions and also shows an error if Google sign-in/up was unsuccessful

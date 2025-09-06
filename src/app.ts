@@ -3,17 +3,12 @@ import fastifyStatic from "@fastify/static";
 import cookie from '@fastify/cookie'
 import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { homePage } from "./backend/pages/homePage.js";
-import { usersPage } from "./backend/pages/usersPage.js";
-import { gamePage } from "./backend/pages/gamePage.js";
 import { getUser } from "./backend/db/userDB.js";
-import { accountPage } from "./backend/pages/accountPage.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { translate } from "./common/translations.js";
 import { Result, User, UserType } from "./common/interfaces.js";
-import { userChatsPage } from "./backend/pages/userChatsPage.js";
 import { frameView } from "./backend/views/frameView.js";
-import { registerEndpoints } from "./backend/api/endpoints.js";
+import { registerEndpoints } from "./backend/endpoints.js";
 import { initDbTables } from "./backend/db/initDbTables.js";
 
 const __dirname = import.meta.dirname;
@@ -128,12 +123,6 @@ const db = new DatabaseSync("../data/transcendence.db");
 try {
 	initDbTables(db);
 	registerEndpoints(fastify);
-
-	accountPage(fastify);
-	gamePage(fastify);
-	homePage(fastify);
-	userChatsPage(fastify);
-	usersPage(fastify);
 
 	fastify.listen({
 		host: "0.0.0.0",
