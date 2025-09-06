@@ -226,9 +226,16 @@ export class Game {
             const payload = JSON.parse(message.content);
 
             if (payload.kind === "KEY" && typeof payload.pressed === "boolean") {
-                if (payload.player === this.m_localIndex) return;
+                if (payload.playerId === this.m_localIndex) return;
 
-                Game.keys[payload.key] = payload.pressed;
+                const remoteKey = payload.playerId === 0
+                    ? (payload.action === "UP" ? "w" : "s")
+                    : (payload.action === "UP" ? "ArrowUp" : "ArrowDown");
+
+                Game.keys[remoteKey] = payload.pressed;
+
+
+                Game.keys[remoteKey] = payload.pressed;
 
             } else if (payload.kind === "GOAL") {
                 this.m_player0.score = payload.p0Score;
