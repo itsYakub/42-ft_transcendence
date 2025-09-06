@@ -1,19 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, GameChatMessage, Message, Result } from "../../common/interfaces.js";
 
-export function initGameChatsDb(db: DatabaseSync): void {
-	db.exec(`DROP TABLE IF EXISTS game_chats;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS game_chats (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		chat TEXT NOT NULL,
-		from_id INTEGER NOT NULL,
-		game_id TEXT NOT NULL,
-		sent_at TEXT NOT NULL
-		);`);
-}
-
 /*
 	Gets all the game's messages
 */

@@ -4,16 +4,16 @@ import { appTotpDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
 export function accountView(user: User): string {
 	return `
 	<div class="w-150 flex flex-col justify-center mx-auto items-center gap-2">
-		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_ACCOUNT_TITLE%%</div>		
+		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_ACCOUNT_TITLE%%</div>		
 		<div class="flex flex-row w-full gap-2 mt-8">
-			<fieldset class="p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
+			<fieldset class="p-2 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800 text-center">%%TEXT_CHANGE_AVATAR%%</legend>
 				<div>
 					<img class="w-20 h-20 mx-auto cursor-[url(/images/pointer.png),pointer] rounded-lg" src="${user.avatar}" id="avatarImage" />
 					<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
 				</div>
 			</fieldset>
-			<fieldset class="grow p-3 border border-red-300 bg-red-200/20 rounded-lg">
+			<fieldset class="grow p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800 text-center">%%TEXT_CHANGE_NICK%%</legend>
 				<form id="changeNickForm" class="flex flex-col">
 					<input type="text" maxlength="25" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
@@ -24,7 +24,7 @@ export function accountView(user: User): string {
 			</fieldset>
 		</div>
 		${securityHtml(user)}		
-		<div class="w-full flex flex-row justify-center border pt-1 border-red-300 bg-red-200/20 rounded-lg px-2 gap-4">
+		<div class="w-full flex flex-row justify-center border pt-1 border-fuchsia-800 bg-red-200/20 rounded-lg px-2 gap-4">
 			<button id="logoutButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-stone-700">%%BUTTON_LOGOUT%%</button>
 			<button id="invalidateTokenButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-stone-700">%%BUTTON_INVALIDATE_TOKEN%%</button>
 		</div>

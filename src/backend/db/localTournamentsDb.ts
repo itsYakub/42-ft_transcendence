@@ -1,27 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Result, LocalMatch, LocalGamer, LocalTournament } from "../../common/interfaces.js";
 
-export function initLocalTournamentsDb(db: DatabaseSync) {
-	db.exec(`DROP TABLE IF EXISTS local_tournaments;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS local_tournaments (
-		game_id TEXT PRIMARY KEY UNIQUE,
-		m1_g1_nick TEXT,
-		m1_g2_nick TEXT,
-		m2_g1_nick TEXT,
-		m2_g2_nick TEXT,
-		m3_g1_nick TEXT,
-		m3_g2_nick TEXT,
-		m1_g1_score INTEGER DEFAULT 0,
-		m1_g2_score INTEGER DEFAULT 0,
-		m2_g1_score INTEGER DEFAULT 0,
-		m2_g2_score INTEGER DEFAULT 0,
-		m3_g1_score INTEGER DEFAULT 0,
-		m3_g2_score INTEGER DEFAULT 0
-		);`);
-}
-
 export function getLocalTournament(db: DatabaseSync, gameId: string): Box<LocalTournament> {
 	try {
 		const select = db.prepare("SELECT * FROM local_tournaments WHERE game_id = ?");

@@ -1,26 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Message, Result, ShortUser, UserChatMessage, UserType } from "../../common/interfaces.js";
 
-export function initUserChatsDb(db: DatabaseSync, { number, start, end, id }): void {
-	db.exec(`DROP TABLE IF EXISTS user_chats;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS user_chats (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		from_id INTEGER NOT NULL,
-		message TEXT NOT NULL,
-		sent_at TEXT NOT NULL,
-		to_id INTEGER NOT NULL
-		);`);
-
-	for (var i = 1; i <= number; i++) {
-		for (var j = start; j <= end; j++) {
-			db.exec(`INSERT INTO user_chats (from_id, message, to_id, sent_at) VALUES (${j + 1}, '${j + 1}-to-${id}', ${id}, '${new Date().toISOString()}');`);
-			db.exec(`INSERT INTO user_chats (from_id, message, to_id, sent_at) VALUES (${id}, '${id}-to-${j}', ${j}, '${new Date().toISOString()}');`);
-		}
-	}
-}
-
 /*
 	Gets a list of ids that are in a private chat with the user
 */

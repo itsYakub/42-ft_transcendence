@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
-import { addGameChat } from '../db/gameChatsDb.js';
+import { addGameChat } from '../db/TournamentChatsDb.js';
 import { removeUserFromMatch } from '../db/userDB.js';
 
 export function userGameLeaveReceived(db: DatabaseSync, user: ShortUser, message: Message) {

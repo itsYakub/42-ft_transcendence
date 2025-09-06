@@ -95,8 +95,7 @@ export interface User {
 	avatar: string,
 	email: string,
 	gameId: string,
-	nick: string,
-	online: boolean,
+	nick: string
 	password: string,
 	refreshToken: string,
 	totpEmail: boolean,

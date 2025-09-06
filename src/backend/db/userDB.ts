@@ -5,34 +5,6 @@ import { defaultAvatar } from "./defaultAvatar.js";
 import { Result, User, UserType, Box, Gamer, TotpType, ShortUser } from "../../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 
-/*
-	Sets up the Users table
-*/
-export function initUsersDb(db: DatabaseSync, addUsers: number = 0): void {
-	db.exec(`DROP TABLE IF EXISTS users;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS users (
-		avatar TEXT,
-		email TEXT,
-		game_id TEXT,
-		nick TEXT UNIQUE NOT NULL,
-		online INTEGER NOT NULL DEFAULT 0,
-		password TEXT,
-		refresh_token TEXT UNIQUE,
-		totp_type TEXT,
-		totp_secret TEXT,
-		type TEXT DEFAULT USER,
-		user_id INTEGER PRIMARY KEY AUTOINCREMENT
-		);`);
-
-	if (addUsers > 0) {
-		const pw = hashPassword("12345678");
-		for (var i = 1; i <= addUsers; i++)
-			db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).contents}', 'test${i}@test.com', '${pw}', '${defaultAvatar}');`);
-	}
-}
-
 export function usersByGameId(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 	try {
 		const select = db.prepare("SELECT user_id, nick, avatar from users WHERE game_id = ?");
@@ -425,30 +397,6 @@ export function getUserByEmail(db: DatabaseSync, email: string): Box<User> {
 	}
 }
 
-/*
-
-*/
-export function isUserOnline(db: DatabaseSync, userId: number): Box<boolean> {
-	try {
-		const select = db.prepare("SELECT online FROM users WHERE user_id = ?");
-		const user = select.get(userId);
-		if (user) {
-			return {
-				result: Result.SUCCESS,
-				contents: Boolean(user.online)
-			}
-		};
-		return {
-			result: Result.ERR_NO_USER
-		};
-	}
-	catch (e) {
-		return {
-			result: Result.ERR_DB
-		};
-	}
-}
-
 export function updateRefreshtoken(db: DatabaseSync, { userId, refreshToken }): Result {
 	try {
 		const select = db.prepare("UPDATE users SET refresh_token = ? WHERE user_id = ?");
@@ -463,30 +411,6 @@ export function updateRefreshtoken(db: DatabaseSync, { userId, refreshToken }): 
 export function invalidateToken(db: DatabaseSync, userId: number): Result {
 	try {
 		const select = db.prepare("UPDATE users SET refresh_token = NULL WHERE user_id = ?");
-		select.run(userId);
-		return Result.SUCCESS;
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
-
-export function markUserOnline(db: DatabaseSync, userId: number): Result {
-	try {
-		const select = db.prepare("UPDATE Users SET online = 1 WHERE user_id = ?");
-		select.run(userId);
-		return Result.SUCCESS;
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
-
-export function markUserOffline(db: DatabaseSync, userId: number): Result {
-	try {
-		const select = db.prepare("UPDATE users SET online = 0 WHERE user_id = ?");
-		// const select = "guest" == type ? db.prepare("DELETE FROM Users WHERE UserID = ?") :
-		// 	db.prepare("UPDATE Users SET Online = 0 WHERE UserID = ?");
 		select.run(userId);
 		return Result.SUCCESS;
 	}
@@ -519,7 +443,6 @@ export function allNicknames(db: DatabaseSync): Box<string[]> {
 		};
 	}
 }
-
 
 /*
 	Returns a list of all nicknames currently in the DB
@@ -616,7 +539,6 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 		email: sqlUser.email as string,
 		gameId: sqlUser.game_id as string,
 		nick: sqlUser.nick as string,
-		online: Boolean(sqlUser.online as number),
 		password: sqlUser.password as string,
 		refreshToken: sqlUser.refresh_token as string,
 		totpEmail: Boolean(sqlUser.totp_email as number),

@@ -59,6 +59,7 @@ export function showAlert(text: string, shouldTranslate: boolean = true) {
 		closeAlertButton.addEventListener("click", () => {
 			alertDialog.close();
 		});
+
 		const content = shouldTranslate ? translate(getLanguage(), `%%${text}%%`) : text;
 		document.querySelector("#alertContent").textContent = content;
 		alertDialog.showModal();

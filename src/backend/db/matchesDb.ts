@@ -1,24 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Gamer, MatchGamer, Result, User, Match } from "../../common/interfaces.js";
-import { updateGameId } from "./gameDb.js";
-
-export function initMatchesDb(db: DatabaseSync) {
-	db.exec(`DROP TABLE IF EXISTS matches;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS matches (
-		game_id TEXT PRIMARY KEY UNIQUE,
-		g1_nick TEXT,
-		g2_nick TEXT,
-		g1_ready INTEGER DEFAULT 0,
-		g2_ready INTEGER DEFAULT 0,
-		g1_score INTEGER DEFAULT 0,
-		g2_score INTEGER DEFAULT 0,
-		g1_user_id INTEGER,
-		g2_user_id INTEGER,
-		tournament_final INTEGER DEFAULT 0
-		);`);
-}
+import { Box, MatchGamer, Result, User, Match } from "../../common/interfaces.js";
 
 export function getMatch(db: DatabaseSync, gameId: string): Box<Match> {
 	try {
@@ -35,8 +16,6 @@ export function getMatch(db: DatabaseSync, gameId: string): Box<Match> {
 		};
 	}
 }
-
-
 
 export function markMatchGamerReady(db: DatabaseSync, user: User): Result {
 	try {

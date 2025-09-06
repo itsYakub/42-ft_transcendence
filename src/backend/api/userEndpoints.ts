@@ -13,7 +13,6 @@ export function userEndpoints(fastify: FastifyInstance) {
 			contents: {
 				userId: user.userId,
 				nick: user.nick,
-				online: user.online,
 				gameId: user.gameId,
 				totpType: user.totpType,
 				userType: user.userType,

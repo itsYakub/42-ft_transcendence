@@ -2,39 +2,6 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Gamer, Match, MatchGamer, Result, Tournament, User, ShortUser } from "../../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 
-export function initTournamentsDb(db: DatabaseSync) {
-	db.exec(`DROP TABLE IF EXISTS tournaments;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS tournaments (
-		game_id TEXT PRIMARY KEY UNIQUE,
-		m1_g1_nick TEXT,
-		m1_g2_nick TEXT,
-		m2_g1_nick TEXT,
-		m2_g2_nick TEXT,
-		m3_g1_nick TEXT,
-		m3_g2_nick TEXT,
-		m1_g1_ready INTEGER DEFAULT 0,
-		m1_g2_ready INTEGER DEFAULT 0,
-		m2_g1_ready INTEGER DEFAULT 0,
-		m2_g2_ready INTEGER DEFAULT 0,
-		m3_g1_ready INTEGER DEFAULT 0,
-		m3_g2_ready INTEGER DEFAULT 0,
-		m1_g1_score INTEGER DEFAULT 0,
-		m1_g2_score INTEGER DEFAULT 0,
-		m2_g1_score INTEGER DEFAULT 0,
-		m2_g2_score INTEGER DEFAULT 0,
-		m3_g1_score INTEGER DEFAULT 0,
-		m3_g2_score INTEGER DEFAULT 0,
-		m1_g1_user_id INTEGER,
-		m1_g2_user_id INTEGER,
-		m2_g1_user_id INTEGER,
-		m2_g2_user_id INTEGER,
-		m3_g1_user_id INTEGER,
-		m3_g2_user_id INTEGER
-		);`);
-}
-
 export function getTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
 	try {
 		const select = db.prepare("SELECT * FROM tournaments WHERE game_id = ?");

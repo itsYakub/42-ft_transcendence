@@ -108,7 +108,7 @@ export function confirmEmailTotp(db: DatabaseSync, id: number): Result {
 /*
 	Removes the TOTP secret and sets the verified column to 0
 */
-export function disableTotp(db: DatabaseSync, id: number): Result {
+export function disableTotpDb(db: DatabaseSync, id: number): Result {
 	try {
 		const select = db.prepare("UPDATE users SET totp_secret = NULL, totp_type = 'DISABLED' WHERE user_id = ?");
 		select.run(id);

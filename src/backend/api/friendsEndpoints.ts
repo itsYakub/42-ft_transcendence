@@ -4,6 +4,7 @@ import { getUserByEmail } from '../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { friendsView } from '../views/friendsView.js';
+import { onlineUsers } from '../sockets/serverSocket.js';
 
 export function friendsEndpoints(fastify: FastifyInstance) {
 	fastify.get("/api/friends", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -14,6 +15,11 @@ export function friendsEndpoints(fastify: FastifyInstance) {
 		const friendsBox = friendsList(db, user.userId);
 		if (Result.SUCCESS != friendsBox.result)
 			return reply.send(friendsBox);
+
+		friendsBox.contents.forEach(friend => {
+			if (onlineUsers.has(friend.friendId))
+				friend.online = true;
+		});
 
 		return reply.send(JSON.stringify({
 			result: Result.SUCCESS,

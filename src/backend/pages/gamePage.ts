@@ -4,7 +4,7 @@ import { getGames, gamePlayers } from '../db/gameDb.js';
 import { remoteMatchLobbyView } from '../views/remoteMatchLobbyView.js';
 import { gameView } from '../views/gameView.js';
 import { FrameParams, LocalTournament, Result, Tournament } from '../../common/interfaces.js';
-import { gameChatsList } from '../db/gameChatsDb.js';
+import { gameChatsList } from '../db/TournamentChatsDb.js';
 import { getTournament } from '../db/tournamentsDb.js';
 import { remoteTournamentView } from '../views/remoteTournamentView.js';
 import { remoteTournamentLobbyView } from '../views/remoteTournamentLobbyView.js';

@@ -1,4 +1,4 @@
-import { ShortUser, User } from "../../common/interfaces.js";
+import { ShortUser } from "../../common/interfaces.js";
 import { profileDialogHtml } from "./dialogsView.js";
 
 /*

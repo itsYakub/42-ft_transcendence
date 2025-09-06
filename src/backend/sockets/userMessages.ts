@@ -1,6 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
 import { addUserChat } from '../db/userChatsDb.js';
-import { markUserOnline } from '../db/userDB.js';
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { generateTournament } from './tournamentMessages.js';
@@ -10,7 +9,6 @@ import { getMatch, markMatchGamerReady } from '../db/matchesDb.js';
 
 export function userLoginReceived(db: DatabaseSync, user: ShortUser) {
 	console.log(`${user.nick} logged in`);
-	markUserOnline(db, user.userId);
 }
 
 export function userSendUserChatReceived(db: DatabaseSync, user: ShortUser, message: Message) {

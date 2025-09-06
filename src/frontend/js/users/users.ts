@@ -36,7 +36,7 @@ export function usersFunctions() {
 		});
 	}
 
-	const userButtons = document.getElementsByClassName("#userButton");
+	const userButtons = document.getElementsByClassName("userButton");
 	for (var i = 0; i < userButtons.length; i++) {
 		userButtons[i].addEventListener("click", async function () {
 			const profileBox = await fetch("/api/profile", {
@@ -61,46 +61,4 @@ export function usersFunctions() {
 			dialog.showModal();
 		});
 	}
-	
-	// const removeFriendButtons = document.getElementsByClassName("removeFriendButton");
-	// for (var i = 0; i < removeFriendButtons.length; i++) {
-	// 	removeFriendButtons[i].addEventListener("click", async function () {
-	// 		const response = await fetch("/api/friends/remove", {
-	// 			method: "POST",
-	// 			headers: {
-	// 				"content-type": "application/json"
-	// 			},
-	// 			body: JSON.stringify({
-	// 				friendId: parseInt(this.dataset.id),
-	// 			})
-	// 		});
-
-	// 		const text = await response.text();
-	// 		if (Result.SUCCESS != text)
-	// 			return;
-
-	// 		((this as HTMLElement).closest(".friendButton") as HTMLElement).style = "display: none;";
-	// 	});
-	// }
-
-	// const removeFoeButtons = document.getElementsByClassName("removeFoeButton");
-	// for (var i = 0; i < removeFoeButtons.length; i++) {
-	// 	removeFoeButtons[i].addEventListener("click", async function () {
-	// 		const response = await fetch("/api/foes/remove", {
-	// 			method: "POST",
-	// 			headers: {
-	// 				"content-type": "application/json"
-	// 			},
-	// 			body: JSON.stringify({
-	// 				foeId: parseInt(this.dataset.id),
-	// 			})
-	// 		});
-
-	// 		const text = await response.text();
-	// 		if (Result.SUCCESS != text)
-	// 			return;
-
-	// 		((this as HTMLElement).closest(".foeButton") as HTMLElement).style = "display: none;";
-	// 	});
-	// }
 }

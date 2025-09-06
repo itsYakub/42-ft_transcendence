@@ -34,6 +34,7 @@ export function translate(language: string, text: string): string {
 		"ERR_AVATAR_TOO_BIG",
 		"ERR_BAD_TOTP",
 		"ERR_DB",
+		"ERR_EMAIL_IN_USE",
 		"ERR_GOOGLE",
 		"ERR_FORBIDDEN",
 		"ERR_NOT_FOUND",
@@ -129,7 +130,7 @@ function translateDutch(text: string): string {
 		case "TEXT_LOGIN": return "Inloggen";
 		case "TEXT_REGISTER": return "Registreren";
 		case "HOME_TITLE": return "Welkom bij Transcendence!";
-		default: return "NLUnknown text";
+		default: return text;
 	}
 }
 
@@ -260,7 +261,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_PLAYER_NAME": return "Player name";
 		case "TEXT_PLAYER_NAME_SET": return "Set";
 		
-		default: return "ENUnknown text";
+		default: return text;
 	}
 }
 
@@ -275,6 +276,6 @@ function translatePolish(text: string): string {
 		case "TEXT_LOGIN": return "Zaloguj się";
 		case "TEXT_REGISTER": return "Załóż konto";
 		case "HOME_TITLE": return "Witamy w projekcie Transcendence!";
-		default: return "PLUnknown text";
+		default: return text;
 	}
 }

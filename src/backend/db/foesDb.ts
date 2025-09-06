@@ -1,27 +1,13 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Foe, Result } from "../../common/interfaces.js";
 
-export function initFoesDb(db: DatabaseSync, number: number = 0, id: number = 1) {
-	db.exec(`DROP TABLE IF EXISTS foes;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS foes (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		foe_id INTEGER NOT NULL,
-		user_id INTEGER NOT NULL
-		);`);
-
-		for (var i = 1; i <= number; i++)
-			db.exec(`INSERT INTO foes (user_id, foe_id) VALUES (${id}, ${i});`);
-}
-
 /*
 	Gets all the user's blocked ids
 */
 export function foesList(db: DatabaseSync, userId: number): Box<Foe[]> {
 	try {
 		//const select = db.prepare("SELECT foes.user_id, foe_id, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY online DESC, nick");
-		const select = db.prepare("SELECT *, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY online DESC, nick");
+		const select = db.prepare("SELECT *, nick FROM foes INNER JOIN users ON users.user_id = foes.foe_id WHERE foes.user_id = ? ORDER BY nick");
 		const foes = select.all(userId).map(foe => sqlToFoe(foe));
 		return {
 			result: Result.SUCCESS,

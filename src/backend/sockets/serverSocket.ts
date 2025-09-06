@@ -3,13 +3,13 @@ import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { userGameLeaveReceived, tournamentChatReceived } from './gameMessages.js';
 import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from './userMessages.js';
-import { getUser, getUserById, markUserOffline, usersByGameId } from '../db/userDB.js';
+import { getUser, getUserById, usersByGameId } from '../db/userDB.js';
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived } from './matchMessages.js';
 import { notificationInviteReceived } from './notificationMessages.js';
 
-const gamers = new Map<number, WebSocket>();
+export const onlineUsers = new Map<number, WebSocket>();
 let db: DatabaseSync;
 
 export function serverSocket(fastify: FastifyInstance): void {
@@ -20,7 +20,7 @@ export function serverSocket(fastify: FastifyInstance): void {
 			return;
 
 		const user = userBox.contents;
-		gamers.set(user.userId, socket);
+		onlineUsers.set(user.userId, socket);
 	
 		socket?.on("message", (data: string | Buffer) => {
 			const message = JSON.parse(data as string);
@@ -28,8 +28,7 @@ export function serverSocket(fastify: FastifyInstance): void {
 		});
 
 		socket?.on("close", () => {
-			markUserOffline(db, user.userId);
-			gamers.delete(user.userId);
+			onlineUsers.delete(user.userId);
 			sendMessageToUsers({
 				type: MessageType.MATCH_LEAVE,
 				fromId: user.userId,
@@ -42,7 +41,7 @@ export function serverSocket(fastify: FastifyInstance): void {
 	Sends the message to all connected users
 */
 export function sendMessageToUsers(message: Message) {
-	gamers.forEach((socket, userId) => sendMessage(socket, message));
+	onlineUsers.forEach((socket, userId) => sendMessage(socket, message));
 }
 
 /*
@@ -54,7 +53,7 @@ export function sendMessageToGameIdUsers(message: Message, gameId: string) {
 
 	const users = usersByGameId(db, gameId);
 	if (Result.SUCCESS == users.result) {
-		gamers.forEach((socket, userId) => sendMessage(socket, message));
+		onlineUsers.forEach((socket, userId) => sendMessage(socket, message));
 	}
 }
 
@@ -67,7 +66,7 @@ export function sendMessageToOtherGameIdUsers(message: Message, gameId: string) 
 	
 	const users = usersByGameId(db, gameId);
 	if (Result.SUCCESS == users.result) {
-		gamers.forEach((socket, userId) => {
+		onlineUsers.forEach((socket, userId) => {
 			if (userId != message.fromId)
 				sendMessage(socket, message);
 		});
@@ -78,8 +77,8 @@ export function sendMessageToOtherGameIdUsers(message: Message, gameId: string) 
 	Sends the message to a specific user
 */
 export function sendMessageToUser(message: Message, userId: number) {
-	if (gamers.has(userId))
-		sendMessage(gamers[userId], message);
+	if (onlineUsers.has(userId))
+		sendMessage(onlineUsers[userId], message);
 }
 
 function sendMessage(socket: WebSocket, message: Message) {

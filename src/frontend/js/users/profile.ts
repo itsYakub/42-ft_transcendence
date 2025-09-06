@@ -39,7 +39,6 @@ export function profileFunctions() {
 	const removeFriendButton = document.querySelector("#removeFriendButton");
 	if (removeFriendButton) {
 		removeFriendButton.addEventListener("click", async function () {
-			console.log("clicked");
 			const response = await fetch("/api/friends/remove", {
 				method: "POST",
 				headers: {
@@ -104,6 +103,11 @@ export function profileFunctions() {
 				const language = getLanguage();
 				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
+				const buttons = document.getElementsByClassName("foeButton");
+				for (var j = 0; j < buttons.length; j++) {
+					if ((buttons[j] as HTMLElement).dataset.id == this.dataset.id)
+						(buttons[j] as HTMLElement).style = "display: none;";
+				}
 			}
 		});
 	}

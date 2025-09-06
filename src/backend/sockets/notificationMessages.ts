@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
 import { addUserChat } from '../db/userChatsDb.js';
-import { markUserOnline } from '../db/userDB.js';
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { generateTournament } from './tournamentMessages.js';

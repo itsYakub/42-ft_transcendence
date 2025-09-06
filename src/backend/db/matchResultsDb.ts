@@ -1,21 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, MatchResult, Result } from "../../common/interfaces.js";
 
-export function initMatchResultsDb(db: DatabaseSync, { number, start, end }): void {
-	db.exec(`DROP TABLE IF EXISTS match_results;`);
-
-	db.exec(`
-		CREATE TABLE IF NOT EXISTS match_results (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		opponent TEXT NOT NULL,
-		opponent_score INTEGER NOT NULL,
-		played_at TEXT NOT NULL,
-		score INTEGER NOT NULL,
-		tournament_win INTEGER NOT NULL,
-		user_id INTEGER NOT NULL
-		);`);
-}
-
 /*
 	Gets all the user's matches
 */

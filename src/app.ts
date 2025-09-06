@@ -3,23 +3,18 @@ import fastifyStatic from "@fastify/static";
 import cookie from '@fastify/cookie'
 import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { initFriendsDb } from "./backend/db/friendsDb.js";
-import { initMatchResultsDb } from "./backend/db/matchResultsDb.js";
 import { homePage } from "./backend/pages/homePage.js";
 import { usersPage } from "./backend/pages/usersPage.js";
-import { initUserChatsDb } from "./backend/db/userChatsDb.js";
 import { serverSocket } from "./backend/sockets/serverSocket.js";
 import { apiEndpoints } from "./backend/api/apiEndpoints.js";
 import { gamePage } from "./backend/pages/gamePage.js";
-import { initFoesDb } from "./backend/db/foesDb.js";
-import { getUser, initUsersDb } from "./backend/db/userDB.js";
+import { getUser } from "./backend/db/userDB.js";
 import { accountPage } from "./backend/pages/accountPage.js";
 import { loggedOutView } from "./backend/views/loggedOutView.js";
 import { authEndpoints } from "./backend/api/authEndpoints.js";
 import { accountEndpoints } from "./backend/api/accountEndpoints.js";
 import { translate } from "./common/translations.js";
 import { Result, User, UserType } from "./common/interfaces.js";
-import { initGameChatsDb } from "./backend/db/gameChatsDb.js";
 import { foesEndpoints } from "./backend/api/foesEndpoints.js";
 import { friendsEndpoints } from "./backend/api/friendsEndpoints.js";
 import { userEndpoints } from "./backend/api/userEndpoints.js";
@@ -27,13 +22,10 @@ import { userChatsPage } from "./backend/pages/userChatsPage.js";
 import { matchResultsEndpoints } from "./backend/api/matchResultsEndpoints.js";
 import { profileEndpoints } from "./backend/api/profileEndpoints.js";
 import { userChatsEndpoints } from "./backend/api/userChatsEndpoints.js";
-import { initTournamentsDb } from "./backend/db/tournamentsDb.js";
 import { tournamentEndpoints } from "./backend/api/tournamentEndpoints.js";
-import { initMatchesDb } from "./backend/db/matchesDb.js";
-import { initLocalTournamentsDb } from "./backend/db/localTournamentsDb.js";
-import { totpEndpoints } from "./backend/api/totpEndpoints.js";
-import { initNotificationsDb } from "./backend/db/notificationsDb.js";
 import { frameView } from "./backend/views/frameView.js";
+import { registerEndpoints } from "./backend/api/endpoints.js";
+import { initDbTables } from "./backend/db/initDbTables.js";
 
 const __dirname = import.meta.dirname;
 
@@ -145,25 +137,8 @@ fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) 
 const db = new DatabaseSync("../data/transcendence.db");
 
 try {
-	initFoesDb(db);
-	initFriendsDb(db);
-	initGameChatsDb(db);
-	initLocalTournamentsDb(db);
-	initMatchesDb(db);
-	initMatchResultsDb(db, {
-		number: 10,
-		start: 1,
-		end: 6
-	});
-	initNotificationsDb(db);
-	initTournamentsDb(db);
-	initUserChatsDb(db, {
-		number: 2,
-		start: 1,
-		end: 2,
-		id: 11
-	});
-	initUsersDb(db, 10);
+	initDbTables(db);
+	registerEndpoints(fastify);
 
 	accountPage(fastify);
 	gamePage(fastify);
@@ -178,7 +153,6 @@ try {
 	friendsEndpoints(fastify);
 	matchResultsEndpoints(fastify);
 	profileEndpoints(fastify);
-	totpEndpoints(fastify);
 	tournamentEndpoints(fastify);
 	userChatsEndpoints(fastify);
 	userEndpoints(fastify);

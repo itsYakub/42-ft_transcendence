@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { allNicknames, isUserOnline } from '../db/userDB.js';
+import { allNicknames } from '../db/userDB.js';
 import { gamePlayers } from '../db/gameDb.js';
 import { translate } from '../../common/translations.js';
 import { Box, Result } from '../../common/interfaces.js';
-import { gameChatsList } from '../db/gameChatsDb.js';
+import { gameChatsList } from '../db/TournamentChatsDb.js';
 import { remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
 
 export function apiEndpoints(fastify: FastifyInstance): void {
@@ -70,12 +70,5 @@ export function apiEndpoints(fastify: FastifyInstance): void {
 		// 	return reply.send({
 		// 		result: Result.ERR_NOT_FOUND,
 		// 	});
-	});
-
-	fastify.get('/api/is-online/:userId', async (request: FastifyRequest, reply: FastifyReply) => {
-		const { userId } = request.params as any;
-
-		const onlineResponse = isUserOnline(request.db, userId);
-		return onlineResponse;
 	});
 }

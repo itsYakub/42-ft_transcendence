@@ -38,6 +38,6 @@ function switcherHtml(): string {
 
 function foeHtml(foe: Foe): string {
 	return `
-	<div class="userButton w-80 cursor-[url(/images/pointer.png),pointer] rounded-lg bg-red-300/50 hover:bg-red-300 text-center text-stone-700 mx-auto p-2" data-id="${foe.userId}">${foe.nick}</div>
+	<div class="userButton foeButton w-80 cursor-[url(/images/pointer.png),pointer] rounded-lg bg-red-300/50 hover:bg-red-300 text-center text-stone-700 mx-auto p-2" data-id="${foe.userId}">${foe.nick}</div>
 	`;
 }
