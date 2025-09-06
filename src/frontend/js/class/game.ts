@@ -3,339 +3,525 @@ import * as BABYLON from '@babylonjs/core/Legacy/legacy';
 import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { Ground } from './ground.js';
-import { GamePlayer, MessageType } from '../../../common/interfaces.js';
+import { GamePlayer, MessageType, Message } from '../../../common/interfaces.js';
 import { sendMessageToServer } from '../sockets/clientSocket.js';
-import * as GUI from '@babylonjs/gui';
 
 /* SECTION:
  *  Classes
  * */
 
 export enum GameMode {
-	GAMEMODE_NONE = 0,
-	GAMEMODE_PVP,
-	GAMEMODE_AI,
-	GAMEMODE_REMOTE,
-	GAMEMODE_COUNT
+    GAMEMODE_NONE = 0,
+    GAMEMODE_PVP,
+    GAMEMODE_AI,
+    GAMEMODE_COUNT,
+    GAMEMODE_REMOTE
 }
 
 export enum StateMachine {
-	STATE_NONE = 0,
-	STATE_START,		/* State when the game is being preapred */
-	STATE_UPDATE,		/* State when the game is being updated */
-	STATE_PAUSED,		/* State for when the game should be paused */
-	STATE_RESTART,		/* State invoked most likely by someone scoring a point */
-	STATE_GAMEOVER,		/* GameOver state; the game should be closed soon, there can be a game over window, etc. */
-	STATE_COUNT
+    STATE_NONE = 0,
+    STATE_START,        /* State when the game is being prepared */
+    STATE_UPDATE,       /* State when the game is being updated */
+    STATE_PAUSED,       /* State for when the game should be paused */
+    STATE_RESTART,      /* State invoked most likely by someone scoring a point */
+    STATE_GAMEOVER,     /* GameOver state; the game should be closed soon, there can be a game over window, etc. */
+    STATE_COUNT
+}
+
+type NetKeyPayload = { kind: "KEY"; action: "UP" | "DOWN"; pressed: boolean; playerId: number };
+type NetBallPayload = { kind: "BALL_UPDATE"; pos: { x: number; y: number }; vel: { x: number; y: number } };
+type NetGameEndPayload = { kind: "GAME_END"; p0Score: number; p1Score: number };
+
+function isNetKeyPayload(x: any): x is NetKeyPayload {
+    return (
+        x &&
+        x.kind === "KEY" &&
+        (x.action === "UP" || x.action === "DOWN") &&
+        typeof x.pressed === "boolean" &&
+        typeof x.playerId === "number"
+    );
+}
+
+function isNetBallPayload(x: any): x is NetBallPayload {
+    return (
+        x &&
+        x.kind === "BALL_UPDATE" &&
+        x.pos &&
+        typeof x.pos.x === "number" &&
+        typeof x.pos.y === "number" &&
+        x.vel &&
+        typeof x.vel.x === "number" &&
+        typeof x.vel.y === "number"
+    );
+}
+
+function isNetGameEndPayload(x: any): x is NetGameEndPayload {
+    return (
+        x &&
+        x.kind === "GAME_END" &&
+        typeof x.p0Score === "number" &&
+        typeof x.p1Score === "number"
+    );
 }
 
 export class Game {
-	/* HTML DOM Elements
-	 * */
-	private m_dialog: HTMLDialogElement;
-	private m_canvas: HTMLCanvasElement;
+    /* HTML DOM Elements */
+    private m_dialog: HTMLDialogElement;
+    private m_canvas: HTMLCanvasElement;
 
-	/* babylonjs elements
-	 * */
-	private m_engine: BABYLON.Engine;
-	private m_scene: BABYLON.Scene;
+    /* babylonjs elements */
+    private m_engine: BABYLON.Engine;
+    private m_scene: BABYLON.Scene;
 
-	/* Game objects
-	 * */
-	private m_mode: GameMode;
+    /* Game objects */
+    private m_mode: GameMode;
 
-	private m_player0: Player;
-	private m_player1: Player;
-	private m_ball: Ball;
-	private m_ground: Ground;
+    private m_player0: Player;
+    private m_player1: Player;
+    private m_ball: Ball;
+    private m_ground: Ground;
 
-	private m_canvasCreated: boolean = false;
-	private m_engineCreated: boolean = false;
-	private m_sceneCreated: boolean = false;
+    private m_canvasCreated: boolean = false;
+    private m_engineCreated: boolean = false;
+    private m_sceneCreated: boolean = false;
 
-	/* TODO(joleksia):
-	 *  This variable is here to tell every game object to no update anymore.
-	 *  Basically, every method should now check if this flag is set to tru or false.
-	 *  If true: no update;
-	 *  If false: update normally;
-	 *  This also should be in sync between clients.
-	 * */
-	private m_stateMachine: StateMachine;
+    /* TODO(joleksia):
+     *  This variable is here to tell every game object to no update anymore.
+     *  Basically, every method should now check if this flag is set to true or false.
+     *  If true: no update;
+     *  If false: update normally;
+     *  This also should be in sync between clients.
+     */
+    private m_stateMachine: StateMachine;
 
-	public static keys: boolean[];
+    /* Match state */
+    private m_gameOver: boolean = false;
 
-	/* SECTION:
-	 *  Public Methods
-	 * */
+    private m_networked: boolean = false;
+    private m_localIndex: 0 | 1 = 0;
+    private m_gameId?: string;
+    private m_started: boolean = false;
 
-	get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
-	get ball() { return (this.m_ball); }
+    /* Store player data for scene creation */
+    private m_player1Data?: GamePlayer;
+    private m_player2Data?: GamePlayer;
 
-	public async setupElements(mode: GameMode, p0: GamePlayer, p1: GamePlayer) {
-		/* Get the dialog element from the document
-		 * */
-		console.log('[ INFO ] Referencing the modal dialog');
-		this.m_dialog = document.getElementById('gameDialog') as HTMLDialogElement;
+    private onLocalKeyBound?: (e: KeyboardEvent) => void;
 
-		/* Check if there's no scene created yet.
-		 * If so, create a new one
-		 * */
-		if (!this.m_canvasCreated) {
-			console.log('[ INFO ] Creating a canvas object');
-			this.m_canvas = document.createElement('canvas');
-			this.m_canvasCreated = true;
-		}
-		this.m_dialog.appendChild(this.m_canvas);
+    public static keys: Record<string, boolean>;
 
-		/* Setup keyboard input map
-		 * TODO(joleksia):
-		 *  This is just a temporary solution and should be probably switched ASAP (@agarbacz?)
-		 * */
-		Game.keys = [];
-		window.addEventListener("keydown", function (e) {
-			Game.keys[e.key] = true;
-		});
+    /* SECTION: Public Methods */
 
-		window.addEventListener("keyup", function (e) {
-			Game.keys[e.key] = false;
-		});
+    get gameOver() { return (this.m_gameOver); }
+    get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
+    get ball() { return (this.m_ball); }
 
-		/* Create a babylon layer
-		 * */
-		if (!this.m_engineCreated) {
-			console.log('[ INFO ] Creating a babylon engine');
-			this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true, stencil: true });
-			this.m_engineCreated = true;
-		}
+    // Add these getter methods to access private properties for ball synchronization
+    get networked() { return this.m_networked; }
+    get localIndex() { return this.m_localIndex; }
+    get gameId() { return this.m_gameId; }
 
-		if (!this.m_sceneCreated) {
-			console.log('[ INFO ] Creating a babylon scene');
-			this.m_mode = mode;
-			this.m_scene = this.createScene(p0, p1);
-		}
+    public setupElements(
+        mode: GameMode,
+        player1: GamePlayer,
+        player2?: GamePlayer,
+        opts?: { networked?: boolean; gameId?: string; localIndex?: 0 | 1 }
+    ) {
+        this.m_gameOver = false;
 
-		/* Display the game dialog
-		 * */
-		console.log('[ INFO ] Preparing the game');
-		this.m_dialog.showModal();
+        // store player data
+        this.m_player1Data = player1;
+        this.m_player2Data = player2;
 
-		/* Resize the canvas to the size of the dialog
-		 * */
-		this.m_canvas.width = this.m_dialog.clientWidth;
-		this.m_canvas.height = this.m_dialog.clientHeight;
+        // store networking options
+        this.m_networked = !!opts?.networked;
+        this.m_gameId = opts?.gameId;
+        this.m_localIndex = opts?.localIndex ?? 0;
 
-		/* If the list of active render loops is equal to zero,
-		 * start a new render loop
-		 * */
-		if (!this.m_engine.activeRenderLoops.length) {
-			this.m_engine.runRenderLoop(() => this.updateRenderLoop());
-		}
+        // dialog/canvas/engine/scene creation
+        console.log('[ INFO ] Referencing the modal dialog');
+        this.m_dialog = document.getElementById('gameDialog') as HTMLDialogElement;
 
-		this.m_stateMachine = StateMachine.STATE_START;
-		console.log('[ INFO ] Game is running...');
-	}
+        if (!this.m_canvasCreated) {
+            console.log('[ INFO ] Creating a canvas object');
+            this.m_canvas = document.createElement('canvas');
+            this.m_canvasCreated = true;
+        }
+        this.m_dialog.appendChild(this.m_canvas);
 
-	public dispose() {
-		console.log('[ INFO ] Disposing babylon scene');
-		this.m_scene.dispose();
-		this.m_sceneCreated = false;
+        Game.keys = {}; // dictionary for string keys
 
-		console.log('[ INFO ] Disposing babylon engine');
-		this.m_engine.stopRenderLoop();
-		this.m_engine.dispose();
-		this.m_engineCreated = false;
+        if (!this.m_networked) {
+            // Non-networked games: set up all keys directly
+            window.addEventListener("keydown", function (e) {
+                Game.keys[e.key] = true;
+            });
+            window.addEventListener("keyup", function (e) {
+                Game.keys[e.key] = false;
+            });
+        } else {
+            // Networked games: each player only handles their own keys
+            window.addEventListener("keydown", (e) => {
+                if (this.m_localIndex === 0) {
+                    // Player 0 uses arrow keys but maps to w/s internally
+                    if (e.key === "ArrowUp") {
+                        Game.keys["w"] = true;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["s"] = true;
+                    }
+                } else {
+                    // Player 1 uses arrow keys directly
+                    if (e.key === "ArrowUp") {
+                        Game.keys["ArrowUp"] = true;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["ArrowDown"] = true;
+                    }
+                }
+            });
+            window.addEventListener("keyup", (e) => {
+                if (this.m_localIndex === 0) {
+                    // Player 0 uses arrow keys but maps to w/s internally
+                    if (e.key === "ArrowUp") {
+                        Game.keys["w"] = false;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["s"] = false;
+                    }
+                } else {
+                    // Player 1 uses arrow keys directly
+                    if (e.key === "ArrowUp") {
+                        Game.keys["ArrowUp"] = false;
+                    } else if (e.key === "ArrowDown") {
+                        Game.keys["ArrowDown"] = false;
+                    }
+                }
+            });
 
-		console.log('[ INFO ] Removing canvas object from dialog');
-		this.m_dialog.removeChild(this.m_canvas);
-		this.m_canvasCreated = false;
+            // wire local key events -> network (only for networked games)
+            if (!this.onLocalKeyBound) {
+                this.onLocalKeyBound = (e: KeyboardEvent) => {
+                    if (this.m_gameOver || !this.m_networked || !this.m_gameId) return;
 
-		console.log('[ INFO ] Closing dialog');
-		this.m_dialog.close();
+                    // Only handle arrow keys for networked games (both players use arrows)
+                    const isUp = e.key === "ArrowUp";
+                    const isDown = e.key === "ArrowDown";
+                    const pressed = e.type === "keydown";
 
-		console.log('[ INFO ] Game is disposed...');
-	}
+                    if (!isUp && !isDown) return;
 
+                    const payload: NetKeyPayload = {
+                        kind: "KEY",
+                        action: isUp ? "UP" : "DOWN",
+                        pressed,
+                        playerId: this.m_localIndex  // 0 = purple paddle, 1 = yellow paddle
+                    };
 
-	public score(p0: boolean, p1: boolean) {
-		/* Increment the player score.
-		 * */
-		if (p0) { this.m_player0.score++ };
-		if (p1) { this.m_player1.score++ };
-		console.log('[ INFO ] Current score: p0:' + this.m_player0.score + ' | p1:' + this.m_player1.score);
+                    // Send the key press to the server
+                    sendMessageToServer({
+                        type: MessageType.MATCH_UPDATE,
+                        gameId: this.m_gameId,
+                        content: JSON.stringify(payload),
+                    });
+                };
 
-		/* Check if the someone passed the score threshold.
-		 * If so, the match is over!
-		 * */
-		if (this.m_player0.score >= g_gameScoreTotal ||
-			this.m_player1.score >= g_gameScoreTotal
-		) {
-			this.m_stateMachine = StateMachine.STATE_GAMEOVER;
-		}
-		else {
-			this.m_stateMachine = StateMachine.STATE_RESTART;
-		}
-	}
+                window.addEventListener("keydown", this.onLocalKeyBound, true);
+                window.addEventListener("keyup", this.onLocalKeyBound, true);
+            }
+        }
 
-	/* SECTION:
-	 *  Private Methods
-	 * */
+        if (!this.m_engineCreated) {
+            console.log('[ INFO ] Creating a babylon engine');
+            this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true, stencil: true });
+            this.m_engineCreated = true;
+        }
 
-	private updateRenderLoop() {
-		/* StateMachine - dependent code
-		 * */
-		switch (this.m_stateMachine) {
-			case (StateMachine.STATE_START): {
-				/* NOTE(joleksia):
-				 *  I've removed the setTimeout added by @lwillis
-				 *  It had some issues with the curremt state machine
-				 *  The state machine, even tho it was updated, still called the conent of setTimeout
-				 * */
-				if (this.m_mode == GameMode.GAMEMODE_REMOTE) {
-					sendMessageToServer({
-						type: MessageType.MATCH_START, gameId: this.m_player0.gameID
-					});
-					console.log('[ INFO ] Match type: remote');
-				}
-				else {
-					this.m_ball.start();
-					console.log('[ INFO ] Match type: local');
-				}
-				this.m_stateMachine = StateMachine.STATE_UPDATE;
-				console.log('[ INFO ] Match start!');
-			} break;
+        if (!this.m_sceneCreated) {
+            console.log('[ INFO ] Creating a babylon scene');
+            this.m_mode = mode;
+            this.m_scene = this.createScene();
+            this.m_sceneCreated = true;
+        }
 
-			case (StateMachine.STATE_UPDATE): {
-				this.m_player0.update();
-				this.m_player1.update();
-				this.m_ball.update();
-			} break;
+        console.log('[ INFO ] Preparing the game');
+        this.m_dialog.showModal();
 
-			case (StateMachine.STATE_PAUSED): {
-				/* NOTE(joleksia):
-				 *  For now you shouldn't be able to enter this state
-				 * */
-			} break;
+        this.m_canvas.width = this.m_dialog.clientWidth;
+        this.m_canvas.height = this.m_dialog.clientHeight;
 
-			case (StateMachine.STATE_RESTART): {
-				/* TODO(joleksia):
-				 *  The ball, in the 'reset()' function, should also set some sort of delay
-				 *  to wait before the actual match starts. It also must be in sync with other clients!
-				 *  @agarbacz
-				 * */
-				this.m_player0.reset();
-				this.m_player1.reset();
-				this.m_ball.reset();
+        if (!this.m_engine.activeRenderLoops.length) {
+            this.m_engine.runRenderLoop(() => this.updateRenderLoop());
+        }
 
-				this.m_stateMachine = StateMachine.STATE_START;
-			} break;
+        this.m_stateMachine = StateMachine.STATE_START;
+        console.log('[ INFO ] Game is running...');
+    }
 
-			case (StateMachine.STATE_GAMEOVER): {
-				this.matchOver();
-				return;
-			} break;
+    public actuallyStart() {
+        if (this.m_gameOver || this.m_started) return;
+        console.log('[ INFO ] Actually starting networked game - ball should move now');
 
-			default: { } break;
-		}
+        this.m_ball.start();
+        this.m_started = true;
+    }
 
-		/* StateMachine - independent code
-		 * */
-		g_gameTime += this.deltaTime;
-		this.m_ground.update();
+    public netOnMessage(message: Message) {
+        if (!this.m_networked || !this.m_gameId || message.gameId !== this.m_gameId)
+            return;
+        if (!message.content) return;
 
-		/* Render the scene...
-		 * */
-		this.m_scene.render()
-	}
+        try {
+            const payload = JSON.parse(message.content);
 
-	// send the match info back to the frontend
-	private matchOver() {
-		// show "winner message" or something, or leave it to the frontend
+            if (payload.kind === "KEY" && typeof payload.pressed === "boolean") {
+                if (payload.playerId === this.m_localIndex) return;
 
-		// @joleksia this is so it's only sent once per match
-		if (this.m_player0.score > this.m_player1.score || this.m_mode == GameMode.GAMEMODE_AI) {
-			sendMessageToServer({
-				type: MessageType.MATCH_OVER,
-				match: {
-					g1: {
-						nick: this.m_player0.nick,
-						score: this.m_player0.score,
-						userId: this.m_player0.userID
-					},
-					g2: {
-						nick: this.m_player1.nick,
-						score: this.m_player1.score,
-						userId: this.m_player1.userID
-					}
-				}
-			});
-		}
+                // Map remote player's actions to their specific paddle keys
+                let remoteKey: string;
+                if (payload.playerId === 0) {
+                    // Remote Player 0 (purple paddle) uses w/s keys internally
+                    remoteKey = payload.action === "UP" ? "w" : "s";
+                } else {
+                    // Remote Player 1 (yellow paddle) uses arrow keys internally
+                    remoteKey = payload.action === "UP" ? "ArrowUp" : "ArrowDown";
+                }
 
-		this.dispose();
-	}
+                Game.keys[remoteKey] = payload.pressed;
 
+            } else if (payload.kind === "BALL_UPDATE") {
+                // Only non-master clients should sync ball position from network
+                if (this.m_localIndex !== 0) {
+                    this.m_ball.syncFromNetwork(payload.pos, payload.vel);
+                }
 
-	private createScene(p0: GamePlayer, p1: GamePlayer) {
-		let scene = new BABYLON.Scene(this.m_engine);
+            } else if (payload.kind === "GOAL") {
+                this.m_player0.score = payload.p0Score;
+                this.m_player1.score = payload.p1Score;
 
-		/* SECTION:
-		 *  Camera Setup
-		 * */
-		let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 10, new BABYLON.Vector3(0, 0, 0));
+                console.log('[ INFO ] Goal scored! Synced scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
 
-		const light = new BABYLON.PointLight("light0", new BABYLON.Vector3(0, 5, 0), scene); light.intensity = 2.0;
-		light.diffuse = new BABYLON.Color3(0.15, 0, 0.4);
-		light.specular = new BABYLON.Color3(0, 0, 0);
-		light.intensity = 1;
+                if (payload.p0Score < g_gameScoreTotal && payload.p1Score < g_gameScoreTotal) {
+                    this.m_stateMachine = StateMachine.STATE_RESTART;
+                }
 
-		/* TODO(joleksia):
-		 *  Here we should set-up the game based on the gamemode.
-		 *  By setting-up I mean:
-		 *  - creating both players [X];
-		 *  - specifing if player is a human or AI [X];
-		 *  - specifing if the game is local or remote (which is important for the socket listening);
-		 * */
-		this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
-		this.m_ball = new Ball(this.m_canvas, scene);
-		this.m_player0 = new Player(this.m_canvas, scene, p0, 0.0, 1.0);
-		switch (this.m_mode) {
-			case (GameMode.GAMEMODE_PVP): {
-				this.m_player1 = new Player(this.m_canvas, scene, p1, 1.0, 1.0);
-			} break;
-			case (GameMode.GAMEMODE_AI): {
-				this.m_player1 = new Player(this.m_canvas, scene, p1, 1.0, 2.0);
-			} break;
-		}
+            } else if (payload.kind === "GAME_END") {
+                this.m_player0.score = payload.p0Score;
+                this.m_player1.score = payload.p1Score;
 
-		// This is adapted from the docs
-		var plane = BABYLON.MeshBuilder.CreatePlane("plane", {
-			size: 2,
-			width: 10,
-			height: 5
-		});
-		plane.position.y = 2;
-		var advancedTexture = GUI.AdvancedDynamicTexture.CreateForMesh(plane);
-		var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
-		button1.width = 1;
-		button1.height = 0.4;
-		button1.color = "white";
-		button1.fontSize = 50;
-		button1.background = "green";
-		button1.onPointerUpObservable.add(function () {
-			alert("Shitty Babylonjs");
-		});
-		advancedTexture.addControl(button1);
+                console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
+                this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 
-		return (scene);
-	}
+            } else if (payload.kind === "RESET") {
+                console.log('[ INFO ] Round reset synced');
+                this.m_stateMachine = StateMachine.STATE_RESTART;
+            }
+        } catch (e) {
+            console.warn('Invalid network message:', e);
+        }
+    }
+
+    public dispose() {
+        if (this.m_gameOver) return; // idempotent
+
+        console.log('[ INFO ] Disposing babylon scene');
+        this.m_scene.dispose();
+        this.m_sceneCreated = false;
+
+        console.log('[ INFO ] Disposing babylon engine');
+        this.m_engine.stopRenderLoop();
+        this.m_engine.dispose();
+        this.m_engineCreated = false;
+
+        console.log('[ INFO ] Removing canvas object from dialog');
+        this.m_dialog.removeChild(this.m_canvas);
+        this.m_canvasCreated = false;
+
+        console.log('[ INFO ] Closing dialog');
+        this.m_dialog.close();
+
+        // rm local key listeners if any
+        if (this.onLocalKeyBound) {
+            window.removeEventListener("keydown", this.onLocalKeyBound, true);
+            window.removeEventListener("keyup", this.onLocalKeyBound, true);
+            this.onLocalKeyBound = undefined;
+        }
+        this.m_networked = false;
+        this.m_started = false;
+
+        this.m_gameOver = true;
+        console.log('[ INFO ] Game is disposed...');
+    }
+
+    public score(p0: boolean, p1: boolean) {
+        /* Increment the player score. */
+        if (p0) { this.m_player0.score++ };
+        if (p1) { this.m_player1.score++ };
+        console.log('[ INFO ] Current score: p0:' + this.m_player0.score + ' | p1:' + this.m_player1.score);
+
+        // Send goal event to sync both clients (only Player 0 sends to avoid duplicates)
+        if (this.m_networked && this.m_gameId && this.m_localIndex === 0) {
+            const goalPayload = {
+                kind: "GOAL",
+                p0Score: this.m_player0.score,
+                p1Score: this.m_player1.score,
+                p0Scored: p0,
+                p1Scored: p1
+            };
+
+            sendMessageToServer({
+                type: MessageType.MATCH_GOAL,
+                gameId: this.m_gameId,
+                content: JSON.stringify(goalPayload),
+            });
+        }
+
+        /* Check if someone passed the score threshold to end the game if so */
+        if (this.m_player0.score >= g_gameScoreTotal ||
+            this.m_player1.score >= g_gameScoreTotal
+        ) {
+            if (this.m_networked && this.m_gameId && this.m_localIndex === 0) {
+                const endPayload = {
+                    kind: "GAME_END",
+                    p0Score: this.m_player0.score,
+                    p1Score: this.m_player1.score
+                };
+
+                sendMessageToServer({
+                    type: MessageType.MATCH_END,
+                    gameId: this.m_gameId,
+                    content: JSON.stringify(endPayload),
+                });
+            }
+
+            this.m_stateMachine = StateMachine.STATE_GAMEOVER;
+        }
+        else {
+            this.m_stateMachine = StateMachine.STATE_RESTART;
+        }
+    }
+
+    /* SECTION: Private Methods */
+
+    private updateRenderLoop() {
+        /* StateMachine - dependent code */
+        switch (this.m_stateMachine) {
+            case (StateMachine.STATE_START): {
+                /* NOTE(joleksia):
+                 *  I've removed the setTimeout added by @lwillis
+                 *  It had some issues with the current state machine
+                 *  The state machine, even tho it was updated, still called the content of setTimeout
+                 */
+                if (this.m_networked) {
+                    // Networked games wait for actuallyStart() to be called
+                    if (this.m_started) {
+                        this.m_stateMachine = StateMachine.STATE_UPDATE;
+                        console.log('[ INFO ] Networked match start!');
+                    }
+                } else {
+                    this.m_ball.start();
+                    this.m_stateMachine = StateMachine.STATE_UPDATE;
+                    console.log('[ INFO ] Local match start!');
+                }
+            } break;
+
+            case (StateMachine.STATE_UPDATE): {
+                if (!this.gameOver) {
+                    this.m_player0.update();
+                    this.m_player1.update();
+                    this.m_ball.update();
+                }
+            } break;
+
+            case (StateMachine.STATE_PAUSED): {
+                /* NOTE(joleksia):
+                 *  For now you shouldn't be able to enter this state
+                 */
+            } break;
+
+            case (StateMachine.STATE_RESTART): {
+                /* TODO(joleksia):
+                 *  The ball, in the 'reset()' function, should also set some sort of delay
+                 *  to wait before the actual match starts. It also must be in sync with other clients!
+                 *  @agarbacz
+                 */
+                this.m_player0.reset();
+                this.m_player1.reset();
+                this.m_ball.reset();
+
+                this.m_stateMachine = StateMachine.STATE_START;
+            } break;
+
+            case (StateMachine.STATE_GAMEOVER): {
+                this.matchOver();
+                return;
+            } break;
+
+            default: { } break;
+        }
+
+        /* StateMachine - independent code */
+        g_gameTime += this.deltaTime;
+        this.m_ground.update();
+
+        /* Resize the canvas to the size of the dialog */
+        this.m_canvas.width = this.m_dialog.clientWidth;
+        this.m_canvas.height = this.m_dialog.clientHeight;
+
+        /* Render the scene... */
+        this.m_scene.render()
+    }
+
+    // send the match info back to the frontend
+    private matchOver() {
+        this.m_ball.reset();
+
+        this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+            detail: {
+                g1Score: this.m_player0.score,
+                g2Score: this.m_player1.score
+            }
+        }));
+
+        // show "winner message" or something
+        this.dispose();
+    }
+
+    private createScene() {
+        let scene = new BABYLON.Scene(this.m_engine);
+
+        /* SECTION: Camera Setup */
+        let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 10, new BABYLON.Vector3(0, 0, 0));
+
+        const light = new BABYLON.PointLight("light0", new BABYLON.Vector3(0, 5, 0), scene);
+        light.intensity = 2.0;
+        light.diffuse = new BABYLON.Color3(0.15, 0, 0.4);
+        light.specular = new BABYLON.Color3(0, 0, 0);
+        light.intensity = 1;
+
+        /* Set up the game based on the gamemode */
+        this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
+        this.m_ball = new Ball(this.m_canvas, scene);
+
+        // Use the stored player data or defaults
+        const player1Data = this.m_player1Data || { nick: "Player 1", userId: 1 };
+        const player2Data = this.m_player2Data || { nick: "Player 2", userId: 2 };
+
+        this.m_player0 = new Player(this.m_canvas, scene, player1Data, 0.0, 1.0);
+
+        switch (this.m_mode) {
+            case (GameMode.GAMEMODE_PVP): {
+                this.m_player1 = new Player(this.m_canvas, scene, player2Data, 1.0, 1.0);
+            } break;
+            case (GameMode.GAMEMODE_AI): {
+                this.m_player1 = new Player(this.m_canvas, scene, player2Data, 1.0, 2.0);
+            } break;
+        }
+        return (scene);
+    }
 }
 
-/* SECTION:
- *  Global game object
- * */
+/* SECTION: Global game object */
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
 export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
+export const g_boundCellSize: number = 0.5;
 
 export var g_game: Game = new Game();
-
-
