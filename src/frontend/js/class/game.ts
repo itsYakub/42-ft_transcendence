@@ -18,6 +18,7 @@ export enum GameMode {
 }
 
 type NetKeyPayload = { kind: "KEY"; action: "UP" | "DOWN"; pressed: boolean; playerId: number };
+type NetBallPayload = { kind: "BALL_UPDATE"; pos: { x: number; y: number }; vel: { x: number; y: number } };
 type NetGameEndPayload = { kind: "GAME_END"; p0Score: number; p1Score: number };
 
 function isNetKeyPayload(x: any): x is NetKeyPayload {
@@ -27,6 +28,19 @@ function isNetKeyPayload(x: any): x is NetKeyPayload {
         (x.action === "UP" || x.action === "DOWN") &&
         typeof x.pressed === "boolean" &&
         typeof x.playerId === "number"
+    );
+}
+
+function isNetBallPayload(x: any): x is NetBallPayload {
+    return (
+        x &&
+        x.kind === "BALL_UPDATE" &&
+        x.pos &&
+        typeof x.pos.x === "number" &&
+        typeof x.pos.y === "number" &&
+        x.vel &&
+        typeof x.vel.x === "number" &&
+        typeof x.vel.y === "number"
     );
 }
 
@@ -78,6 +92,11 @@ export class Game {
     get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
     get ball() { return (this.m_ball); }
 
+    // Add these getter methods to access private properties for ball synchronization
+    get networked() { return this.m_networked; }
+    get localIndex() { return this.m_localIndex; }
+    get gameId() { return this.m_gameId; }
+
     public setupElements(
         mode: GameMode,
         player1: GamePlayer,
@@ -113,23 +132,15 @@ export class Game {
                 Game.keys[e.key] = false;
             });
         } else {
-            // Networked games: only handle arrow keys locally for this player's paddle
+            // Networked games: both players use arrow keys locally
             window.addEventListener("keydown", (e) => {
                 if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                    // Map arrow keys to this player's paddle keys
-                    const localKey = this.m_localIndex === 0
-                        ? (e.key === "ArrowUp" ? "w" : "s")      // Player 0 = purple paddle
-                        : e.key;                                  // Player 1 = yellow paddle
-                    Game.keys[localKey] = true;
+                    Game.keys[e.key] = true;
                 }
             });
             window.addEventListener("keyup", (e) => {
                 if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                    // Map arrow keys to this player's paddle keys
-                    const localKey = this.m_localIndex === 0
-                        ? (e.key === "ArrowUp" ? "w" : "s")      // Player 0 = purple paddle
-                        : e.key;                                  // Player 1 = yellow paddle
-                    Game.keys[localKey] = false;
+                    Game.keys[e.key] = false;
                 }
             });
         }
@@ -208,7 +219,6 @@ export class Game {
         }
     }
 
-
     public actuallyStart() {
         if (this.m_gameOver || this.m_started) return;
         console.log('[ INFO ] Actually starting networked game - ball should move now');
@@ -228,14 +238,15 @@ export class Game {
             if (payload.kind === "KEY" && typeof payload.pressed === "boolean") {
                 if (payload.playerId === this.m_localIndex) return;
 
-                const remoteKey = payload.playerId === 0
-                    ? (payload.action === "UP" ? "w" : "s")
-                    : (payload.action === "UP" ? "ArrowUp" : "ArrowDown");
-
+                // Both players use arrow keys in networked games
+                const remoteKey = payload.action === "UP" ? "ArrowUp" : "ArrowDown";
                 Game.keys[remoteKey] = payload.pressed;
 
-
-                Game.keys[remoteKey] = payload.pressed;
+            } else if (payload.kind === "BALL_UPDATE") {
+                // Only non-master clients should sync ball position from network
+                if (this.m_localIndex !== 0) {
+                    this.m_ball.syncFromNetwork(payload.pos, payload.vel);
+                }
 
             } else if (payload.kind === "GOAL") {
                 this.m_player0.score = payload.p0Score;
@@ -358,7 +369,6 @@ export class Game {
         this.m_ball.reset();
     }
 
-
     /* SECTION: Private Methods */
     private updateRenderLoop() {
         /* SECTION: Update */
@@ -415,6 +425,14 @@ export class Game {
         this.m_ground = new Ground(scene, new BABYLON.Vector2(32.0, 24.0));
         this.m_ball = new Ball(this.m_canvas, scene);
         this.m_player0 = new Player(this.m_canvas, scene, 0.0, 1.0);
+
+        // In networked games, both players should use arrow keys
+        if (this.m_networked) {
+            // Override Player 0's keys to use arrows in networked games
+            (this.m_player0 as any).m_keyUp = 'ArrowUp';
+            (this.m_player0 as any).m_keyDown = 'ArrowDown';
+        }
+
         switch (this.m_mode) {
             case (GameMode.GAMEMODE_PVP): {
                 this.m_player1 = new Player(this.m_canvas, scene, 1.0, 1.0);
@@ -431,5 +449,6 @@ export class Game {
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
 export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
+export const g_boundCellSize: number = 0.5; // Add this if it's missing
 
 export var g_game: Game = new Game();
