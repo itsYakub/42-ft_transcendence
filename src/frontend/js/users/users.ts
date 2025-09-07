@@ -18,7 +18,7 @@ export function usersFunctions() {
 	const userButtons = document.getElementsByClassName("userButton");
 	for (var i = 0; i < userButtons.length; i++) {
 		userButtons[i].addEventListener("click", async function () {
-			const profileBox = await fetch("/api/profile", {
+			const profileBox = await fetch("/profile", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"

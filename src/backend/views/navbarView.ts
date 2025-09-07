@@ -1,5 +1,5 @@
 import { FrameParams, Page, User, UserType } from "../../common/interfaces.js";
-import { alertDialogHtml, profileDialogHtml, totpEnterCodeDialogHtml } from "./dialogsView.js";
+import { alertDialogHtml, profileDialogHtml } from "./dialogsView.js";
 
 export function navbarView(params: FrameParams): string {
 	let languageSelect = englishHtml();
@@ -16,14 +16,14 @@ export function navbarView(params: FrameParams): string {
 	let html: string = alertDialogHtml();
 
 	if (!params.user)
-		html += loggedOutHtml(languageSelect);
+		html += loggedOutHtml(languageSelect, params.page);
 	else
 		html += UserType.GUEST == params.user.userType ? guestHtml(params.user, languageSelect) : loggedInHtml(params.user, languageSelect, params.page);
 
 	return html;
 }
 
-function loggedOutHtml(languageSelect: string): string {
+function loggedOutHtml(languageSelect: string, page: Page): string {
 	return `
 	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
@@ -31,7 +31,7 @@ function loggedOutHtml(languageSelect: string): string {
 				<img class="h-20 w-20" src="/images/icon.png"/>
 				<div class="text-5xl text-gray-300">Transcendence</div>
 			</div>
-			<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer] text-gray-300">
+			<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer] text-gray-300" data-page="${page}">
 				${languageSelect}
 			</select>
 		</div>
@@ -68,7 +68,7 @@ function guestHtml(user: User, languageSelect: string): string {
 	return `
 	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
-			<img id="homeButton" data-id="${user.userId}" class="cursor-[url(/images/pointer.png),pointer] h-20 w-20" src="/images/icon.png"/>
+			<img data-id="${user.userId}" class="h-20 w-20" src="/images/icon.png"/>
 
 			<div class="flex flex-col items-center gap-2">
 				<div class="text-gray-300">${user.nick}</div>

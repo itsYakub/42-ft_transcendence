@@ -1,8 +1,8 @@
-import { Message, MessageType, Result, User, UserType } from "../../../common/interfaces.js";
+import { Message, MessageType, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/remoteTournament.js";
-import { getLanguage, navigate, showAlert } from "../index.js";
+import { getLanguage, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
 export function createRemoteTournament() {
@@ -39,14 +39,14 @@ export function sendTournamentMessage(chat: string) {
 /*
 	A user has entered or left a tournament
 */
-export async function joinOrLeaveTournament(user: User, message: Message) {
+export async function joinOrLeaveTournament(user: ShortUser, message: Message) {
 	if (UserType.GUEST == user.userType && !user.gameId) {
-		navigate(window.location.href);
+		//navigate(window.location.href);
 		return;
 	}
 
 	if (!user.gameId) {
-		navigate(window.location.href, false);
+		//navigate(window.location.href, false);
 		return;
 	}
 
@@ -67,12 +67,12 @@ export async function joinOrLeaveTournament(user: User, message: Message) {
 /*
 	A chat message has been sent to a tournament
 */
-export async function tournamentChat(user: User, message: Message) {
+export async function tournamentChat(user: ShortUser, message: Message) {
 	if (!isMessageForMe(user, message))
 		return;
 
 	if (user.gameId == message.gameId) {
-		const messagesBox = await fetch("/api/game-chats");
+		const messagesBox = await fetch("/game-chats");
 		const messages = await messagesBox.json();
 		if (Result.SUCCESS == messages.result) {
 			const tournamentMessagesDiv = document.querySelector("#tournamentMessagesDiv");
@@ -82,11 +82,11 @@ export async function tournamentChat(user: User, message: Message) {
 	}
 }
 
-export async function updateTournamentDetails(user: User, message: Message) {
+export async function updateTournamentDetails(user: ShortUser, message: Message) {
 	if (!isMessageForMe(user, message))
 		return;
 
-	const contentBox = await fetch("/api/tournament");
+	const contentBox = await fetch("/tournament");
 
 	const json = await contentBox.json();
 	if (Result.SUCCESS == json.result) {
@@ -106,7 +106,7 @@ export async function updateTournamentDetails(user: User, message: Message) {
 	}
 }
 
-export async function tournamentMatchStart(user: User, message: Message) {
+export async function tournamentMatchStart(user: ShortUser, message: Message) {
 	if (!isMessageForMe(user, message) || null == message.match)
 		return;
 
@@ -117,7 +117,7 @@ export async function tournamentMatchStart(user: User, message: Message) {
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
 				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-					const response = await fetch("/api/match-result/add", {
+					const response = await fetch("/match-result/add", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
@@ -128,7 +128,7 @@ export async function tournamentMatchStart(user: User, message: Message) {
 							g2Score: e.detail["g2Score"],
 						})
 					});
-					navigate(window.location.href);
+					//navigate(window.location.href);
 				});
 			}
 
@@ -143,7 +143,7 @@ export async function tournamentMatchStart(user: User, message: Message) {
 		console.log("not for me");
 }
 
-export function tournamentOver(user: User, message: Message) {
+export function tournamentOver(user: ShortUser, message: Message) {
 	if (!isMessageForMe(user, message))
 		return;
 
@@ -155,12 +155,12 @@ export function tournamentOver(user: User, message: Message) {
 	});
 	const alertDialog = document.querySelector("#alertDialog");
 	alertDialog.addEventListener("close", async () => {
-		navigate("/");
+		//navigate("/");
 	});
 	showAlert(`${translate(getLanguage(), "%%TEXT_CONGRATULATIONS%%")} ${gamer.nick}!`, false);
 }
 
-function isMessageForMe(user: User, message: Message) {
+function isMessageForMe(user: ShortUser, message: Message) {
 	if (message.gameId != user.gameId)
 		return false;
 

@@ -7,7 +7,7 @@ export function userChatsFunctions() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
 	for (var i = 0; i < chatPartnerButtons.length; i++) {
 		chatPartnerButtons[i].addEventListener("click", async function () {
-			const chatsBox = await fetch("/api/chats", {
+			const chatsBox = await fetch("/chat", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -42,7 +42,7 @@ export function userChatsFunctions() {
 	const chatPartnerContainer = document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
 		chatPartnerContainer.addEventListener("click", async function () {
-			const profileBox = await fetch("/api/profile", {
+			const profileBox = await fetch("/profile", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -68,7 +68,7 @@ export function userChatsFunctions() {
 	const addUserChatButton = document.querySelector("#addUserChatButton");
 	if (addUserChatButton) {
 		addUserChatButton.addEventListener("click", async () => {
-			const response = await (fetch("/api/chats/users"));
+			const response = await (fetch("/chat/users"));
 			const json = await response.json();
 			const chatUsersDialog = <HTMLDialogElement>document.querySelector("#chatUsersDialog");
 			if (chatUsersDialog) {
@@ -95,7 +95,7 @@ export function userChatsFunctions() {
 	const notificationsButton = document.querySelector("#notificationsButton");
 	if (notificationsButton) {
 		notificationsButton.addEventListener("click", async () => {
-			const chatsBox = await fetch("/api/chats/notifications");
+			const chatsBox = await fetch("/chat/notifications");
 			const notifications = await chatsBox.json();
 			if (Result.SUCCESS == notifications.result) {
 				const userChatsContainer = document.querySelector("#userChatsContainer");

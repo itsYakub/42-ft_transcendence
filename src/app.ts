@@ -4,7 +4,7 @@ import cookie from '@fastify/cookie'
 import fastifyWebsocket from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { getUser } from "./db/userDB.js";
-import { loggedOutView } from "./backend/views/authView.js";
+import { authView } from "./backend/views/authView.js";
 import { translate } from "./common/translations.js";
 import { Page, Result, User, UserType } from "./common/interfaces.js";
 import { frameView } from "./backend/views/frameView.js";
@@ -67,7 +67,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 	];
 
 	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-	const isPage = "/"== request.url;
+	const isPage = "/" == request.url;
 	const language = request.cookies.language ?? "english";
 
 	if (Result.ERR_DB == userBox.result) {
@@ -84,7 +84,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 
 	if (Result.ERR_NO_USER == userBox.result) {
 		if (isPage)
-			return reply.type("text/html").send(frameView({ language }, loggedOutView()));
+			return reply.type("text/html").send(frameView({ language }, authView()));
 		else if (!publicApiEndpoints.includes(request.url))
 			return reply.send({
 				result: translate(language, "%%ERR_FORBIDDEN%%")

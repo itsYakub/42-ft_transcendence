@@ -1,11 +1,11 @@
 import { Box, Result } from "../../../common/interfaces.js";
 import { g_game, GameMode } from "../class/game.js";
-import { navigate, showAlert } from "./../index.js";
+import { showAlert } from "./../index.js";
 
 async function generateTournament(names: string[]) {
 	const gameId = `t${Date.now().toString(36).substring(5)}`;
 	const shuffled = names.sort(() => Math.random() - 0.5);
-	const response = await fetch("/api/tournament/add", {
+	const response = await fetch("/tournament/add", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
@@ -27,7 +27,7 @@ export function localTournamentListeners() {
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
 				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-					const response = await fetch("/api/tournament/update", {
+					const response = await fetch("/tournament/update", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
@@ -40,8 +40,8 @@ export function localTournamentListeners() {
 							matchNumber: this.dataset.match
 						})
 					});
-					if (Result.SUCCESS == await response.text())
-						navigate(window.location.href, false);
+					//if (Result.SUCCESS == await response.text())
+						//navigate(window.location.href, false);
 				})
 			}
 			setTimeout(async () => {
@@ -58,7 +58,7 @@ export function localTournamentListeners() {
 	if (newTournamentForm) {
 		newTournamentForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const userBoxResponse = await fetch("/api/user");
+			const userBoxResponse = await fetch("/user");
 			const userBox = await userBoxResponse.json();
 			if (Result.SUCCESS == userBox.result) {
 				const names = [
@@ -79,7 +79,7 @@ export function localTournamentListeners() {
 					showAlert(result);
 					return;
 				}
-				navigate(window.location.href, false);
+				//navigate(window.location.href, false);
 			}
 		});
 	}

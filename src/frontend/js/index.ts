@@ -8,28 +8,17 @@ import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
-import { Page, Result } from "../../common/interfaces.js";
-import { connectToWS } from "./sockets/clientSocket.js";
+import { MessageType, Page, Result } from "../../common/interfaces.js";
+import { connectToWS, sendMessageToServer } from "./sockets/clientSocket.js";
 
 /*
 	Simulates moving to a new page
 */
-export async function navigate(page: string, updateHistory: boolean = true): Promise<void> {
-	// if (updateHistory)
-	// 	history.pushState(null, null, page);
-
-	// const response = await fetch(page);
-	// const body = await response.text();
-	// const start = body.indexOf("<body>");
-	// const end = body.indexOf("</body>") + 7;
-
-	// document.querySelector('body').innerHTML = body.substring(start, end);
-	// addListeners();
-	// navigated();
-}
-
 export async function showPage(page: Page, add: boolean = true) {
-	connectToWS();
+	if (!page)
+		page = Page.HOME;
+	else
+		connectToWS();
 	const endpoint = Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
 	if (add)
 		history.pushState(page, null);
@@ -41,6 +30,12 @@ export async function showPage(page: Page, add: boolean = true) {
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
 	addListeners();
+	const userResponse = await fetch("/profile/user");
+			const userBox = await userResponse.json();
+	sendMessageToServer({
+		fromId: userBox.contents.userId,
+		type: MessageType.USER_CONNECT
+	});
 }
 
 /*

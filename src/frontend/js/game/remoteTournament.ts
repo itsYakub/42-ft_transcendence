@@ -1,4 +1,3 @@
-import { navigate } from "../index.js";
 import { sendTournamentMessage, tournamentGamerIsReady, tournamentGamerLeaving } from "../sockets/remoteTournamentsMessages.js";
 
 export function tournamentListeners() {
@@ -10,7 +9,7 @@ export function tournamentListeners() {
 	if (leaveTournamentButton) {
 		leaveTournamentButton.addEventListener("click", () => {
 			tournamentGamerLeaving();
-			navigate(window.location.href, false);
+			//navigate(window.location.href, false);
 		});
 	}
 

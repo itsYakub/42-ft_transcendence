@@ -1,10 +1,10 @@
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
-import { getLanguage, navigate } from "../index.js";
-import { Message, User } from "../../../common/interfaces.js";
+import { getLanguage, showPage } from "../index.js";
+import { Message, Page, ShortUser, User } from "../../../common/interfaces.js";
 import { chatString } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
 
-export async function userSendUserChat(user: User, message: Message) {
+export async function userSendUserChat(user: ShortUser, message: Message) {
 	if (user.userId != message.fromId && user.userId != message.toId)
 		return;
 
@@ -39,7 +39,7 @@ export async function userSendUserChat(user: User, message: Message) {
 /*
 	A user has clicked the Ready button or navigated away
 */
-export async function userReadyorUnready(user: User, message: Message) {
+export async function userReadyorUnready(user: ShortUser, message: Message) {
 	if ("game" == currentPage() && message.content) {
 		const container = document.querySelector("#gamerMatchReadyForm");
 		if (container)
@@ -47,15 +47,15 @@ export async function userReadyorUnready(user: User, message: Message) {
 	}
 }
 
-export async function userInvite(user: User, message: Message) {
+export async function userInvite(user: ShortUser, message: Message) {
 	if (user.userId == message.toId) {
 		sendMessageToServer(message);
-		navigate(`/game`);
+		showPage(Page.GAME);
 	}
 }
 
-export async function userConnectOrDisconnect(user: User, message: Message) {
-	if ("friends" == currentPage()) {
-		navigate("/friends");
-	}
+export async function userConnectOrDisconnect(user: ShortUser, message: Message) {
+	// if ("friends" == currentPage()) {
+	// 	navigate("/friends");
+	//}
 }

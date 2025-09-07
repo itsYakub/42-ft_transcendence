@@ -1,5 +1,5 @@
 import { Page, Result } from "../../common/interfaces.js";
-import { navigate, showPage } from "./index.js";
+import { showPage } from "./index.js";
 import { profileFunctions } from "./users/profile.js";
 
 /*
@@ -8,11 +8,12 @@ import { profileFunctions } from "./users/profile.js";
 export function navbarFunctions() {
 	const languageSelect = <HTMLSelectElement>document.getElementById("languageSelect");
 	if (languageSelect) {
-		languageSelect.addEventListener("change", (event) => {
+		languageSelect.addEventListener("change", function (event) {
 			const date = new Date();
 			date.setFullYear(date.getFullYear() + 1);
 			document.cookie = `language=${languageSelect.value}; expires=${date}`;
-			navigate(window.location.href);
+			const page = Page[this.dataset.language];
+			showPage(page);
 		})
 	}
 

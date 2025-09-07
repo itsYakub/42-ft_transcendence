@@ -1,4 +1,4 @@
-import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
+import { Message, MessageType, Result, ShortUser, User } from "../../../common/interfaces.js";
 import {
 	actuallyStartingMatch,
 	matchFinishing,
@@ -35,7 +35,7 @@ function initClientSocket(): Promise<void> {
 		socket!.onopen = () => resolve();
 
 		socket!.onmessage = async (event) => {
-			const userResponse = await fetch("/api/user");
+			const userResponse = await fetch("/profile/user");
 			const userBox = await userResponse.json();
 			if (Result.SUCCESS != userBox.result)
 				return;
@@ -76,7 +76,7 @@ export function currentPage(): string {
 /*
 	Deals with a socket message from the server
 */
-function handleServerMessage(user: User, message: Message) {
+function handleServerMessage(user: ShortUser, message: Message) {
 	switch (message.type) {
 		case MessageType.USER_CONNECT:
 		case MessageType.USER_DISCONNECT:

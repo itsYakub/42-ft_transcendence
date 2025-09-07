@@ -1,8 +1,8 @@
-import { Gamer, Message, MessageType, Result, User, UserType } from "../../../common/interfaces.js";
+import { Gamer, Message, MessageType, Page, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { gameListeners } from "../game/gamePage.js";
-import { getLanguage, navigate } from "../index.js";
+import { getLanguage, showPage } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
 export function createRemoteMatch() {
@@ -17,8 +17,8 @@ export function joiningMatch(gameId: string) {
     });
 }
 
-export function matchFinishing(user: User, message: Message) {
-    navigate(window.location.href);
+export function matchFinishing(user: ShortUser, message: Message) {
+	showPage(Page.GAME);
 }
 
 export function matchGamerLeaving() {
@@ -27,19 +27,19 @@ export function matchGamerLeaving() {
     });
 }
 
-export async function updateMatchList(user: User) {
+export async function updateMatchList(user: ShortUser) {
     if ((UserType.GUEST == user.userType && !user.gameId) || "game" == currentPage())
-        navigate(window.location.href);
+		showPage(Page.GAME);
 }
 
-export async function updateMatchDetails(user: User, message: Message) {
+export async function updateMatchDetails(user: ShortUser, message: Message) {
         // Handle game events (keys, goals, resets, etc.)
         if (message.content && message.content.includes('"kind"')) {
             g_game.netOnMessage(message);
         }
 }
 
-export async function updateMatchLobby(user: User, message: Message) {
+export async function updateMatchLobby(user: ShortUser, message: Message) {
     const matchLobbyDetailsContainer = document.querySelector("#matchLobbyDetailsContainer");
     if (matchLobbyDetailsContainer)
         matchLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
@@ -47,9 +47,9 @@ export async function updateMatchLobby(user: User, message: Message) {
 }
 
 // There are 2 players in the lobby
-export async function startingMatch(user: User) {
+export async function startingMatch(user: ShortUser) {
     setTimeout(async () => {
-        const gamersBox = await fetch("/api/match/gamers");
+        const gamersBox = await fetch("/match/gamers");
         const json = await gamersBox.json();
         if (Result.SUCCESS != json.result || 2 != json.contents.length)
             return;
@@ -63,7 +63,7 @@ export async function startingMatch(user: User) {
                 sendMessageToServer({
                     type: MessageType.MATCH_LEAVE
                 });
-                const response = await fetch("/api/match-result/add", {
+                const response = await fetch("/match-result/add", {
                     method: "POST",
                     headers: {
                         "content-type": "application/json"
@@ -74,7 +74,7 @@ export async function startingMatch(user: User) {
                         g2Score: e.detail["g2Score"],
                     })
                 });
-                navigate("/");
+				showPage(Page.GAME);
             });
         }
 
@@ -92,7 +92,7 @@ export async function startingMatch(user: User) {
     }, 2000);
 }
 
-export function actuallyStartingMatch(user: User, message: Message) {
+export function actuallyStartingMatch(user: ShortUser, message: Message) {
     if (message.gameId != user.gameId)
         return;
     g_game.actuallyStart();

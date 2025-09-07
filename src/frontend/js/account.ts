@@ -1,5 +1,5 @@
 import { Page, Result } from "./../../common/interfaces.js";
-import { navigate, showAlert, showPage } from "./index.js";
+import { showAlert, showPage } from "./index.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -190,9 +190,7 @@ export function accountListeners() {
 			const disableToptJson = await disableToptResponse.json();
 			if (Result.SUCCESS == disableToptJson.result) {
 				const alertDialog = document.querySelector("#alertDialog");
-				alertDialog.addEventListener("close", async () => {
-					navigate("/account");
-				});
+				alertDialog.addEventListener("close", async () => showPage(Page.ACCOUNT));
 				showAlert(Result.SUCCESS_TOTP);
 			}
 		});

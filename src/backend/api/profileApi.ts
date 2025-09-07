@@ -38,3 +38,10 @@ export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 		value: translate(request.language, text)
 	});
 }
+
+export function getUser(request: FastifyRequest, reply: FastifyReply) {
+	return reply.send({
+		result: Result.SUCCESS,
+		contents: request.user
+	});
+}

@@ -1,6 +1,6 @@
-import { getLanguage, navigate } from "../index.js";
+import { getLanguage, showPage } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
-import { Result } from "../../../common/interfaces.js";
+import { Page, Result } from "../../../common/interfaces.js";
 import { createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
 import { createRemoteMatch, joiningMatch, matchGamerLeaving } from "../sockets/remoteMatchesMessages.js";
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
@@ -27,7 +27,7 @@ export function gameListeners() {
 	if (remoteMatchButton) {
 		remoteMatchButton.addEventListener("click", () => {
 			createRemoteMatch();
-			navigate(window.location.href, false);
+			showPage(Page.GAME);
 		});
 	}
 
@@ -35,14 +35,14 @@ export function gameListeners() {
 	if (remoteTournamentButton)
 		remoteTournamentButton.addEventListener("click", () => {
 			createRemoteTournament();
-			navigate(window.location.href, false);
+			showPage(Page.GAME);
 		});
 
 	const joinMatchButtons = document.getElementsByClassName("joinMatchButton");
 	for (var i = 0; i < joinMatchButtons.length; i++) {
 		joinMatchButtons[i].addEventListener("click", function () {
 			joiningMatch(this.dataset.id);
-			navigate(window.location.href, false);
+			showPage(Page.GAME);
 		});
 	}
 
@@ -51,7 +51,7 @@ export function gameListeners() {
 		leaveMatchButton.addEventListener("click", () => {
 			console.log("clicked");
 			matchGamerLeaving();
-			navigate(window.location.href, false);
+			showPage(Page.GAME);
 		});
 	}
 
@@ -59,13 +59,13 @@ export function gameListeners() {
 	for (var i = 0; i < joinTournamentButtons.length; i++) {
 		joinTournamentButtons[i].addEventListener("click", function () {
 			joiningTournament(this.dataset.id);
-			navigate(window.location.href, false);
+			showPage(Page.GAME);
 		});
 	}
 }
 
 async function startLocalMatch() {
-	const nicksResponse = await fetch("/api/match/nicks");
+	const nicksResponse = await fetch("/match/nicks");
 	const nicksBox = await nicksResponse.json();
 	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
@@ -80,7 +80,7 @@ async function startLocalMatch() {
 }
 
 async function startAiMatch() {
-	const nicksResponse = await fetch("/api/match/nicks");
+	const nicksResponse = await fetch("/match/nicks");
 	const nicksBox = await nicksResponse.json();
 	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
@@ -95,7 +95,7 @@ async function startAiMatch() {
 }
 
 async function createLocalTournament() {
-	const nicks = await fetch("/api/tournament/nicks");
+	const nicks = await fetch("/tournament/nicks");
 	const nicksBox = await nicks.json();
 	if (Result.SUCCESS == nicksBox.result) {
 		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(nicksBox.contents));

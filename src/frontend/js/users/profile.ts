@@ -17,7 +17,7 @@ export function profileFunctions() {
 	const addFriendButton = document.querySelector("#addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async function () {
-			const response = await fetch("/api/friends/add", {
+			const response = await fetch("/friends/add", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -39,7 +39,7 @@ export function profileFunctions() {
 	const removeFriendButton = document.querySelector("#removeFriendButton");
 	if (removeFriendButton) {
 		removeFriendButton.addEventListener("click", async function () {
-			const response = await fetch("/api/friends/remove", {
+			const response = await fetch("/friends/remove", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -66,7 +66,7 @@ export function profileFunctions() {
 	const addFoeButton = document.querySelector("#addFoeButton");
 	if (addFoeButton) {
 		addFoeButton.addEventListener("click", async function () {
-			const response = await fetch("/api/foes/add", {
+			const response = await fetch("/foes/add", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -88,7 +88,7 @@ export function profileFunctions() {
 	const removeFoeButton = document.querySelector("#removeFoeButton");
 	if (removeFoeButton) {
 		removeFoeButton.addEventListener("click", async function () {
-			const response = await fetch("/api/foes/remove", {
+			const response = await fetch("/foes/remove", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -120,7 +120,7 @@ export function profileFunctions() {
 				type: MessageType.NOTIFICATION_INVITE,
 				toId: parseInt(this.dataset.id)
 			});
-			// const response = await fetch("/api/foes/add", {
+			// const response = await fetch("/foes/add", {
 			// 	method: "POST",
 			// 	headers: {
 			// 		"content-type": "application/json"

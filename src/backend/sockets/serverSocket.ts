@@ -14,19 +14,30 @@ let db: DatabaseSync;
 
 export function connectToServerSocket(socket: WebSocket, request: FastifyRequest) {
 	db = request.db;
-	const userBox = getUserById(db, request.user?.userId);
-	if (Result.SUCCESS != userBox.result)
-		return;
-
-	const user = userBox.contents;
-	onlineUsers.set(user.userId, socket);
 
 	socket?.on("message", (data: string) => {
+		const userBox = getUserById(db, request.user?.userId);
+		if (Result.SUCCESS != userBox.result)
+			return;
+
+		const user = userBox.contents;
+		onlineUsers.set(user.userId, socket);
 		const message = JSON.parse(data as string);
-		handleClientMessage(db, user, message)
+		console.log(userBox.contents.nick, userBox.contents.userId, message);
+
+		if (MessageType.USER_CONNECT == message.type) {
+			const id = message.fromId;
+			onlineUsers.set(id, socket);
+		}
+		handleClientMessage(db, user, message);
 	});
 
 	socket?.on("close", () => {
+		const userBox = getUserById(db, request.user?.userId);
+		if (Result.SUCCESS != userBox.result)
+			return;
+
+		const user = userBox.contents;
 		onlineUsers.delete(user.userId);
 		sendMessageToUsers({
 			type: MessageType.MATCH_LEAVE,

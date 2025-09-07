@@ -1,5 +1,5 @@
 import { Page, Result, TotpType } from "../../common/interfaces.js";
-import { navigate, showAlert, showPage } from "./index.js";
+import { showAlert, showPage } from "./index.js";
 
 export function authFunctions() {
 	const googleButton = document.querySelector("#googleButton");
