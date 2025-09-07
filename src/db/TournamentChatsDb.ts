@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, GameChatMessage, Message, Result } from "../../common/interfaces.js";
+import { Box, GameChatMessage, Message, Result } from "../common/interfaces.js";
 
 /*
 	Gets all the game's messages

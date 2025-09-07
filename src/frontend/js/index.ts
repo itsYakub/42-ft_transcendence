@@ -1,67 +1,40 @@
 import { navbarFunctions } from "./navbar.js";
-import { accountListeners } from "./user/account.js";
+import { accountListeners } from "./account.js";
 import { devButtons } from "./devButtons.js";
 import { gameListeners } from "./game/gamePage.js";
-import { authFunctions } from "./user/loggedOut.js";
+import { authFunctions } from "./auth.js";
 import { usersFunctions } from "./users/users.js";
-import { registerEvents, navigated } from "./events.js";
 import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
-import { userChatsFunctions } from "./user/userChats.js";
+import { userChatsFunctions } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
+import { Page, Result } from "../../common/interfaces.js";
+import { connectToWS } from "./sockets/clientSocket.js";
 
 /*
 	Simulates moving to a new page
 */
 export async function navigate(page: string, updateHistory: boolean = true): Promise<void> {
-	if (updateHistory)
-		history.pushState(null, null, page);
+	// if (updateHistory)
+	// 	history.pushState(null, null, page);
 
-	const response = await fetch(page);
-	const body = await response.text();
-	const start = body.indexOf("<body>");
-	const end = body.indexOf("</body>") + 7;
+	// const response = await fetch(page);
+	// const body = await response.text();
+	// const start = body.indexOf("<body>");
+	// const end = body.indexOf("</body>") + 7;
 
-	document.querySelector('body').innerHTML = body.substring(start, end);
-	addListeners();
-	navigated();
+	// document.querySelector('body').innerHTML = body.substring(start, end);
+	// addListeners();
+	// navigated();
 }
 
-export function showHomePage() {
+export async function showPage(page: Page, add: boolean = true) {
+	connectToWS();
+	const endpoint = Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
+	if (add)
+		history.pushState(page, null);
 
-}
-
-export async function showFoesPage(add: boolean = true) {
-	if (add) {
-		history.pushState("foes", null);
-	}
-	const response = await fetch("/foes");
-	const body = await response.text();
-	const start = body.indexOf("<body>");
-	const end = body.indexOf("</body>") + 7;
-
-	document.querySelector('body').innerHTML = body.substring(start, end);
-	addListeners();
-}
-
-export async function showFriendsPage(add: boolean = true) {
-	if (add) {
-		history.pushState("friends", null);
-	}
-	const response = await fetch("/friends");
-	const body = await response.text();
-	const start = body.indexOf("<body>");
-	const end = body.indexOf("</body>") + 7;
-
-	document.querySelector('body').innerHTML = body.substring(start, end);
-	addListeners();
-}
-
-export async function showUsersPage(add: boolean = true) {
-	if (add) {
-		history.pushState("users", null);
-	}
-	const response = await fetch("/users");
+	const response = await fetch(endpoint);
 	const body = await response.text();
 	const start = body.indexOf("<body>");
 	const end = body.indexOf("</body>") + 7;
@@ -73,7 +46,27 @@ export async function showUsersPage(add: boolean = true) {
 /*
 	Hooks up the window events
 */
-registerEvents();
+if (typeof window !== "undefined") {
+	/* 
+		Changes page on back/forward buttons
+	*/
+	window.addEventListener
+		('popstate', (event) => {
+			if (history.state)
+				showPage(Page[history.state], false);
+		});
+
+	/*
+		Registers the functions and also shows an error if Google sign-in/up was unsuccessful
+	*/
+	window.addEventListener("load", async () => {
+		if (-1 != document.cookie.indexOf("googleautherror=true")) {
+			showAlert(Result.ERR_GOOGLE);
+			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
+		}
+		addListeners();
+	});
+}
 
 /*
 	Sets up all the listeners after navigating to a new page

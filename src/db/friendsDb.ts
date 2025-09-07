@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Friend, Result } from "../../common/interfaces.js";
+import { Box, Friend, Result } from "../common/interfaces.js";
 
 /*
 	Gets all the user's friends

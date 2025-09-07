@@ -3,7 +3,7 @@ import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { userGameLeaveReceived, tournamentChatReceived } from './gameMessages.js';
 import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from './userMessages.js';
-import { getUserById, usersByGameId } from '../db/userDB.js';
+import { getUserById, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived, matchUpdateReceived } from './matchMessages.js';

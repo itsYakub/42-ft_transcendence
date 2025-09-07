@@ -1,5 +1,5 @@
 import { Gamer, User } from "../../common/interfaces.js";
-import { defaultAvatar } from "../db/defaultAvatar.js";
+import { defaultAvatar } from "../../db/defaultAvatar.js";
 import { gameDialogHtml } from "./dialogsView.js";
 
 export function remoteMatchLobbyView(gamers: Gamer[], user: User): string {

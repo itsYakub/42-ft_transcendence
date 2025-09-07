@@ -1,10 +1,10 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Result } from '../../common/interfaces.js';
-import { incomingChatsList, outgoingChatsList, partnerChats } from '../db/userChatsDb.js';
+import { incomingChatsList, outgoingChatsList, partnerChats } from '../../db/userChatsDb.js';
 import { userChatsMessages } from '../../common/dynamicElements.js';
-import { allChattableUsers, getUserById } from '../db/userDB.js';
-import { readNotifications } from '../db/notificationsDb.js';
-import { readFoes } from '../db/foesDb.js';
+import { allChattableUsers, getUserById } from '../../db/userDB.js';
+import { readNotifications } from '../../db/notificationsDb.js';
+import { readFoes } from '../../db/foesDb.js';
 
 export function notificationsList(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;

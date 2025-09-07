@@ -1,12 +1,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { gamePlayers, updateGameId } from '../db/gameDb.js';
+import { gamePlayers, updateGameId } from '../../db/gameDb.js';
 import { Box, Result } from '../../common/interfaces.js';
-import { readTournament } from '../db/tournamentsDb.js';
+import { readTournament } from '../../db/tournamentsDb.js';
 import { remoteTournamentDetails } from '../views/remoteTournamentView.js';
-import { addLocalTournament, updateLocalTournament } from '../db/localTournamentsDb.js';
-import { generateNickname } from '../db/userDB.js';
-import { createMatchResult } from '../db/matchResultsDb.js';
-import { readTournamentChats } from '../db/TournamentChatsDb.js';
+import { addLocalTournament, updateLocalTournament } from '../../db/localTournamentsDb.js';
+import { generateNickname } from '../../db/userDB.js';
+import { createMatchResult } from '../../db/matchResultsDb.js';
+import { readTournamentChats } from '../../db/TournamentChatsDb.js';
 import { remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
 
 export function getTournamentGamers(request: FastifyRequest, reply: FastifyReply) {

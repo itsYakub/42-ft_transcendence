@@ -1,16 +1,16 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
-import { getGames, gamePlayers } from '../db/gameDb.js';
+import { getGames, gamePlayers } from '../../db/gameDb.js';
 import { remoteMatchLobbyView } from '../views/remoteMatchLobbyView.js';
 import { gameView } from '../views/gameView.js';
-import { FrameParams, LocalTournament, Result, Tournament } from '../../common/interfaces.js';
-import { readTournamentChats } from '../db/TournamentChatsDb.js';
-import { readTournament } from '../db/tournamentsDb.js';
+import { FrameParams, LocalTournament, Page, Result, Tournament } from '../../common/interfaces.js';
+import { readTournamentChats } from '../../db/TournamentChatsDb.js';
+import { readTournament } from '../../db/tournamentsDb.js';
 import { remoteTournamentView } from '../views/remoteTournamentView.js';
 import { remoteTournamentLobbyView } from '../views/remoteTournamentLobbyView.js';
 import { localTournamentView } from '../views/localTournamentView.js';
-import { getLocalTournament } from '../db/localTournamentsDb.js';
-import { removeUserFromMatch } from '../db/userDB.js';
+import { getLocalTournament } from '../../db/localTournamentsDb.js';
+import { removeUserFromMatch } from '../../db/userDB.js';
 
 export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -35,7 +35,7 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const gamesBox = getGames(db);
 
 	const params: FrameParams = {
-		page: request.url,
+		page: Page.GAME,
 		language,
 		user
 	};
@@ -55,7 +55,7 @@ function localTournament(tournament: LocalTournament, request: FastifyRequest, r
 	const language = request.language;
 
 	const params: FrameParams = {
-		page: request.url,
+		page: Page.GAME,
 		language,
 		user
 	};
@@ -75,7 +75,7 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 	const language = request.language;
 
 	const params: FrameParams = {
-		page: request.url,
+		page: Page.GAME,
 		language,
 		user
 	};
@@ -104,7 +104,7 @@ function remoteTournament(tournament: Tournament, request: FastifyRequest, reply
 	const language = request.language;
 
 	const params: FrameParams = {
-		page: request.url,
+		page: Page.GAME,
 		language,
 		user
 	};

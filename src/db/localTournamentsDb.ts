@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Result, LocalMatch, LocalGamer, LocalTournament } from "../../common/interfaces.js";
+import { Box, Result, LocalMatch, LocalGamer, LocalTournament } from "../common/interfaces.js";
 
 export function getLocalTournament(db: DatabaseSync, gameId: string): Box<LocalTournament> {
 	try {

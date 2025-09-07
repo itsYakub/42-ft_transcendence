@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createMatchResult } from '../db/matchResultsDb.js';
+import { createMatchResult } from '../../db/matchResultsDb.js';
 
 export function addMatchResult(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;

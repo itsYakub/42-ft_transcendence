@@ -1,6 +1,5 @@
-import { Result, TotpType } from "../../../common/interfaces.js";
-import { navigate, showAlert } from "../index.js";
-import { closeSocket } from "../sockets/clientSocket.js";
+import { Page, Result } from "./../../common/interfaces.js";
+import { navigate, showAlert, showPage } from "./index.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -29,28 +28,21 @@ export function accountListeners() {
 				const reader = new FileReader();
 				reader.readAsDataURL(files[0]);
 				reader.onloadend = async () => {
-					let index = 23;
-					if (files[0].name.endsWith(".png"))
-						index = 22;
 					let avatar = reader.result as string;
-					avatar = avatar.substring(index);
-
-					avatar = replaceInvalidBase64Chars(avatar);
-
-					const response = await fetch("/api/account/avatar", {
+					avatar = window.btoa(avatar);
+					const response = await fetch("/account/avatar", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
 						},
 						body: JSON.stringify({
-							avatar,
-							type: 23 == index ? "jpeg" : "png"
+							avatar
 						})
 					});
 
 					const result = await response.text();
 					if (Result.SUCCESS == result)
-						navigate("/account");
+						showPage(Page.ACCOUNT);
 					else
 						showAlert(result);
 				}
@@ -66,7 +58,7 @@ export function accountListeners() {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
 			const newNick = changeNickForm.newNick.value;
-			const response = await fetch("/api/account/nick", {
+			const response = await fetch("/account/nick", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -83,9 +75,7 @@ export function accountListeners() {
 			}
 
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-			alertDialog.addEventListener("close", () => {
-				navigate("/account");
-			});
+			alertDialog.addEventListener("close", () => showPage(Page.ACCOUNT));
 			showAlert(Result.SUCCESS_NICK);
 		});
 	}
@@ -110,7 +100,7 @@ export function accountListeners() {
 				return;
 			}
 
-			const response = await fetch("/api/account/password", {
+			const response = await fetch("/account/password", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -125,7 +115,7 @@ export function accountListeners() {
 			switch (result) {
 				case Result.SUCCESS:
 					const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-					alertDialog.addEventListener("close", () => navigate("/account"));
+					alertDialog.addEventListener("close", () => showPage(Page.ACCOUNT));
 					showAlert(Result.SUCCESS_PASSWORD);
 					break;
 				case Result.ERR_FORBIDDEN:
@@ -141,7 +131,7 @@ export function accountListeners() {
 	const totpAppButton = document.querySelector("#totpAppButton");
 	if (totpAppButton) {
 		totpAppButton.addEventListener("click", async () => {
-			const appTotpResponse = await fetch("/api/totp/app", {
+			const appTotpResponse = await fetch("/totp/app", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -166,7 +156,7 @@ export function accountListeners() {
 	const totpEmailButton = document.querySelector("#totpEmailButton");
 	if (totpEmailButton) {
 		totpEmailButton.addEventListener("click", async () => {
-			const emailTotpResponse = await fetch("/api/totp/email", {
+			const emailTotpResponse = await fetch("/totp/email", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -174,22 +164,22 @@ export function accountListeners() {
 				body: JSON.stringify({})
 			});
 
-			const result = await emailTotpResponse.text();					
-			if (Result.SUCCESS == result) {
-				console.log("sent email");
-				
+			const result = await emailTotpResponse.text();
+			if (Result.SUCCESS != result) {
+				showAlert(result);
+				return;
 			}
 
-			const totpDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
-			totpCodeForm.code.value = "";
-			totpDialog.showModal();
+			const totpEnterCodeDialog = <HTMLDialogElement>document.querySelector("#totpEnterCodeDialog");
+			totpEnterCodeForm.code.value = "";
+			totpEnterCodeDialog.showModal();
 		});
 	}
 
 	const totpDisableButton = document.querySelector("#totpDisableButton");
 	if (totpDisableButton) {
 		totpDisableButton.addEventListener("click", async () => {
-			const disableToptResponse = await fetch("/api/totp/disable", {
+			const disableToptResponse = await fetch("/totp/disable", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -211,9 +201,9 @@ export function accountListeners() {
 	/*
 		Checks the entered TOTP code
 	*/
-	const totpCodeForm = <HTMLFormElement>document.querySelector("#totpCodeForm");
-	if (totpCodeForm) {
-		totpCodeForm.code.addEventListener("keydown", (e: any) => {
+	const totpEnterCodeForm = <HTMLFormElement>document.querySelector("#totpEnterCodeForm");
+	if (totpEnterCodeForm) {
+		totpEnterCodeForm.code.addEventListener("keydown", (e: any) => {
 			if ("v" == e.key && e.ctrlKey)
 				return;
 
@@ -221,18 +211,12 @@ export function accountListeners() {
 				e.preventDefault();
 		});
 
-		// totpCodeForm.code.addEventListener("paste", (e) => {
-		// 	let paste = e.clipboardData.getData("text");
-		// 	totpCodeForm.code.value = paste;
-		// })
-
-		totpCodeForm.addEventListener("submit", async (e) => {
+		totpEnterCodeForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			console.log(totpCodeForm.code.value);
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-			const code = totpCodeForm.code.value;
+			const code = totpEnterCodeForm.code.value;
 
-			const response = await fetch("/api/totp/email/verify", {
+			const response = await fetch("/totp/email/verify", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -245,16 +229,24 @@ export function accountListeners() {
 			const result = await response.text();
 			if (Result.SUCCESS == result) {
 				alertDialog.addEventListener("close", async () => {
-					await fetch("/api/account/logout");
-					navigate("/");
+					const response = await fetch("/auth/logout", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({})
+					});
+					const result = await response.text();
+					if (Result.SUCCESS == result)
+						showPage(Page.HOME);
 				});
-				showAlert(Result.SUCCESS);
+				showAlert(Result.SUCCESS_TOTP);
 				return;
 			}
 
 			alertDialog.addEventListener("close", () => {
-				totpCodeForm.code.value = "";
-				totpCodeForm.code.focus();
+				totpEnterCodeForm.code.value = "";
+				totpEnterCodeForm.code.focus();
 			});
 			showAlert(Result.ERR_BAD_TOTP);
 		});
@@ -266,12 +258,20 @@ export function accountListeners() {
 	const logoutButton = document.querySelector("#logoutButton");
 	if (logoutButton) {
 		logoutButton.addEventListener("click", async () => {
-			const response = await fetch("/api/account/logout");
-			if (response.ok) {
-				closeSocket();
-				navigate("/");
+			const response = await fetch("/auth/logout", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({})
+			});
+			const result = await response.text();
+			if (Result.SUCCESS != result) {
+				showAlert(result);
+				return;
 			}
-		}, { once: true });
+			showPage(Page.HOME);
+		});
 	}
 
 	/*
@@ -280,35 +280,19 @@ export function accountListeners() {
 	const invalidateTokenButton = document.querySelector("#invalidateTokenButton");
 	if (invalidateTokenButton) {
 		invalidateTokenButton.addEventListener("click", async () => {
-			const response = await fetch("/api/account/invalidate-token", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({})
+			const response = await fetch("/account/token", {
+				method: "POST"
 			});
 
-			const json = await response.json();
-			if (!json.error) {
-				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-				alertDialog.addEventListener("close", () => {
-					navigate("/");
-				});
-				showAlert(Result.SUCCESS);
+			const result = await response.text();
+			if (Result.SUCCESS != result) {
+				showAlert(result);
+				return;
 			}
-		}, { once: true });
+
+			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+			alertDialog.addEventListener("close", () => showPage(Page.HOME));
+			showAlert(Result.SUCCESS_TOTP);
+		});
 	}
 }
-
-function replaceInvalidBase64Chars(input: string) {
-	return input.replace(/[=+/]/g, charToBeReplaced => {
-		switch (charToBeReplaced) {
-			case '=':
-				return '';
-			case '+':
-				return '#';
-			case '/':
-				return '_';
-		}
-	});
-};

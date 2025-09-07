@@ -1,43 +1,19 @@
-import { Result } from "../../../common/interfaces.js";
-import { navigate, showFoesPage, showFriendsPage, showUsersPage } from "../index.js";
+import { Page, Result } from "../../../common/interfaces.js";
+import { showPage } from "../index.js";
 import { profileFunctions } from "./profile.js";
 
 export function usersFunctions() {
 	const allButton = document.querySelector("#allButton");
-	if (allButton) {
-		allButton.addEventListener("click", async () => {
-			//navigate("/users", false);
-			showUsersPage();
-		});
-	}
+	if (allButton)
+		allButton.addEventListener("click", async () => showPage(Page.USERS));
 
 	const friendsButton = document.querySelector("#friendsButton");
-	if (friendsButton) {
-		friendsButton.addEventListener("click", async () => {
-			// const response = await fetch("/api/friends");
-			// const text = await response.text();
-			// const json = JSON.parse(text);
-			// if (Result.SUCCESS == json.result) {
-			// 	document.querySelector("#content").innerHTML = json.value;
-			// 	usersFunctions();
-			// }
-			showFriendsPage();
-		});
-	}
+	if (friendsButton)
+		friendsButton.addEventListener("click", async () => showPage(Page.FRIENDS));
 
 	const foesButton = document.querySelector("#foesButton");
-	if (foesButton) {
-		foesButton.addEventListener("click", async () => {
-			// const response = await fetch("/api/foes");
-			// const text = await response.text();
-			// const json = JSON.parse(text);
-			// if (Result.SUCCESS == json.result) {
-			// 	document.querySelector("#content").innerHTML = json.value;
-			// 	usersFunctions();
-			// }
-			showFoesPage();
-		});
-	}
+	if (foesButton)
+		foesButton.addEventListener("click", async () => showPage(Page.FOES));
 
 	const userButtons = document.getElementsByClassName("userButton");
 	for (var i = 0; i < userButtons.length; i++) {

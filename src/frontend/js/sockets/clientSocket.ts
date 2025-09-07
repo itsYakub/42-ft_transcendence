@@ -1,21 +1,32 @@
 import { Message, MessageType, Result, User } from "../../../common/interfaces.js";
 import {
-    actuallyStartingMatch,
-    matchFinishing,
-    startingMatch,
-    updateMatchDetails,
-    updateMatchList,
-    updateMatchLobby
+	actuallyStartingMatch,
+	matchFinishing,
+	startingMatch,
+	updateMatchDetails,
+	updateMatchList,
+	updateMatchLobby
 } from "./remoteMatchesMessages.js";
 import { joinOrLeaveTournament, tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails } from "./remoteTournamentsMessages.js";
-import { userConnectOrDisconnect, userInvite, userReadyorUnready, userSendUserChat } from "./userMessages.js";
+import { userConnectOrDisconnect, userInvite, userSendUserChat } from "./userMessages.js";
 
 let socket: WebSocket | null = null;
+
+export async function connectToWS() {
+	if (!isConnected()) {
+		try {
+			await initClientSocket();
+			console.log("connected");
+		} catch (err) {
+			console.error("❌ WebSocket failed:", err);
+		}
+	}
+}
 
 /**
  * Initialize WebSocket connection.
  */
-export function initClientSocket(): Promise<void> {
+function initClientSocket(): Promise<void> {
 	const socketUrl = `wss://${window.location.host}/ws`;
 	if (!socket)
 		socket = new WebSocket(socketUrl);
@@ -40,11 +51,6 @@ export function initClientSocket(): Promise<void> {
 
 		socket!.onclose = (event) => console.warn(`🔌 WebSocket connection closed ${event}`);
 	});
-}
-
-export function closeSocket() {
-	socket.close();
-	socket = null;
 }
 
 /*
@@ -93,24 +99,24 @@ function handleServerMessage(user: User, message: Message) {
 		case MessageType.MATCH_OVER:
 			matchFinishing(user, message);
 			break;
-        case MessageType.MATCH_READY:
-            startingMatch(user);
-            break;
-        case MessageType.MATCH_START:
-            actuallyStartingMatch(user, message);
-            break;
-        case MessageType.MATCH_UPDATE:
-            updateMatchDetails(user, message);
-            break;
-        case MessageType.MATCH_GOAL:
-            updateMatchDetails(user, message);
-            break;
-        case MessageType.MATCH_RESET:
-            updateMatchDetails(user, message);
-            break;
-        case MessageType.MATCH_END:
-            updateMatchDetails(user, message);
-            break;
+		case MessageType.MATCH_READY:
+			startingMatch(user);
+			break;
+		case MessageType.MATCH_START:
+			actuallyStartingMatch(user, message);
+			break;
+		case MessageType.MATCH_UPDATE:
+			updateMatchDetails(user, message);
+			break;
+		case MessageType.MATCH_GOAL:
+			updateMatchDetails(user, message);
+			break;
+		case MessageType.MATCH_RESET:
+			updateMatchDetails(user, message);
+			break;
+		case MessageType.MATCH_END:
+			updateMatchDetails(user, message);
+			break;
 
 		// Tournament messages
 		case MessageType.TOURNAMENT_CHAT:

@@ -1,5 +1,5 @@
 import { TotpType, User, UserType } from "../../common/interfaces.js";
-import { appTotpDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
+import { appTotpDialogHtml, totpEnterCodeDialogHtml } from "./dialogsView.js";
 
 export function accountView(user: User): string {
 	return `
@@ -30,7 +30,7 @@ export function accountView(user: User): string {
 		</div>
 	</div>
 	${appTotpDialogHtml()}
-	${totpLoginDialogHtml()}
+	${totpEnterCodeDialogHtml()}
 	`;
 }
 
@@ -65,24 +65,24 @@ function totpHtml(user: User): string {
 			return `
 			<div class="flex flex-col gap-2">
 				<div class="text-green-900">%%BUTTON_APP_TOTP%%</div>
-				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-green-900 text-gray-300 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
-				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-900 text-gray-300 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
+				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-green-900/50 text-gray-300 hover:bg-red-300/50 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
+				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-900 text-gray-300 hover:bg-red-300/50 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
 			</div>
 			`;
 		case TotpType.DISABLED:
 			return `
 			<div class="flex flex-col gap-2">
-				<div class="text-red-900 mb-4">%%BUTTON_DISABLE_TOTP%%</div>
-				<button id="totpAppButton" class="outline-hidden rounded-lg bg-green-900 text-gray-300 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
-				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-green-900 text-gray-300 mt-2 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
+				<div class="text-red-900 mb-3">%%BUTTON_DISABLE_TOTP%%</div>
+				<button id="totpAppButton" class="outline-hidden rounded-lg bg-green-900/50 text-gray-300 py-2 hover:bg-red-300/50 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
+				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-green-900/50 text-gray-300 mt-2 py-2 hover:bg-red-300/50 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
 			</div>
 			`;
 		case TotpType.EMAIL:
 			return `
 			<div class="flex flex-col gap-2">
-				<div class="text-green-900">%%BUTTON_EMAIL_TOTP%%</div>
-				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-green-900 text-gray-300 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
-				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-900 text-gray-300 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
+				<div class="text-green-900 mb-3">%%BUTTON_EMAIL_TOTP%%</div>
+				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-green-900/50 text-gray-300 hover:bg-red-300/50 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
+				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-900 text-gray-300 hover:bg-red-300/50 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
 			</div>
 			`;
 	}

@@ -1,3 +1,15 @@
+export enum Page {
+	ACCOUNT = "ACCOUNT",
+	CHAT = "CHAT",
+	FOES = "FOES",
+	FRIENDS = "FRIENDS",
+	GAME = "GAME",
+	HOME = "HOME",
+	MATCH = "MATCH",
+	TOURNAMENT = "TOURNAMENT",
+	USERS = "USERS"
+}
+
 export enum Result {
 	ERR_AVATAR_TOO_BIG = "ERR_AVATAR_TOO_BIG",
 	ERR_BAD_PASSWORD = "ERR_BAD_PASSWORD",
@@ -71,7 +83,7 @@ export interface Message {
 
 export interface FrameParams {
 	language: string,
-	page?: string,
+	page?: Page,
 	result?: Result,
 	user?: User
 }

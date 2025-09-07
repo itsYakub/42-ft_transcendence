@@ -1,10 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
-import { gamePlayers } from '../db/gameDb.js';
+import { gamePlayers } from '../../db/gameDb.js';
 import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
-import { createTournament, readTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../db/tournamentsDb.js';
+import { createTournament, readTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../../db/tournamentsDb.js';
 import { remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
-import { removeUserFromMatch, usersInTournament } from '../db/userDB.js';
-import { createMatchResult } from '../db/matchResultsDb.js';
+import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
+import { createMatchResult } from '../../db/matchResultsDb.js';
 
 export function generateTournament(db: DatabaseSync, user: ShortUser) {
 	const gamersBox = gamePlayers(db, user.gameId);

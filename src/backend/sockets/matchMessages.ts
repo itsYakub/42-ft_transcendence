@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { DatabaseSync } from "node:sqlite";
-import { addUserToMatch, removeUserFromMatch, removeUsersFromMatch, usersByGameId } from '../db/userDB.js';
+import { addUserToMatch, removeUserFromMatch, removeUsersFromMatch, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result, ShortUser } from '../../common/interfaces.js';
 import { gamersHtml } from '../views/remoteMatchLobbyView.js';
 import { sendMessageToGameIdUsers, sendMessageToOtherGameIdUsers, sendMessageToUsers, broadcastMessageToClients } from "./serverSocket.js";

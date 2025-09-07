@@ -1,7 +1,7 @@
-import { addChatPartnerView, chatMessageForm, chatPartner, userNotificationsMessages } from "../../../common/dynamicElements.js";
-import { MessageType, Result } from "../../../common/interfaces.js";
-import { sendMessageToServer } from "../sockets/clientSocket.js";
-import { profileFunctions } from "../users/profile.js";
+import { addChatPartnerView, chatMessageForm, chatPartner, userNotificationsMessages } from "./../../common/dynamicElements.js";
+import { MessageType, Result } from "./../../common/interfaces.js";
+import { sendMessageToServer } from "./sockets/clientSocket.js";
+import { profileFunctions } from "./users/profile.js";
 
 export function userChatsFunctions() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");

@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, MatchGamer, Result, User, Match } from "../../common/interfaces.js";
+import { Box, MatchGamer, Result, User, Match } from "../common/interfaces.js";
 
 export function getMatch(db: DatabaseSync, gameId: string): Box<Match> {
 	try {

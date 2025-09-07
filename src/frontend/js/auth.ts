@@ -1,20 +1,14 @@
-import { Result } from "../../../common/interfaces.js";
-import { navigate, showAlert } from "../index.js";
+import { Page, Result, TotpType } from "../../common/interfaces.js";
+import { navigate, showAlert, showPage } from "./index.js";
 
 export function authFunctions() {
 	const googleButton = document.querySelector("#googleButton");
-	if (googleButton) {
-		googleButton.addEventListener("click", async () => {
-			googleLogin();
-		});
-	}
+	if (googleButton)
+		googleButton.addEventListener("click", async () => googleLogin());
 
 	const guestButton = document.querySelector("#guestButton");
-	if (guestButton) {
-		guestButton.addEventListener("click", async () => {
-			guestLogin();
-		});
-	}
+	if (guestButton)
+		guestButton.addEventListener("click", async () => guestLogin());
 
 	const userForm = <HTMLFormElement>document.getElementById("userForm");
 	if (userForm) {
@@ -32,7 +26,7 @@ export function authFunctions() {
 }
 
 async function login(email: string, password: string) {
-	const response = await fetch("/api/user/login", {
+	const response = await fetch("/auth/login", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
@@ -42,64 +36,63 @@ async function login(email: string, password: string) {
 		})
 	});
 
-	const payloadJson = await response.json();
+	const json = await response.json();
 
-	if (payloadJson.totpEnabled) {
-		const totpCodeDialog = <HTMLDialogElement>document.querySelector("#totpCodeDialog");
-		if (totpCodeDialog)
-			totpCodeDialog.showModal();
+	if (TotpType.EMAIL == json.totpType) {
+		const totpEnterCodeForm = <HTMLFormElement>document.querySelector("#totpEnterCodeForm");
+		if (totpEnterCodeForm) {
+			totpEnterCodeForm.code.addEventListener("keydown", (e: any) => {
+				if ("v" == e.key && e.ctrlKey)
+					return;
 
-		const totpCodeForm = <HTMLFormElement>document.querySelector("#totpCodeForm");
-		if (totpCodeForm) {
-			totpCodeForm.code.addEventListener("keydown", (e: any) => {
 				if (!("Escape" == e.key || "Enter" == e.key || "Backspace" == e.key || "Delete" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key) && isNaN(e.key))
 					e.preventDefault();
 			});
 
-			totpCodeForm.addEventListener("submit", async (e) => {
-				if ("cancelTotpCodeButton" == e.submitter.id)
-					return;
-
-				e.preventDefault();
-				const totpResponse = await fetch("/user/totp/check", {
+			totpEnterCodeForm.addEventListener("submit", async (e) => {
+				e.preventDefault();				
+				const code = totpEnterCodeForm.code.value;
+				const response = await fetch("/totp/email/login", {
 					method: "POST",
 					headers: {
 						"content-type": "application/json"
 					},
 					body: JSON.stringify({
-						email,
-						password,
-						code: totpCodeForm.code.value
+						code,
+						email
 					})
 				});
 
-				const json = await totpResponse.json();
-				if (json.error) {
-					const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-					alertDialog.addEventListener("close", () => {
-						totpCodeForm.code.value = "";
-						totpCodeForm.code.focus();
-					});
-					showAlert(Result.ERR_BAD_TOTP);
+				const result = await response.text();
+				if (Result.SUCCESS == result) {
+					showPage(Page.HOME);
 					return;
 				}
 
-				console.log("user totp", json);
-
-				navigate("/");
+				const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+				alertDialog.addEventListener("close", () => {
+					totpEnterCodeForm.code.value = "";
+					totpEnterCodeForm.code.focus();
+				});
+				showAlert(Result.ERR_BAD_TOTP);
 			});
+
+
+			const totpEnterCodeDialog = <HTMLDialogElement>document.querySelector("#totpEnterCodeDialog");
+			if (totpEnterCodeDialog)
+				totpEnterCodeDialog.showModal();
 		}
 	}
-	else if (payloadJson.error) {
-		showAlert(payloadJson.error);
+	else if (Result.SUCCESS != json.result) {
+		showAlert(json.result);
 		return;
 	}
 	else
-		navigate("/");
+		showPage(Page.HOME);
 }
 
 async function register(email: string, password: string) {
-	const response = await fetch("/api/user/register", {
+	const response = await fetch("/auth/register", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
@@ -119,8 +112,7 @@ async function register(email: string, password: string) {
 	const date = new Date();
 	date.setFullYear(date.getFullYear() + 1);
 	document.cookie = `language=english; expires=${date}`;
-
-	navigate("/");
+	showPage(Page.HOME);
 }
 
 function googleLogin() {
@@ -137,7 +129,7 @@ function googleLogin() {
 }
 
 async function guestLogin() {
-	const response = await fetch("/api/guest/register", {
+	const response = await fetch("/auth/guest", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
@@ -150,5 +142,5 @@ async function guestLogin() {
 		showAlert(result);
 		return;
 	}
-	navigate("/");
+	showPage(Page.HOME);
 }

@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createFriend, readFriends, deleteFriend } from '../db/friendsDb.js';
-import { getUserByEmail } from '../db/userDB.js';
+import { createFriend, readFriends, deleteFriend } from '../../db/friendsDb.js';
+import { getUserByEmail } from '../../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { friendsView } from '../views/friendsView.js';

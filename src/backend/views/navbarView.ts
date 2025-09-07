@@ -1,5 +1,5 @@
-import { FrameParams, User, UserType } from "../../common/interfaces.js";
-import { alertDialogHtml, profileDialogHtml, totpLoginDialogHtml } from "./dialogsView.js";
+import { FrameParams, Page, User, UserType } from "../../common/interfaces.js";
+import { alertDialogHtml, profileDialogHtml, totpEnterCodeDialogHtml } from "./dialogsView.js";
 
 export function navbarView(params: FrameParams): string {
 	let languageSelect = englishHtml();
@@ -18,7 +18,7 @@ export function navbarView(params: FrameParams): string {
 	if (!params.user)
 		html += loggedOutHtml(languageSelect);
 	else
-		html += UserType.GUEST == params.user.userType ? guestHtml(params.user, languageSelect, params.page) : loggedInHtml(params.user, languageSelect, params.page);
+		html += UserType.GUEST == params.user.userType ? guestHtml(params.user, languageSelect) : loggedInHtml(params.user, languageSelect, params.page);
 
 	return html;
 }
@@ -36,11 +36,10 @@ function loggedOutHtml(languageSelect: string): string {
 			</select>
 		</div>
 	</div>
-	${totpLoginDialogHtml()}
 	`;
 }
 
-function loggedInHtml(user: User, languageSelect: string, page: string): string {
+function loggedInHtml(user: User, languageSelect: string, page: Page): string {
 	return `
 	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
@@ -65,7 +64,7 @@ function loggedInHtml(user: User, languageSelect: string, page: string): string 
 }
 
 // TODO remove delete cookies button
-function guestHtml(user: User, languageSelect: string, page: string): string {
+function guestHtml(user: User, languageSelect: string): string {
 	return `
 	<div class="h-full bg-stone-700">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
@@ -88,8 +87,8 @@ function guestHtml(user: User, languageSelect: string, page: string): string {
 	`;
 }
 
-function accountButtonHtml(page: string) {
-	const bgColour = "/account" == page ? "bg-stone-800" : "";
+function accountButtonHtml(page: Page) {
+	const bgColour = Page.ACCOUNT == page ? "bg-stone-800" : "";
 
 	return `
 	<button id="accountButton"
@@ -99,8 +98,8 @@ function accountButtonHtml(page: string) {
 	`;
 }
 
-function gameButtonHtml(page: string) {
-	const bgColour = "/game" == page ? "bg-stone-800" : "";
+function gameButtonHtml(page: Page) {
+	const bgColour = Page.GAME == page ? "bg-stone-800" : "";
 
 	return `
 	<button id="gameButton"
@@ -110,8 +109,8 @@ function gameButtonHtml(page: string) {
 	`;
 }
 
-function usersButtonHtml(page: string) {
-	const bgColour = "/users" == page ? "bg-stone-800" : "";
+function usersButtonHtml(page: Page) {
+	const bgColour = (Page.USERS == page || Page.FOES == page || Page.FRIENDS == page) ? "bg-stone-800" : "";
 
 	return `
 	<button id="usersButton"
@@ -121,8 +120,8 @@ function usersButtonHtml(page: string) {
 	`;
 }
 
-function chatButtonHtml(page: string, chatsWaiting: boolean = false) {
-	const bgColour = "/chat" == page ? "bg-stone-800" : "";
+function chatButtonHtml(page: Page, chatsWaiting: boolean = false) {
+	const bgColour = Page.CHAT == page ? "bg-stone-800" : "";
 	const textColour = chatsWaiting ? "text-green-300" : "text-gray-300";
 
 	return `

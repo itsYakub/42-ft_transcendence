@@ -1,11 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
-import { getUserById } from '../db/userDB.js';
-import { readMatchResults } from '../db/matchResultsDb.js';
-import { readFriends } from '../db/friendsDb.js';
+import { getUserById } from '../../db/userDB.js';
+import { readMatchResults } from '../../db/matchResultsDb.js';
+import { readFriends } from '../../db/friendsDb.js';
 import { profileView } from '../../common/dynamicElements.js';
-import { readFoes } from '../db/foesDb.js';
+import { readFoes } from '../../db/foesDb.js';
 
 export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;

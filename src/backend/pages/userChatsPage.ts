@@ -1,15 +1,14 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
 import { userChatsView } from '../views/userChatsView.js';
-import { incomingChatsList, outgoingChatsList } from '../db/userChatsDb.js';
-import { Result } from '../../common/interfaces.js';
-import { readFoes } from '../db/foesDb.js';
+import { incomingChatsList, outgoingChatsList } from '../../db/userChatsDb.js';
+import { Page, Result } from '../../common/interfaces.js';
+import { readFoes } from '../../db/foesDb.js';
 
 export function getChatPage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
-	const page = request.url;
 
 	const outgoingChatsBox = outgoingChatsList(db, user.userId);
 	if (Result.SUCCESS != outgoingChatsBox.result)
@@ -46,5 +45,5 @@ export function getChatPage(request: FastifyRequest, reply: FastifyReply) {
 	const foesChats = foesBox.contents.map(f => f.foeId);
 	outgoingChatsBox.contents = outgoingChatsBox.contents.filter(p => !foesChats.includes(p.userId));
 
-	return reply.type("text/html").send(frameView({ user, language, page }, userChatsView(outgoingChatsBox.contents, user)));
+	return reply.type("text/html").send(frameView({ user, language, page: Page.CHAT }, userChatsView(outgoingChatsBox.contents, user)));
 }

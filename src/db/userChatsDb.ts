@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Message, Result, ShortUser, UserChatMessage, UserType } from "../../common/interfaces.js";
+import { Box, Message, Result, ShortUser, UserChatMessage, UserType } from "../common/interfaces.js";
 
 /*
 	Gets a list of ids that are in a private chat with the user

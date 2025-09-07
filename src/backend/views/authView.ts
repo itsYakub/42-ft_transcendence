@@ -1,3 +1,5 @@
+import { totpEnterCodeDialogHtml } from "./dialogsView.js";
+
 export function loggedOutView(): string {
 	return `
 	<div class="flex flex-col items-center gap-2">
@@ -6,6 +8,7 @@ export function loggedOutView(): string {
 		${googleHtml()}
 		${guestHtml()}
 	</div>
+	${totpEnterCodeDialogHtml()}
 	`;
 }
 

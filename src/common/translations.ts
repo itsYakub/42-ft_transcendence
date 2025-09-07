@@ -193,7 +193,7 @@ function translateEnglish(text: string): string {
 
 		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
 		case "SUCCESS_DISABLED_TOTP": return "Disabled 2FA!";
-		case "SUCCESS_TOTP": return "Enabled 2FA - please log in again!";
+		case "SUCCESS_TOTP": return "Success - please log in again!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
 		case "SUCCESS_NICK": return "Nickname changed!";
 		case "SUCCESS_PASSWORD": return "Password changed!";

@@ -1,15 +1,14 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { frameView } from '../views/frameView.js';
 import { translate } from '../../common/translations.js';
-import { Result } from '../../common/interfaces.js';
-import { readFoes } from '../db/foesDb.js';
+import { Page, Result } from '../../common/interfaces.js';
+import { readFoes } from '../../db/foesDb.js';
 import { foesView } from '../views/foesView.js';
 
 export function getFoesPage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
-	const page = request.url;
 
 	const usersBox = readFoes(db, user.userId);
 	if (Result.SUCCESS != usersBox.result)
@@ -22,5 +21,5 @@ export function getFoesPage(request: FastifyRequest, reply: FastifyReply) {
 	let text = foesView(usersBox.contents);
 	text = translate(language, text);
 
-	return reply.type("text/html").send(frameView({ user, language, page }, text));
+	return reply.type("text/html").send(frameView({ user, language, page: Page.FOES }, text));
 }

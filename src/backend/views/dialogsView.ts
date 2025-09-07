@@ -43,14 +43,14 @@ export function appTotpDialogHtml(): string {
 	`;
 }
 
-export function totpLoginDialogHtml(): string {
+export function totpEnterCodeDialogHtml(): string {
 	return `
-	<dialog id="totpCodeDialog" class="px-4 py-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg border w-80 bg-stone-700 border-red-300/50 text-center items-center">
+	<dialog id="totpEnterCodeDialog" class="px-4 py-2 backdrop:bg-black backdrop:opacity-70 mx-auto mt-20 content-center rounded-lg border w-80 bg-stone-700 border-red-300/50 text-center items-center">
 		<div>
 			<h1 class="text-xl font-bold text-gray-300">
 				%%TEXT_TOTP_CODE_TITLE%%
 			</h1>
-			<form id="totpCodeForm">
+			<form id="totpEnterCodeForm">
 				<div>
 					<input type="text" placeholder="%%TEXT_TOTP_CODE%%" name="code" minlength="6" maxlength="6"
 						class="outline-hidden w-40 h-7 text-center rounded-lg mx-auto my-2 p-1.5 bg-red-300/50 placeholder-stone-400 text-stone-700"

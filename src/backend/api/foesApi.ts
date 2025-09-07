@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createFoe, readFoes, deleteFoe } from '../db/foesDb.js';
+import { createFoe, readFoes, deleteFoe } from '../../db/foesDb.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { foesView } from '../views/foesView.js';

@@ -2,7 +2,7 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { compareSync } from "bcrypt-ts";
 import { accessToken, hashPassword, refreshToken, validJWT } from "./jwt.js";
 import { defaultAvatar } from "./defaultAvatar.js";
-import { Result, User, UserType, Box, Gamer, TotpType, ShortUser } from "../../common/interfaces.js";
+import { Result, User, UserType, Box, Gamer, TotpType, ShortUser } from "../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 import { adjectives } from "./adjectives.js";
 import { animals } from "./animals.js";

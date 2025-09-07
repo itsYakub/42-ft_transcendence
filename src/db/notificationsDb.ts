@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Message, MessageType, Result, UserNotification } from "../../common/interfaces.js";
+import { Box, Message, MessageType, Result, UserNotification } from "../common/interfaces.js";
 
 export function readNotifications(db: DatabaseSync, userId: number): Box<UserNotification[]> {
 	try {

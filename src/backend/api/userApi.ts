@@ -1,8 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { addUser, allNicknames, getUserByEmail, loginUserdb } from '../db/userDB.js';
-import { Result } from '../../common/interfaces.js';
+import { addUser, allNicknames, getUserByEmail, loginUserdb, updateRefreshtoken } from '../../db/userDB.js';
+import { Result, TotpType } from '../../common/interfaces.js';
+import { compareSync } from 'bcrypt-ts';
+import { accessToken, refreshToken } from '../../db/jwt.js';
+import { addTotpEmail, sendTotpEmail } from './totpApi.js';
 
-export function usersList(request: FastifyRequest, reply: FastifyReply) {
+export function listUsers(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 
@@ -42,15 +45,50 @@ export function registerUser(request: FastifyRequest, reply: FastifyReply) {
 			});
 }
 
-export function loginUser(request: FastifyRequest, reply: FastifyReply) {
+export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
-	const userBox = loginUserdb(db, request.body as any);
-	if (Result.SUCCESS != userBox.result) {
-		const date = "Thu, 01 Jan 1970 00:00:00 UTC";
-		return reply.header(
-			"Set-Cookie", `accessToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).header(
-				"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(userBox);
+	const { email, password } = request.body as any;
+
+	const userBox = getUserByEmail(db, email);
+	if (Result.SUCCESS != userBox.result)
+		return reply.send(userBox);
+
+	const user = userBox.contents;
+
+	switch (user.totpType) {
+		case TotpType.DISABLED:
+			if (compareSync(password, user.password)) {
+				const token = refreshToken(user.userId);
+				updateRefreshtoken(db, {
+					userId: user.userId, refreshToken: token
+				});
+				user.accessToken = accessToken(user.userId);
+				user.refreshToken = token;
+				return reply.send({
+					result: Result.SUCCESS,
+					contents: user
+				});
+			}
+
+			return reply.send({ result: Result.ERR_BAD_PASSWORD });
+		case TotpType.EMAIL:
+			const result = await sendTotpEmail(db, user, request.language);
+			if (Result.SUCCESS != result)
+				return reply.send({ result });
+
+			return reply.send({
+				result,
+				totpType: TotpType.EMAIL
+			});
 	}
+
+	// const userBox = loginUserdb(db, request.body as any);
+	// if (Result.SUCCESS != userBox.result) {
+	// 	const date = "Thu, 01 Jan 1970 00:00:00 UTC";
+	// 	return reply.header(
+	// 		"Set-Cookie", `accessToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).header(
+	// 			"Set-Cookie", `refreshToken=blank; Path=/; expires=${date}; Secure; HttpOnly;`).send(userBox);
+	// }
 
 	// if (userBox.contents.totpEnabled) {
 	// 	return reply.send({
@@ -72,7 +110,7 @@ export function loginUser(request: FastifyRequest, reply: FastifyReply) {
 			});
 }
 
-export function nicknames(request: FastifyRequest, reply: FastifyReply) {
+export function listNicknames(request: FastifyRequest, reply: FastifyReply) {
 	const users = allNicknames(request.db);
 	return reply.send(users);
 }

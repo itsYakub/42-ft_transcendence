@@ -15,5 +15,5 @@ export function getHomePage(request: FastifyRequest, reply: FastifyReply) {
 	if (UserType.GUEST == user.userType)
 		return getGamePage(request, reply);
 	else
-		return reply.type("text/html").send(frameView({ user, language, page }, homeView()));
+		return reply.type("text/html").send(frameView({ user, language }, homeView()));
 }

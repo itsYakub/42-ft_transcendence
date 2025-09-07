@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { addGoogleUser, addGuest } from '../db/userDB.js';
+import { addGoogleUser, addGuest } from '../../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 
 export async function googleSignIn(request: FastifyRequest, reply: FastifyReply) {
@@ -23,9 +23,8 @@ export async function googleSignIn(request: FastifyRequest, reply: FastifyReply)
 		body: JSON.stringify(params)
 	});
 
-	if (200 != response.status) {
+	if (200 != response.status)
 		return reply.header("Set-Cookie", `googleautherror=true; Path=/;`).redirect("/");
-	}
 
 	const json = await response.json();
 	const idToken: string = json.id_token;

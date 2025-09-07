@@ -1,5 +1,5 @@
-import { Result } from "../../common/interfaces.js";
-import { navigate, showUsersPage } from "./index.js";
+import { Page, Result } from "../../common/interfaces.js";
+import { navigate, showPage } from "./index.js";
 import { profileFunctions } from "./users/profile.js";
 
 /*
@@ -19,7 +19,7 @@ export function navbarFunctions() {
 	const homeButton = document.querySelector("#homeButton");
 	if (homeButton) {
 		homeButton.addEventListener("click", async function() {
-			const profileBox = await fetch("/api/profile", {
+			const profileBox = await fetch("/profile", {
 				method: "POST",
 				headers: {
 					"content-type": "application/json"
@@ -45,29 +45,28 @@ export function navbarFunctions() {
 	const accountButton = document.querySelector("#accountButton");
 	if (accountButton) {
 		accountButton.addEventListener("click", async () => {
-			await navigate("/account");
+			showPage(Page.ACCOUNT);
 		}, { once: true });
 	}
 
 	const gameButton = document.querySelector("#gameButton");
 	if (gameButton) {
 		gameButton.addEventListener("click", async () => {
-			navigate("/game");
+			showPage(Page.GAME);
 		}, { once: true });
 	}
 
 	const usersButton = document.querySelector("#usersButton");
 	if (usersButton) {
 		usersButton.addEventListener("click", async () => {
-			//navigate("/users");
-			showUsersPage();
+			showPage(Page.USERS);
 		}, { once: true });
 	}
 
 	const chatButton = document.querySelector("#chatButton");
 	if (chatButton) {
 		chatButton.addEventListener("click", async () => {
-			navigate("/chat");
+			showPage(Page.CHAT);
 		}, { once: true });
 	}
 }
