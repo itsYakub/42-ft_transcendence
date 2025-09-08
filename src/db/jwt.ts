@@ -3,7 +3,7 @@ import { createHmac } from 'crypto';
 
 export function accessToken(id: number): string {
 	const date = new Date();
-	date.setSeconds(date.getSeconds() + 5);
+	date.setMinutes(date.getMinutes() + 15);
 	return createJWT(id, date);
 }
 

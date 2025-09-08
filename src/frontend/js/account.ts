@@ -1,5 +1,6 @@
 import { Page, Result } from "./../../common/interfaces.js";
-import { showAlert, showPage } from "./index.js";
+import { isLoggedIn, showAlert, showPage } from "./index.js";
+import { closess } from "./sockets/clientSocket.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -11,7 +12,12 @@ export function accountListeners() {
 	const avatarUploadButton = <HTMLInputElement>document.querySelector("#avatarFilename");
 	const avatarImage = document.querySelector("#avatarImage");
 	if (avatarImage)
-		avatarImage.addEventListener("click", () => avatarUploadButton.click());
+		avatarImage.addEventListener("click", async () => {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
+			avatarUploadButton.click()
+		});
 
 	/*
 		Updates the user's avatar
@@ -57,6 +63,9 @@ export function accountListeners() {
 	if (changeNickForm) {
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const newNick = changeNickForm.newNick.value;
 			const response = await fetch("/account/nick", {
 				method: "POST",
@@ -87,6 +96,9 @@ export function accountListeners() {
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const checkPassword = changePasswordForm.currentPassword.value;
 			const newPassword = changePasswordForm.newPassword.value;
 			const repeatPassword = changePasswordForm.repeatPassword.value;
@@ -131,6 +143,9 @@ export function accountListeners() {
 	const totpAppButton = document.querySelector("#totpAppButton");
 	if (totpAppButton) {
 		totpAppButton.addEventListener("click", async () => {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const appTotpResponse = await fetch("/totp/app", {
 				method: "POST",
 				headers: {
@@ -147,8 +162,8 @@ export function accountListeners() {
 				const totpSecret = document.querySelector("#totpSecret");
 				totpSecret.innerHTML = appTotpJson.contents.secret;
 
-				const totpDialog = <HTMLDialogElement>document.querySelector("#totpDialog");
-				totpDialog.showModal();
+				const totpAppDialog = <HTMLDialogElement>document.querySelector("#totpAppDialog");
+				totpAppDialog.showModal();
 			}
 		});
 	}
@@ -156,6 +171,9 @@ export function accountListeners() {
 	const totpEmailButton = document.querySelector("#totpEmailButton");
 	if (totpEmailButton) {
 		totpEmailButton.addEventListener("click", async () => {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const emailTotpResponse = await fetch("/totp/email", {
 				method: "POST",
 				headers: {
@@ -179,6 +197,9 @@ export function accountListeners() {
 	const totpDisableButton = document.querySelector("#totpDisableButton");
 	if (totpDisableButton) {
 		totpDisableButton.addEventListener("click", async () => {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+			
 			const disableToptResponse = await fetch("/totp/disable", {
 				method: "POST",
 				headers: {
@@ -197,7 +218,61 @@ export function accountListeners() {
 	}
 
 	/*
-		Checks the entered TOTP code
+		Checks the entered TOTP code from an email
+	*/
+	const totpAppForm = <HTMLFormElement>document.querySelector("#totpAppForm");
+	if (totpAppForm) {
+		totpAppForm.code.addEventListener("keydown", (e: any) => {
+			if ("v" == e.key && e.ctrlKey)
+				return;
+
+			if (!("Escape" == e.key || "Enter" == e.key || "Backspace" == e.key || "Delete" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key) && isNaN(e.key))
+				e.preventDefault();
+		});
+
+		totpAppForm.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
+			const code = totpAppForm.code.value;
+
+			const response = await fetch("/totp/app/verify", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					code
+				})
+			});
+
+			const result = await response.text();
+			if (Result.SUCCESS == result) {
+				alertDialog.addEventListener("close", async () => {
+					const response = await fetch("/auth/logout", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({})
+					});
+					const result = await response.text();
+					if (Result.SUCCESS == result)
+						showPage(Page.HOME);
+				});
+				showAlert(Result.SUCCESS_TOTP);
+				return;
+			}
+
+			alertDialog.addEventListener("close", () => {
+				totpAppForm.code.value = "";
+				totpAppForm.code.focus();
+			});
+			showAlert(Result.ERR_BAD_TOTP);
+		});
+	}
+
+	/*
+		Checks the entered TOTP code from an email
 	*/
 	const totpEnterCodeForm = <HTMLFormElement>document.querySelector("#totpEnterCodeForm");
 	if (totpEnterCodeForm) {
@@ -255,21 +330,7 @@ export function accountListeners() {
 	*/
 	const logoutButton = document.querySelector("#logoutButton");
 	if (logoutButton) {
-		logoutButton.addEventListener("click", async () => {
-			const response = await fetch("/auth/logout", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({})
-			});
-			const result = await response.text();
-			if (Result.SUCCESS != result) {
-				showAlert(result);
-				return;
-			}
-			showPage(Page.HOME);
-		});
+		logoutButton.addEventListener("click", async () => closess());
 	}
 
 	/*
@@ -289,7 +350,7 @@ export function accountListeners() {
 			}
 
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-			alertDialog.addEventListener("close", () => showPage(Page.HOME));
+			alertDialog.addEventListener("close", () => closess());
 			showAlert(Result.SUCCESS_TOTP);
 		});
 	}

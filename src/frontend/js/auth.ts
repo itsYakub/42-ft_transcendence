@@ -37,8 +37,13 @@ async function login(email: string, password: string) {
 	});
 
 	const json = await response.json();
+	console.log(json);
+	if (Result.SUCCESS != json.result) {
+		showAlert(json.result);
+		return;
+	}
 
-	if (TotpType.EMAIL == json.totpType) {
+	if (TotpType.APP == json.totpType || TotpType.EMAIL == json.totpType) {
 		const totpEnterCodeForm = <HTMLFormElement>document.querySelector("#totpEnterCodeForm");
 		if (totpEnterCodeForm) {
 			totpEnterCodeForm.code.addEventListener("keydown", (e: any) => {
@@ -50,9 +55,11 @@ async function login(email: string, password: string) {
 			});
 
 			totpEnterCodeForm.addEventListener("submit", async (e) => {
-				e.preventDefault();				
+				e.preventDefault();
 				const code = totpEnterCodeForm.code.value;
-				const response = await fetch("/totp/email/login", {
+
+				const loginMethod = TotpType.APP == json.totpType ? "app" : "email";
+				const response =  await fetch(`/totp/${loginMethod}/login`, {
 					method: "POST",
 					headers: {
 						"content-type": "application/json"
@@ -82,10 +89,6 @@ async function login(email: string, password: string) {
 			if (totpEnterCodeDialog)
 				totpEnterCodeDialog.showModal();
 		}
-	}
-	else if (Result.SUCCESS != json.result) {
-		showAlert(json.result);
-		return;
 	}
 	else
 		showPage(Page.HOME);

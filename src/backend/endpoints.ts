@@ -1,5 +1,5 @@
 import type { WebSocket } from "@fastify/websocket"; import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { addTotpApp, addTotpEmail, checkTotp, disableTotp, loginWithEmailTotp, verifyEmailTotp, verifyTotpApp } from "./api/totpApi.js";
+import { addTotpApp, addTotpEmail, disableTotp, loginWithAppTotp, loginWithEmailTotp, verifyEmailTotp, verifyTotpApp } from "./api/totpApi.js";
 import { changeAvatar, changeNick, changePassword, invalidateToken } from "./api/accountApi.js";
 import { connectToServerSocket } from "./sockets/serverSocket.js";
 import { googleSignIn, loginUser, logoutUser, registerGuest, registerUser } from "./api/authApi.js";
@@ -17,6 +17,7 @@ import { getHomePage } from "./pages/homePage.js";
 import { getChatPage } from "./pages/userChatsPage.js";
 import { getFriendsPage } from "./pages/friendsPage.js";
 import { getFoesPage } from "./pages/foesPage.js";
+import { getAuthPage } from "./pages/authPage.js";
 
 export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/", async (request: FastifyRequest, reply: FastifyReply) => getHomePage(request, reply));
@@ -28,6 +29,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/account/password", (request: FastifyRequest, reply: FastifyReply) => changePassword(request, reply));
 	fastify.post("/account/token", (request: FastifyRequest, reply: FastifyReply) => invalidateToken(request, reply));
 
+	fastify.get("/auth", (request: FastifyRequest, reply: FastifyReply) => getAuthPage(request, reply));
 	fastify.get("/auth/google", (request: FastifyRequest, reply: FastifyReply) => googleSignIn(request, reply));
 	fastify.post("/auth/guest", (request: FastifyRequest, reply: FastifyReply) => registerGuest(request, reply));
 	fastify.post("/auth/login", (request: FastifyRequest, reply: FastifyReply) => loginUser(request, reply));
@@ -45,11 +47,11 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/users/list", (request: FastifyRequest, reply: FastifyReply) => listUsers(request, reply));
 
 	fastify.post("/totp/app", (request: FastifyRequest, reply: FastifyReply) => addTotpApp(request, reply));
-	fastify.post("/totp/email", (request: FastifyRequest, reply: FastifyReply) => addTotpEmail(request, reply));
 	fastify.post("/totp/app/verify", (request: FastifyRequest, reply: FastifyReply) => verifyTotpApp(request, reply));
+	fastify.post("/totp/app/login", (request: FastifyRequest, reply: FastifyReply) => loginWithAppTotp(request, reply));
+	fastify.post("/totp/email", (request: FastifyRequest, reply: FastifyReply) => addTotpEmail(request, reply));
 	fastify.post("/totp/email/verify", (request: FastifyRequest, reply: FastifyReply) => verifyEmailTotp(request, reply));
 	fastify.post("/totp/email/login", (request: FastifyRequest, reply: FastifyReply) => loginWithEmailTotp(request, reply));
-	fastify.get("/totp/check", (request: FastifyRequest, reply: FastifyReply) => checkTotp(request, reply));
 	fastify.post("/totp/disable", (request: FastifyRequest, reply: FastifyReply) => disableTotp(request, reply));
 
 	fastify.get("/account/nicknames", (request: FastifyRequest, reply: FastifyReply) => listNicknames(request, reply));

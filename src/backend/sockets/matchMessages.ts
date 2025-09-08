@@ -36,7 +36,7 @@ export function matchJoinReceived(db: DatabaseSync, user: ShortUser, message: Me
     }
 }
 
-export function matchLeaveReceived(db: DatabaseSync, user: ShortUser, message: Message) {
+export function matchLeaveReceived(db: DatabaseSync, user: ShortUser) {
     const gameId = user.gameId;
     const response = removeUserFromMatch(db, user.userId);
 

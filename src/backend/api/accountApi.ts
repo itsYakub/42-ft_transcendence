@@ -32,9 +32,9 @@ export function invalidateToken(request: FastifyRequest, reply: FastifyReply) {
 	if (Result.SUCCESS != result)
 		return reply.send(result);
 
-	result = removeUserFromMatch(db, user.userId);
-	if (Result.SUCCESS != result)
-		return reply.send(result);
+	// result = removeUserFromMatch(db, user.userId);
+	// if (Result.SUCCESS != result)
+	// 	return reply.send(result);
 
 	const date = "Thu, 01 Jan 1970 00:00:00 UTC";
 	return reply.header(

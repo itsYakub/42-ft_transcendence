@@ -227,6 +227,11 @@ export function addGuest(db: DatabaseSync): Box<string> {
 export function addGoogleUser(db: DatabaseSync, { email, avatar }): Box<string[]> {
 	try {
 		let userBox = getUserByEmail(db, email);
+		if (Result.ERR_DB == userBox.result)
+			return {
+				result: Result.ERR_DB
+			};
+
 		if (Result.SUCCESS == userBox.result) {
 			const token = refreshToken(userBox.contents.userId);
 			updateRefreshtoken(db, {
@@ -250,7 +255,7 @@ export function addGoogleUser(db: DatabaseSync, { email, avatar }): Box<string[]
 			};
 
 		const insert = db.prepare('INSERT INTO users (nick, email, avatar, type) VALUES (?, ?, ?, ?)');
-		const statementSync = insert.run(stringBox.contents, email, avatar, UserType[UserType.GOOGLE]);
+		const statementSync = insert.run(stringBox.contents, email, avatar, UserType.GOOGLE);
 		const userId: number = statementSync.lastInsertRowid as number;
 		const token = refreshToken(userId);
 		removeUserFromMatch(db, userId);

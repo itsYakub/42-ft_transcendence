@@ -1,12 +1,16 @@
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 import { getLanguage, showPage } from "../index.js";
-import { Message, Page, ShortUser, User } from "../../../common/interfaces.js";
+import { Message, Page, Result, ShortUser, User } from "../../../common/interfaces.js";
 import { chatString } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
 
-export async function userSendUserChat(user: ShortUser, message: Message) {
-	if (user.userId != message.fromId && user.userId != message.toId)
+export async function userSendUserChat(message: Message) {
+	const userBox = await fetch("/profile/user");
+	const json = await userBox.json();
+	if (Result.SUCCESS != json.result)
 		return;
+
+	const user = json.contents;
 
 	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
@@ -47,15 +51,15 @@ export async function userReadyorUnready(user: ShortUser, message: Message) {
 	}
 }
 
-export async function userInvite(user: ShortUser, message: Message) {
+export async function userInvite(message: Message) {
+	const userBox = await fetch("/profile/user");
+	const json = await userBox.json();
+	if (Result.SUCCESS != json.result)
+		return;
+
+	const user = json.contents;
 	if (user.userId == message.toId) {
 		sendMessageToServer(message);
 		showPage(Page.GAME);
 	}
-}
-
-export async function userConnectOrDisconnect(user: ShortUser, message: Message) {
-	// if ("friends" == currentPage()) {
-	// 	navigate("/friends");
-	//}
 }

@@ -25,7 +25,7 @@ export function navbarView(params: FrameParams): string {
 
 function loggedOutHtml(languageSelect: string, page: Page): string {
 	return `
-	<div id="navBar" class="h-full bg-stone-700">
+	<div id="navBar" class="h-full bg-stone-700" data-page="${page}">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
 			<div class="mr-auto flex flex-row gap-4 items-center">
 				<img class="h-20 w-20" src="/images/icon.png"/>

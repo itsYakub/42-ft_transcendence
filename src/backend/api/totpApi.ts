@@ -1,10 +1,10 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import * as OTPAuth from "otpauth";
 import nodemailer from 'nodemailer';
 import encodeQR from 'qr';
 import { Result, User } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
-import { getUserByEmail, loginUserdb, updateRefreshtoken } from '../../db/userDB.js';
+import { getUserByEmail, updateRefreshtoken } from '../../db/userDB.js';
 import { DatabaseSync } from 'node:sqlite';
 import { updateAppTotp, updateEmailTotp, updateTotp, updateTotpSecret } from '../../db/totpDb.js';
 import { accessToken, refreshToken } from '../../db/jwt.js';
@@ -117,6 +117,43 @@ export function verifyEmailTotp(request: FastifyRequest, reply: FastifyReply) {
 	return reply.send(updateEmailTotp(db, user.userId));
 }
 
+export function loginWithAppTotp(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+	const { code, email } = request.body as any;
+
+	const userBox = getUserByEmail(db, email);
+	if (Result.SUCCESS != userBox.result)
+		return reply.send(userBox.result);
+
+	const user = userBox.contents;
+
+	let totp = new OTPAuth.TOTP({
+		issuer: "Transcendence",
+		label: user.email,
+		algorithm: "SHA1",
+		digits: 6,
+		period: 30,
+		secret: user.totpSecret,
+	});
+
+	if (null == totp.validate({ token: code, window: 1 }))
+		return reply.send(Result.ERR_BAD_TOTP);
+
+	const token = refreshToken(user.userId);
+	updateRefreshtoken(db, {
+		userId: user.userId, refreshToken: token
+	});
+
+	const accessTokenDate = new Date();
+	accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
+	const refreshTokenDate = new Date();
+	refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
+
+	return reply.header(
+		"Set-Cookie", `accessToken=${accessToken(user.userId)}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+			"Set-Cookie", `refreshToken=${token}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(Result.SUCCESS);
+}
+
 export function loginWithEmailTotp(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const { code, email } = request.body as any;
@@ -146,43 +183,8 @@ export function loginWithEmailTotp(request: FastifyRequest, reply: FastifyReply)
 			"Set-Cookie", `refreshToken=${token}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(Result.SUCCESS);
 }
 
-export function checkTotp(request: FastifyRequest, reply: FastifyReply) {
-	const params = request.body as any;
-	const userBox = loginUserdb(request.db, params);
-	if (Result.SUCCESS != userBox.result)
-		return reply.send(userBox);
-
-	const user = userBox.contents;
-
-	let totp = new OTPAuth.TOTP({
-		issuer: "Transcendence",
-		label: user.email,
-		algorithm: "SHA1",
-		digits: 6,
-		period: 30,
-		secret: user.totpSecret,
-	});
-
-	if (null == totp.validate({ token: params.code, window: 1 })) {
-		return reply.send({
-			result: Result.ERR_BAD_TOTP
-		});
-	}
-
-	const accessTokenDate = new Date();
-	accessTokenDate.setSeconds(accessTokenDate.getSeconds() + 5);
-	const refreshTokenDate = new Date();
-	refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
-	return reply.header(
-		"Set-Cookie", `accessToken=${userBox.contents[0]}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-			"Set-Cookie", `refreshToken=${userBox.contents[1]}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
-				result: Result.SUCCESS
-			});
-}
-
 export function disableTotp(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	return reply.send(updateTotp(db, user.userId));
 }
-

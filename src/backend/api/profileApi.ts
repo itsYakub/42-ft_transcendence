@@ -6,6 +6,7 @@ import { readMatchResults } from '../../db/matchResultsDb.js';
 import { readFriends } from '../../db/friendsDb.js';
 import { profileView } from '../../common/dynamicElements.js';
 import { readFoes } from '../../db/foesDb.js';
+import { accessToken } from '../../db/jwt.js';
 
 export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -55,8 +56,15 @@ export function getShortUser(request: FastifyRequest, reply: FastifyReply) {
 		userType: user.userType
 	}
 
-	return reply.send({
-		result: Result.SUCCESS,
-		contents: shortUser
-	});
+	const accessTokenDate = new Date();
+	accessTokenDate.setMinutes(accessTokenDate.getMinutes() + 15);
+	const refreshTokenDate = new Date();
+	refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
+
+	return reply.header(
+		"Set-Cookie", `accessToken=${accessToken(user.userId)}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
+			"Set-Cookie", `refreshToken=${user.refreshToken}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+				result: Result.SUCCESS,
+				contents: shortUser
+			});
 }
