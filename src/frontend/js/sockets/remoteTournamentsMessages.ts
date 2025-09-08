@@ -1,4 +1,4 @@
-import { Message, MessageType, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
+import { Message, MessageType, Page, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/remoteTournament.js";
@@ -164,7 +164,7 @@ function isMessageForMe(user: ShortUser, message: Message) {
 	if (message.gameId != user.gameId)
 		return false;
 
-	if (UserType.GUEST != user.userType && "game" != currentPage())
+	if (Page.GAME != currentPage())
 		return false;
 
 	return true;

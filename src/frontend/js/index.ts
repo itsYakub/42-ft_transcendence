@@ -30,12 +30,12 @@ export async function showPage(page: Page, add: boolean = true) {
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
 	addListeners();
-	const userResponse = await fetch("/profile/user");
-			const userBox = await userResponse.json();
-	sendMessageToServer({
-		fromId: userBox.contents.userId,
-		type: MessageType.USER_CONNECT
-	});
+	// const userResponse = await fetch("/profile/user");
+	// 		const userBox = await userResponse.json();
+	// sendMessageToServer({
+	// 	fromId: userBox.contents.userId,
+	// 	type: MessageType.USER_CONNECT
+	// });
 }
 
 /*

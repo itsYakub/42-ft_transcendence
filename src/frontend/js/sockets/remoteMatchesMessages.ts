@@ -28,7 +28,8 @@ export function matchGamerLeaving() {
 }
 
 export async function updateMatchList(user: ShortUser) {
-    if ((UserType.GUEST == user.userType && !user.gameId) || "game" == currentPage())
+	console.log("updating");
+  	if (Page.GAME == currentPage())
 		showPage(Page.GAME);
 }
 

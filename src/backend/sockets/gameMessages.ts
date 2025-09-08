@@ -1,15 +1,17 @@
 import { DatabaseSync } from "node:sqlite";
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
-import { createTournamentChat } from '../../db/TournamentChatsDb.js';
 import { removeUserFromMatch } from '../../db/userDB.js';
+import { onlineUsers, sendMessageToUsers } from "./serverSocket.js";
 
-export function userGameLeaveReceived(db: DatabaseSync, user: ShortUser, message: Message) {
+export function userLogoutReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	message.gameId = user.gameId;
 	const response = removeUserFromMatch(db, user.userId);
 
 	if (Result.SUCCESS == response) {
-		// message.fromId = user.userId;
-		// broadcastMessageToClients(fastify, message);
+		onlineUsers.delete(user.userId);
+		sendMessageToUsers({
+			type: MessageType.GAME_LIST_CHANGED
+		});
 	}
 }
 

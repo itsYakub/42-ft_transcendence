@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { userGameLeaveReceived, tournamentChatReceived } from './gameMessages.js';
+import { userLogoutReceived, tournamentChatReceived } from './gameMessages.js';
 import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from './userMessages.js';
-import { getUserById, usersByGameId } from '../../db/userDB.js';
+import { getUser, getUserById, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived, matchUpdateReceived } from './matchMessages.js';
@@ -15,20 +15,17 @@ let db: DatabaseSync;
 export function connectToServerSocket(socket: WebSocket, request: FastifyRequest) {
 	db = request.db;
 
+	onlineUsers.set(request.user.userId, socket);
 	socket?.on("message", (data: string) => {
-		const userBox = getUserById(db, request.user?.userId);
+		const message = JSON.parse(data as string);
+		const userBox = getUserById(db, message.fromId);
 		if (Result.SUCCESS != userBox.result)
 			return;
 
 		const user = userBox.contents;
 		onlineUsers.set(user.userId, socket);
-		const message = JSON.parse(data as string);
-		console.log(userBox.contents.nick, userBox.contents.userId, message);
+		console.log(user.nick, user.userId, message);
 
-		if (MessageType.USER_CONNECT == message.type) {
-			const id = message.fromId;
-			onlineUsers.set(id, socket);
-		}
 		handleClientMessage(db, user, message);
 	});
 
@@ -108,16 +105,13 @@ function sendMessage(socket: WebSocket, message: Message) {
 /*
 	Deals with a socket message from a client
 */
-function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message) {
+export function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message) {
 	switch (message.type) {
-		case MessageType.USER_CONNECT:
-			userLoginReceived(db, user);
-			break;
 		case MessageType.USER_INVITE:
 			userInviteReceived(db, user, message);
 			break;
-		case MessageType.USER_LEAVE_GAME:
-			userGameLeaveReceived(db, user, message);
+		case MessageType.USER_LOGOUT:
+			userLogoutReceived(db, user, message);
 			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChatReceived(db, user, message);

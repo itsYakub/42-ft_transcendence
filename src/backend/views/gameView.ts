@@ -53,11 +53,11 @@ function gameButtonHtml(game: Game): string {
 	});
 
 	return GameType.TOURNAMENT == game.type ? `
-	<button class="joinTournamentButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-id="${gameID}"><span class="text-green-300">%%TEXT_TOURNAMENT%%</span>${gamersString}</button>
+	<button class="joinTournamentButton w-full text-stone-700 bg-red-300/50 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300" data-id="${gameID}"><span class="text-green-300">%%TEXT_TOURNAMENT%%</span>${gamersString}</button>
 	`
 		:
 		`
-	<button class="joinMatchButton w-full text-gray-300 bg-gray-800 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-gray-700" data-id="${gameID}"><span class="text-green-300">%%TEXT_MATCH%%</span>${gamersString}</button>
+	<button class="joinMatchButton w-full text-stone-700 bg-red-300/50 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300" data-id="${gameID}"><span class="text-green-300">%%TEXT_MATCH%%</span>${gamersString}</button>
 	`;
 }
 

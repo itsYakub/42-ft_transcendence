@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
-import { getUserById } from '../../db/userDB.js';
+import { getUser, getUserById } from '../../db/userDB.js';
 import { readMatchResults } from '../../db/matchResultsDb.js';
 import { readFriends } from '../../db/friendsDb.js';
 import { profileView } from '../../common/dynamicElements.js';
@@ -39,9 +39,24 @@ export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	});
 }
 
-export function getUser(request: FastifyRequest, reply: FastifyReply) {
+export function getShortUser(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+
+	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+	if (Result.SUCCESS != userBox.result)
+		return reply.send(userBox);
+
+	const user = userBox.contents;
+	const shortUser = {
+		avatar: user.avatar,
+		gameId: user.gameId,
+		nick: user.nick,
+		userId: user.userId,
+		userType: user.userType
+	}
+
 	return reply.send({
 		result: Result.SUCCESS,
-		contents: request.user
+		contents: shortUser
 	});
 }

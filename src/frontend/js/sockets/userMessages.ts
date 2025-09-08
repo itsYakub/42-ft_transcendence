@@ -21,7 +21,7 @@ export async function userSendUserChat(user: ShortUser, message: Message) {
 			else
 				container.appendChild(node);
 		}
-		else if ("chat" == currentPage()) {
+		else if (Page.CHAT == currentPage()) {
 			// user is chatting with another partner
 			console.log("another partner");
 		}
@@ -40,7 +40,7 @@ export async function userSendUserChat(user: ShortUser, message: Message) {
 	A user has clicked the Ready button or navigated away
 */
 export async function userReadyorUnready(user: ShortUser, message: Message) {
-	if ("game" == currentPage() && message.content) {
+	if (Page.GAME == currentPage() && message.content) {
 		const container = document.querySelector("#gamerMatchReadyForm");
 		if (container)
 			container.innerHTML = translate(getLanguage(), message.content);

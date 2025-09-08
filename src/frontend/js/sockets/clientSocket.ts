@@ -1,4 +1,4 @@
-import { Message, MessageType, Result, ShortUser, User } from "../../../common/interfaces.js";
+import { Message, MessageType, Page, Result, ShortUser, User } from "../../../common/interfaces.js";
 import {
 	actuallyStartingMatch,
 	matchFinishing,
@@ -63,14 +63,21 @@ export function isConnected(): boolean {
 /*
 	Sends a message from a client to the server
 */
-export function sendMessageToServer(message: Message) {
-	if (1 == socket?.OPEN)
-		socket.send(JSON.stringify(message));
+export async function sendMessageToServer(message: Message) {
+	if (1 == socket?.OPEN) {
+		const userBox = await fetch("/profile/user");
+		const json = await userBox.json();
+		if (Result.SUCCESS == json.result) {
+			message.fromId = json.contents.userId;
+			console.log("sending");
+			socket.send(JSON.stringify(message));
+		}
+	}
 }
 
-export function currentPage(): string {
-	const split = window.location.pathname.split("/").filter(n => n);
-	return split[0] ?? "/";
+export function currentPage(): Page {
+	const navBar = <HTMLElement>document.querySelector("#navBar");
+	return Page[navBar.dataset.page];
 }
 
 /*

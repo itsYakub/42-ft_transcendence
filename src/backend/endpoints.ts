@@ -1,15 +1,15 @@
 import type { WebSocket } from "@fastify/websocket"; import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { addTotpApp, addTotpEmail, checkTotp, disableTotp, loginWithEmailTotp, verifyEmailTotp, verifyTotpApp } from "./api/totpApi.js";
-import { changeAvatar, changeNick, changePassword, invalidateToken, logout } from "./api/accountApi.js";
+import { changeAvatar, changeNick, changePassword, invalidateToken } from "./api/accountApi.js";
 import { connectToServerSocket } from "./sockets/serverSocket.js";
-import { googleSignIn, registerGuest } from "./api/authApi.js";
+import { googleSignIn, loginUser, logoutUser, registerGuest, registerUser } from "./api/authApi.js";
 import { addFoe, foesList, removeFoe } from "./api/foesApi.js";
 import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsApi.js";
 import { addMatchResult } from "./api/matchResultsApi.js";
-import { getProfile, getUser } from "./api/profileApi.js";
+import { getProfile, getShortUser } from "./api/profileApi.js";
 import { addTournament, getTournament, getTournamentGamers, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateTournment } from "./api/tournamentApi.js";
 import { chatsList, getChats, notificationsList, userChats } from "./api/chatApi.js";
-import { loginUser, listNicknames, registerUser, listUsers } from "./api/userApi.js";
+import { listNicknames, listUsers } from "./api/userApi.js";
 import { getUsersPage } from "./pages/usersPage.js";
 import { getAccountPage } from "./pages/accountPage.js";
 import { getGamePage } from "./pages/gamePage.js";
@@ -31,7 +31,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/auth/google", (request: FastifyRequest, reply: FastifyReply) => googleSignIn(request, reply));
 	fastify.post("/auth/guest", (request: FastifyRequest, reply: FastifyReply) => registerGuest(request, reply));
 	fastify.post("/auth/login", (request: FastifyRequest, reply: FastifyReply) => loginUser(request, reply));
-	fastify.post("/auth/logout", (request: FastifyRequest, reply: FastifyReply) => logout(request, reply));
+	fastify.post("/auth/logout", (request: FastifyRequest, reply: FastifyReply) => logoutUser(request, reply));
 	fastify.post("/auth/register", (request: FastifyRequest, reply: FastifyReply) => registerUser(request, reply));
 
 	fastify.get("/chat", async (request: FastifyRequest, reply: FastifyReply) => getChatPage(request, reply));
@@ -70,7 +70,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/match-results/add", (request: FastifyRequest, reply: FastifyReply) => addMatchResult(request, reply));
 
 	fastify.get("/profile", (request: FastifyRequest, reply: FastifyReply) => getProfile(request, reply));
-	fastify.get("/profile/user", (request: FastifyRequest, reply: FastifyReply) => getUser(request, reply));
+	fastify.get("/profile/user", (request: FastifyRequest, reply: FastifyReply) => getShortUser(request, reply));
 
 	fastify.get("/tournament", (request: FastifyRequest, reply: FastifyReply) => getTournament(request, reply));
 	fastify.get("/tournament/gamers", (request: FastifyRequest, reply: FastifyReply) => getTournamentGamers(request, reply));
