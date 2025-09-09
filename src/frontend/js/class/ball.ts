@@ -68,9 +68,14 @@ export class Ball extends Shape {
             this.sendBallUpdate(true); // Force send reset state
         }
 
-        setTimeout(() => {
-            this.start();
-        }, 1000);
+		/* NOTE(joleksia):
+		 *  @agarbacz @lwillis is this timeout necessary???
+		 *  If so, it requires some fixes, otherwise it break the ball logic during the match
+		 *  (interrupting the UPDATE state)
+		 * */
+        // setTimeout(() => {
+        //	  this.start();
+        // }, 1000);
     }
 
     public update() {

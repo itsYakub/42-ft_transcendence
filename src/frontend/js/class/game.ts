@@ -455,7 +455,7 @@ export class Game {
             case (StateMachine.STATE_GAMEOVER): {
                 this.matchOver();
                 return;
-            } break;
+            }
 
             default: { } break;
         }
