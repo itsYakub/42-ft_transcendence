@@ -71,7 +71,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 
 	fastify.post("/match-results/add", (request: FastifyRequest, reply: FastifyReply) => addMatchResult(request, reply));
 
-	fastify.get("/profile", (request: FastifyRequest, reply: FastifyReply) => getProfile(request, reply));
+	fastify.get("/profile/:userId", (request: FastifyRequest, reply: FastifyReply) => getProfile(request, reply));
 	fastify.get("/profile/user", (request: FastifyRequest, reply: FastifyReply) => getShortUser(request, reply));
 
 	fastify.get("/tournament", (request: FastifyRequest, reply: FastifyReply) => getTournament(request, reply));

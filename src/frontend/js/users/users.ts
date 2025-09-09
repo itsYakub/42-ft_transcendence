@@ -18,15 +18,7 @@ export function usersFunctions() {
 	const userButtons = document.getElementsByClassName("userButton");
 	for (var i = 0; i < userButtons.length; i++) {
 		userButtons[i].addEventListener("click", async function () {
-			const profileBox = await fetch("/profile", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					userId: this.dataset.id
-				})
-			});
+			const profileBox = await fetch(`/profile/${this.dataset.id}`);
 
 			const json = await profileBox.json();
 			if (Result.SUCCESS != json.result)

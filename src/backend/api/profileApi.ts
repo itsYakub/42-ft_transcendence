@@ -10,7 +10,7 @@ import { accessToken } from '../../db/jwt.js';
 
 export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
-	const { userId } = request.body as any;
+	const { userId } = request.params as any;
 	const userBox = getUserById(db, userId);
 	if (Result.SUCCESS != userBox.result)
 		return reply.send(userBox);
