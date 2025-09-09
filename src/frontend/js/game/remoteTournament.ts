@@ -1,3 +1,5 @@
+import { Page } from "../../../common/interfaces.js";
+import { isLoggedIn, showPage } from "../index.js";
 import { sendTournamentMessage, tournamentGamerIsReady, tournamentGamerLeaving } from "../sockets/remoteTournamentsMessages.js";
 
 export function tournamentListeners() {
@@ -16,6 +18,9 @@ export function tournamentListeners() {
 	const sendTournamentMessageForm = <HTMLFormElement>document.querySelector("#sendTournamentMessageForm");
 	if (sendTournamentMessageForm) {
 		sendTournamentMessageForm.addEventListener("submit", async function (e) {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			e.preventDefault();
 			if (sendTournamentMessageForm.message.value.length > 0) {
 				sendTournamentMessage(sendTournamentMessageForm.message.value);

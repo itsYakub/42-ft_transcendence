@@ -1,6 +1,6 @@
-import { Box, Result } from "../../../common/interfaces.js";
+import { Box, Page, Result } from "../../../common/interfaces.js";
 import { g_game, GameMode } from "../class/game.js";
-import { showAlert } from "./../index.js";
+import { isLoggedIn, showAlert, showPage } from "./../index.js";
 
 async function generateTournament(names: string[]) {
 	const gameId = `t${Date.now().toString(36).substring(5)}`;
@@ -20,10 +20,12 @@ async function generateTournament(names: string[]) {
 }
 
 export function localTournamentListeners() {
-
 	const nextTournamentMatchButton = <HTMLButtonElement>document.querySelector("#nextTournamentMatchButton");
 	if (nextTournamentMatchButton) {
 		nextTournamentMatchButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
 				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
@@ -41,7 +43,7 @@ export function localTournamentListeners() {
 						})
 					});
 					//if (Result.SUCCESS == await response.text())
-						//navigate(window.location.href, false);
+					//navigate(window.location.href, false);
 				})
 			}
 			setTimeout(async () => {
@@ -58,7 +60,10 @@ export function localTournamentListeners() {
 	if (newTournamentForm) {
 		newTournamentForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const userBoxResponse = await fetch("/user");
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
+			const userBoxResponse = await fetch("/profile/user");
 			const userBox = await userBoxResponse.json();
 			if (Result.SUCCESS == userBox.result) {
 				const names = [
@@ -79,7 +84,7 @@ export function localTournamentListeners() {
 					showAlert(result);
 					return;
 				}
-				//navigate(window.location.href, false);
+				showPage(Page.GAME);
 			}
 		});
 	}

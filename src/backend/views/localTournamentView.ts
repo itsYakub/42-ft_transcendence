@@ -4,7 +4,7 @@ import { gameDialogHtml } from './dialogsView.js';
 export function localTournamentView(tournament: LocalTournament, user: User): string {
 	return `
 	<div class="w-full h-full m-auto text-center flex flex-col items-center gap-4">
-	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg border bg-stone-700 border-gray-900 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
+	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
 		<div class="flex flex-row items-center">
 			<div class="flex flex-col gap-20">
 				<fieldset class="w-70 h-31 border border-fuchsia-800 bg-red-200/20 rounded-lg">
@@ -57,7 +57,7 @@ function matchHtml(match: LocalMatch): string {
 	}
 	return `
 		<div class="${gamer1Colour} text-lg">${match.g1.nick ?? "?"}</div>
-		<span class="text-white text-lg">vs</span>
+		<span class="text-gray-300 text-lg">vs</span>
 		<div class="${gamer2Colour} text-lg mb-1">${match.g2.nick ?? "?"}</div>	
 	`;
 }
@@ -89,9 +89,9 @@ function nextMatchHtml(tournament: LocalTournament) {
 
 	return `
 	<div class="flex flex-row justify-center items-center gap-2">
-		<div class="text-gray-900 text-lg">${g1.nick}</div>
-		<span class="text-white text-lg"> vs </span>
-		<div class="text-gray-900 text-lg">${g2.nick}</div>${nextMatchButtonHtml(g1, g2, 1)}
+		<div class="text-[#BE2AD1] text-lg">${g1.nick}</div>
+		<span class="text-gray-300 text-lg"> vs </span>
+		<div class="text-[#FFCD5A] text-lg">${g2.nick}</div>${nextMatchButtonHtml(g1, g2, 1)}
 	</div>
 	`;
 
@@ -99,6 +99,6 @@ function nextMatchHtml(tournament: LocalTournament) {
 
 function nextMatchButtonHtml(g1: LocalGamer, g2: LocalGamer, matchNumber: number) {
 	return `
-	<button id="nextTournamentMatchButton" data-g1="${g1.nick}" data-g2="${g2.nick}" data-match="${matchNumber}" class="text-gray-300 ml-8 bg-gray-800 cursor-[url(/images/pointer.png),pointer] text-center px-3 py-1 rounded-lg hover:bg-gray-700 text-lg">%%TEXT_TOURNAMENT_PLAY%%!</button>
+	<button id="nextTournamentMatchButton" data-g1="${g1.nick}" data-g2="${g2.nick}" data-match="${matchNumber}" class="outline-hidden text-gray-300 ml-8 bg-gray-800 cursor-[url(/images/pointer.png),pointer] text-center px-3 py-1 rounded-lg hover:bg-gray-700 text-lg">%%TEXT_TOURNAMENT_PLAY%%!</button>
 	`;
 }
