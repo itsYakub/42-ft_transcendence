@@ -1,8 +1,10 @@
-import * as BABYLON from '@babylonjs/core/Legacy/legacy';
+import * as BABYLON from '@babylonjs/core';
+import * as GUI from '@babylonjs/gui';
 
 import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { Ground } from './ground.js';
+import { Gui } from './gui.js';
 import { GamePlayer, MessageType, Message } from '../../../common/interfaces.js';
 import { sendMessageToServer } from '../sockets/clientSocket.js';
 
@@ -80,6 +82,7 @@ export class Game {
     private m_player1: Player;
     private m_ball: Ball;
     private m_ground: Ground;
+	private	m_gui : Gui;
 
     private m_canvasCreated: boolean = false;
     private m_engineCreated: boolean = false;
@@ -452,7 +455,7 @@ export class Game {
             case (StateMachine.STATE_GAMEOVER): {
                 this.matchOver();
                 return;
-            } break;
+            }
 
             default: { } break;
         }
@@ -460,6 +463,7 @@ export class Game {
         /* StateMachine - independent code */
         g_gameTime += this.deltaTime;
         this.m_ground.update();
+		this.m_gui.update();
 
         /* Resize the canvas to the size of the dialog */
         this.m_canvas.width = this.m_dialog.clientWidth;
@@ -514,6 +518,8 @@ export class Game {
                 this.m_player1 = new Player(this.m_canvas, scene, player2Data, 1.0, 2.0);
             } break;
         }
+
+		this.m_gui = new Gui(this.m_canvas, this.m_player0, this.m_player1);
         return (scene);
     }
 }
@@ -521,7 +527,7 @@ export class Game {
 /* SECTION: Global game object */
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
-export const g_gameScoreTotal: number = /* 10.0; */ 1.0;
-export const g_boundCellSize: number = 0.5;
+export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
+export const g_boundCellSize: number = 1.0;
 
 export var g_game: Game = new Game();

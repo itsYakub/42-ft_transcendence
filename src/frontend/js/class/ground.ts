@@ -1,7 +1,7 @@
 import * as BABYLON from '@babylonjs/core/Legacy/legacy';
 import * as SIMPLEX from 'simplex-noise';
 
-import { g_game, g_gameTime, g_gamePlayableArea } from './game.js';
+import { g_game, g_gameTime, g_gamePlayableArea, g_boundCellSize } from './game.js';
 
 
 
@@ -41,7 +41,7 @@ export class Ground {
                 }
 
                 let box = BABYLON.MeshBuilder.CreateBox('cell0', { }, scene);
-				box.scaling = new BABYLON.Vector3(g_boundCellSize - 0.05, g_boundCellSize * 2.0, g_boundCellSize - 0.05);
+				box.scaling = new BABYLON.Vector3(g_boundCellSize - 0.05, g_boundCellSize, g_boundCellSize - 0.05);
 				box.position = new BABYLON.Vector3(x, 0.0, y);
 
 				this.m_mesh_arr.push(box);
@@ -71,10 +71,3 @@ export class Ground {
 		}
 	}
 }
-
-
-
-/* SECTION:
- *  Global game object
- * */
-export var	g_boundCellSize : number = 0.5;
