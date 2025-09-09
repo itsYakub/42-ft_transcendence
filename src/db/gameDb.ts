@@ -27,7 +27,7 @@ export function gamePlayers(db: DatabaseSync, gameId: string): Box<MatchGamer[]>
 			contents: gamers
 		};
 	}
-	catch (e) {
+	catch (e) {console.log(e);
 		return {
 			result: Result.ERR_DB
 		};

@@ -1,6 +1,17 @@
-import { Page } from "../../../common/interfaces.js";
+import { Page, Result } from "../../../common/interfaces.js";
 import { isLoggedIn, showPage } from "../index.js";
-import { sendTournamentMessage, tournamentGamerIsReady, tournamentGamerLeaving } from "../sockets/remoteTournamentsMessages.js";
+import { sendTournamentMessage, tournamentGamerIsReady, tournamentGamerLeft } from "../sockets/remoteTournamentsMessages.js";
+
+export async function createRemoteTournament(): Promise<Result> {
+	const response = await fetch(`/tournament/remote/add`, {
+		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
+		body: JSON.stringify({})
+	});
+	return Result[await response.text()];
+}
 
 export function tournamentListeners() {
 	const tournamentGamerReadyButton = document.querySelector("#tournamentGamerReadyButton");
@@ -9,9 +20,12 @@ export function tournamentListeners() {
 
 	const leaveTournamentButton = document.querySelector("#leaveTournamentButton");
 	if (leaveTournamentButton) {
-		leaveTournamentButton.addEventListener("click", () => {
-			tournamentGamerLeaving();
-			//navigate(window.location.href, false);
+		leaveTournamentButton.addEventListener("click", async () => {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
+			showPage(Page.GAME);
+			tournamentGamerLeft();
 		});
 	}
 

@@ -1,6 +1,7 @@
 import { Message, MessageType, Page, Result } from "../../../common/interfaces.js";
 import { showPage } from "../index.js";
 import { actuallyStartingMatch,	matchFinishing,	startingMatch,	updateMatchDetails,	updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
+import { tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
 import { userInvite, userSendUserChat } from "./userMessages.js";
 
 let socket: WebSocket;
@@ -72,12 +73,13 @@ export function isConnected(): boolean {
 */
 export async function sendMessageToServer(message: Message) {
 	if (1 == socket?.OPEN) {
-		const userBox = await fetch("/profile/user");
-		const json = await userBox.json();
-		if (Result.SUCCESS == json.result) {
-			message.fromId = json.contents.userId;
-			socket.send(JSON.stringify(message));
-		}
+		socket.send(JSON.stringify(message));
+		// const userBox = await fetch("/profile/user");
+		// const json = await userBox.json();
+		// if (Result.SUCCESS == json.result) {
+		// 	message.fromId = json.contents.userId;
+		// 	socket.send(JSON.stringify(message));
+		// }
 	}
 }
 
@@ -125,23 +127,20 @@ function handleServerMessage(message: Message) {
 			break;
 
 		// Tournament messages
+		case MessageType.TOURNAMENT_LOBBY_CHANGED:
+			updateTournamentLobby(message);
+			break;
 		// case MessageType.TOURNAMENT_CHAT:
 		// 	tournamentChat(user, message);
 		// 	break;
-		// case MessageType.TOURNAMENT_JOIN:
-		// 	joinOrLeaveTournament(user, message);
-		// 	break;
-		// case MessageType.TOURNAMENT_LEAVE:
-		// 	joinOrLeaveTournament(user, message);
-		// 	break;
-		// case MessageType.TOURNAMENT_MATCH_START:
-		// 	tournamentMatchStart(user, message);
-		// 	break;
+		case MessageType.TOURNAMENT_MATCH_START:
+			tournamentMatchStart(message);
+			break;
 		// case MessageType.TOURNAMENT_OVER:
 		// 	tournamentOver(user, message);
 		// 	break;
-		// case MessageType.TOURNAMENT_UPDATE:
-		// 	updateTournamentDetails(user, message);
-		// 	break;
+		case MessageType.TOURNAMENT_UPDATE:
+			updateTournamentDetails(message);
+			break;
 	}
 }

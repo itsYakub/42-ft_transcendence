@@ -130,6 +130,10 @@ export function handleClientMessage(db: DatabaseSync, user: ShortUser, message: 
 			matchUpdateReceived(db, user, message);
 			break;
 
+		case MessageType.GAME_LIST_CHANGED:
+			sendMessageToUsers(message);
+			break;
+
 		// Tournament messages
 		case MessageType.TOURNAMENT_CHAT:
 			tournamentChatReceived(db, user, message);

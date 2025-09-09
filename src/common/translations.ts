@@ -38,6 +38,7 @@ export function translate(language: string, text: string): string {
 		"ERR_GOOGLE",
 		"ERR_GOOGLE_EMAIL",
 		"ERR_FORBIDDEN",
+		"ERR_FORBIDDEN_NAME",
 		"ERR_NOT_FOUND",
 		"ERR_UNIQUE",
 		"MESSAGE_INVITATION",
@@ -174,6 +175,7 @@ function translateEnglish(text: string): string {
 		case "ERR_DB": return "Database error!";
 		case "ERR_EMAIL_IN_USE": return "Email already registered!";
 		case "ERR_FORBIDDEN": return "Forbidden!";
+		case "ERR_FORBIDDEN_NAME": return "A name is not allowed!";
 		case "ERR_FULL": return "Room full!";
 		case "ERR_GOOGLE": return "Couldn't sign in/up with Google!";
 		case "ERR_GOOGLE_EMAIL": return "Please log in with Google!";

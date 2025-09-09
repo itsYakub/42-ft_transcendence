@@ -28,9 +28,10 @@ export function matchGamerLeaving() {
 }
 
 export async function updateMatchList() {
-	console.log("game list updating");
-	if (Page.GAME == currentPage())
+	if (Page.GAME == currentPage()) {
+		console.log("game list updating");
 		showPage(Page.GAME);
+	}
 }
 
 export async function updateMatchDetails(message: Message) {

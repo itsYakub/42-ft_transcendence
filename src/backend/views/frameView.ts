@@ -6,6 +6,7 @@ import { FrameParams } from "../../common/interfaces.js";
 	Returns the whole page, or an error page
 */
 export function frameView(params: FrameParams, content: string = null): any {
+	console.log(params.page);
 	if (!content)
 		content = errorString(params);
 
@@ -28,7 +29,7 @@ function frameString(navbar: string, content: string): string {
 
 		<body>
 			<div class="h-screen w-screen bg-[url(/images/bg.png)] bg-cover bg-center flex flex-col">
-				<div id="navbar" class="h-32 font-mono">${navbar}</div>
+				${navbar}
 				<div class="w-200 mx-auto grow">
 					<div id="content" class="grow font-mono">${content}</div>
 				</div>

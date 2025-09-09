@@ -3,20 +3,23 @@ import { g_game, GameMode } from "../class/game.js";
 import { isLoggedIn, showAlert, showPage } from "./../index.js";
 
 async function generateTournament(names: string[]) {
-	const gameId = `t${Date.now().toString(36).substring(5)}`;
 	const shuffled = names.sort(() => Math.random() - 0.5);
-	const response = await fetch("/tournament/add", {
+	const response = await fetch("/tournament/local/add", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
 		},
 		body: JSON.stringify({
-			gameId,
 			gamers: shuffled
 		})
 	});
 
-	return await response.text();
+	const text = await response.text();
+	if (text.includes("403 Forbidden")) {
+		return Result.ERR_FORBIDDEN_NAME;
+	}
+
+	return text;
 }
 
 export function localTournamentListeners() {
@@ -28,23 +31,23 @@ export function localTournamentListeners() {
 
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
-				// dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				// 	const response = await fetch("/tournament/update", {
-				// 		method: "POST",
-				// 		headers: {
-				// 			"content-type": "application/json"
-				// 		},
-				// 		body: JSON.stringify({
-				// 			g1Nick: this.dataset.g1,
-				// 			g2Nick: this.dataset.g2,
-				// 			g1Score: e.detail["g1Score"],
-				// 			g2Score: e.detail["g2Score"],
-				// 			matchNumber: this.dataset.match
-				// 		})
-				// 	});
-				// 	if (Result.SUCCESS == await response.text())
-				// 		showPage(Page.GAME);
-				// })
+				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+					const response = await fetch("/tournament/local/update", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({
+							g1Nick: this.dataset.g1,
+							g2Nick: this.dataset.g2,
+							g1Score: e.detail["g1Score"],
+							g2Score: e.detail["g2Score"],
+							matchNumber: this.dataset.match
+						})
+					});
+					if (Result.SUCCESS == await response.text())
+						showPage(Page.GAME);
+				})
 			}
 			setTimeout(async () => {
 				g_game.setupElements(GameMode.GAMEMODE_PVP, {
@@ -79,7 +82,7 @@ export function localTournamentListeners() {
 				}
 
 				const result = await generateTournament(names);
-				//TODO show 403 error
+		
 				if (Result.SUCCESS != result) {
 					showAlert(result);
 					return;

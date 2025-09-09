@@ -7,7 +7,7 @@ import { addFoe, foesList, removeFoe } from "./api/foesApi.js";
 import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsApi.js";
 import { addMatchResult } from "./api/matchResultsApi.js";
 import { getProfile, getShortUser } from "./api/profileApi.js";
-import { addTournament, getTournament, getTournamentGamers, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateTournment } from "./api/tournamentApi.js";
+import { addLocalTournament, addRemoteTournament, createTournamentLobby, getTournament, getTournamentGamers, getTournamentLobby, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
 import { chatsList, getChats, notificationsList, userChats } from "./api/chatApi.js";
 import { listNicknames, listUsers } from "./api/userApi.js";
 import { getUsersPage } from "./pages/usersPage.js";
@@ -75,11 +75,13 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/profile/user", (request: FastifyRequest, reply: FastifyReply) => getShortUser(request, reply));
 
 	fastify.get("/tournament", (request: FastifyRequest, reply: FastifyReply) => getTournament(request, reply));
-	fastify.get("/tournament/gamers", (request: FastifyRequest, reply: FastifyReply) => getTournamentGamers(request, reply));
+	fastify.get("/tournament/:gameId", (request: FastifyRequest, reply: FastifyReply) => getTournamentLobby(request, reply));
+	fastify.get("/tournament/create", (request: FastifyRequest, reply: FastifyReply) => createTournamentLobby(request, reply));
 	fastify.get("/match/nicks", (request: FastifyRequest, reply: FastifyReply) => matchNicks(request, reply));
 	fastify.get("/tournament/nicks", (request: FastifyRequest, reply: FastifyReply) => tournamentNicks(request, reply));
 	fastify.get("/match/gamers", (request: FastifyRequest, reply: FastifyReply) => matchGamers(request, reply));
-	fastify.post("/tournament/add", (request: FastifyRequest, reply: FastifyReply) => addTournament(request, reply));
-	fastify.post("/tournament/update", (request: FastifyRequest, reply: FastifyReply) => updateTournment(request, reply));
+	fastify.post("/tournament/local/add", (request: FastifyRequest, reply: FastifyReply) => addLocalTournament(request, reply));
+	fastify.post("/tournament/remote/add", (request: FastifyRequest, reply: FastifyReply) => addRemoteTournament(request, reply));
+	fastify.post("/tournament/local/update", (request: FastifyRequest, reply: FastifyReply) => updateLocalTournment(request, reply));
 }
 

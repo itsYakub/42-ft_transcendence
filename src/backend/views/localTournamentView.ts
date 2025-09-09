@@ -21,7 +21,7 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 				</fieldset>
 			</div>
 			<div class="border border-fuchsia-800 border-l-0 w-30 h-60"></div>
-			<div class="border border-fuchsia-800 w-30 h-0.25"></div>
+			<hr class="w-30 h-px bg-fuchsia-800 border-0">
 			<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800">Final</legend>
 				<div class="flex flex-col gap-1 justify-center items-center">
@@ -68,6 +68,7 @@ function nextMatchHtml(tournament: LocalTournament) {
 	const m3 = tournament.matches[2];
 	let g1: LocalGamer;
 	let g2: LocalGamer;
+	let matchNumber = 0;
 
 	if (m3.g1.score > m3.g2.score) {
 		const winner = m3.g1.score > m3.g2.score ? m3.g1.nick : m3.g2.nick;
@@ -77,21 +78,24 @@ function nextMatchHtml(tournament: LocalTournament) {
 	if (0 == m1.g1.score && 0 == m1.g2.score) {
 		g1 = m1.g1;
 		g2 = m1.g2;
+		matchNumber = 1;
 	}
 	else if (0 == m2.g1.score && 0 == m2.g2.score) {
 		g1 = m2.g1;
 		g2 = m2.g2;
+		matchNumber = 2;
 	}
 	else if (0 == m3.g1.score && 0 == m3.g2.score) {
 		g1 = m3.g1;
 		g2 = m3.g2;
+		matchNumber = 3;
 	}
 
 	return `
 	<div class="flex flex-row justify-center items-center gap-2">
 		<div class="text-[#BE2AD1] text-lg">${g1.nick}</div>
 		<span class="text-gray-300 text-lg"> vs </span>
-		<div class="text-[#FFCD5A] text-lg">${g2.nick}</div>${nextMatchButtonHtml(g1, g2, 1)}
+		<div class="text-[#FFCD5A] text-lg">${g2.nick}</div>${nextMatchButtonHtml(g1, g2, matchNumber)}
 	</div>
 	`;
 

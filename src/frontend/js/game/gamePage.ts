@@ -1,11 +1,13 @@
 import { getLanguage, isLoggedIn, showPage } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
-import { Page, Result } from "../../../common/interfaces.js";
-import { createRemoteTournament, joiningTournament } from "../sockets/remoteTournamentsMessages.js";
+import { MessageType, Page, Result } from "../../../common/interfaces.js";
+import { joiningTournament, tournamentGamerLeft } from "../sockets/remoteTournamentsMessages.js";
 import { createRemoteMatch, joiningMatch, matchGamerLeaving } from "../sockets/remoteMatchesMessages.js";
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
 import { localTournamentListeners } from "./localTournament.js";
+import { sendMessageToServer } from "../sockets/clientSocket.js";
+import { createRemoteTournament, tournamentListeners } from "./remoteTournament.js";
 
 export function gameListeners() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -53,8 +55,14 @@ export function gameListeners() {
 			if (!await isLoggedIn())
 				return showPage(Page.AUTH);
 
-			createRemoteTournament();
-			showPage(Page.GAME);
+			const result = await createRemoteTournament();
+			console.log(result);
+			if (Result.SUCCESS == result) {
+				showPage(Page.GAME);
+				sendMessageToServer({
+					type: MessageType.GAME_LIST_CHANGED
+				});
+			}
 		});
 
 	const joinMatchButtons = document.getElementsByClassName("joinMatchButton");

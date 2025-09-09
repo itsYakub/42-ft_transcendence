@@ -1,20 +1,21 @@
 import { DatabaseSync } from "node:sqlite";
 import { gamePlayers } from '../../db/gameDb.js';
 import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
-import { createTournament, readTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult } from '../../db/tournamentsDb.js';
-import { remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
+import { readRemoteTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult, createRemoteTournament } from '../../db/remoteTournamentsDb.js';
+import { remoteTournamentLobbyPlayersView, remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
+import { sendMessageToGameIdUsers, sendMessageToUser, sendMessageToUsers } from "./serverSocket.js";
 
 export function generateTournament(db: DatabaseSync, user: ShortUser) {
 	const gamersBox = gamePlayers(db, user.gameId);
 	if (Result.SUCCESS == gamersBox.result) {
 		const shuffled = shuffleGamers(gamersBox.contents);
-		if (Result.SUCCESS == createTournament(db, user.gameId, shuffled)) {
-			// broadcastMessageToClients(fastify, {
-			// 	type: MessageType.TOURNAMENT_UPDATE,
-			// 	gameId: user.gameId
-			// });
+		if (Result.SUCCESS == createRemoteTournament(db, user.gameId, shuffled)) {
+			sendMessageToGameIdUsers({
+				type: MessageType.TOURNAMENT_UPDATE,
+				gameId: user.gameId
+			}, user.gameId);
 		}
 	}
 }
@@ -25,35 +26,36 @@ export function tournamentJoinReceived(db: DatabaseSync, user: ShortUser, messag
 		const gamers = usersInTournament(db, gameId);
 		if (Result.SUCCESS == gamers.result) {
 			if (4 == gamers.contents.length) {
-				if (createTournament(db, gameId, gamers.contents))
-					// broadcastMessageToClients(
-					// 	fastify, {
-					// 	type: MessageType.TOURNAMENT_UPDATE,
-					// 	gameId
-					// }
-					// );
-				return;
+				generateTournament(db, user);
 			}
-			message.fromId = user.userId;
-			message.content = remoteTournamentGamersHtml(gamers.contents);
-			//broadcastMessageToClients(fastify, message);
+			const content = remoteTournamentLobbyPlayersView(gamers.contents);
+			sendMessageToGameIdUsers({
+				type: MessageType.TOURNAMENT_LOBBY_CHANGED,
+				gameId,
+				content
+			}, gameId);
+			sendMessageToUsers({
+				type: MessageType.GAME_LIST_CHANGED
+			});
 		}
 	}
 }
 
 export function tournamentGamerReadyReceived(db: DatabaseSync, user: ShortUser, message: Message) {
-	const tournament = readTournament(db, user.gameId);
+	const tournament = readRemoteTournament(db, user.gameId);
 	if (Result.SUCCESS == tournament.result) {
 		const match = userMatch(tournament.contents, user);
 		markTournamentGamerReady(db, tournament.contents, user);
-		// broadcastMessageToClients(fastify, {
-		// 	type: MessageType.TOURNAMENT_UPDATE,
-		// 	gameId: user.gameId,
-		// 	match
-		// });
+		sendMessageToGameIdUsers({
+			type: MessageType.TOURNAMENT_UPDATE,
+			gameId: user.gameId
+		}, user.gameId);
 
-		if (userOpponent(match, user).ready) {
+		const opponent = userOpponent(match, user);
+		if (opponent.ready) {
 			console.log(`starting match between ${match.g1.nick} and ${match.g2.nick}`);
+			sendMessageToUser({type: MessageType.TOURNAMENT_MATCH_START}, user.userId);
+			sendMessageToUser({type: MessageType.TOURNAMENT_MATCH_START}, opponent.userId);
 			// broadcastMessageToClients(fastify, {
 			// 	type: MessageType.TOURNAMENT_MATCH_START,
 			// 	match
@@ -82,7 +84,7 @@ export function tournamentMatchEndReceived(db: DatabaseSync, user: ShortUser, me
 	}
 
 	if (Result.SUCCESS == updateTournamentMatchResult(db, user.gameId, match)) {
-		const tournament = readTournament(db, user.gameId);
+		const tournament = readRemoteTournament(db, user.gameId);
 		if (Result.SUCCESS == tournament.result) {
 			const matches = tournament.contents.matches;
 
@@ -120,15 +122,21 @@ function userMatch(tournament: Tournament, user: ShortUser): Match {
 }
 
 export function tournamentLeaveReceived(db: DatabaseSync, user: ShortUser, message: Message) {
+	console.log(user.gameId, user.nick);
+	const gameId = user.gameId;
 	if (Result.SUCCESS == removeUserFromMatch(db, user.userId)) {
-		const gamers = usersInTournament(db, user.gameId);
+		const gamers = usersInTournament(db, gameId);
+		console.log(gamers);
 		if (Result.SUCCESS == gamers.result) {
-			// broadcastMessageToClients(fastify, {
-			// 	type: MessageType.TOURNAMENT_LEAVE,
-			// 	gameId: user.gameId,
-			// 	fromId: user.userId,
-			// 	content: remoteTournamentGamersHtml(gamers.contents)
-			// });
+			const content = remoteTournamentLobbyPlayersView(gamers.contents);
+			sendMessageToGameIdUsers({
+				type: MessageType.TOURNAMENT_LOBBY_CHANGED,
+				gameId,
+				content
+			}, gameId);
+			sendMessageToUsers({
+				type: MessageType.GAME_LIST_CHANGED
+			});
 		}
 	}
 }

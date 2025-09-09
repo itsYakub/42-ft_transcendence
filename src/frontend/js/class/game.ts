@@ -521,7 +521,7 @@ export class Game {
 /* SECTION: Global game object */
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
-export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
+export const g_gameScoreTotal: number = /* 10.0; */ 1.0;
 export const g_boundCellSize: number = 0.5;
 
 export var g_game: Game = new Game();
