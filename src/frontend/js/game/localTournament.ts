@@ -28,23 +28,23 @@ export function localTournamentListeners() {
 
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
-				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-					const response = await fetch("/tournament/update", {
-						method: "POST",
-						headers: {
-							"content-type": "application/json"
-						},
-						body: JSON.stringify({
-							g1Nick: this.dataset.g1,
-							g2Nick: this.dataset.g2,
-							g1Score: e.detail["g1Score"],
-							g2Score: e.detail["g2Score"],
-							matchNumber: this.dataset.match
-						})
-					});
-					//if (Result.SUCCESS == await response.text())
-					//navigate(window.location.href, false);
-				})
+				// dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+				// 	const response = await fetch("/tournament/update", {
+				// 		method: "POST",
+				// 		headers: {
+				// 			"content-type": "application/json"
+				// 		},
+				// 		body: JSON.stringify({
+				// 			g1Nick: this.dataset.g1,
+				// 			g2Nick: this.dataset.g2,
+				// 			g1Score: e.detail["g1Score"],
+				// 			g2Score: e.detail["g2Score"],
+				// 			matchNumber: this.dataset.match
+				// 		})
+				// 	});
+				// 	if (Result.SUCCESS == await response.text())
+				// 		showPage(Page.GAME);
+				// })
 			}
 			setTimeout(async () => {
 				g_game.setupElements(GameMode.GAMEMODE_PVP, {
@@ -52,7 +52,7 @@ export function localTournamentListeners() {
 				}, {
 					nick: this.dataset.g2
 				});
-			}, 1000);
+			}, 500);
 		});
 	}
 
