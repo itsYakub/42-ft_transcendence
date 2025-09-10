@@ -1,4 +1,5 @@
-import * as BABYLON from '@babylonjs/core/Legacy/legacy';
+import * as BABYLON from '@babylonjs/core';
+
 import { Shape } from './shape.js';
 import { g_game, g_gamePlayableArea, g_boundCellSize } from './game.js';
 import { sendMessageToServer } from '../sockets/clientSocket.js';
@@ -13,6 +14,10 @@ export class Ball extends Shape {
     private readonly m_syncInterval: number = 100; // Reduced to 10 updates per second
     private m_forcedSync: boolean = false;
 
+	/* Speed amplification */
+	private m_speedInitial : number = 1.0;
+	private m_speedCurrent : number;
+
     /* SECTION: Constructor */
 
     public constructor(canvas : HTMLCanvasElement, scene : BABYLON.Scene) {
@@ -25,6 +30,7 @@ export class Ball extends Shape {
         /* Create the ball itself */
         this.m_name = 'ball';
         this.createMesh();
+		this.m_speedCurrent = this.m_speedInitial;
     }
 
     /* SECTION: Public Methods */
@@ -44,14 +50,11 @@ export class Ball extends Shape {
         }
 
         do {
-            this.vel.x = Math.floor(Math.random() * 3.0 + -1.0);
-        } while(this.vel.x == 0.0);
+            this.dir.x = Math.floor(Math.random() * 3.0 + -1.0);
+        } while(this.dir.x == 0.0);
         do {
-            this.vel.y = Math.floor(Math.random() * 3.0 + -1.0);
-        } while(this.vel.y == 0.0);
-
-        /* Simple position-prediction for the ball */
-        this.simulatePosition();
+            this.dir.y = Math.floor(Math.random() * 3.0 + -1.0);
+        } while(this.dir.y == 0.0);
 
         // Send initial ball state to other client
         if (g_game.networked && g_game.gameId) {
@@ -61,7 +64,8 @@ export class Ball extends Shape {
 
     public reset() {
         this.pos.x = this.pos.y = 0.0;
-        this.vel.x = this.vel.y = 0.0;
+        this.dir.x = this.dir.y = 0.0;
+		this.m_speedCurrent = this.m_speedInitial;
 
         // Send reset state to other client immediately
         if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
@@ -84,15 +88,17 @@ export class Ball extends Shape {
         // In networked games, only the master client updates ball physics
         if (g_game.networked && g_game.localIndex !== 0) {
             // Non-master clients only update visual position, physics are synced from network
-            super.update();
+            super.update(this.m_speedCurrent);
             return;
         }
 
         this.playerBounceCheck();
+		/* Cap the ball's speed between the initial value and the imaginary maximum value (2.0) */
+		this.m_speedCurrent = Math.max(this.m_speedInitial, Math.min(2.0, this.m_speedCurrent));
         this.wallBounceCheck();
 
         /* Update the base 'Shape' class */
-        super.update();
+        super.update(this.m_speedCurrent);
 
         // Send ball position to other client periodically (throttled) or when forced
         if (g_game.networked && g_game.gameId) {
@@ -106,11 +112,11 @@ export class Ball extends Shape {
     }
 
     // New method to sync ball state from network
-    public syncFromNetwork(pos: {x: number, y: number}, vel: {x: number, y: number}) {
+    public syncFromNetwork(pos: {x: number, y: number}, dir: {x: number, y: number}) {
         this.pos.x = pos.x;
         this.pos.y = pos.y;
-        this.vel.x = vel.x;
-        this.vel.y = vel.y;
+        this.dir.x = dir.x;
+        this.dir.y = dir.y;
     }
 
     // Method to send ball updates to other clients
@@ -120,7 +126,7 @@ export class Ball extends Shape {
         const ballPayload = {
             kind: "BALL_UPDATE",
             pos: { x: this.pos.x, y: this.pos.y },
-            vel: { x: this.vel.x, y: this.vel.y },
+            dir: { x: this.dir.x, y: this.dir.y },
             timestamp: Date.now()
         };
 
@@ -132,31 +138,31 @@ export class Ball extends Shape {
     }
 
     /* NOTE(joleksia):
-     *  This function simulates the future ball position after the bounce
+     *  This function simulates the future ball position until the LEFT or RIGHT wall
      */
     public simulatePosition() : BABYLON.Vector2 {
-        let	pos : BABYLON.Vector2 = new BABYLON.Vector2(this.pos.x, this.pos.y);
-        let	vel : BABYLON.Vector2 = new BABYLON.Vector2(this.vel.x, this.vel.y);
+        let	pos0 : BABYLON.Vector2 = new BABYLON.Vector2(this.pos.x, this.pos.y);
+        let	dir0 : BABYLON.Vector2 = new BABYLON.Vector2(this.dir.x, this.dir.y);
         /* This is kept here for safety purposes to avoid infinite loops */
         let	sim_cap : number = 128;
 
         while (sim_cap-- > 0) {
-            if (/* Bounce: TOP */    (pos.y - this.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
-                /* Bounce: BOTTOM */ (pos.y + this.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
+            if (/* Bounce: TOP */    (pos0.y - this.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
+                /* Bounce: BOTTOM */ (pos0.y + this.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
             ) {
-                vel.y *= -1.0;
+                dir0.y *= -1.0;
             }
-            else if (/* Bounce: LEFT */  (pos.x - this.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
-                /* Bounce: RIGHT */ (pos.x + this.siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
+            else if (/* Bounce: LEFT */  (pos0.x - this.siz.x / 2.0) <= (-g_gamePlayableArea.x + g_boundCellSize / 2.0) ||
+				     /* Bounce: RIGHT */ (pos0.x + this.siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
             ) {
                 break;
             }
 
-            pos.x += vel.x;
-            pos.y += vel.y;
+            pos0.x += dir0.x;
+            pos0.y += dir0.y;
         }
 
-        return (pos);
+        return (pos0);
     }
 
     /* SECTION: Private Methods */
@@ -169,13 +175,13 @@ export class Ball extends Shape {
             /* Bounce: RIGHT */ (this.pos.x + this.siz.x / 2.0) >= (g_gamePlayableArea.x - g_boundCellSize / 2.0)
         ) {
             g_game.score(this.pos.x > 0.0, this.pos.x < 0.0);
-            this.m_vel.x *= -1.0;
+            this.m_dir.x *= -1.0;
         }
 
         if (/* Bounce: TOP */    (this.pos.y - this.siz.y / 2.0) <= (-g_gamePlayableArea.y + g_boundCellSize / 2.0) ||
             /* Bounce: BOTTOM */ (this.pos.y + this.siz.y / 2.0) >= (g_gamePlayableArea.y - g_boundCellSize / 2.0)
         ) {
-            this.m_vel.y *= -1.0;
+            this.m_dir.y *= -1.0;
 
             // Mark for forced sync on next update instead of immediate send
             if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
@@ -208,10 +214,11 @@ export class Ball extends Shape {
         );
 
         /* Ball - Player0 (left) bounce */
-        if (this.m_box.intersectsMesh(p0) && this.vel.x < 0.0) {
+        if (this.m_box.intersectsMesh(p0) && this.dir.x < 0.0) {
             /* Horizontal bounce (on X axis: left-right) */
             if (Math.abs((b_tl.x) - (p0_tl.x + p0_tl.z)) < p0_tl.z) {
-                this.vel.x *= -1.0;
+                this.dir.x *= -1.0;
+				this.m_speedCurrent += 0.08;
                 // Mark for forced sync on next update
                 if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
                     this.m_forcedSync = true;
@@ -220,10 +227,10 @@ export class Ball extends Shape {
 
             /* Vertical bounce (on Y axis: top-down) */
             else if (
-                Math.abs((b_tl.y + b_tl.w) - (p0_tl.y)) < p0_tl.w && this.vel.y > 0 ||
-                Math.abs((b_tl.y) - (p0_tl.y + p0_tl.w)) < p0_tl.w && this.vel.y < 0
+                Math.abs((b_tl.y + b_tl.w) - (p0_tl.y)) < p0_tl.w && this.dir.y > 0 ||
+                Math.abs((b_tl.y) - (p0_tl.y + p0_tl.w)) < p0_tl.w && this.dir.y < 0
             ) {
-                this.vel.y *= -1.0;
+                this.dir.y *= -1.0;
                 // Mark for forced sync on next update
                 if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
                     this.m_forcedSync = true;
@@ -232,10 +239,11 @@ export class Ball extends Shape {
         }
 
         /* Ball - Player1 (right) bounce */
-        if (this.m_box.intersectsMesh(p1) && this.vel.x > 0.0) {
+        if (this.m_box.intersectsMesh(p1) && this.dir.x > 0.0) {
             /* Horizontal bounce (on X axis: left-right) */
             if (Math.abs((b_tl.x + b_tl.z) - (p1_tl.x)) < p1_tl.w) {
-                this.vel.x *= -1.0;
+                this.dir.x *= -1.0;
+				this.m_speedCurrent += 0.08;
                 // Mark for forced sync on next update
                 if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
                     this.m_forcedSync = true;
@@ -244,10 +252,10 @@ export class Ball extends Shape {
 
             /* Vertical bounce (on Y axis: top-down) */
             else if (
-                Math.abs((b_tl.y + b_tl.w) - (p1_tl.y)) < p1_tl.w && this.vel.y > 0 ||
-                Math.abs((b_tl.y) - (p1_tl.y + p1_tl.w)) < p1_tl.w && this.vel.y < 0
+                Math.abs((b_tl.y + b_tl.w) - (p1_tl.y)) < p1_tl.w && this.dir.y > 0 ||
+                Math.abs((b_tl.y) - (p1_tl.y + p1_tl.w)) < p1_tl.w && this.dir.y < 0
             ) {
-                this.vel.y *= -1.0;
+                this.dir.y *= -1.0;
                 // Mark for forced sync on next update
                 if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
                     this.m_forcedSync = true;

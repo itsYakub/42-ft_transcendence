@@ -30,10 +30,10 @@ export class Gui {
 
 		/* Create the GUI mesh for player0
 		 * */		
-		var mesh0 = BABYLON.MeshBuilder.CreatePlane('ui-plane0', { size: 2, width: 5, height: 5 } ); 
+		var mesh0 = BABYLON.MeshBuilder.CreatePlane('ui-plane0', { size: 2, width: 6, height: 6 } ); 
 		var advancedTexture0 = GUI.AdvancedDynamicTexture.CreateForMesh(mesh0);
 		mesh0.rotation = new BABYLON.Vector3(1.5, 0.0, 0.0);
-		mesh0.position = new BABYLON.Vector3(-4.0, 2.5, 2.5);
+		mesh0.position = new BABYLON.Vector3(-3.0, 2.5, 2.5);
 
 		var rect0 = new GUI.Rectangle();
 		rect0.background = '#00000000';
@@ -43,7 +43,7 @@ export class Gui {
 		var text0 = new GUI.TextBlock();
 		text0.color = 'white';
 		text0.fontFamily = 'Sans-serif';
-		text0.fontSize = 96;
+		text0.fontSize = 64;
 		text0.fontWeight = 'bolder';
 		text0.text = p0.nick + ': ' + p0.score;
 		text0.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -51,10 +51,10 @@ export class Gui {
 		
 		/* Create the GUI mesh for player1
 		 * */		
-		var mesh1 = BABYLON.MeshBuilder.CreatePlane('ui-plane1', { size: 2, width: 5, height: 5 } ); 
+		var mesh1 = BABYLON.MeshBuilder.CreatePlane('ui-plane1', { size: 2, width: 6, height: 6 } ); 
 		var advancedTexture1 = GUI.AdvancedDynamicTexture.CreateForMesh(mesh1);
 		mesh1.rotation = new BABYLON.Vector3(1.5, 0.0, 0.0);
-		mesh1.position = new BABYLON.Vector3(4.0, 2.5, 2.5);
+		mesh1.position = new BABYLON.Vector3(3.0, 2.5, 2.5);
 
 		var rect1 = new GUI.Rectangle();
 		rect1.background = '#00000000';
@@ -64,7 +64,7 @@ export class Gui {
 		var text1 = new GUI.TextBlock();
 		text1.color = 'white';
 		text1.fontFamily = 'Sans-serif';
-		text1.fontSize = 96;
+		text1.fontSize = 64;
 		text1.fontWeight = 'bolder';
 		text1.text = p1.score + ' :' + p1.nick;
 		text1.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
