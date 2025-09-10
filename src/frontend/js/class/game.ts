@@ -118,6 +118,8 @@ export class Game {
     get gameOver() { return (this.m_gameOver); }
     get deltaTime() { return (this.m_engine.getDeltaTime() * 0.001); }
     get ball() { return (this.m_ball); }
+    get player0() { return (this.m_player0); }
+    get player1() { return (this.m_player1); }
 
     // Add these getter methods to access private properties for ball synchronization
     get networked() { return this.m_networked; }
@@ -492,7 +494,7 @@ export class Game {
         let scene = new BABYLON.Scene(this.m_engine);
 
         /* SECTION: Camera Setup */
-        let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 10, new BABYLON.Vector3(0, 0, 0));
+        let camera = new BABYLON.ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 16, 12, new BABYLON.Vector3(0, 0, 0));
 
         const light = new BABYLON.PointLight("light0", new BABYLON.Vector3(0, 5, 0), scene);
         light.intensity = 2.0;

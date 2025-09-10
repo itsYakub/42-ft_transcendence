@@ -34,7 +34,7 @@ export class Player extends Shape {
 
 	/* AI Section
 	 * */
-	private	m_aiDest : BABYLON.Vector2;
+	private	m_aiPrediction : BABYLON.Vector2;
 	private	m_aiTimerElapsed : number;
 
 	/* SECTION:
@@ -87,7 +87,7 @@ export class Player extends Shape {
 		/* Set the AI data
 		 * */
 		this.m_aiTimerElapsed = 0.0;
-		this.m_aiDest = BABYLON.Vector2.Zero();
+		this.m_aiPrediction = BABYLON.Vector2.Zero();
 
 		console.log('[ INFO ] Player created | Side: ' + (side == 0.0 ? 'LEFT' : 'RIGHT') + ' | Mode: ' + (this.m_mode == PlayerMode.PLAYERMODE_HUMAN ? 'HUMAN' : 'AI'));
 	}	
@@ -107,33 +107,38 @@ export class Player extends Shape {
 	public reset() {
 		this.pos.y = 0.0;
 		this.dir.x = this.dir.y = 0.0;
+		this.m_aiPrediction.x = this.m_aiPrediction.y = 0.0;
 		this.m_aiTimerElapsed = 0.0;
 
 		super.update(1.0);
 	}
 
 	public update() {
-		let	up : boolean;
-		let down : boolean;
-		let round_precision : number = 10.0;
-
 		switch (this.m_mode) {
 			case (PlayerMode.PLAYERMODE_HUMAN): {
-				up = Game.keys[this.m_keyUp];
-				down = Game.keys[this.m_keyDown];
+				if (Game.keys[this.m_keyUp] && !Game.keys[this.m_keyDown]) {
+					this.m_dir.y = 1.0;
+				}
+				else if (!Game.keys[this.m_keyUp] && Game.keys[this.m_keyDown]) {
+					this.m_dir.y = -1.0;
+				}
+				else {
+					this.m_dir.y = 0.0;
+				}
 			} break;
 			case (PlayerMode.PLAYERMODE_AI): {
 				this.aiBehaviour();
-				/* NOTE(joleksia):
-				 *  This one is for dealing with floating-point precision.
-				 *  We could simply just round the values to the nearest integer but it would cause an important data loss.
-				 *  Insteas, we multiply the data by the desired precision and then round to the nearest int. 
-				 * */
-				up = Math.round(this.pos.y * round_precision) < Math.round(this.m_aiDest.y * round_precision);
-				down = Math.round(this.pos.y * round_precision) > Math.round(this.m_aiDest.y * round_precision);
+				if (Math.round(this.m_pos.y * 10.0) < Math.round(this.m_aiPrediction.y * 10.0)) {
+					this.m_dir.y = 1.0;
+				}
+				else if (Math.round(this.m_pos.y * 10.0) > Math.round(this.m_aiPrediction.y * 10.0)) {
+					this.m_dir.y = -1.0;
+				}
+				else {
+					this.m_dir.y = 0.0;
+				}
 			} break;
 		}
-		this.movePlayer(up, down);
 
 		/* Update the base 'Shape' class
 		 * */
@@ -143,21 +148,7 @@ export class Player extends Shape {
 	/* SECTION:
 	 *  Private Methods
 	 * */
-
-	private movePlayer(up : boolean, down : boolean) {
-		/* NOTE(joleksia):
-		 *  This is just a simple, bare-bones solution for player movement
-		 *  It requires a lot of improvements especially if it comes to sockets.
-		 *  @agarbacz please review it.
-		 * */
-		let	dir : number = 0.0;
-		if (up) { dir = 1.0; }
-		else if (down) { dir = -1.0; }
-		else { dir = 0.0; }
-
-		this.dir.y = dir;
-	}
-
+	
 	private aiBehaviour() {
 		/* Simple workflow:
 		 * - if m_aiTimerElapsed < 1.0: just increase the value by the deltaTime;
@@ -166,15 +157,14 @@ export class Player extends Shape {
 		if (this.m_aiTimerElapsed >= 1.0) {
 			this.m_aiTimerElapsed = 0.0;
 
-			this.m_aiDest = g_game.ball.simulatePosition();
-			console.log('[ INFO ] Potential ball position: ' + this.m_aiDest);
-			console.log('[ INFO ] Current pallet position: ' + this.pos);
+			this.m_aiPrediction = g_game.ball.nextBouncePrediction;
 		}
 		else if (this.m_aiTimerElapsed < 1.0) {
 			this.m_aiTimerElapsed += g_game.deltaTime;
 		}
 	}
 }
+
 
 
 /* SECTION:
