@@ -270,16 +270,134 @@ function translateEnglish(text: string): string {
 }
 
 function translatePolish(text: string): string {
-	switch (text) {
-		case "TEXT_HOME": return "Strona Główna";
-		case "TEXT_GAME": return "Gra";
-		case "TEXT_TOURNAMENT": return "Turniej";
-		case "TEXT_FORM_TITLE": return "Zaloguj się lub załóż konto";
-		case "TEXT_EMAIL": return "Mail";
-		case "TEXT_PASSWORD": return "Hasło";
-		case "TEXT_LOGIN": return "Zaloguj się";
-		case "TEXT_REGISTER": return "Załóż konto";
-		case "HOME_TITLE": return "Witamy w projekcie Transcendence!";
-		default: return text;
-	}
+    switch (text) {
+        case "BUTTON_ACCOUNT": return "Konto";
+        case "BUTTON_ADD_FOE": return "Dodaj przeciwnika";
+        case "BUTTON_ADD_FRIEND": return "Zaproś znajomego";
+        case "BUTTON_AI_MATCH": return "Mecz z AI";
+        case "BUTTON_APP_TOTP": return "Aplikacja";
+        case "BUTTON_BLOCK_USER": return "Blokuj";
+        case "BUTTON_CHAT": return "Czat";
+        case "BUTTON_DISABLE_TOTP": return "Zdezaktywuj";
+        case "BUTTON_EMAIL_TOTP": return "Email";
+        case "BUTTON_FOES": return "Przeciwnicy";
+        case "BUTTON_FRIENDS": return "Znajomi";
+        case "BUTTON_GAME": return "Gra";
+        case "BUTTON_HOME": return "Strona Główna";
+        case "BUTTON_INVALIDATE_TOKEN": return "Unieważnij token";
+        case "BUTTON_INVITE": return "Zaproś";
+        case "BUTTON_LOGIN": return "Zaloguj się";
+        case "BUTTON_GOOGLE": return "Kontynuuj z Google";
+        case "BUTTON_GUEST": return "Kontynuuj jako gość";
+        case "BUTTON_LOGOUT": return "Wyloguj się";
+        case "BUTTON_MATCH": return "1v1";
+        case "BUTTON_NOTIFICATIONS": return "Powiadomienia";
+        case "BUTTON_READY": return "Gotowość";
+        case "BUTTON_LEAVE": return "Opuść";
+        case "BUTTON_REGISTER": return "Zarejestruj się";
+        case "BUTTON_REMOVE_FOE": return "Usuń przeciwinika";
+        case "BUTTON_REMOVE_FRIEND": return "Usuń znajomego";
+        case "BUTTON_TOTP_VERIFY": return "Zweryfikuj";
+        case "BUTTON_TOURNAMENT": return "Turniej";
+        case "BUTTON_UPDATE": return "Zaktualizuj";
+        case "BUTTON_USERS": return "Użytkownicy";
+
+        case "ERR_AVATAR_TOO_BIG": return "Wybrany obrazek jest za duży - 100KiB max!";
+        case "ERR_BAD_PASSWORD": return "Niepoprawne hasło!";
+        case "ERR_BAD_TOTP": return "Niepoprawny kod!";
+        case "ERR_DB": return "Błąd bazy danych!";
+        case "ERR_EMAIL_IN_USE": return "Email jest w użyciu!";
+        case "ERR_FORBIDDEN": return "Zabronione!";
+        case "ERR_FORBIDDEN_NAME": return "Nazwa jest zabroniona.";
+        case "ERR_FULL": return "Pokój pełny!";
+        case "ERR_GOOGLE": return "Nie można zalogować się przez Google";
+        case "ERR_GOOGLE_EMAIL": return "Zaloguj się przez Google!";
+        case "ERR_NO_NEW_PASSWORD": return "Nowe hasło musi się różnić od poprzedniego!";
+        case "ERR_NO_USER": return "Użytkownik nie został znaleziony!";
+        case "ERR_NOT_FOUND": return "Nie znaleziono!";
+        case "ERR_PASSWORDS_DONT_MATCH": return "Proszę, powtórz hasło.";
+        case "ERR_SAME_EMAIL": return "Nie możesz dodać sam siebie!";
+        case "ERR_SAME_NAME": return "Nazwy muszą być unikatowe!";
+        case "ERR_TOTP_CODE": return "Niepoprawny kod!";
+        case "ERR_UNIQUE": return "Nazwy muszą być unikatowe!";
+        case "ERR_USER_OFFLINE": return "Użytkownik jest offline!";
+
+        case "MESSAGE_INVITATION": return "Dołącz do mojego turnieju!";
+        case "MESSAGE_TOTP": return "Twój kod 2FA";
+
+        case "PROMPT_TEXT_EMAIL": return "Email znajomego";
+        case "PROMPT_TOTP_CODE": return "Kod 2FA";
+
+        case "SUCCESS_ADDED_FRIEND": return "Dodano znajomego!";
+        case "SUCCESS_DISABLED_TOTP": return "Wyłączono 2FA!";
+        case "SUCCESS_TOTP": return "Sukces - zaloguj się ponownie";
+        case "SUCCESS_INVALIDATED_TOKEN": return "Token unieważniony!";
+        case "SUCCESS_NICK": return "Nick zmieniony!";
+        case "SUCCESS_PASSWORD": return "Hasło zmienione!";
+
+        case "TEXT_ACCOUNT_TITLE": return "Szczegóły konta";
+        case "TEXT_AI": return "AI";
+        case "TEXT_CHANGE_AVATAR": return "Zmień awatar";
+        case "TEXT_CHANGE_NICK": return "Zmień nick";
+        case "TEXT_CHANGE_PASSWORD": return "Zmień hasło";
+        case "TEXT_CHAT": return "Czat";
+        case "TEXT_CHAT_TITLE": return "Wiadomości bezpośrednie";
+        case "TEXT_CONGRATULATIONS": return "Gratulacje";
+        case "TEXT_CREATE_LOCAL": return "Nowy mecz lokalny";
+        case "TEXT_CREATE_REMOTE": return "Nowy mecz zdalny";
+        case "TEXT_CURRENT_PASSWORD": return "Obecne hasło";
+        case "TEXT_EMAIL": return "Email";
+        case "TEXT_FOES_TITLE": return "Przeciwnicy";
+        case "TEXT_FRIENDS_TITLE": return "Znajomi";
+        case "TEXT_GAME_TITLE": return "Mecze";
+        case "TEXT_GUEST": return "Gość";
+        case "TEXT_JOIN": return "W trakcie";
+        case "TEXT_LOCAL_MATCH": return "Mecz lokalny";
+        case "TEXT_LOCAL_TOURNAMENT": return "Turniej lokalny";
+        case "TEXT_LOG_IN_OR_REGISTER": return "Uzytkownik";
+        case "TEXT_MATCH": return "Mecz";
+        case "TEXT_MATCH_SINGULAR": return "Mecz";
+        case "TEXT_MATCH_PLURAL": return "Mecze";
+        case "TEXT_MESSAGES": return "Wiadomości";
+        case "TEXT_NEW_NICK": return "Nowy nick";
+        case "TEXT_NEW_PASSWORD": return "Nowe hasło";
+        case "TEXT_NO_FRIENDS": return "Brak znajomych!";
+        case "TEXT_NO_FOES": return "Brak przeciwników!";
+        case "TEXT_NO_USERS": return "Brak innych użytkowników!";
+        case "TEXT_PASSWORD": return "Hasło";
+        case "TEXT_PLAYER": return "Gracz";
+        case "TEXT_PLAYERS": return "gracze";
+        case "TEXT_REMOTE_MATCH": return "Mecz zdalny";
+        case "TEXT_REMOTE_TOURNAMENT": return "Turniej zdalny";
+        case "TEXT_REMOVE_FOE": return "Usuń z przeciwników";
+        case "TEXT_REMOVE_FRIEND": return "Usuń ze znajomych";
+        case "TEXT_REPEAT_PASSWORD": return "Powtórz hasło";
+        case "TEXT_START": return "Start";
+        case "TEXT_SUCCESS": return "Start";
+        case "TEXT_TEAM": return "Ekipa";
+        case "TEXT_TECH": return "Tech stack";
+        case "TEXT_TOTP_CODE": return "Kod";
+        case "TEXT_TOTP_CODE_TITLE": return "Podaj kod";
+        case "TEXT_TOTP_INPUT": return "wstaw kod poniżej";
+        case "TEXT_TOTP_SCAN": return "Zeskanuj kod QR albo wstaw ten klucz do aplikacji uwierzytelniającej";
+        case "TEXT_TOTP_TITLE": return "2FA";
+        case "TEXT_TOURNAMENT": return "Turniej";
+        case "TEXT_TOURNAMENT_FINAL": return "Finał";
+        case "TEXT_TOURNAMENT_SEMI_FINALS": return "Półfinały";
+        case "TEXT_TOURNAMENT_SINGULAR": return "turniej";
+        case "TEXT_TOURNAMENT_PLAY": return "Graj";
+        case "TEXT_TOURNAMENT_PLURAL": return "turnieje";
+        case "TEXT_USERS": return "Uzytkownicy";
+        case "TEXT_USER_DECISION": return "Wybierz opcję aby kontynuować";
+        case "TEXT_USERS_TITLE": return "Użytkownicy";
+        case "TEXT_WELCOME": return "Witamy w Transcendence!";
+        case "TEXT_WON": return "Wygrana";
+
+
+        case "TEXT_PLAYER_NAME_TITLE": return "Wybierz nazwę";
+        case "TEXT_PLAYER_NAME": return "Nazwa gracza";
+        case "TEXT_PLAYER_NAME_SET": return "Set";
+
+        default: return text;
+    }
 }
