@@ -2,12 +2,13 @@ import { getLanguage, isLoggedIn, showPage } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
 import { MessageType, Page, Result } from "../../../common/interfaces.js";
 import { joiningTournament, tournamentGamerLeft } from "../sockets/remoteTournamentsMessages.js";
-import { createRemoteMatch, joiningMatch, matchGamerLeaving } from "../sockets/remoteMatchesMessages.js";
+import { joiningMatch, matchGamerLeaving } from "../sockets/remoteMatchesMessages.js";
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
 import { localTournamentListeners } from "./localTournament.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 import { createRemoteTournament, tournamentListeners } from "./remoteTournament.js";
+import { numbersToNick } from "../../../common/utils.js";
 
 export function gameListeners() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -44,8 +45,14 @@ export function gameListeners() {
 			if (!await isLoggedIn())
 				return showPage(Page.AUTH);
 
-			createRemoteMatch();
-			showPage(Page.GAME);
+			const result = await createRemoteMatch();
+			console.log(result);
+			if (Result.SUCCESS == result) {
+				showPage(Page.GAME);
+				sendMessageToServer({
+					type: MessageType.GAME_LIST_CHANGED
+				});
+			}
 		});
 	}
 
@@ -109,7 +116,7 @@ async function startLocalMatch() {
 			g_game.setupElements(GameMode.GAMEMODE_PVP, {
 				nick: nicksBox.contents[0]
 			}, {
-				nick: nicksBox.contents[1]
+				nick: numbersToNick(nicksBox.contents[1])
 			});
 		}
 	}
@@ -124,7 +131,7 @@ async function startAiMatch() {
 			g_game.setupElements(GameMode.GAMEMODE_AI, {
 				nick: nicksBox.contents[0]
 			}, {
-				nick: nicksBox.contents[1]
+				nick: numbersToNick(nicksBox.contents[1])
 			});
 		}
 	}
@@ -134,7 +141,14 @@ async function createLocalTournament() {
 	const nicks = await fetch("/tournament/nicks");
 	const nicksBox = await nicks.json();
 	if (Result.SUCCESS == nicksBox.result) {
-		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(nicksBox.contents));
+		let newNicks = [];
+		nicksBox.contents.forEach(nick => newNicks.push(numbersToNick(nick)));
+		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(newNicks));
 		localTournamentListeners();
 	}
+}
+
+export async function createRemoteMatch(): Promise<Result> {
+	const response = await fetch(`/match/create`);
+	return Result[await response.text()];
 }

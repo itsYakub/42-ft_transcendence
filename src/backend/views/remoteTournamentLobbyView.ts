@@ -1,5 +1,4 @@
 import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
-import { gameDialogHtml } from "./dialogsView.js";
 
 export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
 	return `
@@ -27,7 +26,7 @@ export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessag
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" hidden>
-								<button type="submit" class="border border-gray-700 py-0.5 px-2 cursor-[url(/images/pointer.png),pointer] hover:bg-gray-700 rounded-lg bg-gray-800"><i class="text-fuchsia-800 fa-solid fa-play"></i></button>
+								<button type="submit" class="py-0.5 px-2 cursor-[url(/images/pointer.png),pointer] bg-stone-700 rounded-lg"><i class="text-fuchsia-800 fa-solid fa-play"></i></button>
 							</div>
 						</form>
 					</div>
@@ -35,7 +34,6 @@ export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessag
 			</fieldset>
 		</div>
 	</div>
-	${gameDialogHtml()}
 	`;
 }
 

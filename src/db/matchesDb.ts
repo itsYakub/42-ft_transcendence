@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, MatchGamer, Result, User, Match } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 export function getMatch(db: DatabaseSync, gameId: string): Box<Match> {
 	try {
@@ -41,7 +42,7 @@ function sqlToMatch(match: Record<string, SQLOutputValue>): Match {
 
 function sqlToMatchGamer(match: Record<string, SQLOutputValue>, gamerNumber: number): MatchGamer {
 	return {
-		nick: match[`g${gamerNumber}_nick`] as string,
+		nick: numbersToNick(match[`g${gamerNumber}_nick`] as string),
 		ready: Boolean(match[`g${gamerNumber}_ready`] as number),
 		score: match[`g${gamerNumber}_score`] as number,
 		userId: match[`g${gamerNumber}_user_id`] as number

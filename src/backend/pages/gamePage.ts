@@ -21,6 +21,8 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	if (user.gameId) {
 		const gameId = user.gameId;
 
+		console.log(gameId);
+
 		if (gameId.startsWith("t")) {
 			const localTournamentBox = readLocalTournament(db, gameId);
 			if (Result.SUCCESS == localTournamentBox.result)
@@ -90,7 +92,7 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 	}
 
 	if (user.gameId.startsWith("m"))
-		return reply.type("text/html").send(frameView(params, remoteMatchLobbyView(gamersBox.contents, user)));
+		return reply.type("text/html").send(frameView(params, remoteMatchLobbyView(gamersBox.contents)));
 
 	const chatsBox = readTournamentChats(db, user.gameId);
 	if (Result.SUCCESS != chatsBox.result) {

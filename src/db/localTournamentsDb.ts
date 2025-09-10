@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Result, LocalMatch, LocalGamer, LocalTournament } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 export function readLocalTournament(db: DatabaseSync, gameId: string): Box<LocalTournament> {
 	try {
@@ -18,12 +19,13 @@ export function readLocalTournament(db: DatabaseSync, gameId: string): Box<Local
 }
 
 export function createLocalTournament(db: DatabaseSync, gameId: string, gamers: string[]): Result {
+	console.log(gamers);
 	try {
 		const select = db.prepare("INSERT INTO local_tournaments (game_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?)");
 		select.run(gameId, gamers[0], gamers[1], gamers[2], gamers[3]);
 		return Result.SUCCESS;
 	}
-	catch (e) {
+	catch (e) {console.log(e);
 		return Result.ERR_DB;
 	}
 }
@@ -66,7 +68,7 @@ function sqlToLocalMatch(tournament: Record<string, SQLOutputValue>, matchNumber
 
 function sqlToLocalGamer(tournament: Record<string, SQLOutputValue>, matchNumber: number, gamerNumber: number): LocalGamer {
 	return {
-		nick: tournament[`m${matchNumber}_g${gamerNumber}_nick`] as string,
+		nick: numbersToNick(tournament[`m${matchNumber}_g${gamerNumber}_nick`] as string),
 		score: tournament[`m${matchNumber}_g${gamerNumber}_score`] as number,
 		userId: tournament[`m${matchNumber}_g${gamerNumber}_user_id`] as number
 	}

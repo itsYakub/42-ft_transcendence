@@ -1,25 +1,29 @@
 import { Box, Page, Result } from "../../../common/interfaces.js";
+import { nickToNumbers } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
 import { isLoggedIn, showAlert, showPage } from "./../index.js";
 
 async function generateTournament(names: string[]) {
-	const shuffled = names.sort(() => Math.random() - 0.5);
+	let newNames = [];
+	names.forEach((name, index) => {
+		0 == index ? newNames.push(name) : newNames.push(nickToNumbers(name))
+	});
+	const shuffled = newNames.sort(() => Math.random() - 0.5);
+	console.log("shuffled", shuffled);
+	console.log("new", newNames);
 	const response = await fetch("/tournament/local/add", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
 		},
 		body: JSON.stringify({
-			gamers: shuffled
+			gamers: newNames
 		})
 	});
 
-	const text = await response.text();
-	if (text.includes("403 Forbidden")) {
-		return Result.ERR_FORBIDDEN_NAME;
-	}
+	console.log(response);
 
-	return text;
+	return await response.text();
 }
 
 export function localTournamentListeners() {

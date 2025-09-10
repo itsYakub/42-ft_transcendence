@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, GameChatMessage, Message, Result } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 /*
 	Gets all the game's messages
@@ -38,6 +39,6 @@ function sqlToTournamentChatMessage(sqlChat: Record<string, SQLOutputValue>): Ga
 	return {
 		chat: sqlChat.chat as string,
 		fromId: sqlChat.from_id as number,
-		nick: sqlChat.nick as string,
+		nick: numbersToNick(sqlChat.nick as string),
 	}
 }

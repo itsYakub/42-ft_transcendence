@@ -93,6 +93,7 @@ export const animals = [
 	"Heron",
 	"Herring",
 	"Hippopotamus",
+	"Hornet",
 	"Horse",
 	"Human",
 	"Hummingbird",

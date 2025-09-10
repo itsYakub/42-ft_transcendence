@@ -1,5 +1,4 @@
 import { GameChatMessage, Match, MatchGamer, ShortUser, Tournament, User } from "../../common/interfaces.js";
-import { gameDialogHtml } from "./dialogsView.js";
 import { remoteTournamentMessagesHtml } from "./remoteTournamentLobbyView.js";
 
 export function remoteTournamentView(tournament: Tournament, chats: GameChatMessage[], user: User): string {
@@ -29,7 +28,6 @@ export function remoteTournamentView(tournament: Tournament, chats: GameChatMess
 			</div>
 		</div>
 	</div>
-	${gameDialogHtml()}
 	`;
 }
 
@@ -60,7 +58,6 @@ export function remoteTournamentDetails(tournament: Tournament, user: ShortUser)
 		<div class="text-gray-300 text-lg text-center mb-2">Other match</div>
 		${secondaryMatchHtml(tournament.matches[1 == match.matchNumber ? 1 : 0])}
 	</div>
-	${gameDialogHtml()}
 	`;
 
 	return html;
@@ -130,10 +127,9 @@ function finalHtml(match: Match, user: ShortUser): string {
 		return `
 			<div class="flex flex-col gap-2">
 				${gamerHtml(match.g1, user.userId, 1)}
-				<div class="text-white text-center">Vs</div>
+				<div class="text-white text-center">vs</div>
 				${gamerHtml(match.g2, user.userId, 2)}
 			</div>
-			${gameDialogHtml()}
 		`;
 	else
 		return secondaryMatchHtml(match);
@@ -162,7 +158,7 @@ function readyButtonHtml(gamer: MatchGamer, position: number) {
 		`
 		:
 		`
-		<button disabled class="text-stone-700 bg-[#FFCD5A] py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>
+		<button disabled class="text-stone-700 bg-[#FFCD5A] py-2 px-4 rounded-lg">${gamer.nick}</button>
 		`;
 	}
 	return `<button id="tournamentGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;

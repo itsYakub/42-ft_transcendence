@@ -1,5 +1,5 @@
 import { FrameParams, Page, User, UserType } from "../../common/interfaces.js";
-import { alertDialogHtml, profileDialogHtml } from "./dialogsView.js";
+import { alertDialogHtml, gameDialogHtml, profileDialogHtml } from "./dialogsView.js";
 
 export function navbarView(params: FrameParams): string {
 	let languageSelect = englishHtml();
@@ -60,6 +60,7 @@ function loggedInHtml(user: User, languageSelect: string, page: Page): string {
 		</div>
 	</div>
 	${profileDialogHtml()}
+	${gameDialogHtml()}
 	`;
 }
 
@@ -84,6 +85,7 @@ function guestHtml(user: User, languageSelect: string): string {
 		</div>
 	</div>
 	${profileDialogHtml()}
+	${gameDialogHtml()}
 	`;
 }
 

@@ -1,5 +1,5 @@
-import { Game, GameType, User } from "../../common/interfaces.js";
-import { gameDialogHtml } from "./dialogsView.js";
+import { Game, GameType } from "../../common/interfaces.js";
+import { numbersToNick } from "../../common/utils.js";
 
 export function gameView(games: Game[]): string {
 	return `
@@ -27,7 +27,6 @@ export function gameView(games: Game[]): string {
 			</div>
 		</div>
 	</div>
-	${gameDialogHtml()}
 	`;
 }
 
@@ -53,16 +52,16 @@ function gameButtonHtml(game: Game): string {
 	});
 
 	return GameType.TOURNAMENT == game.type ? `
-	<button class="joinTournamentButton w-full text-stone-700 bg-red-300/50 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300" data-id="${gameID}"><span class="text-green-300">%%TEXT_TOURNAMENT%%</span>${gamersString}</button>
+	<button class="joinTournamentButton w-full text-stone-700 bg-red-300/50 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300" data-id="${gameID}"><span class="text-green-800">%%TEXT_TOURNAMENT%%</span>${gamersString}</button>
 	`
 		:
 		`
-	<button class="joinMatchButton w-full text-stone-700 bg-red-300/50 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300" data-id="${gameID}"><span class="text-green-300">%%TEXT_MATCH%%</span>${gamersString}</button>
+	<button class="joinMatchButton w-full text-stone-700 bg-red-300/50 block mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300" data-id="${gameID}"><span class="text-green-800">%%TEXT_MATCH%%</span>${gamersString}</button>
 	`;
 }
 
 function nameHtml(gamer: string) {
 	return `
-	<div class="">${gamer}</div>
+	<div class="">${numbersToNick(gamer)}</div>
 	`;
 }

@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, MatchResult, Result } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 /*
 	Gets all the user's matches
@@ -33,7 +34,7 @@ export function createMatchResult(db: DatabaseSync, userId: number, opponent: st
 
 function sqlToMatchResult(matchResult: Record<string, SQLOutputValue>): MatchResult {
 	return {
-		opponent: matchResult.opponent as string,
+		opponent: numbersToNick(matchResult.opponent as string),
 		opponentScore: matchResult.opponent_score as number,
 		playedAt: new Date(matchResult.played_at as string),
 		score: matchResult.score as number,

@@ -1,5 +1,4 @@
 import { LocalGamer, LocalMatch, LocalTournament, User } from '../../common/interfaces.js';
-import { gameDialogHtml } from './dialogsView.js';
 
 export function localTournamentView(tournament: LocalTournament, user: User): string {
 	return `
@@ -35,7 +34,6 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 		</div>
 		<div id="leaveTournamentButton" class="text-red-900 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_LEAVE%%</div>
 	</div>
-	${gameDialogHtml()}
 	`;
 }
 

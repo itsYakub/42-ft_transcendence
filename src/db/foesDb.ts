@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Foe, Result } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 /*
 	Gets all the user's blocked ids
@@ -51,7 +52,7 @@ export function deleteFoe(db: DatabaseSync, userId: number, foeId: number): Resu
 function sqlToFoe(foe: Record<string, SQLOutputValue>): Foe {
 	return {
 		foeId: foe.foe_id as number,
-		nick: foe.nick as string,
+		nick: numbersToNick(foe.nick as string),
 		userId: foe.user_id as number
 	};
 }

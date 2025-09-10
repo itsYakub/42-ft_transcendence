@@ -6,8 +6,6 @@ import { tournamentListeners } from "../game/remoteTournament.js";
 import { getLanguage, showAlert } from "../index.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
-
-
 export function joiningTournament(gameId: string) {
 	sendMessageToServer({
 		type: MessageType.TOURNAMENT_JOIN,
@@ -33,34 +31,6 @@ export function sendTournamentMessage(chat: string) {
 		chat
 	});
 }
-
-/*
-	A user has entered or left a tournament
-*/
-// export async function joinOrLeaveTournament(user: ShortUser, message: Message) {
-// 	if (UserType.GUEST == user.userType && !user.gameId) {
-// 		//navigate(window.location.href);
-// 		return;
-// 	}
-
-// 	if (!user.gameId) {
-// 		//navigate(window.location.href, false);
-// 		return;
-// 	}
-
-// 	if (!isMessageForMe(user, message))
-// 		return;
-
-// 	if (user.gameId == message.gameId) {
-// 		const tournamentDetailsContainer = document.querySelector("#tournamentDetailsContainer");
-// 		if (tournamentDetailsContainer)
-// 			tournamentDetailsContainer.innerHTML = translate(getLanguage(), message.content);
-// 		const gamers = document.getElementsByClassName("tournamentGamer").length;
-// 		const tournamentPlayersLegend = document.querySelector("#tournamentPlayersLegend");
-// 		tournamentPlayersLegend.innerHTML = translate(getLanguage(), `${gamers} / 4 %%TEXT_PLAYERS%%`);
-// 		tournamentListeners();
-// 	}
-// }
 
 /*
 	A chat message has been sent to a tournament
@@ -101,7 +71,6 @@ export async function updateTournamentDetails(message: Message) {
 		}
 	}
 }
-
 
 export async function updateTournamentLobby(message: Message) {
 	const tournamentLobbyDetailsContainer = document.querySelector("#tournamentLobbyDetailsContainer");

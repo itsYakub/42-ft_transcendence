@@ -1,6 +1,7 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Gamer, Match, MatchGamer, Result, Tournament, ShortUser } from "../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
+import { numbersToNick } from "../common/utils.js";
 
 export function readRemoteTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
 	try {
@@ -113,7 +114,7 @@ function sqlToMatch(tournament: Record<string, SQLOutputValue>, matchNumber: num
 
 function sqlToMatchGamer(tournament: Record<string, SQLOutputValue>, matchNumber: number, gamerNumber: number): MatchGamer {
 	return {
-		nick: tournament[`m${matchNumber}_g${gamerNumber}_nick`] as string,
+		nick: numbersToNick(tournament[`m${matchNumber}_g${gamerNumber}_nick`] as string),
 		ready: Boolean(tournament[`m${matchNumber}_g${gamerNumber}_ready`] as number),
 		score: tournament[`m${matchNumber}_g${gamerNumber}_score`] as number,
 		userId: tournament[`m${matchNumber}_g${gamerNumber}_user_id`] as number

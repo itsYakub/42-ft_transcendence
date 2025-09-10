@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Message, MessageType, Result, UserNotification } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 export function readNotifications(db: DatabaseSync, userId: number): Box<UserNotification[]> {
 	try {
@@ -30,7 +31,7 @@ export function createInviteNotification(db: DatabaseSync, message: Message): Re
 
 function sqlToNotification(userChatMessage: Record<string, SQLOutputValue>): UserNotification {
 	return {
-		nick: userChatMessage.nick as string,
+		nick: numbersToNick(userChatMessage.nick as string),
 		sentAt: new Date(userChatMessage.sent_at as string),
 		type: MessageType[userChatMessage.notification_type as string]
 	};

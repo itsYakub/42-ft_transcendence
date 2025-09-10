@@ -22,15 +22,16 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 	console.log(`connected clients: ${onlineUsers.size}`);
 
 	socket?.on("message", (data: string) => {
-		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (Result.SUCCESS != userBox.result) {
-			console.log(`invalid user`);
-			return;
-		}
+		// const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		// if (Result.SUCCESS != userBox.result) {
+		// 	console.log(`invalid user`);
+		// 	return;
+		// }
 
+		const user = request.user;
 		const message = JSON.parse(data as string);
-		onlineUsers.set(userBox.contents.userId, socket);
-		handleClientMessage(db, userBox.contents, message);
+		onlineUsers.set(user.userId, socket);
+		handleClientMessage(db, user, message);
 	});
 
 	socket?.on("close", () => {
@@ -48,7 +49,7 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 	Sends the message to all connected users
 */
 export function sendMessageToUsers(message: Message) {
-	console.log(`sending ${message.type} to ${onlineUsers.size} users`);
+	//console.log(`sending ${message.type} to ${onlineUsers.size} users`);
 	onlineUsers.forEach((socket, userId) => sendMessage(socket, message));
 }
 
@@ -56,7 +57,7 @@ export function sendMessageToUsers(message: Message) {
 	Sends the message to all connected users except the originator
 */
 export function sendMessageToOtherUsers(message: Message, senderId: number) {
-	console.log(`sending ${message.type} to ${onlineUsers.size - 1} users`);
+	//console.log(`sending ${message.type} to ${onlineUsers.size - 1} users`);
 	onlineUsers.forEach((socket, userId) => {
 		if (userId != senderId)
 			sendMessage(socket, message)
@@ -69,7 +70,7 @@ export function sendMessageToOtherUsers(message: Message, senderId: number) {
 export function sendMessageToGameIdUsers(message: Message, gamerIds: number[]) {
 	onlineUsers.forEach((socket, userId: number) => {
 		if (-1 != gamerIds.indexOf(userId)) {
-			console.warn(`${userId} gets ${message.type}`);
+		//	console.warn(`${userId} gets ${message.type}`);
 			sendMessage(socket, message);
 		}
 	});

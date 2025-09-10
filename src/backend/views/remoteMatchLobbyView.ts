@@ -1,22 +1,22 @@
-import { Gamer, User } from "../../common/interfaces.js";
+import { Gamer } from "../../common/interfaces.js";
+import { numbersToNick } from "../../common/utils.js";
 import { defaultAvatar } from "../../db/defaultAvatar.js";
-import { gameDialogHtml } from "./dialogsView.js";
 
-export function remoteMatchLobbyView(gamers: Gamer[], user: User): string {
+export function remoteMatchLobbyView(gamers: Gamer[]): string {
+	console.log(gamers);
 	return `
 	<div class="flex flex-col items-center">
 		<h1 id="gameTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_REMOTE_MATCH%%</h1>
 		<div class="flex flex-row h-150">
 			<div id="matchLobbyDetailsContainer" class="mt-8 mx-auto">
-				${gamersHtml(gamers)}
+				${gamersHtml(gamers, false)}
 			</div>
 		</div>		
 	</div>
-	${gameDialogHtml()}
 	`;
 }
 
-export function gamersHtml(gamers: Gamer[]): string {
+export function gamersHtml(gamers: Gamer[], convert: boolean = true): string {
 	switch (gamers.length) {
 		case 0:
 			return "";
@@ -24,7 +24,7 @@ export function gamersHtml(gamers: Gamer[]): string {
 			return `
 		<div class="flex flex-row gap-8 mx-auto">
 			<div class="flex flex-col gap-3">
-				${gamerHtml(gamers[0], true)}
+				${gamerHtml(gamers[0], true, convert)}
 				<button id="leaveMatchButton" class="text-red-900 cursor-[url(/images/pointer.png),pointer] hover:text-fuchsia-800">%%BUTTON_LEAVE%%</button>
 			</div>		
 			${spinnerHtml(gamers)}
@@ -35,21 +35,22 @@ export function gamersHtml(gamers: Gamer[]): string {
 		default:
 			return `
 		<div class="flex flex-row gap-8 mx-auto">
-			${gamerHtml(gamers[0], true)}	
+			${gamerHtml(gamers[0], true, convert)}	
 			${spinnerHtml(gamers)}			
-			${gamerHtml(gamers[1], false)}	
+			${gamerHtml(gamers[1], false, convert)}	
 		</div>
 		`;
 	}
 }
 
-function gamerHtml(gamer: Gamer, isGamer1: boolean) {
+function gamerHtml(gamer: Gamer, isGamer1: boolean, convert: boolean = true) {
+	console.log(gamer.nick);
 	const avatar = gamer.avatar ?? defaultAvatar;
 	const colour = isGamer1 ? "bg-[#BE2AD1]" : "bg-[#FFCD5A]";
 	return `
 	<div class="flex flex-col gap-3">
 		<img class="rounded-lg mx-auto cursor-[url(/images/pointer.png),pointer] h-60 w-60" src="${avatar}" />
-		<div class="w-60 py-2 mt-2 ${colour} rounded-lg text-stone-700 text-center">${gamer.nick}</div>
+		<div class="w-60 py-2 mt-2 ${colour} rounded-lg text-stone-700 text-center">${convert ? numbersToNick(gamer.nick) : gamer.nick}</div>
 	</div>
 	`;
 }

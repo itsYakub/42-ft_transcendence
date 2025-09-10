@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Message, Result, ShortUser, UserChatMessage, UserType } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 /*
 	Gets a list of ids that are in a private chat with the user
@@ -82,7 +83,7 @@ function sqlToUserChatPartner(userChatPartner: Record<string, SQLOutputValue>): 
 	return {
 		avatar: userChatPartner.avatar as string,
 		gameId: userChatPartner.game_id as string,
-		nick: userChatPartner.nick as string,
+		nick: numbersToNick(userChatPartner.nick as string),
 		userId: userChatPartner.partner_id as number,
 		userType: UserType[userChatPartner.type as string]
 	};

@@ -1,13 +1,14 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { gamePlayers, updateGameId } from '../../db/gameDb.js';
 import { Box, Result } from '../../common/interfaces.js';
-import { createRemoteTournament, readRemoteTournament } from '../../db/remoteTournamentsDb.js';
+import { readRemoteTournament } from '../../db/remoteTournamentsDb.js';
 import { remoteTournamentDetails } from '../views/remoteTournamentView.js';
 import { createLocalTournament, updateLocalTournament } from '../../db/localTournamentsDb.js';
 import { generateNickname } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
 import { readTournamentChats } from '../../db/TournamentChatsDb.js';
 import { remoteTournamentLobbyView, remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
+import { nickToNumbers } from '../../common/utils.js';
 
 export function getTournamentGamers(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -35,7 +36,7 @@ export function matchNicks(request: FastifyRequest, reply: FastifyReply) {
 
 export function tournamentNicks(request: FastifyRequest, reply: FastifyReply) {
 	let nicks = [
-		request.user.nick,
+		nickToNumbers(request.user.nick),
 		generateNickname(),
 		generateNickname(),
 		generateNickname()
@@ -43,7 +44,7 @@ export function tournamentNicks(request: FastifyRequest, reply: FastifyReply) {
 
 	while (4 != nicks.filter((n, i) => nicks.indexOf(n) === i).length) {
 		nicks = [
-			request.user.nick,
+			nickToNumbers(request.user.nick),
 			generateNickname(),
 			generateNickname(),
 			generateNickname()
@@ -73,6 +74,14 @@ export async function getTournament(request: FastifyRequest, reply: FastifyReply
 		result: Result.SUCCESS,
 		contents: remoteTournamentDetails(gamersBox.contents, request.user)
 	});
+}
+
+export async function createMatchLobby(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+	const user = request.user;
+	const gameId = `m${Date.now().toString(36).substring(5)}`;
+	user.gameId = gameId;
+	return reply.send(updateGameId(db, user));
 }
 
 export async function createTournamentLobby(request: FastifyRequest, reply: FastifyReply) {

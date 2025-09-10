@@ -61,7 +61,8 @@ export function tournamentGamerReadyReceived(db: DatabaseSync, user: ShortUser, 
 			console.log(`starting match between ${match.g1.nick} and ${match.g2.nick}`);
 			sendMessageToGameIdUsers({
 				type: MessageType.TOURNAMENT_MATCH_START,
-				gameId: user.gameId
+				gameId: user.gameId,
+				match
 			}, [match.g1.userId, match.g2.userId]);
 		}
 	}

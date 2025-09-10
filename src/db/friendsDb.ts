@@ -1,5 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Friend, Result } from "../common/interfaces.js";
+import { numbersToNick } from "../common/utils.js";
 
 /*
 	Gets all the user's friends
@@ -52,7 +53,7 @@ export function deleteFriend(db: DatabaseSync, userId: number, friendId: number)
 function sqlToFriend(friend: Record<string, SQLOutputValue>): Friend {
 	return {
 		friendId: friend.friend_id as number,
-		nick: friend.nick as string,
+		nick: numbersToNick(friend.nick as string),
 		online: false, //Boolean(friend.online as number),
 		userId: friend.user_id as number
 	};

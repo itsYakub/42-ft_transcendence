@@ -6,6 +6,7 @@ import { Result, User, UserType, Box, Gamer, TotpType, ShortUser } from "../comm
 import { updateGameId } from "./gameDb.js";
 import { adjectives } from "./adjectives.js";
 import { animals } from "./animals.js";
+import { nickToNumbers, numbersToNick } from "../common/utils.js";
 
 export function usersByGameId(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 	try {
@@ -536,7 +537,7 @@ export function generateNickname(): string {
 	const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
 	const animal = animals[Math.floor(Math.random() * animals.length)];
 
-	return `${adjective} ${animal}`;
+	return nickToNumbers(`${adjective} ${animal}`);
 }
 
 function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
@@ -544,7 +545,7 @@ function sqlToUser(sqlUser: Record<string, SQLOutputValue>): User {
 		avatar: sqlUser.avatar as string,
 		email: sqlUser.email as string,
 		gameId: sqlUser.game_id as string,
-		nick: sqlUser.nick as string,
+		nick: numbersToNick(sqlUser.nick as string),
 		password: sqlUser.password as string,
 		refreshToken: sqlUser.refresh_token as string,
 		totpEmail: Boolean(sqlUser.totp_email as number),
@@ -559,7 +560,7 @@ function sqlToShortUser(sqlUser: Record<string, SQLOutputValue>): ShortUser {
 	return {
 		avatar: sqlUser.avatar as string,
 		gameId: sqlUser.game_id as string,
-		nick: sqlUser.nick as string,
+		nick: numbersToNick(sqlUser.nick as string),
 		userId: sqlUser.user_id as number,
 		userType: UserType[sqlUser.type as string]
 	};

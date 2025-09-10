@@ -1,3 +1,4 @@
+import { nickToNumbers } from "../../common/utils.js";
 import { Page, Result } from "./../../common/interfaces.js";
 import { isLoggedIn, showAlert, showPage } from "./index.js";
 import { closess } from "./sockets/clientSocket.js";
@@ -61,12 +62,21 @@ export function accountListeners() {
 	*/
 	const changeNickForm = <HTMLFormElement>document.querySelector("#changeNickForm");
 	if (changeNickForm) {
+		changeNickForm.newNick.addEventListener("keydown", (e: any) => {
+			if (!("Backspace" == e.key || " " == e.key || "Delete" == e.key || "Space" == e.key || "ArrowLeft" == e.key || "ArrowRight" == e.key ||
+				(e.key.charCodeAt(0) >= 65 && e.key.charCodeAt(0) <= 90 || e.key.charCodeAt(0) >= 97 && e.key.charCodeAt(0) <= 122)
+			))
+				e.preventDefault();
+		});
+
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
 			if (!await isLoggedIn())
 				return showPage(Page.AUTH);
 
-			const newNick = changeNickForm.newNick.value;
+			let newNick = changeNickForm.newNick.value;
+			newNick = nickToNumbers(newNick);
+
 			const response = await fetch("/account/nick", {
 				method: "POST",
 				headers: {
@@ -199,7 +209,7 @@ export function accountListeners() {
 		totpDisableButton.addEventListener("click", async () => {
 			if (!await isLoggedIn())
 				return showPage(Page.AUTH);
-			
+
 			const disableToptResponse = await fetch("/totp/disable", {
 				method: "POST",
 				headers: {
