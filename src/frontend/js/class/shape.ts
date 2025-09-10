@@ -1,4 +1,4 @@
-import * as BABYLON from '@babylonjs/core/Legacy/legacy';
+import * as BABYLON from '@babylonjs/core';
 
 import { g_game, g_gamePlayableArea, g_boundCellSize } from './game.js';
 
@@ -21,7 +21,7 @@ export class Shape {
 	 *  Thus, velocity calculation are 2D based and then mapped to 3D vector.
 	 * */
 	public	m_pos : BABYLON.Vector2;
-	public	m_vel : BABYLON.Vector2;
+	public	m_dir : BABYLON.Vector2;
 	public	m_siz : BABYLON.Vector3;
 	public	m_col : BABYLON.Color3;
 
@@ -33,21 +33,21 @@ export class Shape {
 		this.m_siz = siz;
 		this.m_col = col;
 
-		this.m_vel = BABYLON.Vector2.Zero();
+		this.m_dir = BABYLON.Vector2.Zero();
 	}
 
 	/* SECTION: Methods
 	 * */
 	public get	pos() { return (this.m_pos); }
 	public set	pos(vector : BABYLON.Vector2) { this.m_pos = vector; }
-	public get	vel() { return (this.m_vel); }
-	public set	vel(vector : BABYLON.Vector2) { this.m_vel = vector; }
+	public get	dir() { return (this.m_dir); }
+	public set	dir(vector : BABYLON.Vector2) { this.m_dir = vector; }
 	public get	siz() { return (this.m_siz); }
 	public set	siz(vector : BABYLON.Vector3) { this.m_siz = vector; }
 
-	public	update() {
-		this.m_pos.x += this.m_vel.x * g_game.deltaTime * 4.0;
-		this.m_pos.y += this.m_vel.y * g_game.deltaTime * 4.0;
+	public	update(speed : number) {
+		this.m_pos.x += speed * this.m_dir.x * g_game.deltaTime * 4.0;
+		this.m_pos.y += speed * this.m_dir.y * g_game.deltaTime * 4.0;
 		
 		/* NOTE(joleksia):
 		 *  This chunk of code is responsible for keeping all the meshes in the playable area.

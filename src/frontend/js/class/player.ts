@@ -106,10 +106,10 @@ export class Player extends Shape {
 
 	public reset() {
 		this.pos.y = 0.0;
-		this.vel.x = this.vel.y = 0.0;
+		this.dir.x = this.dir.y = 0.0;
 		this.m_aiTimerElapsed = 0.0;
 
-		super.update();
+		super.update(1.0);
 	}
 
 	public update() {
@@ -137,7 +137,7 @@ export class Player extends Shape {
 
 		/* Update the base 'Shape' class
 		 * */
-		super.update();
+		super.update(1.0);
 	}
 
 	/* SECTION:
@@ -155,7 +155,7 @@ export class Player extends Shape {
 		else if (down) { dir = -1.0; }
 		else { dir = 0.0; }
 
-		this.vel.y = dir;
+		this.dir.y = dir;
 	}
 
 	private aiBehaviour() {
