@@ -157,7 +157,6 @@ export function loginWithAppTotp(request: FastifyRequest, reply: FastifyReply) {
 export function loginWithEmailTotp(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const { code, email } = request.body as any;
-	console.log("found", code, email);
 
 	const userBox = getUserByEmail(db, email);
 	if (Result.SUCCESS != userBox.result)

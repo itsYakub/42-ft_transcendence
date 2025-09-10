@@ -85,6 +85,7 @@ export async function updateTournamentDetails(message: Message) {
 
 	const json = await contentBox.json();
 	if (Result.SUCCESS == json.result) {
+		console.log(json);
 		const tournamentTitle = document.querySelector("#tournamentTitle");
 		if (tournamentTitle) {
 			if (3 == message.match?.matchNumber)
@@ -103,7 +104,6 @@ export async function updateTournamentDetails(message: Message) {
 
 
 export async function updateTournamentLobby(message: Message) {
-	console.log("t lobby changing");
 	const tournamentLobbyDetailsContainer = document.querySelector("#tournamentLobbyDetailsContainer");
 	if (tournamentLobbyDetailsContainer)
 		tournamentLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
@@ -114,31 +114,31 @@ export async function updateTournamentLobby(message: Message) {
 
 export async function tournamentMatchStart(message: Message) {
 	const match = message.match;
-		setTimeout(async () => {
-			const dialog = document.querySelector("#gameDialog");
-			if (dialog) {
-				// dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				// 	const response = await fetch("/match-result/add", {
-				// 		method: "POST",
-				// 		headers: {
-				// 			"content-type": "application/json"
-				// 		},
-				// 		body: JSON.stringify({
-				// 			g2Nick: match.g1.nick == user.nick ? match.g2.nick : match.g1.nick,
-				// 			g1Score: e.detail["g1Score"],
-				// 			g2Score: e.detail["g2Score"],
-				// 		})
-				// 	});
-				// 	//navigate(window.location.href);
-				// });
-			}
+	setTimeout(async () => {
+		const dialog = document.querySelector("#gameDialog");
+		if (dialog) {
+			// dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+			// 	const response = await fetch("/match-result/add", {
+			// 		method: "POST",
+			// 		headers: {
+			// 			"content-type": "application/json"
+			// 		},
+			// 		body: JSON.stringify({
+			// 			g2Nick: match.g1.nick == user.nick ? match.g2.nick : match.g1.nick,
+			// 			g1Score: e.detail["g1Score"],
+			// 			g2Score: e.detail["g2Score"],
+			// 		})
+			// 	});
+			// 	//navigate(window.location.href);
+			// });
+		}
 
-			g_game.setupElements(GameMode.GAMEMODE_PVP, {
-				nick: match.g1.nick
-			}, {
-				nick: match.g2.nick
-			});
-		}, 500);
+		g_game.setupElements(GameMode.GAMEMODE_PVP, {
+			nick: match.g1.nick
+		}, {
+			nick: match.g2.nick
+		});
+	}, 500);
 }
 
 export function tournamentOver(user: ShortUser, message: Message) {

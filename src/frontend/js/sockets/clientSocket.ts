@@ -1,4 +1,4 @@
-import { Message, MessageType, Page, Result } from "../../../common/interfaces.js";
+import { Message, MessageType, Page, Result, ShortUser } from "../../../common/interfaces.js";
 import { showPage } from "../index.js";
 import { actuallyStartingMatch,	matchFinishing,	startingMatch,	updateMatchDetails,	updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
 import { tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
@@ -49,7 +49,7 @@ function initClientSocket(): Promise<void> {
 				return;
 
 			const message = JSON.parse(event.data);
-			handleServerMessage(message);
+			handleServerMessage(message, json.contents);
 		};
 
 		socket!.onerror = (err) => {
@@ -94,7 +94,7 @@ export function currentPage(): Page {
 /*
 	Deals with a socket message from the server
 */
-function handleServerMessage(message: Message) {
+function handleServerMessage(message: Message, user: ShortUser) {
 	switch (message.type) {
 		case MessageType.USER_INVITE:
 			userInvite(message);
@@ -104,7 +104,7 @@ function handleServerMessage(message: Message) {
 			break;
 
 		case MessageType.GAME_LIST_CHANGED:
-			updateMatchList();
+			updateMatchList(user);
 			break;
 
 		case MessageType.MATCH_LOBBY_CHANGED:

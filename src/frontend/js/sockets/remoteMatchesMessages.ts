@@ -27,8 +27,8 @@ export function matchGamerLeaving() {
 	});
 }
 
-export async function updateMatchList() {
-	if (Page.GAME == currentPage()) {
+export async function updateMatchList(user: ShortUser) {
+	if (Page.GAME == currentPage() && !user.gameId) {
 		console.log("game list updating");
 		showPage(Page.GAME);
 	}

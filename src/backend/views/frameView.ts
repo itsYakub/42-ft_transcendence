@@ -6,7 +6,6 @@ import { FrameParams } from "../../common/interfaces.js";
 	Returns the whole page, or an error page
 */
 export function frameView(params: FrameParams, content: string = null): any {
-	console.log(params.page);
 	if (!content)
 		content = errorString(params);
 

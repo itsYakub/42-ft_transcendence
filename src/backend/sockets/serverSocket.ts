@@ -18,13 +18,15 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 
 	const user = request.user;
 	onlineUsers.set(request.user.userId, socket);
-	console.log(`connected user is now ${user.nick}`);
+	console.log(`connected user is now ${user.nick} : ${user.userId}`);
 	console.log(`connected clients: ${onlineUsers.size}`);
 
 	socket?.on("message", (data: string) => {
 		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		if (Result.SUCCESS != userBox.result)
+		if (Result.SUCCESS != userBox.result) {
+			console.log(`invalid user`);
 			return;
+		}
 
 		const message = JSON.parse(data as string);
 		onlineUsers.set(userBox.contents.userId, socket);
@@ -46,36 +48,31 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 	Sends the message to all connected users
 */
 export function sendMessageToUsers(message: Message) {
+	console.log(`sending ${message.type} to ${onlineUsers.size} users`);
 	onlineUsers.forEach((socket, userId) => sendMessage(socket, message));
+}
+
+/*
+	Sends the message to all connected users except the originator
+*/
+export function sendMessageToOtherUsers(message: Message, senderId: number) {
+	console.log(`sending ${message.type} to ${onlineUsers.size - 1} users`);
+	onlineUsers.forEach((socket, userId) => {
+		if (userId != senderId)
+			sendMessage(socket, message)
+	});
 }
 
 /*
 	Sends the message to all users in the same match/lobby
 */
-export function sendMessageToGameIdUsers(message: Message, gameId: string) {
-	if (!db)
-		return;
-
-	const users = usersByGameId(db, gameId);
-	if (Result.SUCCESS == users.result) {
-		onlineUsers.forEach((socket, userId) => sendMessage(socket, message));
-	}
-}
-
-/*
-	Sends the message to all clients in the same match/lobby except the originator
-*/
-export function sendMessageToOtherGameIdUsers(message: Message, gameId: string) {
-	if (!db)
-		return;
-
-	const users = usersByGameId(db, gameId);
-	if (Result.SUCCESS == users.result) {
-		onlineUsers.forEach((socket, userId) => {
-			if (userId != message.fromId)
-				sendMessage(socket, message);
-		});
-	}
+export function sendMessageToGameIdUsers(message: Message, gamerIds: number[]) {
+	onlineUsers.forEach((socket, userId: number) => {
+		if (-1 != gamerIds.indexOf(userId)) {
+			console.warn(`${userId} gets ${message.type}`);
+			sendMessage(socket, message);
+		}
+	});
 }
 
 /*

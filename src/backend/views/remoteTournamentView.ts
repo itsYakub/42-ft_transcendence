@@ -1,4 +1,4 @@
-import { GameChatMessage, Match, MatchGamer, Tournament, User } from "../../common/interfaces.js";
+import { GameChatMessage, Match, MatchGamer, ShortUser, Tournament, User } from "../../common/interfaces.js";
 import { gameDialogHtml } from "./dialogsView.js";
 import { remoteTournamentMessagesHtml } from "./remoteTournamentLobbyView.js";
 
@@ -33,7 +33,7 @@ export function remoteTournamentView(tournament: Tournament, chats: GameChatMess
 	`;
 }
 
-export function remoteTournamentDetails(tournament: Tournament, user: User): string {
+export function remoteTournamentDetails(tournament: Tournament, user: ShortUser): string {
 	if (isFinalFinished(tournament.matches[2])) {
 		const match = tournament.matches[2];
 		const winner = match.g1.score > match.g2.score ? match.g1 : match.g2;
@@ -51,13 +51,9 @@ export function remoteTournamentDetails(tournament: Tournament, user: User): str
 
 	const html = `
 	<div class="flex flex-col gap-2">
-		${gamerHtml(match.g1)}
+		${gamerHtml(match.g1, user.userId, 1)}
 		<div class="text-white text-center">Vs</div>
-		${gamerHtml(match.g2)}
-	</div>
-	<div class="flex flex-row justify-between mr-9">
-		${readyButtonHtml(gamer)}
-		<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
+		${gamerHtml(match.g2, user.userId, 2)}
 	</div>
 	<div class="flex flex-col gap-2 mt-2 w-69">
 		<div class="border border-gray-800 my-4 h-0.5 w-full mx-2"></div>
@@ -107,15 +103,15 @@ function gamerScore(gamer: MatchGamer, opponent: MatchGamer): string {
 	`;
 }
 
-function whichMatchIsUserIn(tournament: Tournament, user: User): Match {
+function whichMatchIsUserIn(tournament: Tournament, user: ShortUser): Match {
 	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
 }
 
-function whichGamerIsUser(match: Match, user: User): MatchGamer {
+function whichGamerIsUser(match: Match, user: ShortUser): MatchGamer {
 	return match.g1.userId == user.userId ? match.g1 : match.g2;
 }
 
-function whichOpponentHasUser(match: Match, user: User): MatchGamer {
+function whichOpponentHasUser(match: Match, user: ShortUser): MatchGamer {
 	return match.g1.userId == user.userId ? match.g2 : match.g1;
 }
 
@@ -129,37 +125,45 @@ function isFinalFinished(match: Match): boolean {
 	return match.g1.score + match.g2.score > 0;
 }
 
-function finalHtml(match: Match, user: User): string {
+function finalHtml(match: Match, user: ShortUser): string {
 	if (match.g1.userId == user.userId || match.g2.userId == user.userId)
 		return `
 			<div class="flex flex-col gap-2">
-				${gamerHtml(match.g1)}
+				${gamerHtml(match.g1, user.userId, 1)}
 				<div class="text-white text-center">Vs</div>
-				${gamerHtml(match.g2)}
+				${gamerHtml(match.g2, user.userId, 2)}
 			</div>
-			<div class="flex flex-row justify-between mr-9">
-				${readyButtonHtml(whichGamerIsUser(match, user))}
-				<button id="leaveTournamentButton" class="text-gray-300 mt-4 bg-red-600 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_LEAVE%%</button>
-			</div>
-
 			${gameDialogHtml()}
 		`;
 	else
 		return secondaryMatchHtml(match);
 }
 
-function gamerHtml(gamer: MatchGamer) {
-	const readyText = gamer.ready ? `<i class="fa-solid fa-check text-green-300 my-auto"></i>` : `<i class="fa-solid fa-xmark text-red-300 my-auto"></i>`;
+function gamerHtml(gamer: MatchGamer, userId: number, position: number) {
+	if (gamer.userId == userId)
+		return readyButtonHtml(gamer, position);
+
+	if (gamer.ready) {
+		const buttonColour = 1 == position ? "bg-[#BE2AD1]" : "bg-[#FFCD5A]";
+		return `
+		<div class="py-2 px-4 rounded-lg text-stone-700 ${buttonColour} text-center">${gamer.nick}</div>
+		`;
+	}
 
 	return `
-	<div class="flex flex-row mr-2">
-		<div class="w-60 py-2 mr-2 border border-gray-700 rounded-lg text-gray-400 text-center">${gamer.nick}</div>
-		${readyText}
-	</div>
+	<div class="py-2 px-4 rounded-lg text-stone-700 text-center">${gamer.nick}</div>
 	`;
 }
 
-function readyButtonHtml(gamer: MatchGamer) {
-	return gamer.ready ? `<button disabled class="text-gray-300 mt-4 bg-gray-800 block py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>` :
-		`<button id="tournamentGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 block cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
+function readyButtonHtml(gamer: MatchGamer, position: number) {
+	if (gamer.ready) {
+		return 1 == position ? `
+		<button disabled class="text-stone-700 bg-[#BE2AD1] py-2 px-4 rounded-lg">${gamer.nick}</button>
+		`
+		:
+		`
+		<button disabled class="text-stone-700 bg-[#FFCD5A] py-1 px-4 rounded-lg">%%BUTTON_READY%%</button>
+		`;
+	}
+	return `<button id="tournamentGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
 }

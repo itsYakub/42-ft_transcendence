@@ -84,7 +84,6 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 	};
 
 	const gamersBox = gamePlayers(db, user.gameId);
-	console.log(gamersBox);
 	if (Result.SUCCESS != gamersBox.result) {
 		params.result = gamersBox.result;
 		return reply.type("text/html").send(frameView(params));
@@ -94,7 +93,6 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 		return reply.type("text/html").send(frameView(params, remoteMatchLobbyView(gamersBox.contents, user)));
 
 	const chatsBox = readTournamentChats(db, user.gameId);
-	console.log(chatsBox);
 	if (Result.SUCCESS != chatsBox.result) {
 		params.result = chatsBox.result;
 		return reply.type("text/html").send(frameView(params));

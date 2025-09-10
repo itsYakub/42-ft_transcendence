@@ -17,6 +17,8 @@ export function initDbTables(db: DatabaseSync) {
 }
 
 function initFoesTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS foes");
+	
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS foes (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,6 +33,8 @@ function initFoesTable(db: DatabaseSync) {
 }
 
 function initFriendsTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS friends");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS friends (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,6 +49,8 @@ function initFriendsTable(db: DatabaseSync) {
 }
 
 function initLocalTournamentsTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS local_tournaments");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS local_tournaments (
 		game_id TEXT PRIMARY KEY UNIQUE,
@@ -64,6 +70,8 @@ function initLocalTournamentsTable(db: DatabaseSync) {
 }
 
 function initMatchesTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS matches");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS matches (
 		game_id TEXT PRIMARY KEY UNIQUE,
@@ -80,6 +88,8 @@ function initMatchesTable(db: DatabaseSync) {
 }
 
 function initMatchResultsTable(db: DatabaseSync): void {
+	db.exec("DROP TABLE IF EXISTS match_results");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS match_results (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,6 +103,8 @@ function initMatchResultsTable(db: DatabaseSync): void {
 }
 
 function initNotificationsTable(db: DatabaseSync): void {
+	db.exec("DROP TABLE IF EXISTS notifications");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS notifications (
 		from_id INTEGER NOT NULL,
@@ -107,6 +119,8 @@ function initNotificationsTable(db: DatabaseSync): void {
 }
 
 function initTournamentsTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS tournaments");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS tournaments (
 		game_id TEXT PRIMARY KEY UNIQUE,
@@ -138,6 +152,8 @@ function initTournamentsTable(db: DatabaseSync) {
 }
 
 function initTournamentChatsTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS tournament_chats");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS tournament_chats (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -149,6 +165,8 @@ function initTournamentChatsTable(db: DatabaseSync) {
 }
 
 function initUsersTable(db: DatabaseSync) {
+	db.exec("DROP TABLE IF EXISTS users");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS users (
 		avatar TEXT,
@@ -173,6 +191,7 @@ function initUsersTable(db: DatabaseSync) {
 }
 
 function initUserChatsTable(db: DatabaseSync): void {
+	db.exec("DROP TABLE IF EXISTS user_chats");
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS user_chats (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,

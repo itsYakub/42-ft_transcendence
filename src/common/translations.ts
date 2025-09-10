@@ -159,7 +159,7 @@ function translateEnglish(text: string): string {
 		case "BUTTON_LOGOUT": return "Log out";
 		case "BUTTON_MATCH": return "Match";
 		case "BUTTON_NOTIFICATIONS": return "Notifications";
-		case "BUTTON_READY": return "Ready";
+		case "BUTTON_READY": return "Ready up";
 		case "BUTTON_LEAVE": return "Leave";
 		case "BUTTON_REGISTER": return "Register";
 		case "BUTTON_REMOVE_FOE": return "Remove foe";
