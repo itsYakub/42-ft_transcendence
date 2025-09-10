@@ -22,13 +22,13 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 	console.log(`connected clients: ${onlineUsers.size}`);
 
 	socket?.on("message", (data: string) => {
-		// const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
-		// if (Result.SUCCESS != userBox.result) {
-		// 	console.log(`invalid user`);
-		// 	return;
-		// }
+		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (Result.SUCCESS != userBox.result) {
+			console.log(`invalid user`);
+			return;
+		}
 
-		const user = request.user;
+		const user = userBox.contents;
 		const message = JSON.parse(data as string);
 		onlineUsers.set(user.userId, socket);
 		handleClientMessage(db, user, message);

@@ -148,6 +148,8 @@ export class Ball extends Shape {
         sendMessageToServer({
             type: MessageType.MATCH_UPDATE,
             gameId: g_game.gameId,
+			fromId: g_game.getPlayers()[0].userId,
+			toId: g_game.getPlayers()[1].userId,
             content: JSON.stringify(ballPayload),
         });
     }

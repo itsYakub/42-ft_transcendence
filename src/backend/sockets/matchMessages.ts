@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { addUserToMatch, removeUserFromMatch, removeUsersFromMatch, usersByGameId } from '../../db/userDB.js';
+import { addUserToMatch, removeUserFromMatch, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result, ShortUser } from '../../common/interfaces.js';
 import { gamersHtml } from '../views/remoteMatchLobbyView.js';
 import { sendMessageToGameIdUsers, sendMessageToOtherUsers, sendMessageToUsers } from "./serverSocket.js";
@@ -79,16 +79,11 @@ export function matchStartReceived(db: DatabaseSync, user: ShortUser, message: M
 
 /* Forward game updates - handles ball sync, paddle movements, etc. */
 export function matchUpdateReceived(db: DatabaseSync, user: ShortUser, message: Message) {
-
-  //  if (message.gameId && user.gameId === message.gameId) {
-		const uu = usersByGameId(db, message.gameId);
-		const id = uu.contents[0].userId == user.userId ? uu.contents[1].userId : uu.contents[0].userId;
-        // Use the new sendMessageToOtherGameIdUsers to avoid echoing back to sender
-        sendMessageToGameIdUsers({
-            type: MessageType.MATCH_UPDATE,
-            gameId: message.gameId,
-            fromId: user.userId,
-            content: message.content
-        }, [1,2]);
-  //  }
+	const id = message.fromId == user.userId ? message.toId : message.fromId;
+	sendMessageToGameIdUsers({
+		type: MessageType.MATCH_UPDATE,
+		gameId: message.gameId,
+		fromId: user.userId,
+		content: message.content
+	}, [id]);
 }
