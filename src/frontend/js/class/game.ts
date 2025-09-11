@@ -109,9 +109,12 @@ export class Game {
 	private m_player1Data?: GamePlayer;
 	private m_player2Data?: GamePlayer;
 
+	private receiverId: number;
+
 	private onLocalKeyBound?: (e: KeyboardEvent) => void;
 
 	public static keys: Record<string, boolean>;
+
 
 	/* SECTION: Public Methods */
 
@@ -133,13 +136,19 @@ export class Game {
 		];
 	}
 
+	public getReceiverId(): number {
+		return this.receiverId;
+	}
+
 	public setupElements(
 		mode: GameMode,
 		player1: GamePlayer,
 		player2?: GamePlayer,
-		opts?: { networked?: boolean; gameId?: string; localIndex?: 0 | 1 }
+		opts?: { networked?: boolean; gameId?: string; localIndex?: 0 | 1, receiverId?: number }
 	) {
 		this.m_gameOver = false;
+
+		this.receiverId = opts.receiverId;
 
 		// store player data
 		this.m_player1Data = player1;
@@ -227,14 +236,14 @@ export class Game {
 						playerId: this.m_localIndex  // 0 = purple paddle, 1 = yellow paddle
 					};
 
+					console.log("sending to server");
 					// Send the key press to the server
-					sendMessageToServer({
-						type: MessageType.MATCH_UPDATE,
-						gameId: this.m_gameId,
-						fromId: g_game.getPlayers()[0].userId,
-						toId: g_game.getPlayers()[1].userId,
-						content: JSON.stringify(payload),
-					});
+					// sendMessageToServer({
+					// 	type: MessageType.MATCH_UPDATE,
+					// 	gameId: this.m_gameId,
+					// 	toId: this.receiverId,
+					// 	content: JSON.stringify(payload),
+					// });
 				};
 
 				window.addEventListener("keydown", this.onLocalKeyBound, true);
@@ -382,12 +391,11 @@ export class Game {
 				p1Scored: p1
 			};
 
+			console.log(this.getReceiverId(), this.receiverId);
 			sendMessageToServer({
 				type: MessageType.MATCH_GOAL,
-				gameId: this.m_gameId,
-				fromId: g_game.getPlayers()[0].userId,
-				toId: g_game.getPlayers()[1].userId,
-				content: JSON.stringify(goalPayload),
+				toId: this.receiverId,
+				matchContent: goalPayload,
 			});
 		}
 
@@ -402,13 +410,12 @@ export class Game {
 					p1Score: this.m_player1.score
 				};
 
-				sendMessageToServer({
-					type: MessageType.MATCH_END,
-					gameId: this.m_gameId,
-					fromId: g_game.getPlayers()[0].userId,
-					toId: g_game.getPlayers()[1].userId,
-					content: JSON.stringify(endPayload),
-				});
+				// sendMessageToServer({
+				// 	type: MessageType.MATCH_END,
+				// 	gameId: this.m_gameId,
+				// 	toId: this.receiverId,
+				// 	content: JSON.stringify(endPayload),
+				// });
 			}
 
 			this.m_stateMachine = StateMachine.STATE_GAMEOVER;

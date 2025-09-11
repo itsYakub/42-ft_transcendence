@@ -145,13 +145,12 @@ export class Ball extends Shape {
             timestamp: Date.now()
         };
 
-        sendMessageToServer({
-            type: MessageType.MATCH_UPDATE,
-            gameId: g_game.gameId,
-			fromId: g_game.getPlayers()[0].userId,
-			toId: g_game.getPlayers()[1].userId,
-            content: JSON.stringify(ballPayload),
-        });
+        // sendMessageToServer({
+        //     type: MessageType.MATCH_UPDATE,
+        //     gameId: g_game.gameId,
+		// 	toId: g_game.getReceiverId(),
+        //     content: JSON.stringify(ballPayload),
+        // });
     }
 
     /* NOTE(joleksia):

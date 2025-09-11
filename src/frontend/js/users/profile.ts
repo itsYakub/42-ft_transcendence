@@ -1,14 +1,15 @@
 import { profileActionbuttons } from "../../../common/dynamicElements.js";
 import { MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
-import { getLanguage, isLoggedIn, showPage } from "../index.js";
+import { getLanguage, showPage } from "../index.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
+import { isUserLoggedIn } from "../user.js";
 
 export function profileFunctions() {
 	const closeProfileButton = document.querySelector("#closeProfileButton");
 	if (closeProfileButton) {
 		closeProfileButton.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const profileDialog = <HTMLDialogElement>document.querySelector("#profileDialog");
@@ -20,7 +21,7 @@ export function profileFunctions() {
 	const addFriendButton = document.querySelector("#addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const response = await fetch("/friends/add", {
@@ -45,7 +46,7 @@ export function profileFunctions() {
 	const removeFriendButton = document.querySelector("#removeFriendButton");
 	if (removeFriendButton) {
 		removeFriendButton.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const response = await fetch("/friends/remove", {
@@ -75,7 +76,7 @@ export function profileFunctions() {
 	const addFoeButton = document.querySelector("#addFoeButton");
 	if (addFoeButton) {
 		addFoeButton.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const response = await fetch("/foes/add", {
@@ -100,7 +101,7 @@ export function profileFunctions() {
 	const removeFoeButton = document.querySelector("#removeFoeButton");
 	if (removeFoeButton) {
 		removeFoeButton.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const response = await fetch("/foes/remove", {
@@ -130,7 +131,7 @@ export function profileFunctions() {
 	const inviteButton = document.querySelector("#inviteButton");
 	if (inviteButton) {
 		inviteButton.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			console.log("invite");

@@ -13,17 +13,17 @@ export function getChatPage(request: FastifyRequest, reply: FastifyReply) {
 	const outgoingChatsBox = outgoingChatsList(db, user.userId);
 	if (Result.SUCCESS != outgoingChatsBox.result)
 		return reply.type("text/html").send(frameView({
-			user,
 			language,
-			result: outgoingChatsBox.result
+			result: outgoingChatsBox.result,
+			user
 		}));
 
 	const incomingChatsBox = incomingChatsList(db, user.userId);
 	if (Result.SUCCESS != incomingChatsBox.result)
 		return reply.type("text/html").send(frameView({
-			user,
 			language,
-			result: incomingChatsBox.result
+			result: incomingChatsBox.result,
+			user
 		}));
 
 	incomingChatsBox.contents.forEach(partner => {
@@ -37,9 +37,9 @@ export function getChatPage(request: FastifyRequest, reply: FastifyReply) {
 	const foesBox = readFoes(db, user.userId);
 	if (Result.SUCCESS != foesBox.result)
 		return reply.type("text/html").send(frameView({
-			user,
 			language,
-			result: foesBox.result
+			result: foesBox.result,
+			user
 		}));
 
 	const foesChats = foesBox.contents.map(f => f.foeId);

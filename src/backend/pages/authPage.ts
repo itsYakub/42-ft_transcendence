@@ -5,5 +5,5 @@ import { Page } from '../../common/interfaces.js';
 
 export function getAuthPage(request: FastifyRequest, reply: FastifyReply) {
 	const language = request.language;
-	return reply.type("text/html").send(frameView({ language, page: Page.AUTH }, authView()));
+	return reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, authView()));
 }

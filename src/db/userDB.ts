@@ -40,15 +40,15 @@ export function usersInTournament(db: DatabaseSync, gameId: string): Box<Gamer[]
 	}
 }
 
-export function addUserToMatch(db: DatabaseSync, gameId: string, user: ShortUser): Result {
+export function addUserToMatch(db: DatabaseSync, gameId: string, userId: number): Result {
 	try {
 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
 
-		if (user.gameId != gameId && 2 == game.count)
+		if (2 == game.count)
 			return Result.ERR_GAME_FULL;
 
-		return updateGameId(db, gameId, user.userId);
+		return updateGameId(db, gameId, userId);
 	}
 	catch (e) {
 		return Result.ERR_DB;
@@ -199,11 +199,13 @@ export function addUser(db: DatabaseSync, { email, password }): Box<string[]> {
 /*
 	Adds a guest to the DB
 */
-export function addGuest(db: DatabaseSync): Box<string> {
+export function createGuest(db: DatabaseSync): Box<ShortUser> {
 	try {
 		const stringBox = getNickname(db);
 		if (Result.SUCCESS != stringBox.result)
-			return stringBox;
+			return {
+				result: stringBox.result
+			}
 
 		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
 		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST]);
@@ -211,7 +213,13 @@ export function addGuest(db: DatabaseSync): Box<string> {
 		removeUserFromMatch(db, id);
 		return {
 			result: Result.SUCCESS,
-			contents: refreshToken(id)
+			contents: {
+				avatar: defaultAvatar,
+				gameId: null,
+				nick: numbersToNick(stringBox.contents),
+				userId: id,
+				userType: UserType.GUEST
+			}
 		};
 	}
 	catch (e) {

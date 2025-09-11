@@ -24,9 +24,9 @@ export function gamersHtml(gamers: Gamer[], convert: boolean = true): string {
 			return `
 		<div class="flex flex-row gap-8 mx-auto">
 			<div class="flex flex-col gap-3">
-				${gamerHtml(gamers[0], true, convert)}
-				<button id="leaveMatchButton" class="text-red-900 cursor-[url(/images/pointer.png),pointer] hover:text-fuchsia-800">%%BUTTON_LEAVE%%</button>
-			</div>		
+				${gamerHtml(gamers[0], 0, convert)}	
+				<button id="leaveMatchButton" class="text-red-900 cursor-[url(/images/pointer.png),pointer] hover:text-fuchsia-800">%%BUTTON_LEAVE%%</button>	
+			</div>
 			${spinnerHtml(gamers)}
 			<div class="text-gray-300 text-center my-auto pb-16 text-9xl">?</div>
 		</div>
@@ -35,21 +35,26 @@ export function gamersHtml(gamers: Gamer[], convert: boolean = true): string {
 		default:
 			return `
 		<div class="flex flex-row gap-8 mx-auto">
-			${gamerHtml(gamers[0], true, convert)}	
+			${gamerHtml(gamers[0], 1, convert)}	
 			${spinnerHtml(gamers)}			
-			${gamerHtml(gamers[1], false, convert)}	
+			${gamerHtml(gamers[1], 2, convert)}	
 		</div>
 		`;
 	}
 }
 
-function gamerHtml(gamer: Gamer, isGamer1: boolean, convert: boolean = true) {
-	console.log(gamer.nick);
+function gamerHtml(gamer: Gamer, gamerNum: number, convert: boolean = true) {
+	let colour = "bg-red-200/10";
 	const avatar = gamer.avatar ?? defaultAvatar;
-	const colour = isGamer1 ? "bg-[#BE2AD1]" : "bg-[#FFCD5A]";
+	switch (gamerNum) {
+		case 1: colour = "bg-[#BE2AD1]";
+			break;
+		case 2: colour = "bg-[#FFCD5A]";
+			break;
+	}
 	return `
 	<div class="flex flex-col gap-3">
-		<img class="rounded-lg mx-auto cursor-[url(/images/pointer.png),pointer] h-60 w-60" src="${avatar}" />
+		<img class="rounded-lg mx-auto h-60 w-60" src="${avatar}" />
 		<div class="w-60 py-2 mt-2 ${colour} rounded-lg text-stone-700 text-center">${convert ? numbersToNick(gamer.nick) : gamer.nick}</div>
 	</div>
 	`;

@@ -2,7 +2,7 @@ import { GameChatMessage, Gamer, User } from "../../common/interfaces.js";
 import { numbersToNick } from "../../common/utils.js";
 
 export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessage[], user: User): string {
-	return `
+	return `	
 	<div class="flex flex-col w-full items-center gap-4">
 		<h1 id="tournamentTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_REMOTE_TOURNAMENT%%</h1>
 		<div class="flex flex-row h-120 w-full gap-2">
@@ -48,8 +48,6 @@ function remoteTournamentGamersHtml(gamers: Gamer[], convert: boolean = true): s
 	gamers.forEach(gamer => {
 		gamersString += tournamentGamerHtml(gamer, convert);
 	});
-
-	console.log(gamersString);
 
 	return `
 	<div class="flex flex-col gap-8">

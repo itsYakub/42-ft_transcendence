@@ -1,7 +1,8 @@
 import { Box, Page, Result } from "../../../common/interfaces.js";
 import { nickToNumbers } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
-import { isLoggedIn, showAlert, showPage } from "./../index.js";
+import { isUserLoggedIn } from "../user.js";
+import { showAlert, showPage } from "./../index.js";
 
 async function generateTournament(names: string[]) {
 	let newNames = [];
@@ -30,7 +31,7 @@ export function localTournamentListeners() {
 	const nextTournamentMatchButton = <HTMLButtonElement>document.querySelector("#nextTournamentMatchButton");
 	if (nextTournamentMatchButton) {
 		nextTournamentMatchButton.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const dialog = document.querySelector("#gameDialog");
@@ -67,7 +68,7 @@ export function localTournamentListeners() {
 	if (newTournamentForm) {
 		newTournamentForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const userBoxResponse = await fetch("/profile/user");

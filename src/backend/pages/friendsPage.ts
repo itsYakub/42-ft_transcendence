@@ -13,9 +13,9 @@ export function getFriendsPage(request: FastifyRequest, reply: FastifyReply) {
 	const usersBox = readFriends(db, user.userId);
 	if (Result.SUCCESS != usersBox.result)
 		return reply.type("text/html").send(frameView({
-			user,
 			language,
-			result: usersBox.result
+			result: usersBox.result,
+			user
 		}));
 
 	let text = friendsView(usersBox.contents);

@@ -1,8 +1,9 @@
-import { Gamer, Message, MessageType, Page, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
+import { Gamer, Message, MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { gameListeners } from "../game/gamePage.js";
 import { getLanguage, showPage } from "../index.js";
+import { getUserGameId, getUserId } from "../user.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
 export function createRemoteMatch() {
@@ -27,14 +28,15 @@ export function matchGamerLeaving() {
 	});
 }
 
-export async function updateMatchList(user: ShortUser) {
-	if (Page.GAME == currentPage() && !user.gameId) {
+export async function updateMatchList() {
+	if (Page.GAME == currentPage() && !getUserGameId()) {
 		console.log("game list updating");
 		showPage(Page.GAME);
 	}
 }
 
 export async function updateMatchDetails(message: Message) {
+	console.log(message);
 	// Handle game events (keys, goals, resets, etc.)
 	if (message.content && message.content.includes('"kind"')) {
 		g_game.netOnMessage(message);
@@ -50,59 +52,47 @@ export async function updateMatchLobby(message: Message) {
 }
 
 // There are 2 players in the lobby
-export async function startingMatch() {
-	const userBox = await fetch("/profile/user");
-	const json = await userBox.json();
-	if (Result.SUCCESS != json.result)
-		return;
-
-	const user = json.contents;
+export async function startingMatch(message: Message) {
 
 	setTimeout(async () => {
-		const gamersBox = await fetch("/match/gamers");
-		const json = await gamersBox.json();
-		if (Result.SUCCESS != json.result || 2 != json.contents.length)
-			return;
+		// 	const gamersBox = await fetch("/match/gamers");
+		// 	const json = await gamersBox.json();
+		// 	if (Result.SUCCESS != json.result || 2 != json.contents.length)
+		// 		return;
 
-		const gamers: Gamer[] = json.contents;
-		const localIndex = gamers[0].userId === user.userId ? 0 : 1;
+		const match = message.match;
+		const localIndex = match.g1.userId === getUserId() ? 0 : 1;
 
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				sendMessageToServer({
-					type: MessageType.MATCH_LEAVE
-				});
-				const response = await fetch("/match-result/add", {
-					method: "POST",
-					headers: {
-						"content-type": "application/json"
-					},
-					body: JSON.stringify({
-						g2Nick: gamers[0].nick == user.nick ? gamers[1].nick : gamers[0].nick,
-						g1Score: e.detail["g1Score"],
-						g2Score: e.detail["g2Score"],
-					})
-				});
-				showPage(Page.GAME);
+				// sendMessageToServer({
+				// 	type: MessageType.MATCH_LEAVE
+				// });
+				// const response = await fetch("/match-result/add", {
+				// 	method: "POST",
+				// 	headers: {
+				// 		"content-type": "application/json"
+				// 	},
+				// 	body: JSON.stringify({
+				// 		g2Nick: gamers[0].nick == user.nick ? gamers[1].nick : gamers[0].nick,
+				// 		g1Score: e.detail["g1Score"],
+				// 		g2Score: e.detail["g2Score"],
+				// 	})
+				// });
+				// showPage(Page.GAME);
 			});
 		}
 
-		g_game.setupElements(GameMode.GAMEMODE_PVP, {
-			nick: gamers[0].nick,
-			userId: gamers[0].userId,
-		}, {
-			nick: gamers[1].nick,
-			userId: gamers[1].userId,
-		}, {
+		console.log("starting match...");
+		const receiverId = match.g1.userId == getUserId() ? match.g2.userId : match.g1.userId;
+		console.log(localIndex, receiverId);
+		g_game.setupElements(GameMode.GAMEMODE_PVP, match.g1, match.g2, {
 			networked: true,
-			gameId: user.gameId,
-			localIndex: localIndex as 0 | 1
+			gameId: message.gameId,
+			localIndex: localIndex as 0 | 1,
+			receiverId
 		});
 		g_game.actuallyStart();
-	}, 2000);
+	}, 1000);
 }
-
-// export function actuallyStartingMatch() {
-// 	g_game.actuallyStart();
-// }

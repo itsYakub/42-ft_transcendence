@@ -10,12 +10,13 @@ import { userChatsFunctions } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
 import { Page, Result } from "../../common/interfaces.js";
 import { connectToWS, currentPage } from "./sockets/clientSocket.js";
+import { isUserLoggedIn, userLoggedIn } from "./user.js";
 
 /*
 	Simulates moving to a new page
 */
 export async function showPage(page: Page, add: boolean = true) {
-	if (Page.AUTH != page && !await isLoggedIn())
+	if (Page.AUTH != page && !isUserLoggedIn())
 		page = Page.AUTH;
 
 	if (add)
@@ -62,12 +63,6 @@ export function getLanguage(): string {
 	return language;
 }
 
-export async function isLoggedIn(): Promise<boolean> {
-	const userBox = await fetch("/profile/user");
-	const json = await userBox.json();
-	return Result.SUCCESS == json.result;
-}
-
 /*
 	Connects to the websocket and adds the button handlers
 */
@@ -109,6 +104,11 @@ if (typeof window !== "undefined") {
 			showAlert(Result.ERR_GOOGLE);
 			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
 		}
+		const response = await fetch("/profile/user");
+		const json = await response.json();
+		if (Result.SUCCESS == json.result)
+			userLoggedIn(json.contents);
+
 		setupPage(currentPage());
 	});
 }

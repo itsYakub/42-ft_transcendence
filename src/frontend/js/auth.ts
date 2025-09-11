@@ -1,5 +1,6 @@
 import { Page, Result, TotpType } from "../../common/interfaces.js";
 import { showAlert, showPage } from "./index.js";
+import { userLoggedIn } from "./user.js";
 
 export function authFunctions() {
 	const googleButton = document.querySelector("#googleButton");
@@ -140,10 +141,12 @@ async function guestLogin() {
 		body: JSON.stringify({})
 	});
 
-	const result = await response.text();
-	if (Result.SUCCESS != result) {
-		showAlert(result);
+	const json = await response.json();
+	if (Result.SUCCESS != json.result) {
+		showAlert(json.result);
 		return;
 	}
+
+	userLoggedIn(json.contents);
 	showPage(Page.HOME);
 }

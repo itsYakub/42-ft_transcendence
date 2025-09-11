@@ -1,7 +1,8 @@
 import { Message, MessageType, Page, Result, ShortUser } from "../../../common/interfaces.js";
 import { showPage } from "../index.js";
-import { matchFinishing, startingMatch,	updateMatchDetails,	updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
-import { tournamentMatchStart, updateTournamentLobby } from "./remoteTournamentsMessages.js";
+import { userLoggedOut, getUserId, getUserNick, getUserGameId } from "../user.js";
+import { matchFinishing, startingMatch, updateMatchDetails, updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
+import { tournamentChat, tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
 import { userInvite, userSendUserChat } from "./userMessages.js";
 
 let socket: WebSocket;
@@ -17,7 +18,7 @@ export async function connectToWS() {
 	}
 }
 
-export async function closess() {
+export async function closeClientSocket() {
 	console.log("closing socket");
 	socket.close();
 	socket = null;
@@ -28,6 +29,7 @@ export async function closess() {
 		},
 		body: JSON.stringify({})
 	});
+	userLoggedOut();
 	showPage(Page.AUTH);
 }
 
@@ -42,15 +44,7 @@ function initClientSocket(): Promise<void> {
 	return new Promise(async (resolve, reject) => {
 		socket!.onopen = () => resolve();
 
-		socket!.onmessage = async (event) => {
-			const userBox = await fetch("/profile/user");
-			const json = await userBox.json();
-			if (Result.SUCCESS != json.result)
-				return;
-
-			const message = JSON.parse(event.data);
-			handleServerMessage(message, json.contents);
-		};
+		socket!.onmessage = async (event) => handleServerMessage(JSON.parse(event.data));		
 
 		socket!.onerror = (err) => {
 			console.error("❌ WebSocket error occurred:", err);
@@ -72,14 +66,11 @@ export function isConnected(): boolean {
 	Sends a message from a client to the server
 */
 export async function sendMessageToServer(message: Message) {
-	if (1 == socket?.OPEN) {
+	if (1 == socket?.OPEN) {		
+		message.fromId = getUserId();
+		message.gameId = getUserGameId();		
+		console.log(`sending: ${JSON.stringify(message)}`);
 		socket.send(JSON.stringify(message));
-		// const userBox = await fetch("/profile/user");
-		// const json = await userBox.json();
-		// if (Result.SUCCESS == json.result) {
-		// 	message.fromId = json.contents.userId;
-		// 	socket.send(JSON.stringify(message));
-		// }
 	}
 }
 
@@ -94,7 +85,7 @@ export function currentPage(): Page {
 /*
 	Deals with a socket message from the server
 */
-function handleServerMessage(message: Message, user: ShortUser) {
+function handleServerMessage(message: Message) {
 	switch (message.type) {
 		case MessageType.USER_INVITE:
 			userInvite(message);
@@ -104,7 +95,7 @@ function handleServerMessage(message: Message, user: ShortUser) {
 			break;
 
 		case MessageType.GAME_LIST_CHANGED:
-			updateMatchList(user);
+			updateMatchList();
 			break;
 
 		case MessageType.MATCH_LOBBY_CHANGED:
@@ -114,7 +105,7 @@ function handleServerMessage(message: Message, user: ShortUser) {
 			matchFinishing();
 			break;
 		case MessageType.MATCH_READY:
-			startingMatch();
+			startingMatch(message);
 			break;
 		case MessageType.MATCH_UPDATE:
 		case MessageType.MATCH_GOAL:
@@ -127,17 +118,17 @@ function handleServerMessage(message: Message, user: ShortUser) {
 		case MessageType.TOURNAMENT_LOBBY_CHANGED:
 			updateTournamentLobby(message);
 			break;
-		// case MessageType.TOURNAMENT_CHAT:
-		// 	tournamentChat(user, message);
-		// 	break;
+		case MessageType.TOURNAMENT_CHAT:
+			tournamentChat(message);
+			break;
 		case MessageType.TOURNAMENT_MATCH_START:
 			tournamentMatchStart(message);
 			break;
 		// case MessageType.TOURNAMENT_OVER:
 		// 	tournamentOver(user, message);
 		// 	break;
-		// case MessageType.TOURNAMENT_UPDATE:
-		// 	updateTournamentDetails(message);
-		// 	break;
+		case MessageType.TOURNAMENT_UPDATE:
+			updateTournamentDetails(message);
+			break;
 	}
 }

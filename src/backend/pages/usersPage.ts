@@ -13,9 +13,9 @@ export function getUsersPage(request: FastifyRequest, reply: FastifyReply) {
 	const usersBox = allUsers(db);
 	if (Result.SUCCESS != usersBox.result)
 		return reply.type("text/html").send(frameView({
-			user,
 			language,
-			result: usersBox.result
+			result: usersBox.result,
+			user
 		}));
 
 	let text = usersView(usersBox.contents);

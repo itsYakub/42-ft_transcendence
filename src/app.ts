@@ -74,12 +74,12 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 
 	if (Result.ERR_DB == userBox.result) {
-		return "/" == request.url ? reply.type("text/html").send(frameView({ language, page: Page.AUTH }, dbErrorView()))
+		return "/" == request.url ? reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, dbErrorView()))
 		: reply.send({ result: userBox.result });
 	}
 
 	if (Result.ERR_NO_USER == userBox.result)
-		return "/" == request.url ? reply.type("text/html").send(frameView({ language, page: Page.AUTH }, authView()))
+		return "/" == request.url ? reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, authView()))
 		: reply.send({ result: Result.ERR_NO_USER });
 
 	request.user = userBox.contents;

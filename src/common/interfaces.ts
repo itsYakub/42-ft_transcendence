@@ -77,7 +77,8 @@ export enum MessageType {
 
 export interface Message {
 	chat?: string,
-	content?: string
+	content?: string,
+	matchContent?: any,
 	fromId?: number,
 	gameId?: string,
 	match?: Match,
@@ -89,7 +90,7 @@ export interface FrameParams {
 	language: string,
 	page?: Page,
 	result?: Result,
-	user?: User
+	user: User
 }
 
 export enum UserType {

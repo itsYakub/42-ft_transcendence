@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { addGoogleUser, addGuest, addUser, getUserByEmail, removeUserFromMatch, updateRefreshtoken } from '../../db/userDB.js';
+import { addGoogleUser, createGuest, addUser, getUserByEmail, removeUserFromMatch, updateRefreshtoken } from '../../db/userDB.js';
 import { Result, TotpType, UserType } from '../../common/interfaces.js';
 import { compareSync } from 'bcrypt-ts';
 import { refreshToken, accessToken } from '../../db/jwt.js';
@@ -118,12 +118,14 @@ export function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 }
 
 export function registerGuest(request: FastifyRequest, reply: FastifyReply) {
-	const guestBox = addGuest(request.db);
+	const guestBox = createGuest(request.db);
 	if (Result.SUCCESS != guestBox.result)
 		return reply.send(guestBox);
 
+	const token = refreshToken(guestBox.contents.userId);
+
 	return reply.header(
-		"Set-Cookie", `accessToken=${guestBox.contents}; Path=/; Secure; HttpOnly;`).send(Result.SUCCESS);
+		"Set-Cookie", `accessToken=${token}; Path=/; Secure; HttpOnly;`).send(guestBox);
 }
 
 export function registerUser(request: FastifyRequest, reply: FastifyReply) {

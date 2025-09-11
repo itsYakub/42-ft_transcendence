@@ -15,10 +15,11 @@ export function navbarView(params: FrameParams): string {
 
 	let html: string = alertDialogHtml();
 
-	if (!params.user)
+	const user = params.user;
+	if (!user)
 		html += loggedOutHtml(languageSelect, params.page);
 	else
-		html += UserType.GUEST == params.user.userType ? guestHtml(params.user, languageSelect) : loggedInHtml(params.user, languageSelect, params.page);
+		html += UserType.GUEST == user.userType ? guestHtml(user, languageSelect) : loggedInHtml(user, languageSelect, params.page);
 
 	return html;
 }

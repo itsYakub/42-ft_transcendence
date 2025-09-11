@@ -21,7 +21,7 @@ export function readRemoteTournament(db: DatabaseSync, gameId: string): Box<Tour
 
 export function createRemoteTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
 	try {
-		gameId = `r${gameId.substring(1)}`;
+		console.log(gameId);
 		gamers.forEach(gamer => {
 			updateGameId(db, gameId, gamer.userId);
 		});
@@ -30,20 +30,20 @@ export function createRemoteTournament(db: DatabaseSync, gameId: string, gamers:
 		select.run(gameId, gamers[0].userId, gamers[1].userId, gamers[2].userId, gamers[3].userId, gamers[0].nick, gamers[1].nick, gamers[2].nick, gamers[3].nick);
 		return Result.SUCCESS;
 	}
-	catch (e) {
+	catch (e) {console.log(e);
 		return Result.ERR_DB;
 	}
 }
 
-export function joinTournament(db: DatabaseSync, gameId: string, user: ShortUser): Result {
+export function joinTournament(db: DatabaseSync, gameId: string, userId: number): Result {
 	try {
 		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
 
-		if (user.gameId != gameId && 4 == game.count)
+		if (3 == game.count)
 			return Result.ERR_GAME_FULL;
 
-		return updateGameId(db, gameId, user.userId);
+		return updateGameId(db, gameId, userId);
 	}
 	catch (e) {
 		console.log(e);
@@ -51,12 +51,12 @@ export function joinTournament(db: DatabaseSync, gameId: string, user: ShortUser
 	}
 }
 
-export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournament, user: ShortUser): Result {
-	const match = whichMatchIsUserIn(tournament, user);
-	const player = match.g1.userId == user.userId ? 1 : 2;
+export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournament, gameId: string, userId: number): Result {
+	const match = whichMatchIsUserIn(tournament, userId);
+	const player = match.g1.userId == userId ? 1 : 2;
 	try {
 		const select = db.prepare(`UPDATE tournaments SET m${match.matchNumber}_g${player}_ready = 1 WHERE game_id = ?;`);
-		select.run(user.gameId);
+		select.run(gameId);
 		return Result.SUCCESS;
 	}
 	catch (e) {
@@ -93,8 +93,8 @@ export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches:
 	}
 }
 
-function whichMatchIsUserIn(tournament: Tournament, user: ShortUser): Match {
-	return tournament.matches.find(match => match.g1.userId == user.userId || match.g2.userId == user.userId);
+function whichMatchIsUserIn(tournament: Tournament, userId: number): Match {
+	return tournament.matches.find(match => match.g1.userId == userId || match.g2.userId == userId);
 }
 
 function sqlToTournament(tournament: Record<string, SQLOutputValue>): Tournament {

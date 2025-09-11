@@ -21,7 +21,7 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	if (user.gameId) {
 		const gameId = user.gameId;
 
-		console.log(gameId);
+		console.log(`user ${user.nick} ${user.userId} game ${gameId}`);
 
 		if (gameId.startsWith("t")) {
 			const localTournamentBox = readLocalTournament(db, gameId);

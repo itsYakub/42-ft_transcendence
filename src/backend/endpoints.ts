@@ -7,7 +7,7 @@ import { addFoe, foesList, removeFoe } from "./api/foesApi.js";
 import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsApi.js";
 import { addMatchResult } from "./api/matchResultsApi.js";
 import { getProfile, getShortUser } from "./api/profileApi.js";
-import { addLocalTournament, addRemoteTournament, createMatchLobby, createTournamentLobby, getTournament, getTournamentGamers, getTournamentLobby, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
+import { addLocalTournament, addRemoteTournament, createMatchLobby, createTournamentLobby, getTournament, getTournamentGamers, getTournamentLobby, leaveRemoteTournament, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
 import { chatsList, getChats, notificationsList, userChats } from "./api/chatApi.js";
 import { listNicknames, listUsers } from "./api/userApi.js";
 import { getUsersPage } from "./pages/usersPage.js";
@@ -84,6 +84,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/match/gamers", (request: FastifyRequest, reply: FastifyReply) => matchGamers(request, reply));
 	fastify.post("/tournament/local/add", (request: FastifyRequest, reply: FastifyReply) => addLocalTournament(request, reply));
 	fastify.post("/tournament/remote/add", (request: FastifyRequest, reply: FastifyReply) => addRemoteTournament(request, reply));
+	fastify.post("/tournament/remote/leave", (request: FastifyRequest, reply: FastifyReply) => leaveRemoteTournament(request, reply));
 	fastify.post("/tournament/local/update", (request: FastifyRequest, reply: FastifyReply) => updateLocalTournment(request, reply));
 }
 

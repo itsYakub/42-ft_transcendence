@@ -1,14 +1,15 @@
 import { addChatPartnerView, chatMessageForm, chatPartner, userNotificationsMessages } from "./../../common/dynamicElements.js";
 import { MessageType, Page, Result } from "./../../common/interfaces.js";
-import { isLoggedIn, showPage } from "./index.js";
+import { showPage } from "./index.js";
 import { sendMessageToServer } from "./sockets/clientSocket.js";
+import { isUserLoggedIn } from "./user.js";
 import { profileFunctions } from "./users/profile.js";
 
 export function userChatsFunctions() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
 	for (var i = 0; i < chatPartnerButtons.length; i++) {
 		chatPartnerButtons[i].addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const chatsBox = await fetch("/chat", {
@@ -46,7 +47,7 @@ export function userChatsFunctions() {
 	const chatPartnerContainer = document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
 		chatPartnerContainer.addEventListener("click", async function () {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const profileBox = await fetch("/profile", {
@@ -75,7 +76,7 @@ export function userChatsFunctions() {
 	const addUserChatButton = document.querySelector("#addUserChatButton");
 	if (addUserChatButton) {
 		addUserChatButton.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const response = await (fetch("/chat/users"));
@@ -105,7 +106,7 @@ export function userChatsFunctions() {
 	const notificationsButton = document.querySelector("#notificationsButton");
 	if (notificationsButton) {
 		notificationsButton.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const chatsBox = await fetch("/chat/notifications");
@@ -133,7 +134,7 @@ export function userChatsFunctions() {
 	if (sendUserChatForm) {
 		sendUserChatForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");

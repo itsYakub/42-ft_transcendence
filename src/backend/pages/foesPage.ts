@@ -13,9 +13,9 @@ export function getFoesPage(request: FastifyRequest, reply: FastifyReply) {
 	const usersBox = readFoes(db, user.userId);
 	if (Result.SUCCESS != usersBox.result)
 		return reply.type("text/html").send(frameView({
-			user,
 			language,
-			result: usersBox.result
+			result: usersBox.result,
+			user
 		}));
 
 	let text = foesView(usersBox.contents);

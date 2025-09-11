@@ -1,7 +1,8 @@
 import { nickToNumbers } from "../../common/utils.js";
 import { Page, Result } from "./../../common/interfaces.js";
-import { isLoggedIn, showAlert, showPage } from "./index.js";
-import { closess } from "./sockets/clientSocket.js";
+import { showAlert, showPage } from "./index.js";
+import { closeClientSocket } from "./sockets/clientSocket.js";
+import { isUserLoggedIn } from "./user.js";
 
 /*
 	The buttons and events create by the /profile page
@@ -14,7 +15,7 @@ export function accountListeners() {
 	const avatarImage = document.querySelector("#avatarImage");
 	if (avatarImage)
 		avatarImage.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			avatarUploadButton.click()
@@ -71,7 +72,7 @@ export function accountListeners() {
 
 		changeNickForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			let newNick = changeNickForm.newNick.value;
@@ -106,7 +107,7 @@ export function accountListeners() {
 	if (changePasswordForm) {
 		changePasswordForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const checkPassword = changePasswordForm.currentPassword.value;
@@ -153,7 +154,7 @@ export function accountListeners() {
 	const totpAppButton = document.querySelector("#totpAppButton");
 	if (totpAppButton) {
 		totpAppButton.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const appTotpResponse = await fetch("/totp/app", {
@@ -181,7 +182,7 @@ export function accountListeners() {
 	const totpEmailButton = document.querySelector("#totpEmailButton");
 	if (totpEmailButton) {
 		totpEmailButton.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const emailTotpResponse = await fetch("/totp/email", {
@@ -207,7 +208,7 @@ export function accountListeners() {
 	const totpDisableButton = document.querySelector("#totpDisableButton");
 	if (totpDisableButton) {
 		totpDisableButton.addEventListener("click", async () => {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			const disableToptResponse = await fetch("/totp/disable", {
@@ -340,7 +341,7 @@ export function accountListeners() {
 	*/
 	const logoutButton = document.querySelector("#logoutButton");
 	if (logoutButton) {
-		logoutButton.addEventListener("click", async () => closess());
+		logoutButton.addEventListener("click", async () => closeClientSocket());
 	}
 
 	/*
@@ -360,7 +361,7 @@ export function accountListeners() {
 			}
 
 			const alertDialog = <HTMLDialogElement>document.querySelector("#alertDialog");
-			alertDialog.addEventListener("close", () => closess());
+			alertDialog.addEventListener("close", () => closeClientSocket());
 			showAlert(Result.SUCCESS_TOTP);
 		});
 	}

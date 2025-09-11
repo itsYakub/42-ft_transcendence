@@ -4,7 +4,7 @@ import { Box, Result } from '../../common/interfaces.js';
 import { readRemoteTournament } from '../../db/remoteTournamentsDb.js';
 import { remoteTournamentDetails } from '../views/remoteTournamentView.js';
 import { createLocalTournament, updateLocalTournament } from '../../db/localTournamentsDb.js';
-import { generateNickname } from '../../db/userDB.js';
+import { generateNickname, removeUserFromMatch } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
 import { readTournamentChats } from '../../db/TournamentChatsDb.js';
 import { remoteTournamentLobbyView, remoteTournamentMessagesHtml } from '../views/remoteTournamentLobbyView.js';
@@ -80,7 +80,10 @@ export function createMatchLobby(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const gameId = `m${Date.now().toString(36).substring(5)}`;
-	return reply.send(updateGameId(db, gameId, user.userId));
+	return reply.send({
+		result: updateGameId(db, gameId, user.userId),
+		gameId
+	});
 }
 
 export function createTournamentLobby(request: FastifyRequest, reply: FastifyReply) {
@@ -121,6 +124,10 @@ export function addRemoteTournament(request: FastifyRequest, reply: FastifyReply
 	const gameId = `l${Date.now().toString(36).substring(5)}`;
 
 	return reply.send(updateGameId(db, gameId, user.userId));
+}
+
+export function leaveRemoteTournament(request: FastifyRequest, reply: FastifyReply) {
+	return reply.send(removeUserFromMatch(request.db, request.user.userId));
 }
 
 export function updateLocalTournment(request: FastifyRequest, reply: FastifyReply) {

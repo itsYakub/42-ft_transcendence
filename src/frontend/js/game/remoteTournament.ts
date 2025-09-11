@@ -1,6 +1,7 @@
 import { Page, Result } from "../../../common/interfaces.js";
-import { isLoggedIn, showPage } from "../index.js";
+import { showPage } from "../index.js";
 import { sendTournamentMessage, tournamentGamerIsReady, tournamentGamerLeft } from "../sockets/remoteTournamentsMessages.js";
+import { getUserGameId, isUserLoggedIn, removeUserGameId } from "../user.js";
 
 export async function createRemoteTournament(): Promise<Result> {
 	const response = await fetch(`/tournament/remote/add`, {
@@ -21,18 +22,25 @@ export function tournamentListeners() {
 	const leaveTournamentButton = document.querySelector("#leaveTournamentButton");
 	if (leaveTournamentButton) {
 		leaveTournamentButton.addEventListener("click", async () => {console.log("clicked leave");
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			showPage(Page.GAME);
-			tournamentGamerLeft();
+			const gameId = getUserGameId();
+
+			const response = await fetch("tournament/leave");
+			const json = await response.json();
+			if (Result.SUCCESS == json.result) {
+				tournamentGamerLeft();
+				removeUserGameId();
+				showPage(Page.GAME);
+			}
 		});
 	}
 
 	const sendTournamentMessageForm = <HTMLFormElement>document.querySelector("#sendTournamentMessageForm");
 	if (sendTournamentMessageForm) {
 		sendTournamentMessageForm.addEventListener("submit", async function (e) {
-			if (!await isLoggedIn())
+			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
 			e.preventDefault();

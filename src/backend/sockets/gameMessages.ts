@@ -15,9 +15,9 @@ export function userLogoutReceived(db: DatabaseSync, user: ShortUser, message: M
 	}
 }
 
-export function tournamentChatReceived(db: DatabaseSync, user: ShortUser, message: Message) {
-	message.fromId = user.userId;
-	message.gameId = user.gameId;
+export function tournamentChatReceived(db: DatabaseSync, message: Message) {
+	//message.fromId = user.userId;
+	//message.gameId = user.gameId;
 
 	// if (Result.SUCCESS == addGameChat(db, message))
 	// 	broadcastMessageToClients(fastify, message);

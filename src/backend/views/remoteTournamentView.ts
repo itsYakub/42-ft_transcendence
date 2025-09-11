@@ -5,18 +5,17 @@ export function remoteTournamentView(tournament: Tournament, chats: GameChatMess
 	const title = isFinalReady(tournament) ? "TEXT_TOURNAMENT_FINAL" : "TEXT_TOURNAMENT_SEMI_FINALS";
 	return `
 	<div class="w-full h-full">
-		<h1 id="gameTitle" class="text-gray-300 pt-4 mb-4 text-3xl text-center">%%TEXT_TOURNAMENT%% - %%${title}%%</h1>
-		<div class="flex flex-row h-150">
-			<div id="tournamentDetailsContainer" class="flex flex-col w-69">
-				${remoteTournamentDetails(tournament, user)}
-			</div>
-			<div class="grow border border-gray-700 rounded-lg p-2">				
+		<h1 id="gameTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_REMOTE_TOURNAMENT%% - %%${title}%%</h1>
+		<div class="flex flex-row h-150">			
+			${remoteTournamentDetails(tournament, user)}
+			<fieldset class="grow border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 ml-4">
+				<legend class="text-fuchsia-800 text-center">%%TEXT_CHAT%%</legend>					
 				<div class="flex flex-col h-full">
-					<div id="messagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
+					<div id="tournamentMessagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 						${remoteTournamentMessagesHtml(chats, user)}
 					</div>
 					<div class="mt-2">
-						<form id="sendMatchMessageForm">
+						<form id="sendTournamentMessageForm">
 							<div class="flex flex-row gap-1">
 								<input type="text" name="message" class="text-gray-300 grow border border-gray-700 rounded-lg px-2">
 								<input type="submit" hidden>
@@ -25,7 +24,7 @@ export function remoteTournamentView(tournament: Tournament, chats: GameChatMess
 						</form>
 					</div>
 				</div>
-			</div>
+			</fieldset>
 		</div>
 	</div>
 	`;
@@ -48,19 +47,24 @@ export function remoteTournamentDetails(tournament: Tournament, user: ShortUser)
 	const gamer = whichGamerIsUser(match, user);
 
 	const html = `
-	<div class="flex flex-col gap-2">
-		${gamerHtml(match.g1, user.userId, 1)}
-		<div class="text-white text-center">Vs</div>
-		${gamerHtml(match.g2, user.userId, 2)}
-	</div>
-	<div class="flex flex-col gap-2 mt-2 w-69">
-		<div class="border border-gray-800 my-4 h-0.5 w-full mx-2"></div>
-		<div class="text-gray-300 text-lg text-center mb-2">Other match</div>
-		${secondaryMatchHtml(tournament.matches[1 == match.matchNumber ? 1 : 0])}
+	<div class="flex flex-col gap-8">
+		${userMatchHtml(match, user)}
+		${secondaryMatchHtml(tournament.matches[0] == match ? tournament.matches[1]: tournament.matches[0])}
 	</div>
 	`;
 
 	return html;
+}
+
+function userMatchHtml(match: Match, user: ShortUser): string {
+	return `
+	<fieldset class="w-80 h-55 flex flex-col gap-2 items-center justify-center border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
+		<legend id="tournamentPlayersLegend" class="text-fuchsia-800 text-center">%%TEXT_MATCH%% 1</legend>		
+		${gamerHtml(match.g1, user.userId, 1)}
+		<div class="text-white text-center">vs</div>
+		${gamerHtml(match.g2, user.userId, 2)}
+	</fieldset>
+	`;
 }
 
 function secondaryMatchHtml(match: Match): string {
@@ -82,10 +86,13 @@ function secondaryMatchHtml(match: Match): string {
 	}
 
 	return `
-	<div class="text-gray-300 text-center font-bold">${match.g1.nick}${g1Score}</div>
-	<div class="text-white text-center">Vs</div>
-	<div class="text-gray-300 text-center font-bold">${match.g2.nick}${g2Score}</div>
-	<div class="text-white text-center mt-2">${statusString}</div>
+	<fieldset class="w-80 h-55 flex flex-col gap-2 items-center justify-center border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
+		<legend id="tournamentPlayersLegend" class="text-fuchsia-800 text-center">%%TEXT_MATCH%% 2</legend>		
+		<div class="w-75 text-stone-700 text-center bg-red-200/10 rounded-lg py-2 px-4">${match.g1.nick}${g1Score}</div>
+		<div class="text-white text-center">Vs</div>
+		<div class="w-75 text-stone-700 text-center bg-red-200/10 rounded-lg py-2 px-4">${match.g2.nick}${g2Score}</div>
+		<div class="text-white text-center mt-2">${statusString}</div>
+	</fieldset>
 	`;
 }
 
@@ -142,24 +149,24 @@ function gamerHtml(gamer: MatchGamer, userId: number, position: number) {
 	if (gamer.ready) {
 		const buttonColour = 1 == position ? "bg-[#BE2AD1]" : "bg-[#FFCD5A]";
 		return `
-		<div class="py-2 px-4 rounded-lg text-stone-700 ${buttonColour} text-center">${gamer.nick}</div>
+		<div class="w-75 py-2 px-4 rounded-lg text-stone-700 ${buttonColour} text-center">${gamer.nick}</div>
 		`;
 	}
 
 	return `
-	<div class="py-2 px-4 rounded-lg text-stone-700 text-center">${gamer.nick}</div>
+	<div class="w-75 py-2 px-4 rounded-lg bg-red-200/10 text-stone-700 text-center">${gamer.nick}</div>
 	`;
 }
 
 function readyButtonHtml(gamer: MatchGamer, position: number) {
 	if (gamer.ready) {
 		return 1 == position ? `
-		<button disabled class="text-stone-700 bg-[#BE2AD1] py-2 px-4 rounded-lg">${gamer.nick}</button>
+		<button disabled class="w-75 text-stone-700 bg-[#BE2AD1] py-2 px-4 rounded-lg">${gamer.nick}</button>
 		`
 		:
 		`
-		<button disabled class="text-stone-700 bg-[#FFCD5A] py-2 px-4 rounded-lg">${gamer.nick}</button>
+		<button disabled class="w-75 text-stone-700 bg-[#FFCD5A] py-2 px-4 rounded-lg">${gamer.nick}</button>
 		`;
 	}
-	return `<button id="tournamentGamerReadyButton" class="text-gray-300 mt-4 bg-gray-800 cursor-[url(/images/pointer.png),pointer] py-1 px-4 rounded-lg hover:bg-gray-700">%%BUTTON_READY%%</button>`;
+	return `<button id="tournamentGamerReadyButton" class="w-75 border border-red-300 text-stone-700 mt-4 bg-red-300/50 cursor-[url(/images/pointer.png),pointer] py-2 px-4 rounded-lg hover:bg-red-300">%%BUTTON_READY%%</button>`;
 }
