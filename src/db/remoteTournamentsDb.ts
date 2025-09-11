@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Gamer, Match, MatchGamer, Result, Tournament, ShortUser } from "../common/interfaces.js";
+import { Box, Match, MatchGamer, Result, Tournament, ShortUser, Gamer } from "../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 import { numbersToNick } from "../common/utils.js";
 
@@ -21,6 +21,11 @@ export function readRemoteTournament(db: DatabaseSync, gameId: string): Box<Tour
 
 export function createRemoteTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
 	try {
+		gameId = `r${gameId.substring(1)}`;
+		gamers.forEach(gamer => {
+			updateGameId(db, gameId, gamer.userId);
+		});
+
 		const select = db.prepare("INSERT INTO tournaments (game_id, m1_g1_user_id, m1_g2_user_id, m2_g1_user_id, m2_g2_user_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		select.run(gameId, gamers[0].userId, gamers[1].userId, gamers[2].userId, gamers[3].userId, gamers[0].nick, gamers[1].nick, gamers[2].nick, gamers[3].nick);
 		return Result.SUCCESS;
@@ -38,8 +43,7 @@ export function joinTournament(db: DatabaseSync, gameId: string, user: ShortUser
 		if (user.gameId != gameId && 4 == game.count)
 			return Result.ERR_GAME_FULL;
 
-		user.gameId = gameId;
-		return updateGameId(db, user);
+		return updateGameId(db, gameId, user.userId);
 	}
 	catch (e) {
 		console.log(e);

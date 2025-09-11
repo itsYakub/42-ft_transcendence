@@ -48,8 +48,7 @@ export function addUserToMatch(db: DatabaseSync, gameId: string, user: ShortUser
 		if (user.gameId != gameId && 2 == game.count)
 			return Result.ERR_GAME_FULL;
 
-		user.gameId = gameId;
-		return updateGameId(db, user);
+		return updateGameId(db, gameId, user.userId);
 	}
 	catch (e) {
 		return Result.ERR_DB;

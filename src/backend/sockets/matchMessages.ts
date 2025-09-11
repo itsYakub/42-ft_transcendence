@@ -15,13 +15,6 @@ export function matchJoinReceived(db: DatabaseSync, user: ShortUser, message: Me
 					type: MessageType.MATCH_READY,
 					gameId
 				}, userIds);
-
-				setTimeout(() => {
-					sendMessageToGameIdUsers({
-						type: MessageType.MATCH_START,
-						gameId
-					}, userIds);
-				}, 3000);
 			}
 
 			const userIds = gamers.contents.map((gamer) => gamer.userId);

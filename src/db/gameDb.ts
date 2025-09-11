@@ -35,10 +35,10 @@ export function gamePlayers(db: DatabaseSync, gameId: string): Box<MatchGamer[]>
 	}
 }
 
-export function updateGameId(db: DatabaseSync, user: ShortUser): Result {
+export function updateGameId(db: DatabaseSync, gameId: string, userId: number): Result {
 	try {
 		const select = db.prepare(`UPDATE users SET game_id = ? WHERE user_id = ?;`);
-		select.run(user.gameId, user.userId);
+		select.run(gameId, userId);
 		return Result.SUCCESS;
 	}
 	catch (e) {
@@ -113,6 +113,7 @@ function sqlToGame(game: Record<string, SQLOutputValue>): Game {
 }
 
 function sqlToGamer(gamer: Record<string, SQLOutputValue>): MatchGamer {
+	console.log(gamer);
 	return {
 		nick: numbersToNick(gamer.nick as string),
 		userId: gamer.user_id as number

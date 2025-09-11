@@ -62,7 +62,7 @@ export function matchGamers(request: FastifyRequest, reply: FastifyReply) {
 	return reply.send(gamersBox);
 }
 
-export async function getTournament(request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> {
+export function getTournament(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const gamersBox = readRemoteTournament(db, request.user.gameId);
 	if (Result.SUCCESS != gamersBox.result)
@@ -76,27 +76,25 @@ export async function getTournament(request: FastifyRequest, reply: FastifyReply
 	});
 }
 
-export async function createMatchLobby(request: FastifyRequest, reply: FastifyReply) {
+export function createMatchLobby(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const gameId = `m${Date.now().toString(36).substring(5)}`;
-	user.gameId = gameId;
-	return reply.send(updateGameId(db, user));
+	return reply.send(updateGameId(db, gameId, user.userId));
 }
 
-export async function createTournamentLobby(request: FastifyRequest, reply: FastifyReply) {
+export function createTournamentLobby(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const gameId = `t${Date.now().toString(36).substring(5)}`;
-	user.gameId = gameId;
-	return reply.send(updateGameId(db, user));
+	return reply.send(updateGameId(db, gameId, user.userId));
 }
 
-export async function getTournamentLobby(request: FastifyRequest, reply: FastifyReply) {
+export function getTournamentLobby(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	user.gameId = (request.params as any).gameId;
-	const result = updateGameId(db, user);
+	const result = updateGameId(db, user.gameId, user.userId);
 	if (Result.SUCCESS != result)
 		return reply.send({ result });
 
@@ -106,7 +104,7 @@ export async function getTournamentLobby(request: FastifyRequest, reply: Fastify
 	});
 }
 
-export async function addLocalTournament(request: FastifyRequest, reply: FastifyReply): Promise<Box<string>> {
+export function addLocalTournament(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const gameId = `t${Date.now().toString(36).substring(5)}`;
@@ -114,16 +112,15 @@ export async function addLocalTournament(request: FastifyRequest, reply: Fastify
 
 	if (Result.SUCCESS == createLocalTournament(db, gameId, gamers))
 		user.gameId = gameId;
-	return reply.send(updateGameId(db, user));
+	return reply.send(updateGameId(db, gameId, user.userId));
 }
 
-export async function addRemoteTournament(request: FastifyRequest, reply: FastifyReply) {
+export function addRemoteTournament(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const gameId = `l${Date.now().toString(36).substring(5)}`;
 
-	user.gameId = gameId;
-	return reply.send(updateGameId(db, user));
+	return reply.send(updateGameId(db, gameId, user.userId));
 }
 
 export function updateLocalTournment(request: FastifyRequest, reply: FastifyReply) {

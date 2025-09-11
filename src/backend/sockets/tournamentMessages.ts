@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { gamePlayers } from '../../db/gameDb.js';
 import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser } from '../../common/interfaces.js';
 import { readRemoteTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult, createRemoteTournament } from '../../db/remoteTournamentsDb.js';
-import { remoteTournamentLobbyPlayersView, remoteTournamentGamersHtml } from '../views/remoteTournamentLobbyView.js';
+import { remoteTournamentLobbyPlayersView } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
 import { sendMessageToGameIdUsers, sendMessageToOtherUsers, sendMessageToUser, sendMessageToUsers } from "./serverSocket.js";
@@ -28,6 +28,7 @@ export function tournamentJoinReceived(db: DatabaseSync, user: ShortUser, messag
 		const gamers = usersInTournament(db, gameId);
 		if (Result.SUCCESS == gamers.result) {
 			if (4 == gamers.contents.length) {
+				console.log("generating");
 				generateTournament(db, user);
 			}
 			else {
@@ -39,6 +40,7 @@ export function tournamentJoinReceived(db: DatabaseSync, user: ShortUser, messag
 					content
 				}, userIds);
 			}
+			
 			sendMessageToOtherUsers({
 				type: MessageType.GAME_LIST_CHANGED
 			}, user.userId);

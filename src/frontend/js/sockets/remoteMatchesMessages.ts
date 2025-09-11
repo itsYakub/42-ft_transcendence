@@ -10,7 +10,7 @@ export function createRemoteMatch() {
 	joiningMatch(gameId);
 }
 
-export function joiningMatch(gameId: string) {
+export async function joiningMatch(gameId: string): Promise<void> {
 	sendMessageToServer({
 		type: MessageType.MATCH_JOIN,
 		gameId
@@ -99,9 +99,10 @@ export async function startingMatch() {
 			gameId: user.gameId,
 			localIndex: localIndex as 0 | 1
 		});
+		g_game.actuallyStart();
 	}, 2000);
 }
 
-export function actuallyStartingMatch() {
-	g_game.actuallyStart();
-}
+// export function actuallyStartingMatch() {
+// 	g_game.actuallyStart();
+// }

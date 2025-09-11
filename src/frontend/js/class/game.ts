@@ -270,11 +270,13 @@ export class Game {
 	}
 
 	public actuallyStart() {
-		if (this.m_gameOver || this.m_started) return;
-		console.log('[ INFO ] Actually starting networked game - ball should move now');
+		setTimeout(() => {
+			if (this.m_gameOver || this.m_started) return;
+			console.log('[ INFO ] Actually starting networked game - ball should move now');
 
-		this.m_ball.start();
-		this.m_started = true;
+			this.m_ball.start();
+			this.m_started = true;
+		}, 1000);
 	}
 
 	public netOnMessage(message: Message) {
@@ -413,6 +415,7 @@ export class Game {
 		}
 		else {
 			this.m_stateMachine = StateMachine.STATE_RESTART;
+			this.m_ball.start();
 		}
 	}
 

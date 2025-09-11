@@ -1,7 +1,7 @@
 import { Message, MessageType, Page, Result, ShortUser } from "../../../common/interfaces.js";
 import { showPage } from "../index.js";
-import { actuallyStartingMatch,	matchFinishing,	startingMatch,	updateMatchDetails,	updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
-import { tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
+import { matchFinishing, startingMatch,	updateMatchDetails,	updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
+import { tournamentMatchStart, updateTournamentLobby } from "./remoteTournamentsMessages.js";
 import { userInvite, userSendUserChat } from "./userMessages.js";
 
 let socket: WebSocket;
@@ -116,9 +116,6 @@ function handleServerMessage(message: Message, user: ShortUser) {
 		case MessageType.MATCH_READY:
 			startingMatch();
 			break;
-		case MessageType.MATCH_START:
-			actuallyStartingMatch();
-			break;
 		case MessageType.MATCH_UPDATE:
 		case MessageType.MATCH_GOAL:
 		case MessageType.MATCH_RESET:
@@ -139,8 +136,8 @@ function handleServerMessage(message: Message, user: ShortUser) {
 		// case MessageType.TOURNAMENT_OVER:
 		// 	tournamentOver(user, message);
 		// 	break;
-		case MessageType.TOURNAMENT_UPDATE:
-			updateTournamentDetails(message);
-			break;
+		// case MessageType.TOURNAMENT_UPDATE:
+		// 	updateTournamentDetails(message);
+		// 	break;
 	}
 }

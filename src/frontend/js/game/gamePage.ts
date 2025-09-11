@@ -78,7 +78,7 @@ export function gameListeners() {
 			if (!await isLoggedIn())
 				return showPage(Page.AUTH);
 
-			joiningMatch(this.dataset.id);
+			await joiningMatch(this.dataset.id);
 			showPage(Page.GAME);
 		});
 	}

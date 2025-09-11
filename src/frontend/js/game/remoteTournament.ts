@@ -20,7 +20,7 @@ export function tournamentListeners() {
 
 	const leaveTournamentButton = document.querySelector("#leaveTournamentButton");
 	if (leaveTournamentButton) {
-		leaveTournamentButton.addEventListener("click", async () => {
+		leaveTournamentButton.addEventListener("click", async () => {console.log("clicked leave");
 			if (!await isLoggedIn())
 				return showPage(Page.AUTH);
 

@@ -78,7 +78,7 @@ export async function updateTournamentLobby(message: Message) {
 		tournamentLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
 	const navBar = (document.querySelector("#navBar") as HTMLElement).dataset.page = Page.TOURNAMENT;
 
-	gameListeners();
+	tournamentListeners();
 }
 
 export async function tournamentMatchStart(message: Message) {
