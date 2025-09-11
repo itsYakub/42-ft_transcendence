@@ -425,14 +425,13 @@ export class Game {
                     this.m_stateMachine = StateMachine.STATE_UPDATE;
                     console.log('[ INFO ] Local match start!');
                 }
+				this.m_gui.showPlayerScore(this.m_scene, this.m_player0, this.m_player1);
             } break;
 
             case (StateMachine.STATE_UPDATE): {
-                if (!this.gameOver) {
-                    this.m_player0.update();
-                    this.m_player1.update();
-                    this.m_ball.update();
-                }
+				this.m_player0.update();
+				this.m_player1.update();
+				this.m_ball.update();
             } break;
 
             case (StateMachine.STATE_PAUSED): {
@@ -450,14 +449,14 @@ export class Game {
                 this.m_player0.reset();
                 this.m_player1.reset();
                 this.m_ball.reset();
+				this.m_gui.clearUI(this.m_scene);
 
                 this.m_stateMachine = StateMachine.STATE_START;
             } break;
 
             case (StateMachine.STATE_GAMEOVER): {
                 this.matchOver();
-                return;
-            }
+            } break;
 
             default: { } break;
         }
@@ -465,7 +464,6 @@ export class Game {
         /* StateMachine - independent code */
         g_gameTime += this.deltaTime;
         this.m_ground.update();
-		this.m_gui.update();
 
         /* Resize the canvas to the size of the dialog */
         this.m_canvas.width = this.m_dialog.clientWidth;
@@ -477,8 +475,9 @@ export class Game {
 
     // send the match info back to the frontend
     private matchOver() {
-        this.m_ball.reset();
+		let p_win : Player;
 
+        this.m_ball.reset();
         this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
             detail: {
                 g1Score: this.m_player0.score,
@@ -487,8 +486,10 @@ export class Game {
         }));
 
         // show "winner message" or something
-        this.dispose();
-    }
+		p_win = this.m_player0.score > this.m_player1.score ? this.m_player0 : this.m_player1;
+    	this.m_gui.clearUI(this.m_scene);
+    	this.m_gui.showMatchOver(this.m_scene, p_win);
+	}
 
     private createScene() {
         let scene = new BABYLON.Scene(this.m_engine);
@@ -521,7 +522,7 @@ export class Game {
             } break;
         }
 
-		this.m_gui = new Gui(this.m_canvas, this.m_player0, this.m_player1);
+		this.m_gui = new Gui(this.m_canvas);
         return (scene);
     }
 }
