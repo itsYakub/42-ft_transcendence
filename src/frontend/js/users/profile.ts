@@ -1,13 +1,16 @@
 import { profileActionbuttons } from "../../../common/dynamicElements.js";
-import { MessageType, Result } from "../../../common/interfaces.js";
+import { MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
-import { getLanguage } from "../index.js";
+import { getLanguage, isLoggedIn, showPage } from "../index.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 
 export function profileFunctions() {
 	const closeProfileButton = document.querySelector("#closeProfileButton");
 	if (closeProfileButton) {
-		closeProfileButton.addEventListener("click", () => {
+		closeProfileButton.addEventListener("click", async () => {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const profileDialog = <HTMLDialogElement>document.querySelector("#profileDialog");
 			if (profileDialog)
 				profileDialog.close();
@@ -17,6 +20,9 @@ export function profileFunctions() {
 	const addFriendButton = document.querySelector("#addFriendButton");
 	if (addFriendButton) {
 		addFriendButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const response = await fetch("/friends/add", {
 				method: "POST",
 				headers: {
@@ -39,6 +45,9 @@ export function profileFunctions() {
 	const removeFriendButton = document.querySelector("#removeFriendButton");
 	if (removeFriendButton) {
 		removeFriendButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const response = await fetch("/friends/remove", {
 				method: "POST",
 				headers: {
@@ -66,6 +75,9 @@ export function profileFunctions() {
 	const addFoeButton = document.querySelector("#addFoeButton");
 	if (addFoeButton) {
 		addFoeButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const response = await fetch("/foes/add", {
 				method: "POST",
 				headers: {
@@ -88,6 +100,9 @@ export function profileFunctions() {
 	const removeFoeButton = document.querySelector("#removeFoeButton");
 	if (removeFoeButton) {
 		removeFoeButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const response = await fetch("/foes/remove", {
 				method: "POST",
 				headers: {
@@ -115,6 +130,9 @@ export function profileFunctions() {
 	const inviteButton = document.querySelector("#inviteButton");
 	if (inviteButton) {
 		inviteButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			console.log("invite");
 			sendMessageToServer({
 				type: MessageType.NOTIFICATION_INVITE,

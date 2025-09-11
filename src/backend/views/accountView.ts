@@ -1,5 +1,5 @@
 import { TotpType, User, UserType } from "../../common/interfaces.js";
-import { appTotpDialogHtml, totpEnterCodeDialogHtml } from "./dialogsView.js";
+import { totpAppDialogHtml, totpEnterCodeDialogHtml } from "./dialogsView.js";
 
 export function accountView(user: User): string {
 	return `
@@ -29,7 +29,7 @@ export function accountView(user: User): string {
 			<button id="invalidateTokenButton" class="cursor-[url(/images/pointer.png),pointer] text-red-900 font-bold hover:text-stone-700">%%BUTTON_INVALIDATE_TOKEN%%</button>
 		</div>
 	</div>
-	${appTotpDialogHtml()}
+	${totpAppDialogHtml()}
 	${totpEnterCodeDialogHtml()}
 	`;
 }

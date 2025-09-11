@@ -21,9 +21,9 @@ export function profileDialogHtml(): string {
 	return `<dialog id="profileDialog" class="outline-hidden mx-auto mt-40 text-center content-center rounded-lg border bg-stone-700 border-red-300/50"></dialog>`;
 }
 
-export function appTotpDialogHtml(): string {
+export function totpAppDialogHtml(): string {
 	return `
-	<dialog id="totpDialog" class="backdrop:bg-black backdrop:opacity-70 m-auto w-100 content-center rounded-lg border bg-stone-700 border-red-300/50">
+	<dialog id="totpAppDialog" class="backdrop:bg-black backdrop:opacity-70 m-auto w-100 content-center rounded-lg border bg-stone-700 border-red-300/50">
 		<div class="p-3">
 			<h1 class="text-xl font-bold text-gray-300 mb-2 text-center">
 				%%TEXT_TOTP_TITLE%%
@@ -32,7 +32,7 @@ export function appTotpDialogHtml(): string {
 			<div class="text-gray-300 text-wrap text-center my-2">%%TEXT_TOTP_SCAN%%</div>
 			<div id="totpSecret" class="text-white text-center"></div>
 			<div class="text-gray-300 text-wrap text-center my-2">%%TEXT_TOTP_INPUT%%</div>
-			<form id="totpForm" class="mt-2 mx-auto text-center">
+			<form id="totpAppForm" class="mt-2 mx-auto text-center">
 				<input type="submit" class="hidden" />				
 				<input type="text" name="code" placeholder="%%TEXT_TOTP_CODE%%" minlength="6" maxlength="6"
 						class="outline-hidden mx-auto text-center rounded-lg w-30 h-7 p-1.5 bg-red-300/50 placeholder-stone-400 text-stone-700"

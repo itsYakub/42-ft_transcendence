@@ -1,58 +1,44 @@
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
-import { userGameLeaveReceived, tournamentChatReceived } from './gameMessages.js';
-import { userInviteReceived, userLoginReceived, userSendUserChatReceived } from './userMessages.js';
-import { getUserById, usersByGameId } from '../../db/userDB.js';
-import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
+import { tournamentChatReceived } from './gameMessages.js';
+import { userInviteReceived, userSendUserChatReceived } from './userMessages.js';
+import { getUser, usersByGameId } from '../../db/userDB.js';
+import { Message, MessageType, Result, ShortUser } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchStartReceived, matchUpdateReceived } from './matchMessages.js';
 import { notificationInviteReceived } from './notificationMessages.js';
 
 export const onlineUsers = new Map<number, WebSocket>();
+
 let db: DatabaseSync;
 
 export function connectToServerSocket(socket: WebSocket, request: FastifyRequest) {
 	db = request.db;
 
+	const user = request.user;
+	onlineUsers.set(request.user.userId, socket);
+	console.log(`connected user is now ${user.nick}`);
+	console.log(`connected clients: ${onlineUsers.size}`);
+
 	socket?.on("message", (data: string) => {
-		const userBox = getUserById(db, request.user?.userId);
+		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (Result.SUCCESS != userBox.result)
 			return;
 
-		const user = userBox.contents;
-		onlineUsers.set(user.userId, socket);
 		const message = JSON.parse(data as string);
-		console.log(userBox.contents.nick, userBox.contents.userId, message);
-
-		if (MessageType.USER_CONNECT == message.type) {
-			const id = message.fromId;
-			onlineUsers.set(id, socket);
-		}
-		handleClientMessage(db, user, message);
+		onlineUsers.set(userBox.contents.userId, socket);
+		handleClientMessage(db, userBox.contents, message);
 	});
 
 	socket?.on("close", () => {
-		const userBox = getUserById(db, request.user?.userId);
+		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (Result.SUCCESS != userBox.result)
 			return;
 
-		const user = userBox.contents;
-		onlineUsers.delete(user.userId);
-		sendMessageToUsers({
-			type: MessageType.MATCH_LEAVE,
-			fromId: user.userId,
-		});
-	});
-}
-
-/*
-	Sends the message to all connected clients, who have to decide if it's relevant
-*/
-export function broadcastMessageToClients(fastify: FastifyInstance, message: Message) {
-	fastify.websocketServer.clients.forEach((client: any) => {
-		if (1 === client.readyState)
-			client.send(JSON.stringify(message));
+		console.log(`${userBox.contents.nick} closed socket`);
+		onlineUsers.delete(userBox.contents.userId);
+		matchLeaveReceived(db, userBox.contents);
 	});
 }
 
@@ -108,16 +94,10 @@ function sendMessage(socket: WebSocket, message: Message) {
 /*
 	Deals with a socket message from a client
 */
-function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message) {
+export function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message) {
 	switch (message.type) {
-		case MessageType.USER_CONNECT:
-			userLoginReceived(db, user);
-			break;
 		case MessageType.USER_INVITE:
 			userInviteReceived(db, user, message);
-			break;
-		case MessageType.USER_LEAVE_GAME:
-			userGameLeaveReceived(db, user, message);
 			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChatReceived(db, user, message);
@@ -135,7 +115,7 @@ function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message
 			matchJoinReceived(db, user, message);
 			break;
 		case MessageType.MATCH_LEAVE:
-			matchLeaveReceived(db, user, message);
+			matchLeaveReceived(db, user);
 			break;
 		case MessageType.MATCH_OVER:
 			matchOverReceived(db, user, message);
@@ -148,6 +128,10 @@ function handleClientMessage(db: DatabaseSync, user: ShortUser, message: Message
 		case MessageType.MATCH_RESET:
 		case MessageType.MATCH_END:
 			matchUpdateReceived(db, user, message);
+			break;
+
+		case MessageType.GAME_LIST_CHANGED:
+			sendMessageToUsers(message);
 			break;
 
 		// Tournament messages

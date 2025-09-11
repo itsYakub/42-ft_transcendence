@@ -107,7 +107,7 @@ export function localTournamentHtml(nicks: string[]): string {
 				<input type="text" name="g3Nick" value="${nicks[2]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 3" class="w-80 outline-hidden rounded-lg p-2.5 bg-red-300/50 text-center placeholder-stone-400 text-stone-700">
 			</div>
 			<input type="text" name="g4Nick" value="${nicks[3]}" minlength="5" maxlength="25" required="true" placeholder="%%TEXT_PLAYER%% 4" class="w-80 outline-hidden rounded-lg mx-auto p-2.5 bg-red-300/50 text-center placeholder-stone-400 text-stone-700">
-			<div id="startLocalTournamentButton" class="text-stone-700 mt-8 bg-red-300/50 mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%TEXT_START%%</div>
+			<button type="submit" class="outline-hidden text-stone-700 mt-8 bg-red-300/50 mx-auto cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%TEXT_START%%</button>
 		</div>
 	</form>
 	`;

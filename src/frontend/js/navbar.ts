@@ -20,15 +20,7 @@ export function navbarFunctions() {
 	const homeButton = document.querySelector("#homeButton");
 	if (homeButton) {
 		homeButton.addEventListener("click", async function() {
-			const profileBox = await fetch("/profile", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					userId: this.dataset.id
-				})
-			});
+			const profileBox = await fetch(`/profile/${this.dataset.id}`);
 
 			const json = await profileBox.json();
 			if (Result.SUCCESS != json.result)

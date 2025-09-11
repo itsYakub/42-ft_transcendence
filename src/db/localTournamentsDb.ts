@@ -1,7 +1,7 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Result, LocalMatch, LocalGamer, LocalTournament } from "../common/interfaces.js";
 
-export function getLocalTournament(db: DatabaseSync, gameId: string): Box<LocalTournament> {
+export function readLocalTournament(db: DatabaseSync, gameId: string): Box<LocalTournament> {
 	try {
 		const select = db.prepare("SELECT * FROM local_tournaments WHERE game_id = ?");
 		const tournament = sqlToLocalTournament(select.get(gameId));
@@ -17,7 +17,7 @@ export function getLocalTournament(db: DatabaseSync, gameId: string): Box<LocalT
 	}
 }
 
-export function addLocalTournament(db: DatabaseSync, gamers: string[], gameId: string): Result {
+export function createLocalTournament(db: DatabaseSync, gameId: string, gamers: string[]): Result {
 	try {
 		const select = db.prepare("INSERT INTO local_tournaments (game_id, m1_g1_nick, m1_g2_nick, m2_g1_nick, m2_g2_nick) VALUES (?, ?, ?, ?, ?)");
 		select.run(gameId, gamers[0], gamers[1], gamers[2], gamers[3]);

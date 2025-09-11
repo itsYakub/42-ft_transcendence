@@ -32,23 +32,10 @@ export function invalidateToken(request: FastifyRequest, reply: FastifyReply) {
 	if (Result.SUCCESS != result)
 		return reply.send(result);
 
-	result = removeUserFromMatch(db, user.userId);
-	if (Result.SUCCESS != result)
-		return reply.send(result);
+	// result = removeUserFromMatch(db, user.userId);
+	// if (Result.SUCCESS != result)
+	// 	return reply.send(result);
 
-	const date = "Thu, 01 Jan 1970 00:00:00 UTC";
-	return reply.header(
-		"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
-			"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).send(Result.SUCCESS);
-}
-
-export function logout(request: FastifyRequest, reply: FastifyReply) {
-	const db = request.db;
-	console.log(`logging out ${request.user.nick} ${request.user.userId}`);
-	const result = removeUserFromMatch(db, request.user.userId);
-	console.log(result);
-	if (Result.SUCCESS != result)
-		return reply.send(result);
 	const date = "Thu, 01 Jan 1970 00:00:00 UTC";
 	return reply.header(
 		"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(

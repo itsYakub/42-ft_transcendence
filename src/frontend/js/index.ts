@@ -8,20 +8,20 @@ import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
 import { userChatsFunctions } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
-import { MessageType, Page, Result } from "../../common/interfaces.js";
-import { connectToWS, sendMessageToServer } from "./sockets/clientSocket.js";
+import { Page, Result } from "../../common/interfaces.js";
+import { connectToWS, currentPage } from "./sockets/clientSocket.js";
 
 /*
 	Simulates moving to a new page
 */
 export async function showPage(page: Page, add: boolean = true) {
-	if (!page)
-		page = Page.HOME;
-	else
-		connectToWS();
-	const endpoint = Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
+	if (Page.AUTH != page && !await isLoggedIn())
+		page = Page.AUTH;
+
 	if (add)
 		history.pushState(page, null);
+
+	const endpoint = Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
 
 	const response = await fetch(endpoint);
 	const body = await response.text();
@@ -29,55 +29,7 @@ export async function showPage(page: Page, add: boolean = true) {
 	const end = body.indexOf("</body>") + 7;
 
 	document.querySelector('body').innerHTML = body.substring(start, end);
-	addListeners();
-	const userResponse = await fetch("/profile/user");
-			const userBox = await userResponse.json();
-	sendMessageToServer({
-		fromId: userBox.contents.userId,
-		type: MessageType.USER_CONNECT
-	});
-}
-
-/*
-	Hooks up the window events
-*/
-if (typeof window !== "undefined") {
-	/* 
-		Changes page on back/forward buttons
-	*/
-	window.addEventListener
-		('popstate', (event) => {
-			if (history.state)
-				showPage(Page[history.state], false);
-		});
-
-	/*
-		Registers the functions and also shows an error if Google sign-in/up was unsuccessful
-	*/
-	window.addEventListener("load", async () => {
-		if (-1 != document.cookie.indexOf("googleautherror=true")) {
-			showAlert(Result.ERR_GOOGLE);
-			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
-		}
-		addListeners();
-	});
-}
-
-/*
-	Sets up all the listeners after navigating to a new page
-*/
-export function addListeners() {
-	accountListeners();
-	authFunctions();
-	gameListeners();
-	navbarFunctions();
-	localTournamentListeners();
-	tournamentListeners();
-	userChatsFunctions();
-	usersFunctions();
-
-	// remove!
-	devButtons();
+	setupPage(page);
 }
 
 /*
@@ -97,6 +49,9 @@ export function showAlert(text: string, shouldTranslate: boolean = true) {
 	}
 }
 
+/*
+	Gets the currently selected language
+*/
 export function getLanguage(): string {
 	let language = document?.cookie
 		.split("; ")
@@ -105,4 +60,55 @@ export function getLanguage(): string {
 	if (!language)
 		language = "english";
 	return language;
+}
+
+export async function isLoggedIn(): Promise<boolean> {
+	const userBox = await fetch("/profile/user");
+	const json = await userBox.json();
+	return Result.SUCCESS == json.result;
+}
+
+/*
+	Connects to the websocket and adds the button handlers
+*/
+function setupPage(page: Page) {
+	if (Page.AUTH != page)
+		connectToWS();
+
+	accountListeners();
+	authFunctions();
+	gameListeners();
+	navbarFunctions();
+	localTournamentListeners();
+	tournamentListeners();
+	userChatsFunctions();
+	usersFunctions();
+
+	// remove!
+	devButtons();
+}
+
+/*
+	Hooks up the window events
+*/
+if (typeof window !== "undefined") {
+	/* 
+		Changes page on back/forward buttons
+	*/
+	window.addEventListener
+		('popstate', (event) => {
+			if (history.state)
+				showPage(Page[history.state], false);
+		});
+
+	/*
+		Shows an error if Google sign-in/up was unsuccessful
+	*/
+	window.addEventListener("load", async () => {
+		if (-1 != document.cookie.indexOf("googleautherror=true")) {
+			showAlert(Result.ERR_GOOGLE);
+			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
+		}
+		setupPage(currentPage());
+	});
 }

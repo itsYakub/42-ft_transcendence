@@ -1,33 +1,38 @@
-import { Box, Result } from "../../../common/interfaces.js";
+import { Box, Page, Result } from "../../../common/interfaces.js";
 import { g_game, GameMode } from "../class/game.js";
-import { showAlert } from "./../index.js";
+import { isLoggedIn, showAlert, showPage } from "./../index.js";
 
 async function generateTournament(names: string[]) {
-	const gameId = `t${Date.now().toString(36).substring(5)}`;
 	const shuffled = names.sort(() => Math.random() - 0.5);
-	const response = await fetch("/tournament/add", {
+	const response = await fetch("/tournament/local/add", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
 		},
 		body: JSON.stringify({
-			gameId,
 			gamers: shuffled
 		})
 	});
 
-	return await response.text();
+	const text = await response.text();
+	if (text.includes("403 Forbidden")) {
+		return Result.ERR_FORBIDDEN_NAME;
+	}
+
+	return text;
 }
 
 export function localTournamentListeners() {
-
 	const nextTournamentMatchButton = <HTMLButtonElement>document.querySelector("#nextTournamentMatchButton");
 	if (nextTournamentMatchButton) {
 		nextTournamentMatchButton.addEventListener("click", async function () {
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
 				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-					const response = await fetch("/tournament/update", {
+					const response = await fetch("/tournament/local/update", {
 						method: "POST",
 						headers: {
 							"content-type": "application/json"
@@ -40,8 +45,8 @@ export function localTournamentListeners() {
 							matchNumber: this.dataset.match
 						})
 					});
-					//if (Result.SUCCESS == await response.text())
-						//navigate(window.location.href, false);
+					if (Result.SUCCESS == await response.text())
+						showPage(Page.GAME);
 				})
 			}
 			setTimeout(async () => {
@@ -50,7 +55,7 @@ export function localTournamentListeners() {
 				}, {
 					nick: this.dataset.g2
 				});
-			}, 1000);
+			}, 500);
 		});
 	}
 
@@ -58,7 +63,10 @@ export function localTournamentListeners() {
 	if (newTournamentForm) {
 		newTournamentForm.addEventListener("submit", async (e) => {
 			e.preventDefault();
-			const userBoxResponse = await fetch("/user");
+			if (!await isLoggedIn())
+				return showPage(Page.AUTH);
+
+			const userBoxResponse = await fetch("/profile/user");
 			const userBox = await userBoxResponse.json();
 			if (Result.SUCCESS == userBox.result) {
 				const names = [
@@ -74,12 +82,12 @@ export function localTournamentListeners() {
 				}
 
 				const result = await generateTournament(names);
-				//TODO show 403 error
+		
 				if (Result.SUCCESS != result) {
 					showAlert(result);
 					return;
 				}
-				//navigate(window.location.href, false);
+				showPage(Page.GAME);
 			}
 		});
 	}

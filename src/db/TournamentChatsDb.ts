@@ -6,7 +6,7 @@ import { Box, GameChatMessage, Message, Result } from "../common/interfaces.js";
 */
 export function readTournamentChats(db: DatabaseSync, gameId: string): Box<GameChatMessage[]> {
 	try {
-		const select = db.prepare("SELECT from_id, chat, nick FROM game_chats INNER JOIN users ON users.user_id = game_chats.from_id WHERE game_chats.game_id = ? ORDER BY sent_at DESC");
+		const select = db.prepare("SELECT from_id, chat, nick FROM tournament_chats INNER JOIN users ON users.user_id = tournament_chats.from_id WHERE tournament_chats.game_id = ? ORDER BY sent_at DESC");
 		const chats: GameChatMessage[] = select.all(gameId).map(sqlChat => sqlToTournamentChatMessage(sqlChat));
 		return {
 			result: Result.SUCCESS,
@@ -25,7 +25,7 @@ export function readTournamentChats(db: DatabaseSync, gameId: string): Box<GameC
 */
 export function createTournamentChat(db: DatabaseSync, message: Message): Result {
 	try {
-		const select = db.prepare("INSERT INTO game_chats (game_id, from_id, chat, sent_at) VALUES (?, ?, ?, ?)");
+		const select = db.prepare("INSERT INTO tournament_chats (game_id, from_id, chat, sent_at) VALUES (?, ?, ?, ?)");
 		select.run(message.gameId, message.fromId, message.chat, new Date().toISOString());
 		return Result.SUCCESS;
 	}

@@ -1,15 +1,15 @@
 import type { WebSocket } from "@fastify/websocket"; import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { addTotpApp, addTotpEmail, checkTotp, disableTotp, loginWithEmailTotp, verifyEmailTotp, verifyTotpApp } from "./api/totpApi.js";
-import { changeAvatar, changeNick, changePassword, invalidateToken, logout } from "./api/accountApi.js";
+import { addTotpApp, addTotpEmail, disableTotp, loginWithAppTotp, loginWithEmailTotp, verifyEmailTotp, verifyTotpApp } from "./api/totpApi.js";
+import { changeAvatar, changeNick, changePassword, invalidateToken } from "./api/accountApi.js";
 import { connectToServerSocket } from "./sockets/serverSocket.js";
-import { googleSignIn, registerGuest } from "./api/authApi.js";
+import { googleSignIn, loginUser, logoutUser, registerGuest, registerUser } from "./api/authApi.js";
 import { addFoe, foesList, removeFoe } from "./api/foesApi.js";
 import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsApi.js";
 import { addMatchResult } from "./api/matchResultsApi.js";
-import { getProfile, getUser } from "./api/profileApi.js";
-import { addTournament, getTournament, getTournamentGamers, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateTournment } from "./api/tournamentApi.js";
+import { getProfile, getShortUser } from "./api/profileApi.js";
+import { addLocalTournament, addRemoteTournament, createTournamentLobby, getTournament, getTournamentGamers, getTournamentLobby, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
 import { chatsList, getChats, notificationsList, userChats } from "./api/chatApi.js";
-import { loginUser, listNicknames, registerUser, listUsers } from "./api/userApi.js";
+import { listNicknames, listUsers } from "./api/userApi.js";
 import { getUsersPage } from "./pages/usersPage.js";
 import { getAccountPage } from "./pages/accountPage.js";
 import { getGamePage } from "./pages/gamePage.js";
@@ -17,6 +17,7 @@ import { getHomePage } from "./pages/homePage.js";
 import { getChatPage } from "./pages/userChatsPage.js";
 import { getFriendsPage } from "./pages/friendsPage.js";
 import { getFoesPage } from "./pages/foesPage.js";
+import { getAuthPage } from "./pages/authPage.js";
 
 export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/", async (request: FastifyRequest, reply: FastifyReply) => getHomePage(request, reply));
@@ -28,10 +29,11 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/account/password", (request: FastifyRequest, reply: FastifyReply) => changePassword(request, reply));
 	fastify.post("/account/token", (request: FastifyRequest, reply: FastifyReply) => invalidateToken(request, reply));
 
+	fastify.get("/auth", (request: FastifyRequest, reply: FastifyReply) => getAuthPage(request, reply));
 	fastify.get("/auth/google", (request: FastifyRequest, reply: FastifyReply) => googleSignIn(request, reply));
 	fastify.post("/auth/guest", (request: FastifyRequest, reply: FastifyReply) => registerGuest(request, reply));
 	fastify.post("/auth/login", (request: FastifyRequest, reply: FastifyReply) => loginUser(request, reply));
-	fastify.post("/auth/logout", (request: FastifyRequest, reply: FastifyReply) => logout(request, reply));
+	fastify.post("/auth/logout", (request: FastifyRequest, reply: FastifyReply) => logoutUser(request, reply));
 	fastify.post("/auth/register", (request: FastifyRequest, reply: FastifyReply) => registerUser(request, reply));
 
 	fastify.get("/chat", async (request: FastifyRequest, reply: FastifyReply) => getChatPage(request, reply));
@@ -45,11 +47,11 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/users/list", (request: FastifyRequest, reply: FastifyReply) => listUsers(request, reply));
 
 	fastify.post("/totp/app", (request: FastifyRequest, reply: FastifyReply) => addTotpApp(request, reply));
-	fastify.post("/totp/email", (request: FastifyRequest, reply: FastifyReply) => addTotpEmail(request, reply));
 	fastify.post("/totp/app/verify", (request: FastifyRequest, reply: FastifyReply) => verifyTotpApp(request, reply));
+	fastify.post("/totp/app/login", (request: FastifyRequest, reply: FastifyReply) => loginWithAppTotp(request, reply));
+	fastify.post("/totp/email", (request: FastifyRequest, reply: FastifyReply) => addTotpEmail(request, reply));
 	fastify.post("/totp/email/verify", (request: FastifyRequest, reply: FastifyReply) => verifyEmailTotp(request, reply));
 	fastify.post("/totp/email/login", (request: FastifyRequest, reply: FastifyReply) => loginWithEmailTotp(request, reply));
-	fastify.get("/totp/check", (request: FastifyRequest, reply: FastifyReply) => checkTotp(request, reply));
 	fastify.post("/totp/disable", (request: FastifyRequest, reply: FastifyReply) => disableTotp(request, reply));
 
 	fastify.get("/account/nicknames", (request: FastifyRequest, reply: FastifyReply) => listNicknames(request, reply));
@@ -69,15 +71,17 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 
 	fastify.post("/match-results/add", (request: FastifyRequest, reply: FastifyReply) => addMatchResult(request, reply));
 
-	fastify.get("/profile", (request: FastifyRequest, reply: FastifyReply) => getProfile(request, reply));
-	fastify.get("/profile/user", (request: FastifyRequest, reply: FastifyReply) => getUser(request, reply));
+	fastify.get("/profile/:userId", (request: FastifyRequest, reply: FastifyReply) => getProfile(request, reply));
+	fastify.get("/profile/user", (request: FastifyRequest, reply: FastifyReply) => getShortUser(request, reply));
 
 	fastify.get("/tournament", (request: FastifyRequest, reply: FastifyReply) => getTournament(request, reply));
-	fastify.get("/tournament/gamers", (request: FastifyRequest, reply: FastifyReply) => getTournamentGamers(request, reply));
+	fastify.get("/tournament/:gameId", (request: FastifyRequest, reply: FastifyReply) => getTournamentLobby(request, reply));
+	fastify.get("/tournament/create", (request: FastifyRequest, reply: FastifyReply) => createTournamentLobby(request, reply));
 	fastify.get("/match/nicks", (request: FastifyRequest, reply: FastifyReply) => matchNicks(request, reply));
 	fastify.get("/tournament/nicks", (request: FastifyRequest, reply: FastifyReply) => tournamentNicks(request, reply));
 	fastify.get("/match/gamers", (request: FastifyRequest, reply: FastifyReply) => matchGamers(request, reply));
-	fastify.post("/tournament/add", (request: FastifyRequest, reply: FastifyReply) => addTournament(request, reply));
-	fastify.post("/tournament/update", (request: FastifyRequest, reply: FastifyReply) => updateTournment(request, reply));
+	fastify.post("/tournament/local/add", (request: FastifyRequest, reply: FastifyReply) => addLocalTournament(request, reply));
+	fastify.post("/tournament/remote/add", (request: FastifyRequest, reply: FastifyReply) => addRemoteTournament(request, reply));
+	fastify.post("/tournament/local/update", (request: FastifyRequest, reply: FastifyReply) => updateLocalTournment(request, reply));
 }
 
