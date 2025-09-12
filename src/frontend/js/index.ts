@@ -22,6 +22,9 @@ export async function showPage(page: Page, add: boolean = true) {
 	if (add)
 		history.pushState(page, null);
 
+	// if (Page.USERS == page)
+	// 	window.removeEventListener("popstate", changePage);
+
 	const endpoint = !page || Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
 
 	const response = await fetch(endpoint);
@@ -83,6 +86,11 @@ function setupPage(page: Page) {
 	devButtons();
 }
 
+function changePage() {
+	if (history.state)
+		showPage(Page[history.state], false);
+}
+
 /*
 	Hooks up the window events
 */
@@ -90,11 +98,14 @@ if (typeof window !== "undefined") {
 	/* 
 		Changes page on back/forward buttons
 	*/
-	window.addEventListener
-		('popstate', (event) => {
-			if (history.state)
-				showPage(Page[history.state], false);
-		});
+	window.addEventListener('popstate', changePage);
+
+	// window.addEventListener
+	// ('beforeunload', (event) => {
+	// 	event.preventDefault();
+	// 	console.log(event);
+	// 	alert("woohoo");
+	// });
 
 	/*
 		Shows an error if Google sign-in/up was unsuccessful

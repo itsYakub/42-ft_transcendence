@@ -44,6 +44,7 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 			}
 		}
 		//TODO remove from game, lose game 10 - 0!, send message to game
+		//TODO player closes with escape
 		matchLeaveReceived(db, user.gameId, user.userId);
 	});
 }
