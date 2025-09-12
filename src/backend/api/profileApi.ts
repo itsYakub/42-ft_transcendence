@@ -7,6 +7,7 @@ import { readFriends } from '../../db/friendsDb.js';
 import { profileView } from '../../common/dynamicElements.js';
 import { readFoes } from '../../db/foesDb.js';
 import { accessToken } from '../../db/jwt.js';
+import { isUserAlreadyConnected } from '../sockets/serverSocket.js';
 
 export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -67,4 +68,13 @@ export function getShortUser(request: FastifyRequest, reply: FastifyReply) {
 				result: Result.SUCCESS,
 				contents: shortUser
 			});
+}
+
+export function isConnected(request: FastifyRequest, reply: FastifyReply) {
+	const result = isUserAlreadyConnected((request.params as any).id);
+	const date = "Thu, 01 Jan 1970 00:00:00 UTC";
+	return result ? reply.header(
+		"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
+			"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).send(Result.ERR_EMAIL_IN_USE)
+		: reply.send(Result.SUCCESS);
 }

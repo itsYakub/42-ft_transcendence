@@ -8,7 +8,7 @@ export function userLogoutReceived(db: DatabaseSync, user: ShortUser, message: M
 	const response = removeUserFromMatch(db, user.userId);
 
 	if (Result.SUCCESS == response) {
-		onlineUsers.delete(user.userId);
+		onlineUsers.delete(user.userId.toString());
 		sendMessageToUsers({
 			type: MessageType.GAME_LIST_CHANGED
 		});

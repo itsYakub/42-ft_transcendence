@@ -10,7 +10,7 @@ import { userChatsFunctions } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
 import { Page, Result } from "../../common/interfaces.js";
 import { connectToWS, currentPage } from "./sockets/clientSocket.js";
-import { isUserLoggedIn, userLoggedIn } from "./user.js";
+import { getUserNick, isUserLoggedIn, userLoggedIn } from "./user.js";
 
 /*
 	Simulates moving to a new page
@@ -104,11 +104,21 @@ if (typeof window !== "undefined") {
 			showAlert(Result.ERR_GOOGLE);
 			document.cookie = `googleautherror=false; expires=Thu, 01 Jan 1970 00:00:00 UTC; Path=/;`;
 		}
-		const response = await fetch("/profile/user");
-		const json = await response.json();
-		if (Result.SUCCESS == json.result)
-			userLoggedIn(json.contents);
 
+		const userBox = await fetch("/profile/user");
+		const userJson = await userBox.json();
+		if (Result.SUCCESS == userJson.result) {
+			const alreadyBox = await fetch(`/profile/logged-in/${userJson.contents.userId}`);
+			const alreadyText = await alreadyBox.text();
+			if (Result.SUCCESS != alreadyText) {
+				showPage(Page.AUTH);
+				return;
+			}
+
+			userLoggedIn(userJson.contents);
+		}
+
+		console.log(`new user is ${getUserNick()}`);
 		setupPage(currentPage());
 	});
 }

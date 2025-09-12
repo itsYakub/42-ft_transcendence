@@ -4,7 +4,7 @@ import { getUserByEmail } from '../../db/userDB.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { friendsView } from '../views/friendsView.js';
-import { onlineUsers } from '../sockets/serverSocket.js';
+import { isUserAlreadyConnected } from '../sockets/serverSocket.js';
 
 export function friendsList(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -16,7 +16,7 @@ export function friendsList(request: FastifyRequest, reply: FastifyReply) {
 		return reply.send(friendsBox);
 
 	friendsBox.contents.forEach(friend => {
-		if (onlineUsers.has(friend.friendId))
+		if (isUserAlreadyConnected(friend.friendId))
 			friend.online = true;
 	});
 
