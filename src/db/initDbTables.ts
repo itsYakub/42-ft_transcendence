@@ -182,7 +182,7 @@ function initUsersTable(db: DatabaseSync) {
 		);`);
 
 	//TODO remove
-	const addUsers: number = 0
+	const addUsers: number = 10
 	if (addUsers > 0) {
 		const pw = hashPassword("12345678");
 		for (var i = 1; i <= addUsers; i++)

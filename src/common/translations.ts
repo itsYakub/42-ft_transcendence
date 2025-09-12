@@ -67,6 +67,8 @@ export function translate(language: string, text: string): string {
 		"TEXT_LOCAL_TOURNAMENT",
 		"TEXT_LOG_IN_OR_REGISTER",
 		"TEXT_MATCH",
+		"TEXT_MATCH_QUIT",
+		"TEXT_MATCH_WIN",
 		"TEXT_MATCH_SINGULAR",
 		"TEXT_MATCH_PLURAL",
 		"TEXT_MESSAGES",
@@ -225,6 +227,8 @@ function translateEnglish(text: string): string {
 		case "TEXT_MATCH": return "Match";
 		case "TEXT_MATCH_SINGULAR": return "match";
 		case "TEXT_MATCH_PLURAL": return "matches";
+		case "TEXT_MATCH_QUIT": return "Quit!";
+		case "TEXT_MATCH_WIN": return "has won!";
 		case "TEXT_MESSAGES": return "Messages";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
@@ -358,6 +362,8 @@ function translatePolish(text: string): string {
         case "TEXT_MATCH": return "Mecz";
         case "TEXT_MATCH_SINGULAR": return "Mecz";
         case "TEXT_MATCH_PLURAL": return "Mecze";
+		case "TEXT_MATCH_QUIT": return "Quit!";
+		case "TEXT_MATCH_WIN": return "has won!";
         case "TEXT_MESSAGES": return "Wiadomości";
         case "TEXT_NEW_NICK": return "Nowy nick";
         case "TEXT_NEW_PASSWORD": return "Nowe hasło";

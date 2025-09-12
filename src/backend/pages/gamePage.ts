@@ -100,7 +100,7 @@ function lobby(request: FastifyRequest, reply: FastifyReply): FastifyReply {
 		return reply.type("text/html").send(frameView(params));
 	}
 
-	return reply.type("text/html").send(frameView(params, remoteTournamentLobbyView(gamersBox.contents, chatsBox.contents, user)));
+	return reply.type("text/html").send(frameView(params, remoteTournamentLobbyView(gamersBox.contents, chatsBox.contents, user.userId)));
 }
 
 function remoteTournament(tournament: Tournament, request: FastifyRequest, reply: FastifyReply): FastifyReply {

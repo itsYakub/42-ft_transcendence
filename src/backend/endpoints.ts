@@ -39,7 +39,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/chat", async (request: FastifyRequest, reply: FastifyReply) => getChatPage(request, reply));
 	fastify.get("/chat/notifications", (request: FastifyRequest, reply: FastifyReply) => notificationsList(request, reply));
 	fastify.post("/chat/list", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
-	fastify.post("/chat/users", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
+	fastify.get("/chat/users", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
 
 	fastify.get("/game", async (request: FastifyRequest, reply: FastifyReply) => getGamePage(request, reply));
 
@@ -55,7 +55,6 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/totp/disable", (request: FastifyRequest, reply: FastifyReply) => disableTotp(request, reply));
 
 	fastify.get("/account/nicknames", (request: FastifyRequest, reply: FastifyReply) => listNicknames(request, reply));
-	fastify.get("/account/tournament-chats", (request: FastifyRequest, reply: FastifyReply) => tournamentChats(request, reply));
 	fastify.get("/user-chats/:otherUserId", (request: FastifyRequest, reply: FastifyReply) => userChats(request, reply));
 
 	fastify.get("/foes", async (request: FastifyRequest, reply: FastifyReply) => getFoesPage(request, reply));
@@ -85,6 +84,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/match/gamers", (request: FastifyRequest, reply: FastifyReply) => matchGamers(request, reply));
 	fastify.post("/tournament/local/add", (request: FastifyRequest, reply: FastifyReply) => addLocalTournament(request, reply));
 	fastify.post("/tournament/remote/add", (request: FastifyRequest, reply: FastifyReply) => addRemoteTournament(request, reply));
+	fastify.get("/tournament/remote/chat", (request: FastifyRequest, reply: FastifyReply) => tournamentChats(request, reply));
 	fastify.post("/tournament/remote/leave", (request: FastifyRequest, reply: FastifyReply) => leaveRemoteTournament(request, reply));
 	fastify.post("/tournament/local/update", (request: FastifyRequest, reply: FastifyReply) => updateLocalTournment(request, reply));
 }

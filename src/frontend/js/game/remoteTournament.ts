@@ -3,7 +3,7 @@ import { showPage } from "../index.js";
 import { sendTournamentMessage, tournamentGamerIsReady, tournamentGamerLeft } from "../sockets/remoteTournamentsMessages.js";
 import { getUserGameId, isUserLoggedIn, removeUserGameId } from "../user.js";
 
-export async function createRemoteTournament(): Promise<Result> {
+export async function createRemoteTournament() {
 	const response = await fetch(`/tournament/remote/add`, {
 		method: "POST",
 		headers: {
@@ -11,7 +11,7 @@ export async function createRemoteTournament(): Promise<Result> {
 		},
 		body: JSON.stringify({})
 	});
-	return Result[await response.text()];
+	return await response.json();
 }
 
 export function tournamentListeners() {

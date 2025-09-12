@@ -3,6 +3,8 @@ import * as GUI from '@babylonjs/gui';
 
 import { Player } from './player.js';
 import { g_game } from './game.js';
+import { translate } from '../../../common/translations.js';
+import { getLanguage } from '../index.js';
 
 /* SECTION:
  *  Classes
@@ -55,7 +57,7 @@ export class Gui {
 		advanceTexture1.background = '#0000008f';
 
 		let	text3 = new GUI.TextBlock('ui-text3');
-		text3.text = p_won.nick + ' %%has won!%%';
+		text3.text = p_won.nick + translate(getLanguage(), ' %%TEXT_MATCH_WIN%%');
 		text3.top = -32;
 		text3.color = 'white';
 		text3.shadowColor = 'black';
@@ -65,7 +67,7 @@ export class Gui {
 		text3.fontWeight = 'bolder';
 		advanceTexture1.addControl(text3);
 
-		let button0 = GUI.Button.CreateSimpleButton('ui-btn0', '%%Quit!%%');
+		let button0 = GUI.Button.CreateSimpleButton('ui-btn0', translate(getLanguage(), '%%TEXT_MATCH_QUIT%%'));
 		button0.top = 256;
 		button0.width = '256px'
 		button0.height = '64px';

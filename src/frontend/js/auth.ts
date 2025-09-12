@@ -71,8 +71,9 @@ async function login(email: string, password: string) {
 					})
 				});
 
-				const result = await response.text();
-				if (Result.SUCCESS == result) {
+				const userJson = await response.json();
+				if (Result.SUCCESS == userJson.result) {
+					userLoggedIn(userJson.contents);
 					showPage(Page.HOME);
 					return;
 				}
@@ -91,8 +92,10 @@ async function login(email: string, password: string) {
 				totpEnterCodeDialog.showModal();
 		}
 	}
-	else
+	else {
+		userLoggedIn(json.contents);
 		showPage(Page.HOME);
+	}
 }
 
 async function register(email: string, password: string) {
@@ -107,15 +110,17 @@ async function register(email: string, password: string) {
 		})
 	});
 
-	const payload = await response.json();
+	const json = await response.json();
+	console.log(json);
 
-	if (Result.SUCCESS != payload.result) {
-		showAlert(payload.result);
+	if (Result.SUCCESS != json.result) {
+		showAlert(json.result);
 		return;
 	}
 	const date = new Date();
 	date.setFullYear(date.getFullYear() + 1);
 	document.cookie = `language=english; expires=${date}`;
+	userLoggedIn(json.contents);
 	showPage(Page.HOME);
 }
 

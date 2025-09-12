@@ -50,15 +50,7 @@ export function userChatsFunctions() {
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			const profileBox = await fetch("/profile", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					userId: this.dataset.id
-				})
-			});
+			const profileBox = await fetch(`/profile/${this.dataset.id}`);
 
 			const json = await profileBox.json();
 			if (Result.SUCCESS != json.result)
@@ -95,6 +87,7 @@ export function userChatsFunctions() {
 						chatPartnerContainer.dataset.id = this.dataset.id;
 						resetChatPartnerButtons();
 						document.querySelector("#userChatsContainer").innerHTML = "";
+						document.querySelector("#sendUserChatForm").innerHTML = chatMessageForm();
 						chatUsersDialog.close();
 					});
 				}

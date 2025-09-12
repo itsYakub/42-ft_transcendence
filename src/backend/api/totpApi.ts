@@ -151,7 +151,10 @@ export function loginWithAppTotp(request: FastifyRequest, reply: FastifyReply) {
 
 	return reply.header(
 		"Set-Cookie", `accessToken=${accessToken(user.userId)}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-			"Set-Cookie", `refreshToken=${token}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(Result.SUCCESS);
+			"Set-Cookie", `refreshToken=${token}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+				result: Result.SUCCESS,
+				contents: user
+			});
 }
 
 export function loginWithEmailTotp(request: FastifyRequest, reply: FastifyReply) {
@@ -179,7 +182,10 @@ export function loginWithEmailTotp(request: FastifyRequest, reply: FastifyReply)
 
 	return reply.header(
 		"Set-Cookie", `accessToken=${accessToken(user.userId)}; Path=/; expires=${accessTokenDate}; Secure; HttpOnly;`).header(
-			"Set-Cookie", `refreshToken=${token}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send(Result.SUCCESS);
+			"Set-Cookie", `refreshToken=${token}; Path=/; expires=${refreshTokenDate}; Secure; HttpOnly;`).send({
+				result: Result.SUCCESS,
+				contents: user
+			});
 }
 
 export function disableTotp(request: FastifyRequest, reply: FastifyReply) {

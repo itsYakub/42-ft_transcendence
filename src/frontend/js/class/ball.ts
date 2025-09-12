@@ -84,17 +84,9 @@ export class Ball extends Shape {
 
         // Send reset state to other client immediately
         if (g_game.networked && g_game.gameId && g_game.localIndex === 0) {
-            this.sendBallUpdate(true); // Force send reset state
+            this.sendBallUpdate(true);
+			setTimeout(() => this.start(), 500); // Force send reset state
         }
-
-		/* NOTE(joleksia):
-		 *  @agarbacz @lwillis is this timeout necessary???
-		 *  If so, it requires some fixes, otherwise it break the ball logic during the match
-		 *  (interrupting the UPDATE state)
-		 * */
-        // setTimeout(() => {
-        //	  this.start();
-        // }, 1000);
     }
 
     public update() {

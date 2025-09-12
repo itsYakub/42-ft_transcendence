@@ -3,7 +3,6 @@ import { numbersToNick } from "../../common/utils.js";
 import { defaultAvatar } from "../../db/defaultAvatar.js";
 
 export function remoteMatchLobbyView(gamers: Gamer[]): string {
-	console.log(gamers);
 	return `
 	<div class="flex flex-col items-center">
 		<h1 id="gameTitle" class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1 mx-auto">%%TEXT_REMOTE_MATCH%%</h1>

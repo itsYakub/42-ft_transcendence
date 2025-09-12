@@ -9,7 +9,7 @@ import { localTournamentListeners } from "./localTournament.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 import { createRemoteTournament, tournamentListeners } from "./remoteTournament.js";
 import { numbersToNick } from "../../../common/utils.js";
-import { isUserLoggedIn, removeUserGameId, setUserGameId } from "../user.js";
+import { getUserGameId, isUserLoggedIn, removeUserGameId, setUserGameId } from "../user.js";
 
 export function gameListeners() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -64,9 +64,9 @@ export function gameListeners() {
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			const result = await createRemoteTournament();
-			console.log(result);
-			if (Result.SUCCESS == result) {
+			const json = await createRemoteTournament();
+			if (Result.SUCCESS == json.result) {
+				setUserGameId(json.gameId);
 				showPage(Page.GAME);
 				sendMessageToServer({
 					type: MessageType.GAME_LIST_CHANGED

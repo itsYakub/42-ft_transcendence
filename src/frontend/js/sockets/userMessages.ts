@@ -3,22 +3,22 @@ import { getLanguage, showPage } from "../index.js";
 import { Message, Page, Result, ShortUser, User } from "../../../common/interfaces.js";
 import { chatString } from "../../../common/dynamicElements.js";
 import { translate } from "../../../common/translations.js";
+import { getUserId } from "../user.js";
 
 export async function userSendUserChat(message: Message) {
-	const userBox = await fetch("/profile/user");
-	const json = await userBox.json();
-	if (Result.SUCCESS != json.result)
-		return;
-
-	const user = json.contents;
-
 	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
 		const partnerId = parseInt(chatPartnerContainer.dataset.id);
-		if (partnerId == message.fromId || partnerId == message.toId) {
+		console.log(partnerId);
+		console.log(message.fromId);
+		console.log(message.toId);
+		console.log(typeof(partnerId));
+		console.log(typeof(message.fromId));
+		console.log(typeof(message.toId));
+		if (partnerId === message.fromId || partnerId === message.toId) {
 			// user is chatting with this partner
 			const node = document.createElement("span");
-			node.innerHTML = chatString(message.chat, user.userId == message.toId);
+			node.innerHTML = chatString(message.chat, getUserId() == message.toId);
 			const container = document.querySelector("#userChatsContainer");
 			if (node.firstElementChild)
 				container.insertBefore(node.firstElementChild, container.firstChild);
@@ -37,17 +37,6 @@ export async function userSendUserChat(message: Message) {
 		if (chatButton) {
 			chatButton.classList.replace("text-gray-300", "text-green-300");
 		}
-	}
-}
-
-/*
-	A user has clicked the Ready button or navigated away
-*/
-export async function userReadyorUnready(user: ShortUser, message: Message) {
-	if (Page.GAME == currentPage() && message.content) {
-		const container = document.querySelector("#gamerMatchReadyForm");
-		if (container)
-			container.innerHTML = translate(getLanguage(), message.content);
 	}
 }
 

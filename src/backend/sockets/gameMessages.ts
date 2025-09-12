@@ -1,7 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { Message, MessageType, Result, ShortUser, User } from '../../common/interfaces.js';
-import { removeUserFromMatch } from '../../db/userDB.js';
-import { onlineUsers, sendMessageToUsers } from "./serverSocket.js";
+import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
+import { onlineUsers, sendMessageToGameIdUsers, sendMessageToUsers } from "./serverSocket.js";
+import { createTournamentChat, readTournamentChats } from "../../db/TournamentChatsDb.js";
+import { tournamentChats } from "../api/tournamentApi.js";
+import { remoteTournamentMessagesHtml } from "../views/remoteTournamentLobbyView.js";
 
 export function userLogoutReceived(db: DatabaseSync, user: ShortUser, message: Message) {
 	message.gameId = user.gameId;
@@ -16,9 +19,20 @@ export function userLogoutReceived(db: DatabaseSync, user: ShortUser, message: M
 }
 
 export function tournamentChatReceived(db: DatabaseSync, message: Message) {
-	//message.fromId = user.userId;
-	//message.gameId = user.gameId;
-
-	// if (Result.SUCCESS == addGameChat(db, message))
-	// 	broadcastMessageToClients(fastify, message);
+	console.log(message);
+	const gamers = usersInTournament(db, message.gameId);
+	if (Result.SUCCESS == createTournamentChat(db, message)) {
+		const userIds = gamers.contents.map((gamer) => gamer.userId);
+		sendMessageToGameIdUsers({
+				type: MessageType.TOURNAMENT_CHAT
+			}, userIds);
+		// const messagesBox = readTournamentChats(db, message.gameId);
+		// if (Result.SUCCESS == messagesBox.result) {
+		// 	const content = remoteTournamentMessagesHtml(messagesBox.contents, message.fromId);
+		// 	sendMessageToGameIdUsers({
+		// 		type: MessageType.TOURNAMENT_CHAT,
+		// 		content
+		// 	}, userIds);
+		// }
+	}
 }

@@ -103,7 +103,7 @@ export function getTournamentLobby(request: FastifyRequest, reply: FastifyReply)
 
 	return reply.send({
 		result,
-		contents: remoteTournamentLobbyView([user], [], user)
+		contents: remoteTournamentLobbyView([user], [], user.userId)
 	});
 }
 
@@ -123,7 +123,10 @@ export function addRemoteTournament(request: FastifyRequest, reply: FastifyReply
 	const user = request.user;
 	const gameId = `l${Date.now().toString(36).substring(5)}`;
 
-	return reply.send(updateGameId(db, gameId, user.userId));
+	return reply.send({
+		result: updateGameId(db, gameId, user.userId),
+		gameId
+	});
 }
 
 export function leaveRemoteTournament(request: FastifyRequest, reply: FastifyReply) {
@@ -163,10 +166,10 @@ export function updateLocalTournment(request: FastifyRequest, reply: FastifyRepl
 export function tournamentChats(request: FastifyRequest, reply: FastifyReply) {
 	const messagesBox = readTournamentChats(request.db, request.user.gameId);
 	if (Result.SUCCESS == messagesBox.result) {
-		const html = remoteTournamentMessagesHtml(messagesBox.contents, request.user);
+		const html = remoteTournamentMessagesHtml(messagesBox.contents, request.user.userId);
 		return reply.send({
 			result: Result.SUCCESS,
-			value: html
+			content: html
 		});
 	}
 	else
@@ -174,6 +177,7 @@ export function tournamentChats(request: FastifyRequest, reply: FastifyReply) {
 			result: Result.ERR_NOT_FOUND,
 		});
 }
+
 
 // fastify.get('/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
 // 	const gamersBox = gamePlayers(db, request.user.gameId);

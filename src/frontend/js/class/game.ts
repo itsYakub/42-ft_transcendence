@@ -419,7 +419,7 @@ export class Game {
 		}
 		else {
 			this.m_stateMachine = StateMachine.STATE_RESTART;
-			this.m_ball.start();
+			this.m_ball.reset();
 		}
 	}
 

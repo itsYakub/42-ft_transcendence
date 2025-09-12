@@ -36,20 +36,17 @@ export function sendTournamentMessage(chat: string) {
 	A chat message has been sent to a tournament
 */
 export async function tournamentChat(message: Message) {
-	if (getUserGameId() == message.gameId) {
-		const messagesBox = await fetch("/game-chats");
-		const messages = await messagesBox.json();
-		if (Result.SUCCESS == messages.result) {
-			const tournamentMessagesDiv = document.querySelector("#tournamentMessagesDiv");
-			if (tournamentMessagesDiv)
-				tournamentMessagesDiv.innerHTML = messages.value;
-		}
+	const messagesBox = await fetch("/tournament/remote/chat");
+	const messages = await messagesBox.json();
+	if (Result.SUCCESS == messages.result) {
+		const tournamentMessagesDiv = document.querySelector("#tournamentMessagesDiv");
+		if (tournamentMessagesDiv)
+			tournamentMessagesDiv.innerHTML = messages.content;
 	}
 }
 
 export async function updateTournamentDetails(message: Message) {
 	const contentBox = await fetch("/tournament");
-
 	const json = await contentBox.json();
 	if (Result.SUCCESS == json.result) {
 		const tournamentTitle = document.querySelector("#tournamentTitle");
@@ -98,7 +95,7 @@ export async function tournamentMatchStart(message: Message) {
 			// });
 		}
 
-	const localIndex = match.g1.userId === getUserId() ? 0 : 1;
+		const localIndex = match.g1.userId === getUserId() ? 0 : 1;
 		g_game.setupElements(GameMode.GAMEMODE_PVP, match.g1, match.g2, {
 			networked: true,
 			gameId: getUserGameId(),

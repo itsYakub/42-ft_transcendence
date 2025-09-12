@@ -12,7 +12,7 @@ export function remoteTournamentView(tournament: Tournament, chats: GameChatMess
 				<legend class="text-fuchsia-800 text-center">%%TEXT_CHAT%%</legend>					
 				<div class="flex flex-col h-full">
 					<div id="tournamentMessagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
-						${remoteTournamentMessagesHtml(chats, user)}
+						${remoteTournamentMessagesHtml(chats, user.userId)}
 					</div>
 					<div class="mt-2">
 						<form id="sendTournamentMessageForm">

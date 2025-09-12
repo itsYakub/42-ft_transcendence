@@ -158,7 +158,7 @@ export function getUser(db: DatabaseSync, accessToken: string, refreshToken: str
 /*
 	Adds a user to the DB after a sign up with email/password
 */
-export function addUser(db: DatabaseSync, { email, password }): Box<string[]> {
+export function addUser(db: DatabaseSync, { email, password }) {
 	try {
 		const stringBox = getNickname(db);
 		if (Result.SUCCESS != stringBox.result)
@@ -178,10 +178,15 @@ export function addUser(db: DatabaseSync, { email, password }): Box<string[]> {
 
 		return {
 			result: Result.SUCCESS,
-			contents: [
-				accessToken(userId),
-				token
-			]
+			contents: {
+				avatar: defaultAvatar,
+				gameId: null,
+				nick: numbersToNick(stringBox.contents),
+				userId,
+				userType: UserType.GUEST
+			},
+			accessToken: accessToken(userId),
+			refreshToken: token
 		};
 	}
 	catch (e) {

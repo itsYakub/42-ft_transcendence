@@ -151,10 +151,8 @@ export function registerUser(request: FastifyRequest, reply: FastifyReply) {
 	const refreshTokenDate = new Date();
 	refreshTokenDate.setFullYear(refreshTokenDate.getFullYear() + 1);
 	return reply.header(
-		"Set-Cookie", `accessToken=${response.contents[0]}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
-			"Set-Cookie", `refreshToken=${response.contents[1]}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send({
-				result: Result.SUCCESS
-			});
+		"Set-Cookie", `accessToken=${response.accessToken}; expires=${accessTokenDate}; Path=/; Secure; HttpOnly;`).header(
+			"Set-Cookie", `refreshToken=${response.refreshToken}; expires=${refreshTokenDate}; Path=/; Secure; HttpOnly;`).send(response);
 }
 
 /* Converts the image blob into base64 */

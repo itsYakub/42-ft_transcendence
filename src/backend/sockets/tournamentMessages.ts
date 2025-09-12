@@ -13,7 +13,6 @@ export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
 	const gameId = `r${Date.now().toString(36).substring(5)}`;
 	if (Result.SUCCESS == createRemoteTournament(db, gameId, shuffled)) {
 		const userIds = gamers.map((gamer) => gamer.userId);
-		console.log(userIds);
 		sendMessageToGameIdUsers({
 			type: MessageType.TOURNAMENT_UPDATE,
 			gameId

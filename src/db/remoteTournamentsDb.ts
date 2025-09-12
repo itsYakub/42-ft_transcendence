@@ -21,7 +21,6 @@ export function readRemoteTournament(db: DatabaseSync, gameId: string): Box<Tour
 
 export function createRemoteTournament(db: DatabaseSync, gameId: string, gamers: Gamer[]): Result {
 	try {
-		console.log(gameId);
 		gamers.forEach(gamer => {
 			updateGameId(db, gameId, gamer.userId);
 		});
@@ -30,7 +29,7 @@ export function createRemoteTournament(db: DatabaseSync, gameId: string, gamers:
 		select.run(gameId, gamers[0].userId, gamers[1].userId, gamers[2].userId, gamers[3].userId, gamers[0].nick, gamers[1].nick, gamers[2].nick, gamers[3].nick);
 		return Result.SUCCESS;
 	}
-	catch (e) {console.log(e);
+	catch (e) {
 		return Result.ERR_DB;
 	}
 }
