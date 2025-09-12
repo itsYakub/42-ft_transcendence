@@ -7,6 +7,7 @@ import { Ground } from './ground.js';
 import { Gui } from './gui.js';
 import { GamePlayer, MessageType, Message } from '../../../common/interfaces.js';
 import { sendMessageToServer } from '../sockets/clientSocket.js';
+import { getUserId } from '../user.js';
 
 /* SECTION:
  *  Classes
@@ -337,6 +338,18 @@ export class Game {
 				console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
 				this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 
+			} else if (payload.kind === "GAME_QUIT") {
+				if (this.m_player0.userID == getUserId()) {
+					this.m_player0.score = 10;
+					this.m_player1.score = 0;
+				}
+				else {
+					this.m_player0.score = 0;
+					this.m_player1.score = 10;
+				}
+
+				console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
+				this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 			} else if (payload.kind === "RESET") {
 				console.log('[ INFO ] Round reset synced');
 				this.m_stateMachine = StateMachine.STATE_RESTART;

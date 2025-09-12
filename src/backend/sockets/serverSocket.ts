@@ -3,7 +3,7 @@ import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { tournamentChatReceived } from './gameMessages.js';
 import { userInviteReceived, userSendUserChatReceived } from './userMessages.js';
-import { getUser } from '../../db/userDB.js';
+import { getUser, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchUpdateReceived } from './matchMessages.js';
@@ -26,14 +26,29 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 		handleClientMessage(db, message);
 	});
 
-	socket?.on("close", () => {
+	socket?.on("close", async () => {
 		console.log(`${user.nick} closed socket`);
 		onlineUsers.delete(user.userId.toString());
+		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
+		if (Result.SUCCESS == userBox.result) {
+			const gamersBox = usersByGameId(db, userBox.contents.gameId);
+			if (Result.SUCCESS == gamersBox.result) {
+				const gamers = gamersBox.contents;
+				sendMessageToGameIdUsers({
+					type: MessageType.MATCH_END,
+					gameId: userBox.contents.gameId,
+					matchContent: {
+						kind: "GAME_QUIT"
+					}
+				}, [gamers[0]?.userId, gamers[1]?.userId]);
+			}
+		}
+		//TODO remove from game, lose game 10 - 0!, send message to game
 		matchLeaveReceived(db, user.gameId, user.userId);
 	});
 }
 
-export function isUserAlreadyConnected(userId: number): boolean	{
+export function isUserAlreadyConnected(userId: number): boolean {
 	return onlineUsers.has(userId.toString());
 }
 
@@ -106,8 +121,8 @@ export function handleClientMessage(db: DatabaseSync, message: Message) {
 		case MessageType.MATCH_LEAVE:
 			matchLeaveReceived(db, message.gameId, message.fromId);
 			break;
-			// matchOverReceived(db, message);
-			// break;
+		// matchOverReceived(db, message);
+		// break;
 		// case MessageType.MATCH_START:
 		// 	matchStartReceived(db, message);
 		// 	break;
