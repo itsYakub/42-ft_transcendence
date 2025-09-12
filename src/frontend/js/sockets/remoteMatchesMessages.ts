@@ -1,5 +1,6 @@
 import { Gamer, Message, MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
+import { numbersToNick } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
 import { gameListeners } from "../game/gamePage.js";
 import { getLanguage, showPage } from "../index.js";
@@ -36,9 +37,8 @@ export async function updateMatchList() {
 }
 
 export async function updateMatchDetails(message: Message) {
-	console.log(message);
 	// Handle game events (keys, goals, resets, etc.)
-	if (message.content && message.content.includes('"kind"')) {
+	if (message.matchContent && message.matchContent.kind) {
 		g_game.netOnMessage(message);
 	}
 }
@@ -87,6 +87,8 @@ export async function startingMatch(message: Message) {
 		console.log("starting match...");
 		const receiverId = match.g1.userId == getUserId() ? match.g2.userId : match.g1.userId;
 		console.log(localIndex, receiverId);
+		match.g1.nick = numbersToNick(match.g1.nick);
+		match.g2.nick = numbersToNick(match.g2.nick);
 		g_game.setupElements(GameMode.GAMEMODE_PVP, match.g1, match.g2, {
 			networked: true,
 			gameId: message.gameId,

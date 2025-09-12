@@ -68,8 +68,7 @@ export function isConnected(): boolean {
 export async function sendMessageToServer(message: Message) {
 	if (1 == socket?.OPEN) {		
 		message.fromId = getUserId();
-		message.gameId = getUserGameId();		
-		console.log(`sending: ${JSON.stringify(message)}`);
+		message.gameId = getUserGameId();
 		socket.send(JSON.stringify(message));
 	}
 }

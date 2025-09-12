@@ -81,11 +81,10 @@ export function matchOverReceived(db: DatabaseSync, message: Message) {
 
 /* Forward game updates - handles ball sync, paddle movements, etc. */
 export function matchUpdateReceived(db: DatabaseSync, message: Message) {
-	console.log(message);
 	sendMessageToUser({
 		type: MessageType.MATCH_UPDATE,
 		gameId: message.gameId,
 		fromId: message.fromId,
-		content: message.content
+		matchContent: message.matchContent
 	}, message.toId);
 }

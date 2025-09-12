@@ -238,12 +238,11 @@ export class Game {
 
 					console.log("sending to server");
 					// Send the key press to the server
-					// sendMessageToServer({
-					// 	type: MessageType.MATCH_UPDATE,
-					// 	gameId: this.m_gameId,
-					// 	toId: this.receiverId,
-					// 	content: JSON.stringify(payload),
-					// });
+					sendMessageToServer({
+						type: MessageType.MATCH_UPDATE,
+						toId: this.receiverId,
+						matchContent: payload,
+					});
 				};
 
 				window.addEventListener("keydown", this.onLocalKeyBound, true);
@@ -291,10 +290,10 @@ export class Game {
 	public netOnMessage(message: Message) {
 		if (!this.m_networked || !this.m_gameId || message.gameId !== this.m_gameId)
 			return;
-		if (!message.content) return;
+		if (!message.matchContent) return;
 
 		try {
-			const payload = JSON.parse(message.content);
+			const payload = message.matchContent;
 
 			if (payload.kind === "KEY" && typeof payload.pressed === "boolean") {
 				if (payload.playerId === this.m_localIndex) return;
@@ -391,7 +390,6 @@ export class Game {
 				p1Scored: p1
 			};
 
-			console.log(this.getReceiverId(), this.receiverId);
 			sendMessageToServer({
 				type: MessageType.MATCH_GOAL,
 				toId: this.receiverId,
@@ -410,12 +408,11 @@ export class Game {
 					p1Score: this.m_player1.score
 				};
 
-				// sendMessageToServer({
-				// 	type: MessageType.MATCH_END,
-				// 	gameId: this.m_gameId,
-				// 	toId: this.receiverId,
-				// 	content: JSON.stringify(endPayload),
-				// });
+				sendMessageToServer({
+					type: MessageType.MATCH_END,
+					toId: this.receiverId,
+					matchContent: endPayload,
+				});
 			}
 
 			this.m_stateMachine = StateMachine.STATE_GAMEOVER;

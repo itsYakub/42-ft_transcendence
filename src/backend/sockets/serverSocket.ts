@@ -71,8 +71,7 @@ export function sendMessageToGameIdUsers(message: Message, gamerIds: number[]) {
 */
 export function sendMessageToUser(message: Message, userId: number) {
 	if (onlineUsers.has(userId.toString())) {
-		console.warn(`sending ${message.type} to ${userId}`);
-		sendMessage(onlineUsers[userId], message);
+		sendMessage(onlineUsers.get(userId.toString()), message);
 	}
 }
 
@@ -85,7 +84,7 @@ function sendMessage(socket: WebSocket, message: Message) {
 	Deals with a socket message from a client
 */
 export function handleClientMessage(db: DatabaseSync, message: Message) {
-	console.log(message);
+	console.log("incoming mesage", message);
 	switch (message.type) {
 		case MessageType.USER_INVITE:
 			userInviteReceived(db, message);
