@@ -68,6 +68,6 @@ export function totpEnterCodeDialogHtml(): string {
 */
 export function gameDialogHtml(): string {
 	return `
-	<dialog id="gameDialog" class="w-[75vw] h-[40vw] m-auto text-center content-center rounded-lg border bg-stone-700 border-red-300/50"></dialog>
+	<dialog id="gameDialog" class="outline hidden w-[75vw] h-[40vw] m-auto text-center content-center rounded-lg border bg-stone-700 border-red-300/50"></dialog>
 	`;
 }

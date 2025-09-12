@@ -84,7 +84,6 @@ function sendMessage(socket: WebSocket, message: Message) {
 	Deals with a socket message from a client
 */
 export function handleClientMessage(db: DatabaseSync, message: Message) {
-	console.log("incoming mesage", message);
 	switch (message.type) {
 		case MessageType.USER_INVITE:
 			userInviteReceived(db, message);
