@@ -6,7 +6,7 @@ import { authFunctions } from "./auth.js";
 import { usersFunctions } from "./users/users.js";
 import { localTournamentListeners } from "./game/localTournament.js";
 import { translate } from "../../common/translations.js";
-import { userChatsFunctions } from "./chat.js";
+import { userChatListeners } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
 import { Page, Result } from "../../common/interfaces.js";
 import { connectToWS, currentPage } from "./sockets/clientSocket.js";
@@ -76,7 +76,7 @@ function setupPage(page: Page) {
 	navbarFunctions();
 	localTournamentListeners();
 	tournamentListeners();
-	userChatsFunctions();
+	userChatListeners();
 	usersFunctions();
 
 	// remove!

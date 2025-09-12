@@ -113,7 +113,6 @@ function sqlToGame(game: Record<string, SQLOutputValue>): Game {
 }
 
 function sqlToGamer(gamer: Record<string, SQLOutputValue>): MatchGamer {
-	console.log(gamer);
 	return {
 		nick: numbersToNick(gamer.nick as string),
 		userId: gamer.user_id as number

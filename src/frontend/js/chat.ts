@@ -5,36 +5,10 @@ import { sendMessageToServer } from "./sockets/clientSocket.js";
 import { isUserLoggedIn } from "./user.js";
 import { profileFunctions } from "./users/profile.js";
 
-export function userChatsFunctions() {
+export function userChatListeners() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
-	for (var i = 0; i < chatPartnerButtons.length; i++) {
-		chatPartnerButtons[i].addEventListener("click", async function () {
-			if (!isUserLoggedIn())
-				return showPage(Page.AUTH);
-
-			const chatsBox = await fetch(`/chat/partner/${this.dataset.id}`);
-
-			const json = await chatsBox.json();
-			if (Result.SUCCESS == json.result) {
-				resetChatPartnerButtons();
-				(this as HTMLElement).classList.add("bg-red-400");
-				(this as HTMLElement).classList.remove("bg-red-300/50");
-				(this as HTMLElement).classList.remove("cursor-[url(/images/pointer.png),pointer]");
-				(this as HTMLElement).classList.remove("hover:bg-red-300");
-
-				const userChatsContainer = document.querySelector("#userChatsContainer");
-				if (userChatsContainer) {
-					const messages = json.contents.messages;
-					const partner = json.contents.partner;
-					const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
-					chatPartnerContainer.innerHTML = chatPartner(partner);
-					chatPartnerContainer.dataset.id = partner.userId;
-					userChatsContainer.innerHTML = messages;
-					document.querySelector("#sendUserChatForm").innerHTML = chatMessageForm();
-				}
-			}
-		});
-	}
+	for (var i = 0; i < chatPartnerButtons.length; i++)
+		chatPartnerButtons[i].addEventListener("click", function () {chatPartnerClicked(this)});
 
 	const chatPartnerContainer = document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
@@ -75,8 +49,9 @@ export function userChatsFunctions() {
 				for (var i = 0; i < addChatPartnerButtons.length; i++) {
 					addChatPartnerButtons[i].addEventListener("click", function () {
 						const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
-						chatPartnerContainer.innerHTML = `<div class="bg-red-300/50 rounded text-center p4 text-stone-700">${this.dataset.nick}</div>`;
+						chatPartnerContainer.innerHTML = `<div class="bg-red-300/50 rounded text-center p-2 text-stone-700">${this.dataset.nick}</div>`;
 						chatPartnerContainer.dataset.id = this.dataset.id;
+						chatPartnerContainer.dataset.new = "true";
 						resetChatPartnerButtons();
 						document.querySelector("#userChatsContainer").innerHTML = "";
 						document.querySelector("#sendUserChatForm").innerHTML = chatMessageForm();
@@ -125,18 +100,56 @@ export function userChatsFunctions() {
 			const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 			const messageText: string = sendUserChatForm.message.value;
 			if (messageText.length > 0) {
-				const response = await (fetch("/chat/users"));
-				const json = await response.json();
-				console.log(partnersHtml(json.contents));
-
 				sendMessageToServer({
 					type: MessageType.USER_SEND_USER_CHAT,
 					chat: messageText,
 					toId: parseInt(chatPartnerContainer.dataset.id)
 				});
+				if ("true" === chatPartnerContainer.dataset.new) {
+					const response = await (fetch("/chat/partners"));
+					const json = await response.json();
+					document.querySelector("#usersDiv").innerHTML = partnersHtml(json.contents);
+					const partnerButtons = document.getElementsByClassName("chatPartnerButton");
+					for (var i = 0; i < partnerButtons.length; i++) {
+						if ((partnerButtons[i] as HTMLElement).dataset.id == chatPartnerContainer.dataset.id) {
+							partnerButtons[i].classList.replace("bg-red-300/50", "bg-red-400");
+							partnerButtons[i].classList.remove("hover:bg-red-300");
+							partnerButtons[i].classList.remove("cursor-[url(/images/pointer.png),pointer]");
+						}
+						partnerButtons[i].addEventListener("click", function () {chatPartnerClicked(this)});
+					}
+					chatPartnerContainer.dataset.new = "false";
+				}
 			}
 			sendUserChatForm.message.value = "";
 		});
+	}
+}
+
+async function chatPartnerClicked(button: HTMLElement) {
+	if (!isUserLoggedIn())
+		return showPage(Page.AUTH);
+
+	const chatsBox = await fetch(`/chat/partners/${button.dataset.id}`);
+
+	const json = await chatsBox.json();
+	if (Result.SUCCESS == json.result) {
+		resetChatPartnerButtons();
+		button.classList.add("bg-red-400");
+		button.classList.remove("bg-red-300/50");
+		button.classList.remove("cursor-[url(/images/pointer.png),pointer]");
+		button.classList.remove("hover:bg-red-300");
+
+		const userChatsContainer = document.querySelector("#userChatsContainer");
+		if (userChatsContainer) {
+			const messages = json.contents.messages;
+			const partner = json.contents.partner;
+			const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
+			chatPartnerContainer.innerHTML = chatPartner(partner);
+			chatPartnerContainer.dataset.id = partner.userId;
+			userChatsContainer.innerHTML = messages;
+			document.querySelector("#sendUserChatForm").innerHTML = chatMessageForm();
+		}
 	}
 }
 

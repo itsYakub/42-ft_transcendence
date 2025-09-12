@@ -273,6 +273,8 @@ export class Game {
 			this.m_engine.runRenderLoop(() => this.updateRenderLoop());
 		}
 
+		this.m_gui.showPlayerScore(this.m_scene, this.m_player0, this.m_player1);
+
 		this.m_stateMachine = StateMachine.STATE_START;
 		console.log('[ INFO ] Game is running...');
 	}
@@ -325,6 +327,8 @@ export class Game {
 				if (payload.p0Score < g_gameScoreTotal && payload.p1Score < g_gameScoreTotal) {
 					this.m_stateMachine = StateMachine.STATE_RESTART;
 				}
+				this.m_gui.clearUI(this.m_scene);
+				this.m_gui.showPlayerScore(this.m_scene, this.m_player0, this.m_player1);
 
 			} else if (payload.kind === "GAME_END") {
 				this.m_player0.score = payload.p0Score;
@@ -419,40 +423,42 @@ export class Game {
 		}
 		else {
 			this.m_stateMachine = StateMachine.STATE_RESTART;
+
+			this.m_gui.clearUI(this.m_scene);
+			this.m_gui.showPlayerScore(this.m_scene, this.m_player0, this.m_player1);
 			this.m_ball.reset();
 		}
 	}
 
 	/* SECTION: Private Methods */
 
-    private updateRenderLoop() {
-        /* StateMachine - dependent code */
-        switch (this.m_stateMachine) {
-            case (StateMachine.STATE_START): {
-                /* NOTE(joleksia):
-                 *  I've removed the setTimeout added by @lwillis
-                 *  It had some issues with the current state machine
-                 *  The state machine, even tho it was updated, still called the content of setTimeout
-                 */
-                if (this.m_networked) {
-                    // Networked games wait for actuallyStart() to be called
-                    if (this.m_started) {
-                        this.m_stateMachine = StateMachine.STATE_UPDATE;
-                        console.log('[ INFO ] Networked match start!');
-                    }
-                } else {
-                    this.m_ball.start();
-                    this.m_stateMachine = StateMachine.STATE_UPDATE;
-                    console.log('[ INFO ] Local match start!');
-                }
-				this.m_gui.showPlayerScore(this.m_scene, this.m_player0, this.m_player1);
-            } break;
+	private updateRenderLoop() {
+		/* StateMachine - dependent code */
+		switch (this.m_stateMachine) {
+			case (StateMachine.STATE_START): {
+				/* NOTE(joleksia):
+				 *  I've removed the setTimeout added by @lwillis
+				 *  It had some issues with the current state machine
+				 *  The state machine, even tho it was updated, still called the content of setTimeout
+				 */
+				if (this.m_networked) {
+					// Networked games wait for actuallyStart() to be called
+					if (this.m_started) {
+						this.m_stateMachine = StateMachine.STATE_UPDATE;
+						console.log('[ INFO ] Networked match start!');
+					}
+				} else {
+					this.m_ball.start();
+					this.m_stateMachine = StateMachine.STATE_UPDATE;
+					console.log('[ INFO ] Local match start!');
+				}
+			} break;
 
-            case (StateMachine.STATE_UPDATE): {
+			case (StateMachine.STATE_UPDATE): {
 				this.m_player0.update();
 				this.m_player1.update();
 				this.m_ball.update();
-            } break;
+			} break;
 
 			case (StateMachine.STATE_PAUSED): {
 				/* NOTE(joleksia):
@@ -460,30 +466,29 @@ export class Game {
 				 */
 			} break;
 
-            case (StateMachine.STATE_RESTART): {
-                /* TODO(joleksia):
-                 *  The ball, in the 'reset()' function, should also set some sort of delay
-                 *  to wait before the actual match starts. It also must be in sync with other clients!
-                 *  @agarbacz
-                 */
-                this.m_player0.reset();
-                this.m_player1.reset();
-                this.m_ball.reset();
-				this.m_gui.clearUI(this.m_scene);
+			case (StateMachine.STATE_RESTART): {
+				/* TODO(joleksia):
+				 *  The ball, in the 'reset()' function, should also set some sort of delay
+				 *  to wait before the actual match starts. It also must be in sync with other clients!
+				 *  @agarbacz
+				 */
+				this.m_player0.reset();
+				this.m_player1.reset();
+				this.m_ball.reset();
 
 				this.m_stateMachine = StateMachine.STATE_START;
 			} break;
 
-            case (StateMachine.STATE_GAMEOVER): {
-                this.matchOver();
-            } break;
+			case (StateMachine.STATE_GAMEOVER): {
+				this.matchOver();
+			} break;
 
 			default: { } break;
 		}
 
-        /* StateMachine - independent code */
-        g_gameTime += this.deltaTime;
-        this.m_ground.update();
+		/* StateMachine - independent code */
+		g_gameTime += this.deltaTime;
+		this.m_ground.update();
 
 		/* Resize the canvas to the size of the dialog */
 		this.m_canvas.width = this.m_dialog.clientWidth;
@@ -493,22 +498,22 @@ export class Game {
 		this.m_scene.render()
 	}
 
-    // send the match info back to the frontend
-    private matchOver() {
-		let p_win : Player;
+	// send the match info back to the frontend
+	private matchOver() {
+		let p_win: Player;
 
-        this.m_ball.reset();
-        this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
-            detail: {
-                g1Score: this.m_player0.score,
-                g2Score: this.m_player1.score
-            }
-        }));
+		this.m_ball.reset();
+		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
+			detail: {
+				g1Score: this.m_player0.score,
+				g2Score: this.m_player1.score
+			}
+		}));
 
-        // show "winner message" or something
+		// show "winner message" or something
 		p_win = this.m_player0.score > this.m_player1.score ? this.m_player0 : this.m_player1;
-    	this.m_gui.clearUI(this.m_scene);
-    	this.m_gui.showMatchOver(this.m_scene, p_win);
+		this.m_gui.clearUI(this.m_scene);
+		this.m_gui.showMatchOver(this.m_scene, p_win);
 	}
 
 	private createScene() {
@@ -543,8 +548,8 @@ export class Game {
 		}
 
 		this.m_gui = new Gui(this.m_canvas);
-        return (scene);
-    }
+		return (scene);
+	}
 }
 
 /* SECTION: Global game object */

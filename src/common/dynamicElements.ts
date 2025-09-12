@@ -71,7 +71,7 @@ function userNotificationMessage(notification: UserNotification): string {
 
 export function chatPartner(partner: ShortUser): string {
 	return `
-	<div class="bg-red-300/50 rounded text-center p2 text-stone-700">${partner.nick}</div>
+	<div class="bg-red-300/50 rounded text-center p-2 text-stone-700">${partner.nick}</div>
 	`;
 }
 
@@ -81,16 +81,16 @@ export function chatPartner(partner: ShortUser): string {
 export function chatString(message: string, isPartner: boolean): string {
 
 	if ("%%MESSAGE_INVITATION%%" == message) {
-		return isPartner ? `<div class="text-gray-300 bg-blue-700 mr-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">${translate(getLanguage(), message)}</div>`
+		return isPartner ? `<div class="text-gray-300 bg-blue-800 mr-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">${translate(getLanguage(), message)}</div>`
 			: "";
 	}
 
 	return isPartner ?
 		`
-	<div class="text-gray-300 bg-blue-700 mr-auto px-4 py-2 rounded-lg">${message}</div>
+	<div class="text-stone-700 bg-blue-800 mr-auto px-4 py-2 rounded-lg">${message}</div>
 	` :
 		`
-	<div class="text-gray-300 bg-green-700 ml-auto px-4 py-2 rounded-lg">${message}</div>
+	<div class="text-stone-700 bg-green-800 ml-auto px-4 py-2 rounded-lg">${message}</div>
 	`;
 }
 

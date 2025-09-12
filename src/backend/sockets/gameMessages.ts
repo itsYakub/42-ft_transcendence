@@ -19,20 +19,11 @@ export function userLogoutReceived(db: DatabaseSync, user: ShortUser, message: M
 }
 
 export function tournamentChatReceived(db: DatabaseSync, message: Message) {
-	console.log(message);
 	const gamers = usersInTournament(db, message.gameId);
 	if (Result.SUCCESS == createTournamentChat(db, message)) {
 		const userIds = gamers.contents.map((gamer) => gamer.userId);
 		sendMessageToGameIdUsers({
-				type: MessageType.TOURNAMENT_CHAT
-			}, userIds);
-		// const messagesBox = readTournamentChats(db, message.gameId);
-		// if (Result.SUCCESS == messagesBox.result) {
-		// 	const content = remoteTournamentMessagesHtml(messagesBox.contents, message.fromId);
-		// 	sendMessageToGameIdUsers({
-		// 		type: MessageType.TOURNAMENT_CHAT,
-		// 		content
-		// 	}, userIds);
-		// }
+			type: MessageType.TOURNAMENT_CHAT
+		}, userIds);
 	}
 }

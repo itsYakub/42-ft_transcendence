@@ -8,7 +8,7 @@ import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsA
 import { addMatchResult } from "./api/matchResultsApi.js";
 import { getProfile, getShortUser, isConnected } from "./api/profileApi.js";
 import { addLocalTournament, addRemoteTournament, createMatchLobby, createTournamentLobby, getTournament, getTournamentGamers, getTournamentLobby, leaveRemoteTournament, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
-import { chatsList, getChats, notificationsList, userChats } from "./api/chatApi.js";
+import { chatsList, getChatPartners, getChats, notificationsList, userChats } from "./api/chatApi.js";
 import { listNicknames, listUsers } from "./api/userApi.js";
 import { getUsersPage } from "./pages/usersPage.js";
 import { getAccountPage } from "./pages/accountPage.js";
@@ -38,7 +38,8 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 
 	fastify.get("/chat", async (request: FastifyRequest, reply: FastifyReply) => getChatPage(request, reply));
 	fastify.get("/chat/notifications", (request: FastifyRequest, reply: FastifyReply) => notificationsList(request, reply));
-	fastify.get("/chat/partner/:partnerId", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
+	fastify.get("/chat/partners", (request: FastifyRequest, reply: FastifyReply) => getChatPartners(request, reply));
+	fastify.get("/chat/partners/:partnerId", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
 	fastify.get("/chat/users", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
 
 	fastify.get("/game", async (request: FastifyRequest, reply: FastifyReply) => getGamePage(request, reply));

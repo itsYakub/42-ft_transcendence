@@ -17,7 +17,7 @@ export function userChatsView(partners: ShortUser[], user: User): string {
 			</fieldset>
 			<fieldset class="grow border h-full flex flex-col justify-end border-fuchsia-800 bg-red-200/20 rounded-lg p-3">
 				<legend class="text-fuchsia-800 text-center">%%TEXT_MESSAGES%%</legend>
-				<div id="chatPartnerContainer" class="p-4 cursor-[url(/images/pointer.png),pointer]"></div>
+				<div id="chatPartnerContainer" class="cursor-[url(/images/pointer.png),pointer]"></div>
 				<div id="userChatsContainer" class="flex flex-col-reverse grow mt-2 gap-2 pt-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto"></div>
 				<form id="sendUserChatForm"></form>
 			</fieldset>

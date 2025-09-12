@@ -21,6 +21,7 @@ export class Gui {
 	}
 
 	public showPlayerScore(scene : BABYLON.Scene, p0 : Player, p1 : Player) {
+		console.log("updating score");
 		let	advanceTexture0 = GUI.AdvancedDynamicTexture.CreateFullscreenUI('ui-full0');
 
 		let	text0 = new GUI.TextBlock('ui-text0');
@@ -89,6 +90,6 @@ export class Gui {
 	}
 
 	public clearUI(scene : BABYLON.Scene) {
-		scene.getTextureByName('ui-full0').dispose();
+		scene.getTextureByName('ui-full0')?.dispose();
 	}
 }

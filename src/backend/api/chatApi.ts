@@ -36,6 +36,39 @@ export function getChats(request: FastifyRequest, reply: FastifyReply) {
 	});
 }
 
+export function getChatPartners(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+	const user = request.user;
+
+	const outgoingChatsBox = outgoingChatsList(db, user.userId);
+	if (Result.SUCCESS != outgoingChatsBox.result)
+		return reply.send({result: outgoingChatsBox.result});
+
+	const incomingChatsBox = incomingChatsList(db, user.userId);
+	if (Result.SUCCESS != incomingChatsBox.result)
+		return reply.send({result: incomingChatsBox.result});
+
+	incomingChatsBox.contents.forEach(partner => {
+		if (null == outgoingChatsBox.contents.find(id => id.userId == partner.userId)) {
+			outgoingChatsBox.contents.push(partner);
+		}
+	});
+
+	outgoingChatsBox.contents.sort((a, b) => a.nick.localeCompare(b.nick));
+
+	const foesBox = readFoes(db, user.userId);
+	if (Result.SUCCESS != foesBox.result)
+		return reply.send({result: foesBox.result});
+
+	const foesChats = foesBox.contents.map(f => f.foeId);
+	outgoingChatsBox.contents = outgoingChatsBox.contents.filter(p => !foesChats.includes(p.userId));
+
+	return reply.send({
+		result: Result.SUCCESS,
+		contents: outgoingChatsBox.contents
+	});
+}
+
 export function chatsList(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;

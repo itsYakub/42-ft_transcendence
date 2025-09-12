@@ -21,7 +21,7 @@ export async function joiningMatch(gameId: string): Promise<void> {
 
 export function matchFinishing() {
 	removeUserGameId();
-	setTimeout(() => showPage(Page.GAME), 2000);
+	//setTimeout(() => showPage(Page.GAME), 2000);
 }
 
 export function matchGamerLeaving() {

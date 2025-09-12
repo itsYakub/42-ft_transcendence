@@ -38,7 +38,6 @@ async function login(email: string, password: string) {
 	});
 
 	const json = await response.json();
-	console.log(json);
 	if (Result.SUCCESS != json.result) {
 		showAlert(json.result);
 		return;
@@ -111,7 +110,6 @@ async function register(email: string, password: string) {
 	});
 
 	const json = await response.json();
-	console.log(json);
 
 	if (Result.SUCCESS != json.result) {
 		showAlert(json.result);
