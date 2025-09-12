@@ -9,12 +9,6 @@ export async function userSendUserChat(message: Message) {
 	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
 		const partnerId = parseInt(chatPartnerContainer.dataset.id);
-		console.log(partnerId);
-		console.log(message.fromId);
-		console.log(message.toId);
-		console.log(typeof(partnerId));
-		console.log(typeof(message.fromId));
-		console.log(typeof(message.toId));
 		if (partnerId === message.fromId || partnerId === message.toId) {
 			// user is chatting with this partner
 			const node = document.createElement("span");

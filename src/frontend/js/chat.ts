@@ -1,4 +1,4 @@
-import { addChatPartnerView, chatMessageForm, chatPartner, userNotificationsMessages } from "./../../common/dynamicElements.js";
+import { addChatPartnerView, chatMessageForm, chatPartner, partnersHtml, userNotificationsMessages } from "./../../common/dynamicElements.js";
 import { MessageType, Page, Result } from "./../../common/interfaces.js";
 import { showPage } from "./index.js";
 import { sendMessageToServer } from "./sockets/clientSocket.js";
@@ -12,15 +12,7 @@ export function userChatsFunctions() {
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			const chatsBox = await fetch("/chat", {
-				method: "POST",
-				headers: {
-					"content-type": "application/json"
-				},
-				body: JSON.stringify({
-					partnerId: parseInt(this.dataset.id)
-				})
-			});
+			const chatsBox = await fetch(`/chat/partner/${this.dataset.id}`);
 
 			const json = await chatsBox.json();
 			if (Result.SUCCESS == json.result) {
@@ -83,7 +75,7 @@ export function userChatsFunctions() {
 				for (var i = 0; i < addChatPartnerButtons.length; i++) {
 					addChatPartnerButtons[i].addEventListener("click", function () {
 						const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
-						chatPartnerContainer.innerHTML = this.dataset.nick;
+						chatPartnerContainer.innerHTML = `<div class="bg-red-300/50 rounded text-center p4 text-stone-700">${this.dataset.nick}</div>`;
 						chatPartnerContainer.dataset.id = this.dataset.id;
 						resetChatPartnerButtons();
 						document.querySelector("#userChatsContainer").innerHTML = "";
@@ -133,6 +125,10 @@ export function userChatsFunctions() {
 			const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 			const messageText: string = sendUserChatForm.message.value;
 			if (messageText.length > 0) {
+				const response = await (fetch("/chat/users"));
+				const json = await response.json();
+				console.log(partnersHtml(json.contents));
+
 				sendMessageToServer({
 					type: MessageType.USER_SEND_USER_CHAT,
 					chat: messageText,

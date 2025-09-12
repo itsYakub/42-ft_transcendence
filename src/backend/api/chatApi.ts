@@ -17,7 +17,7 @@ export function notificationsList(request: FastifyRequest, reply: FastifyReply) 
 export function getChats(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
-	const { partnerId } = request.body as any;
+	const { partnerId } = request.params as any;
 
 	const chatsBox = partnerChats(db, user.userId, partnerId);
 	if (Result.SUCCESS != chatsBox.result)
@@ -39,10 +39,6 @@ export function getChats(request: FastifyRequest, reply: FastifyReply) {
 export function chatsList(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
-
-	// const notificationsBox = notificationsList(db, user.userId);
-	// if (Result.SUCCESS != notificationsBox.result)
-	// 	return reply.send(notificationsBox.result);
 
 	const incomingChatsBox = incomingChatsList(db, user.userId);
 	if (Result.SUCCESS != incomingChatsBox.result)

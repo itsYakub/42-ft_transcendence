@@ -8,15 +8,14 @@ export function userLoginReceived(db: DatabaseSync, user: ShortUser) {
 }
 
 export function userSendUserChatReceived(db: DatabaseSync, message: Message) {
-	console.log(message);
-	const response = addUserChat(db, message);
-
-	sendMessageToGameIdUsers({
-		type: MessageType.USER_SEND_USER_CHAT,
-		fromId: message.fromId,
-		toId: message.toId,
-		chat: message.chat
-	}, [message.fromId, message.toId]);
+	if (Result.SUCCESS == addUserChat(db, message)) {
+		sendMessageToGameIdUsers({
+			type: MessageType.USER_SEND_USER_CHAT,
+			fromId: message.fromId,
+			toId: message.toId,
+			chat: message.chat
+		}, [message.fromId, message.toId]);
+	}
 }
 
 export function userInviteReceived(db: DatabaseSync, message: Message) {

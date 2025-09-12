@@ -27,6 +27,23 @@ export function profileActionbuttons(isfriend: boolean, isFoe: boolean, profileU
 	return "";
 }
 
+export function partnersHtml(partners: ShortUser[]): string {
+	let partnersString = "";
+	partners.forEach(partner => {
+		partnersString += partnerHtml(partner);
+	});
+
+	return partnersString;
+}
+
+function partnerHtml(partner: ShortUser): string {
+	return `
+		<div class="chatPartnerButton flex flex-row gap-2 justify-end items-center bg-red-300/50 cursor-[url(/images/pointer.png),pointer] hover:bg-red-300 text-right w-full text-stone-700 p-2 rounded-lg" data-id="${partner.userId}">
+			<div>${partner.nick}</div>
+			<img class="w-10 h-10 rounded-lg" src="${partner.avatar}"></img>
+		</div>
+	`;
+}
 
 /*
 	The list of all the chats between the user and partner
@@ -54,7 +71,7 @@ function userNotificationMessage(notification: UserNotification): string {
 
 export function chatPartner(partner: ShortUser): string {
 	return `
-	<div>${partner.nick}</div>
+	<div class="bg-red-300/50 rounded text-center p2 text-stone-700">${partner.nick}</div>
 	`;
 }
 

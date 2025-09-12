@@ -119,7 +119,6 @@ async function register(email: string, password: string) {
 	}
 	const date = new Date();
 	date.setFullYear(date.getFullYear() + 1);
-	document.cookie = `language=english; expires=${date}`;
 	userLoggedIn(json.contents);
 	showPage(Page.HOME);
 }

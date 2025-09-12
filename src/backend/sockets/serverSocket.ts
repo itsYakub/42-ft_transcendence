@@ -106,9 +106,8 @@ export function handleClientMessage(db: DatabaseSync, message: Message) {
 		case MessageType.MATCH_LEAVE:
 			matchLeaveReceived(db, message.gameId, message.fromId);
 			break;
-		case MessageType.MATCH_OVER:
-			matchOverReceived(db, message);
-			break;
+			// matchOverReceived(db, message);
+			// break;
 		// case MessageType.MATCH_START:
 		// 	matchStartReceived(db, message);
 		// 	break;

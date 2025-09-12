@@ -64,18 +64,14 @@ export function partnerChats(db: DatabaseSync, userId: number, partnerId: number
 /*
 	Adds a private message (DM)
 */
-export function addUserChat(db: DatabaseSync, message: Message): any {
+export function addUserChat(db: DatabaseSync, message: Message): Result {
 	try {
 		const select = db.prepare("INSERT INTO user_chats (to_id, from_id, message, sent_at) VALUES (?, ?, ?, ?)");
 		select.run(message.toId, message.fromId, message.chat, new Date().toISOString());
-		return {
-			result: Result.SUCCESS,
-		};
+		return Result.SUCCESS;
 	}
 	catch (e) {
-		return {
-			result: Result.ERR_DB,
-		};
+		return Result.ERR_DB;
 	}
 }
 

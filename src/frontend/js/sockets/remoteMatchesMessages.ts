@@ -4,7 +4,7 @@ import { numbersToNick } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
 import { gameListeners } from "../game/gamePage.js";
 import { getLanguage, showPage } from "../index.js";
-import { getUserGameId, getUserId } from "../user.js";
+import { getUserGameId, getUserId, removeUserGameId, setUserGameId } from "../user.js";
 import { currentPage, sendMessageToServer } from "./clientSocket.js";
 
 export function createRemoteMatch() {
@@ -20,7 +20,8 @@ export async function joiningMatch(gameId: string): Promise<void> {
 }
 
 export function matchFinishing() {
-	showPage(Page.GAME);
+	removeUserGameId();
+	setTimeout(() => showPage(Page.GAME), 2000);
 }
 
 export function matchGamerLeaving() {

@@ -38,7 +38,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 
 	fastify.get("/chat", async (request: FastifyRequest, reply: FastifyReply) => getChatPage(request, reply));
 	fastify.get("/chat/notifications", (request: FastifyRequest, reply: FastifyReply) => notificationsList(request, reply));
-	fastify.post("/chat/list", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
+	fastify.get("/chat/partner/:partnerId", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
 	fastify.get("/chat/users", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
 
 	fastify.get("/game", async (request: FastifyRequest, reply: FastifyReply) => getGamePage(request, reply));

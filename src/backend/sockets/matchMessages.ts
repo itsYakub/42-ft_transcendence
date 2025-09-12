@@ -81,6 +81,17 @@ export function matchOverReceived(db: DatabaseSync, message: Message) {
 
 /* Forward game updates - handles ball sync, paddle movements, etc. */
 export function matchUpdateReceived(db: DatabaseSync, message: Message) {
+	if (MessageType.MATCH_END == message.type) {
+		const gamersBox = usersByGameId(db, message.gameId);
+		if (Result.SUCCESS == gamersBox.result) {
+			const gamers = gamersBox.contents;
+			removeUserFromMatch(db, gamers[0].userId);
+			removeUserFromMatch(db, gamers[1].userId);
+			sendMessageToGameIdUsers({
+				type: MessageType.MATCH_OVER
+			}, [gamers[0].userId, gamers[1].userId])
+		}
+	}
 	sendMessageToUser({
 		type: MessageType.MATCH_UPDATE,
 		gameId: message.gameId,

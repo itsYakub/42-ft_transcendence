@@ -148,7 +148,7 @@ export class Game {
 	) {
 		this.m_gameOver = false;
 
-		this.receiverId = opts.receiverId;
+		this.receiverId = opts?.receiverId;
 
 		// store player data
 		this.m_player1Data = player1;

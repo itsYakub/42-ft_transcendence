@@ -22,7 +22,7 @@ export async function showPage(page: Page, add: boolean = true) {
 	if (add)
 		history.pushState(page, null);
 
-	const endpoint = Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
+	const endpoint = !page || Page.HOME == page ? "/" : `/${page.toLowerCase()}`;
 
 	const response = await fetch(endpoint);
 	const body = await response.text();
