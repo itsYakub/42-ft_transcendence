@@ -14,7 +14,7 @@ export function alertDialogHtml(): string {
 }
 
 export function chatUsersHtml(): string {
-	return `<dialog id="chatUsersDialog" class="mx-auto mt-80 text-center content-center rounded-lg border bg-stone-700 border-red-300/50"></dialog>`;
+	return `<dialog id="chatUsersDialog" class="outline-hidden mx-auto mt-80 text-center content-center rounded-lg border bg-stone-700 border-red-300/50"></dialog>`;
 }
 
 export function profileDialogHtml(): string {

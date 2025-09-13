@@ -4,11 +4,15 @@ import { usersView } from '../views/usersView.js';
 import { translate } from '../../common/translations.js';
 import { allUsers } from '../../db/userDB.js';
 import { Page, Result } from '../../common/interfaces.js';
+import { hasUnseenChats } from '../../db/userChatsDb.js';
 
 export function getUsersPage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
+
+	const booleanBox = hasUnseenChats(request.db, user.userId);
+	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
 
 	const usersBox = allUsers(db);
 	if (Result.SUCCESS != usersBox.result)
@@ -16,10 +20,10 @@ export function getUsersPage(request: FastifyRequest, reply: FastifyReply) {
 			language,
 			result: usersBox.result,
 			user
-		}));
+		}, chatsWaiting));
 
 	let text = usersView(usersBox.contents);
 	text = translate(language, text);
 
-	return reply.type("text/html").send(frameView({ user, language, page: Page.USERS }, text));
+	return reply.type("text/html").send(frameView({ user, language, page: Page.USERS }, chatsWaiting, text));
 }

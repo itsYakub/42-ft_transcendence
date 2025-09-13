@@ -1,8 +1,8 @@
 import { partnersHtml } from "../../common/dynamicElements.js";
-import { ShortUser, User } from "../../common/interfaces.js";
+import { ChatMessage, ChatPartner, ShortUser, User } from "../../common/interfaces.js";
 import { chatUsersHtml, profileDialogHtml } from "./dialogsView.js";
 
-export function userChatsView(partners: ShortUser[], user: User): string {
+export function userChatsView(partners: ChatPartner[]): string {
 	return `
 	<div class="flex flex-col items-center gap-4">
 		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_CHAT_TITLE%%</div>

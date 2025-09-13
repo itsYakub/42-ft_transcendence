@@ -10,6 +10,7 @@ import { frameView } from "./backend/views/frameView.js";
 import { registerEndpoints } from "./backend/endpoints.js";
 import { initDbTables } from "./db/initDbTables.js";
 import { dbErrorView } from "./backend/views/dbErrorView.js";
+import { hasUnseenChats } from "./db/userChatsDb.js";
 
 const __dirname = import.meta.dirname;
 
@@ -74,13 +75,13 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 	const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 
 	if (Result.ERR_DB == userBox.result) {
-		return "/" == request.url ? reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, dbErrorView()))
-		: reply.send({ result: userBox.result });
+		return "/" == request.url ? reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, false, dbErrorView()))
+			: reply.send({ result: userBox.result });
 	}
 
 	if (Result.ERR_NO_USER == userBox.result)
-		return "/" == request.url ? reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, authView()))
-		: reply.send({ result: Result.ERR_NO_USER });
+		return "/" == request.url ? reply.type("text/html").send(frameView({ user: null, language, page: Page.AUTH }, false, authView()))
+			: reply.send({ result: Result.ERR_NO_USER });
 
 	request.user = userBox.contents;
 	done();
@@ -90,13 +91,16 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 	Handles all incorrect URLs
 */
 fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+	const booleanBox = hasUnseenChats(request.db, request.user.userId);
+	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
+
 	const params = {
 		user: request.user,
 		result: Result.ERR_NOT_FOUND,
 		language: request.cookies.language ?? "english"
 	};
 
-	const frame = frameView(params);
+	const frame = frameView(params, chatsWaiting);
 	return reply.type("text/html").send(frame);
 });
 

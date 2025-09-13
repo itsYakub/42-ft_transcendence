@@ -1,9 +1,10 @@
 import { Message, MessageType, Page, Result, ShortUser } from "../../../common/interfaces.js";
+import { userSendUserChat } from "../chat.js";
 import { showPage } from "../index.js";
 import { userLoggedOut, getUserId, getUserNick, getUserGameId } from "../user.js";
 import { matchFinishing, startingMatch, updateMatchDetails, updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
 import { tournamentChat, tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
-import { userInvite, userSendUserChat } from "./userMessages.js";
+import { userInvite } from "./userMessages.js";
 
 let socket: WebSocket;
 

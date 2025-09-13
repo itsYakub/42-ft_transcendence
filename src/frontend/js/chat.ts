@@ -1,14 +1,83 @@
-import { addChatPartnerView, chatMessageForm, chatPartner, partnersHtml, userNotificationsMessages } from "./../../common/dynamicElements.js";
-import { MessageType, Page, Result } from "./../../common/interfaces.js";
+import { addChatPartnerView, chatMessageForm, chatPartner, chatString, partnerHtml, partnersHtml, selectedPartnerHtml, userNotificationsMessages } from "./../../common/dynamicElements.js";
+import { Message, MessageType, Page, Result, ShortUser } from "./../../common/interfaces.js";
 import { showPage } from "./index.js";
-import { sendMessageToServer } from "./sockets/clientSocket.js";
-import { isUserLoggedIn } from "./user.js";
+import { currentPage, sendMessageToServer } from "./sockets/clientSocket.js";
+import { getUserId, isUserLoggedIn } from "./user.js";
 import { profileFunctions } from "./users/profile.js";
 
+export async function userSendUserChat(message: Message) {
+	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
+	if (chatPartnerContainer) {
+		const partnerId = parseInt(chatPartnerContainer.dataset.id);
+		if (partnerId === message.fromId || partnerId === message.toId) {
+			// user is chatting with this partner
+			console.log(partnerId, message.fromId, message.toId);
+			const node = document.createElement("span");
+			node.innerHTML = chatString(message.chat, getUserId() == message.toId);
+			const container = document.querySelector("#userChatsContainer");
+			if (node.firstElementChild)
+				container.insertBefore(node.firstElementChild, container.firstChild);
+			else
+				container.appendChild(node);
+		}
+		else if (Page.CHAT == currentPage()) {
+			// user is chatting with another partner
+			const partnerId = message.fromId == getUserId() ? message.toId : message.fromId;
+			const response = await fetch(`/chat/unseen/${partnerId}`);
+			if (Result.SUCCESS != await response.text())
+				return;
+
+			const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
+			let selectedButton: HTMLElement;
+			for (var i = 0; i < chatPartnerButtons.length; i++) {
+				if (parseInt((chatPartnerButtons[i] as HTMLElement).dataset.id) == partnerId) {
+					selectedButton = chatPartnerButtons[i] as HTMLElement;
+					(selectedButton.childNodes[3] as HTMLElement).classList.remove("collapse");
+				}
+			}
+
+			if (!selectedButton) {
+				const response = await fetch(`/profile/user/${partnerId}`);
+				const profileJson = await response.json();
+				if (Result.SUCCESS == profileJson.result) {
+					const partner = profileJson.contents as ShortUser;
+					if (0 == chatPartnerButtons.length)
+						insertChatPartner(partner, null, false);
+					else {
+						let nicks = [];
+						for (var i = 0; i < chatPartnerButtons.length; i++)
+							nicks.push((chatPartnerButtons[i] as HTMLElement).dataset.nick);
+
+						nicks.push(partner.nick);
+						nicks.sort((a, b) => a.localeCompare(b));
+						const index = nicks.indexOf(partner.nick);
+						console.log(`${partner.nick} is at index ${index}`);
+						insertChatPartner(partner, chatPartnerButtons[index] as HTMLElement, 0 == index);
+					}
+				}
+			}
+
+			const chatIndicator = document.querySelector("#chatIndicator");
+			if (chatIndicator)
+				chatIndicator.classList.remove("collapse");
+		}
+	}
+	else {
+		// user is on another page
+		const partnerId = message.fromId == getUserId() ? message.toId : message.fromId;
+		const response = await fetch(`/chat/unseen/${partnerId}`);
+		if (Result.SUCCESS != await response.text())
+			return;
+		const chatIndicator = document.querySelector("#chatIndicator");
+		if (chatIndicator)
+			chatIndicator.classList.remove("collapse");
+	}
+}
+
 export function userChatListeners() {
-	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
+	let chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
 	for (var i = 0; i < chatPartnerButtons.length; i++)
-		chatPartnerButtons[i].addEventListener("click", function () {chatPartnerClicked(this)});
+		chatPartnerButtons[i].addEventListener("click", function () { chatPartnerClicked(this) });
 
 	const chatPartnerContainer = document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
@@ -77,6 +146,7 @@ export function userChatListeners() {
 					resetChatPartnerButtons();
 					const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 					chatPartnerContainer.innerHTML = "";
+					chatPartnerContainer.dataset.id = "0";
 					notificationsButton.classList.add("bg-red-400");
 					notificationsButton.classList.remove("bg-red-300/50");
 					notificationsButton.classList.remove("cursor-[url(/images/pointer.png),pointer]");
@@ -106,17 +176,24 @@ export function userChatListeners() {
 					toId: parseInt(chatPartnerContainer.dataset.id)
 				});
 				if ("true" === chatPartnerContainer.dataset.new) {
-					const response = await (fetch("/chat/partners"));
-					const json = await response.json();
-					document.querySelector("#usersDiv").innerHTML = partnersHtml(json.contents);
-					const partnerButtons = document.getElementsByClassName("chatPartnerButton");
-					for (var i = 0; i < partnerButtons.length; i++) {
-						if ((partnerButtons[i] as HTMLElement).dataset.id == chatPartnerContainer.dataset.id) {
-							partnerButtons[i].classList.replace("bg-red-300/50", "bg-red-400");
-							partnerButtons[i].classList.remove("hover:bg-red-300");
-							partnerButtons[i].classList.remove("cursor-[url(/images/pointer.png),pointer]");
+					chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
+					const profileResponse = await fetch(`/profile/user/${chatPartnerContainer.dataset.id}`);
+					const profileJson = await profileResponse.json();
+					if (Result.SUCCESS == profileJson.result) {
+						const partner = profileJson.contents as ShortUser;
+						if (0 == chatPartnerButtons.length)
+							insertNewChatPartner(partner, null, false);
+						else {
+							let nicks = [];
+							for (var i = 0; i < chatPartnerButtons.length; i++)
+								nicks.push((chatPartnerButtons[i] as HTMLElement).dataset.nick);
+
+							nicks.push(partner.nick);
+							nicks.sort((a, b) => a.localeCompare(b));
+							const index = nicks.indexOf(partner.nick);
+							console.log(`${partner.nick} is at index ${index}`);
+							insertNewChatPartner(partner, chatPartnerButtons[index] as HTMLElement, 0 == index);
 						}
-						partnerButtons[i].addEventListener("click", function () {chatPartnerClicked(this)});
 					}
 					chatPartnerContainer.dataset.new = "false";
 				}
@@ -150,16 +227,25 @@ async function chatPartnerClicked(button: HTMLElement) {
 			userChatsContainer.innerHTML = messages;
 			document.querySelector("#sendUserChatForm").innerHTML = chatMessageForm();
 		}
+
+		(button.childNodes[3] as HTMLElement).classList.add("collapse");
+		const unseenBox = await fetch("/chat/unseen");
+		const unseenJson = await unseenBox.json();
+		if (Result.SUCCESS == unseenJson.result && unseenJson.contents == false) {
+			const chatIndicator = document.querySelector("#chatIndicator");
+			if (chatIndicator)
+				chatIndicator.classList.add("collapse");
+		}
 	}
 }
 
 function resetChatPartnerButtons() {
 	const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
-	for (var j = 0; j < chatPartnerButtons.length; j++) {
-		chatPartnerButtons[j].classList.remove("bg-red-400");
-		chatPartnerButtons[j].classList.add("bg-red-300/50");
-		chatPartnerButtons[j].classList.add("cursor-[url(/images/pointer.png),pointer]");
-		chatPartnerButtons[j].classList.add("hover:bg-red-300");
+	for (var i = 0; i < chatPartnerButtons.length; i++) {
+		chatPartnerButtons[i].classList.remove("bg-red-400");
+		chatPartnerButtons[i].classList.add("bg-red-300/50");
+		chatPartnerButtons[i].classList.add("cursor-[url(/images/pointer.png),pointer]");
+		chatPartnerButtons[i].classList.add("hover:bg-red-300");
 	}
 
 	const notificationsButton = document.querySelector("#notificationsButton");
@@ -169,4 +255,53 @@ function resetChatPartnerButtons() {
 		notificationsButton.classList.add("cursor-[url(/images/pointer.png),pointer]");
 		notificationsButton.classList.add("hover:bg-red-300");
 	}
+}
+
+function insertChatPartner(partner: ShortUser, insertAfter: HTMLElement, first: boolean) {
+	const node = document.createElement("div");
+
+	node.innerHTML = partnerHtml({
+		avatar: partner.avatar,
+		gameId: partner.gameId,
+		hasUnseen: true,
+		nick: partner.nick,
+		userId: partner.userId,
+		userType: partner.userType
+	});
+
+	const realNode = node.firstElementChild;
+	const usersDiv = document.querySelector("#usersDiv");
+	if (first)
+		usersDiv.insertBefore(realNode, usersDiv.firstChild);
+	else if (!insertAfter)
+		usersDiv.appendChild(realNode);
+	else
+		usersDiv.insertBefore(realNode, insertAfter);
+
+	realNode.addEventListener("click", function () { chatPartnerClicked(realNode as HTMLElement) });
+}
+
+function insertNewChatPartner(partner: ShortUser, insertAfter: HTMLElement, first: boolean) {
+	const node = document.createElement("div");
+
+	node.innerHTML = selectedPartnerHtml({
+		avatar: partner.avatar,
+		gameId: partner.gameId,
+		hasUnseen: false,
+		nick: partner.nick,
+		userId: partner.userId,
+		userType: partner.userType
+	});
+
+	const realNode = node.firstElementChild;
+	const usersDiv = document.querySelector("#usersDiv");
+	resetChatPartnerButtons();
+	if (first)
+		usersDiv.insertBefore(realNode, usersDiv.firstChild);
+	else if (!insertAfter)
+		usersDiv.appendChild(realNode);
+	else
+		usersDiv.insertBefore(realNode, insertAfter);
+
+	realNode.addEventListener("click", function () { chatPartnerClicked(realNode as HTMLElement) });
 }

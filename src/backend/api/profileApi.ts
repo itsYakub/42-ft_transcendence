@@ -41,6 +41,13 @@ export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	});
 }
 
+export function getSpecificUser(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+	const userId = (request.params as any).id;
+
+	return reply.send(getUserById(db, userId));
+}
+
 export function getShortUser(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 

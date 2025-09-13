@@ -67,8 +67,16 @@ export function remoteTournamentMessagesHtml(chats: GameChatMessage[], userId: n
 
 function tournamentGamerHtml(gamer: Gamer, convert: boolean = true) {
 	return `
-	<div class="tournamentGamer py-2 w-full rounded-lg bg-red-300/50 text-stone-700 text-center">${convert ? numbersToNick(gamer.nick): gamer.nick}</div>
+	<button class="w-full bg-red-300/50 flex-col gap-2 justify-end items-center text-right text-stone-700 p-2 rounded-lg">	
+		<img class="w-10 h-10 rounded-lg" src="${gamer.avatar}"></img>
+		<div>${convert ? numbersToNick(gamer.nick): gamer.nick}</div>
+	</button>
 	`;
+
+
+	// return `
+	// <div class="tournamentGamer py-2 w-full rounded-lg bg-red-300/50 text-stone-700 text-center">${convert ? numbersToNick(gamer.nick): gamer.nick}</div>
+	// `;
 }
 
 function tournamentMessageHtml(userId: number, chat: GameChatMessage) {

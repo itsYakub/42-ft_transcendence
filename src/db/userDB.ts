@@ -26,7 +26,7 @@ export function usersByGameId(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 
 export function usersInTournament(db: DatabaseSync, gameId: string): Box<Gamer[]> {
 	try {
-		const select = db.prepare("SELECT user_id, nick from users WHERE game_id = ?");
+		const select = db.prepare("SELECT avatar, user_id, nick from users WHERE game_id = ?");
 		const gamers = select.all(gameId).map(gamer => sqlToGamer(gamer));;
 		return {
 			result: Result.SUCCESS,
@@ -513,12 +513,12 @@ export function allChattableUsers(db: DatabaseSync, user: User): Box<ShortUser[]
 		};
 	}
 	try {
-		const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'GUEST' ORDER BY nick");
+		const select = db.prepare("SELECT * FROM users WHERE ? != user_id AND type != 'GUEST'");
 		const users = select.all(user.userId).map(user => sqlToShortUser(user));
 
 		return {
 			result: Result.SUCCESS,
-			contents: users
+			contents: users.sort((a, b) => a.nick.localeCompare(b.nick))
 		};
 	}
 	catch (e) {

@@ -21,7 +21,7 @@ export function getGames(db: DatabaseSync): Box<Game[]> {
 
 export function gamePlayers(db: DatabaseSync, gameId: string): Box<MatchGamer[]> {
 	try {
-		const select = db.prepare("SELECT game_id, user_id, nick FROM users WHERE game_id IS ?");
+		const select = db.prepare("SELECT avatar, game_id, user_id, nick FROM users WHERE game_id IS ?");
 		const gamers = select.all(gameId).map(gamer => sqlToGamer(gamer));
 		return {
 			result: Result.SUCCESS,

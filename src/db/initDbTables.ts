@@ -10,6 +10,7 @@ export function initDbTables(db: DatabaseSync) {
 	initMatchesTable(db);
 	initMatchResultsTable(db);
 	initNotificationsTable(db);
+	initLastSeenTable(db);
 	initTournamentsTable(db);
 	initTournamentChatsTable(db);
 	initUsersTable(db);
@@ -46,6 +47,18 @@ function initFriendsTable(db: DatabaseSync) {
 	const number: number = 0, id: number = 1
 	for (var i = 1; i <= number; i++)
 		db.exec(`INSERT INTO friends (user_id, friend_id) VALUES (${id}, ${i});`);
+}
+
+function initLastSeenTable(db: DatabaseSync): void {
+	db.exec("DROP TABLE IF EXISTS last_seen");
+
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS last_seen (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		partner_id INTEGER NOT NULL,
+		seen INTEGER NOT NULL DEFAULT 1,
+		user_id INTEGER NOT NULL
+		);`);
 }
 
 function initLocalTournamentsTable(db: DatabaseSync) {
@@ -192,6 +205,7 @@ function initUsersTable(db: DatabaseSync) {
 
 function initUserChatsTable(db: DatabaseSync): void {
 	db.exec("DROP TABLE IF EXISTS user_chats");
+
 	db.exec(`
 		CREATE TABLE IF NOT EXISTS user_chats (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,

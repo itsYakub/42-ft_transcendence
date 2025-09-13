@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Result } from '../../common/interfaces.js';
-import { incomingChatsList, outgoingChatsList, partnerChats } from '../../db/userChatsDb.js';
+import { hasUnseenChats, incomingChatsList, outgoingChatsList, partnerChats, updateSeen } from '../../db/userChatsDb.js';
 import { userChatsMessages } from '../../common/dynamicElements.js';
-import { allChattableUsers, getUserById } from '../../db/userDB.js';
+import { allChattableUsers, allOtherUsers, getUserById } from '../../db/userDB.js';
 import { readNotifications } from '../../db/notificationsDb.js';
 import { readFoes } from '../../db/foesDb.js';
 
@@ -34,6 +34,18 @@ export function getChats(request: FastifyRequest, reply: FastifyReply) {
 			partner: userBox.contents
 		}
 	});
+}
+
+export function getUnseen(request: FastifyRequest, reply: FastifyReply) {
+	return reply.send(hasUnseenChats(request.db, request.user.userId));
+}
+
+export function markUnseen(request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+	const user = request.user;
+	const { partnerId } = request.params as any;
+
+	return reply.send(updateSeen(db, user.userId, partnerId));
 }
 
 export function getChatPartners(request: FastifyRequest, reply: FastifyReply) {

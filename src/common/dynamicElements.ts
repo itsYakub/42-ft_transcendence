@@ -1,5 +1,5 @@
 import { getLanguage } from "../frontend/js/index.js";
-import { MatchResult, MessageType, ShortUser, User, UserChatMessage, UserNotification, UserType } from "./interfaces.js";
+import { ChatMessage, ChatPartner, MatchResult, MessageType, ShortUser, User, UserChatMessage, UserNotification, UserType } from "./interfaces.js";
 import { translate } from "./translations.js";
 
 /*
@@ -27,7 +27,7 @@ export function profileActionbuttons(isfriend: boolean, isFoe: boolean, profileU
 	return "";
 }
 
-export function partnersHtml(partners: ShortUser[]): string {
+export function partnersHtml(partners: ChatPartner[]): string {
 	let partnersString = "";
 	partners.forEach(partner => {
 		partnersString += partnerHtml(partner);
@@ -36,12 +36,35 @@ export function partnersHtml(partners: ShortUser[]): string {
 	return partnersString;
 }
 
-function partnerHtml(partner: ShortUser): string {
+export function partnerHtml(partner: ChatPartner): string {
+	const showChatsIndicator = partner.hasUnseen ? "" : "collapse";
+
 	return `
-		<div class="chatPartnerButton flex flex-row gap-2 justify-end items-center bg-red-300/50 cursor-[url(/images/pointer.png),pointer] hover:bg-red-300 text-right w-full text-stone-700 p-2 rounded-lg" data-id="${partner.userId}">
+	<div class="chatPartnerButton w-full relative inline-flex cursor-[url(/images/pointer.png),pointer] rounded-lg bg-red-300/50 hover:bg-red-400" data-id="${partner.userId}" data-nick="${partner.nick}">
+		<button class="inline-flex w-full flex-row gap-2 justify-end items-center text-right text-stone-700 p-2 rounded-lg">
 			<div>${partner.nick}</div>
 			<img class="w-10 h-10 rounded-lg" src="${partner.avatar}"></img>
-		</div>
+		</button>
+		<span class="chatPartnerButtonIndicator ${showChatsIndicator} absolute top-1 right-1 flex size-3" data-id="${partner.userId}">
+			<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-fuchsia-700 opacity-75"></span>
+			<span class="relative inline-flex size-3 rounded-full bg-fuchsia-800"></span>
+		</span>
+	</div>
+	`;
+}
+
+export function selectedPartnerHtml(partner: ChatPartner): string {
+	return `
+	<div class="chatPartnerButton w-full relative inline-flex  rounded-lg bg-red-300" data-id="${partner.userId}" data-nick="${partner.nick}">
+		<button class="inline-flex w-full flex-row gap-2 justify-end items-center text-right text-stone-700 p-2 rounded-lg">
+			<div>${partner.nick}</div>
+			<img class="w-10 h-10 rounded-lg" src="${partner.avatar}"></img>
+		</button>
+		<span class="chatPartnerButtonIndicator collapse absolute top-1 right-1 flex size-3" data-id="${partner.userId}">
+			<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-fuchsia-700 opacity-75"></span>
+			<span class="relative inline-flex size-3 rounded-full bg-fuchsia-800"></span>
+		</span>
+	</div>
 	`;
 }
 
@@ -87,10 +110,10 @@ export function chatString(message: string, isPartner: boolean): string {
 
 	return isPartner ?
 		`
-	<div class="text-stone-700 bg-blue-800 mr-auto px-4 py-2 rounded-lg">${message}</div>
+	<div class="text-gray-300 bg-blue-800 mr-auto px-4 py-2 rounded-lg">${message}</div>
 	` :
 		`
-	<div class="text-stone-700 bg-green-800 ml-auto px-4 py-2 rounded-lg">${message}</div>
+	<div class="text-gray-300 bg-green-800 ml-auto px-4 py-2 rounded-lg">${message}</div>
 	`;
 }
 

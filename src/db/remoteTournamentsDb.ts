@@ -36,9 +36,8 @@ export function createRemoteTournament(db: DatabaseSync, gameId: string, gamers:
 
 export function joinTournament(db: DatabaseSync, gameId: string, userId: number): Result {
 	try {
-		let select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
+		const select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
-
 		if (3 == game.count)
 			return Result.ERR_GAME_FULL;
 

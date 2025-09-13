@@ -133,6 +133,24 @@ export interface ShortUser {
 	userId: number
 }
 
+export interface ChatMessage {
+	avatar: string,
+	gameId: string,
+	nick: string,
+	seen: boolean,
+	userType: UserType,
+	userId: number
+}
+
+export interface ChatPartner {
+	avatar: string,
+	gameId: string,
+	nick: string,
+	hasUnseen: boolean,
+	userType: UserType,
+	userId: number
+}
+
 export interface Game {
 	gameId: string,
 	nicks: string,
@@ -165,6 +183,7 @@ export interface MatchResult {
 export interface UserChatMessage {
 	fromId: number,
 	message: string,
+	seen: boolean,
 	sentAt: Date
 }
 

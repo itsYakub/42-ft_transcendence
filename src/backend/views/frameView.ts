@@ -5,11 +5,11 @@ import { FrameParams } from "../../common/interfaces.js";
 /*
 	Returns the whole page, or an error page
 */
-export function frameView(params: FrameParams, content: string = null): any {
+export function frameView(params: FrameParams, chatsWaiting: boolean, content: string = null): any {
 	if (!content)
 		content = errorString(params);
 
-	const text = frameString(navbarView(params), content);
+	const text = frameString(navbarView(params, chatsWaiting), content);
 	return translate(params.language, text)
 }
 

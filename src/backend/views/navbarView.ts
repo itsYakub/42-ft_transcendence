@@ -1,7 +1,7 @@
-import { FrameParams, Page, User, UserType } from "../../common/interfaces.js";
+import { FrameParams, Page, Result, User, UserType } from "../../common/interfaces.js";
 import { alertDialogHtml, gameDialogHtml, profileDialogHtml } from "./dialogsView.js";
 
-export function navbarView(params: FrameParams): string {
+export function navbarView(params: FrameParams, chatsWaiting: boolean): string {
 	let languageSelect = englishHtml();
 
 	switch (params.language) {
@@ -19,7 +19,7 @@ export function navbarView(params: FrameParams): string {
 	if (!user)
 		html += loggedOutHtml(languageSelect, params.page);
 	else
-		html += UserType.GUEST == user.userType ? guestHtml(user, languageSelect) : loggedInHtml(user, languageSelect, params.page);
+		html += UserType.GUEST == user.userType ? guestHtml(user, languageSelect) : loggedInHtml(user, chatsWaiting, languageSelect, params.page);
 
 	return html;
 }
@@ -40,7 +40,7 @@ function loggedOutHtml(languageSelect: string, page: Page): string {
 	`;
 }
 
-function loggedInHtml(user: User, languageSelect: string, page: Page): string {
+function loggedInHtml(user: User, chatsWaiting: boolean, languageSelect: string, page: Page): string {	
 	return `
 	<div id="navBar" class="h-32 font-mono bg-stone-700" data-page="${page}">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
@@ -52,7 +52,7 @@ function loggedInHtml(user: User, languageSelect: string, page: Page): string {
 					${accountButtonHtml(page)}
 					${gameButtonHtml(page)}
 					${usersButtonHtml(page)}
-					${chatButtonHtml(page)}
+					${chatButtonHtml(page, chatsWaiting)}
 				</div>
 			</div>
 			<select id="languageSelect" class="cursor-[url(/images/pointer.png),pointer] text-gray-300">
@@ -123,15 +123,18 @@ function usersButtonHtml(page: Page) {
 	`;
 }
 
-function chatButtonHtml(page: Page, chatsWaiting: boolean = false) {
+function chatButtonHtml(page: Page, chatsWaiting: boolean) {
 	const bgColour = Page.CHAT == page ? "bg-stone-800" : "";
-	const textColour = chatsWaiting ? "text-green-300" : "text-gray-300";
+	const showChatsIndicator = chatsWaiting ? "" : "collapse";
 
 	return `
-	<button id="chatButton"
-		class="cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} ${textColour} px-2 py-1 rounded-lg hover:bg-stone-800">
-		%%BUTTON_CHAT%%
-	</button>
+	<span id="chatButton" class="relative inline-flex cursor-[url(/images/pointer.png),pointer] rounded-lg hover:bg-stone-800">
+		<button class="inline-flex cursor-[url(/images/pointer.png),pointer] text-left ${bgColour} text-gray-300 px-2 py-1 rounded-lg hover:bg-stone-800">%%BUTTON_CHAT%%</button>
+		<span id="chatIndicator" class="${showChatsIndicator} absolute top-0.25 right-0.25 flex size-3">
+			<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-fuchsia-700 opacity-75"></span>
+			<span class="relative inline-flex size-3 rounded-full bg-fuchsia-800"></span>
+		</span>
+	</span>
 	`;
 }
 
