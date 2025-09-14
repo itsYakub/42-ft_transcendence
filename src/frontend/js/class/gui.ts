@@ -21,7 +21,6 @@ export class Gui {
 	}
 
 	public showPlayerScore(scene : BABYLON.Scene, p0 : Player, p1 : Player) {
-		console.log("updating score");
 		let	advanceTexture0 = GUI.AdvancedDynamicTexture.CreateFullscreenUI('ui-full0');
 
 		let	text0 = new GUI.TextBlock('ui-text0');
@@ -59,27 +58,30 @@ export class Gui {
 
 		let	text3 = new GUI.TextBlock('ui-text3');
 		text3.text = p_won.nick + translate(getLanguage(), ' %%TEXT_MATCH_WIN%%');
-		text3.top = -32;
+		text3.top = "-10%";
 		text3.color = 'white';
 		text3.shadowColor = 'black';
 		text3.shadowBlur = 10;
 		text3.shadowOffsetY = 10;
-		text3.fontSize = 80;
+		text3.fontSize = "6%";
 		text3.fontWeight = 'bolder';
 		advanceTexture1.addControl(text3);
 
 		let button0 = GUI.Button.CreateSimpleButton('ui-btn0', translate(getLanguage(), '%%TEXT_MATCH_QUIT%%'));
-		button0.top = 256;
-		button0.width = '256px'
-		button0.height = '64px';
+		
+		button0.top = "20%";
+		button0.width = "10%";
+		button0.height = "10%";
 		button0.color = 'black';
 		button0.background = 'white';
 		button0.cornerRadius = 16;
 		button0.shadowColor = 'black';
 		button0.shadowBlur = 10;
 		button0.shadowOffsetY = 10;
-		button0.fontSize = 24;
+		button0.fontSize = "4%";
 		button0.fontWeight = 'bolder';
+		button0.hoverCursor = "pointer";
+
 		advanceTexture1.addControl(button0);
 
 		button0.onPointerUpObservable.add(

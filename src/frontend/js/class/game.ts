@@ -515,6 +515,9 @@ export class Game {
 	private matchOver() {
 		let p_win: Player;
 
+		console.log("match over");
+		this.m_engine.stopRenderLoop();
+
 		this.m_ball.reset();
 		this.m_dialog.dispatchEvent(new CustomEvent("matchOver", {
 			detail: {

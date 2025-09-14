@@ -110,8 +110,8 @@ export function getTournamentLobby(request: FastifyRequest, reply: FastifyReply)
 export function addLocalTournament(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
-	const gameId = `t${Date.now().toString(36).substring(5)}`;
-	const { gamers } = request.body as any;
+	
+	const { gamers, gameId } = request.body as any;
 
 	if (Result.SUCCESS == createLocalTournament(db, gameId, gamers))
 		user.gameId = gameId;

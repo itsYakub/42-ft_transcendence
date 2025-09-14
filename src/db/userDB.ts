@@ -183,7 +183,7 @@ export function addUser(db: DatabaseSync, { email, password }) {
 				gameId: null,
 				nick: numbersToNick(stringBox.contents),
 				userId,
-				userType: UserType.GUEST
+				userType: UserType.USER
 			},
 			accessToken: accessToken(userId),
 			refreshToken: token

@@ -62,6 +62,7 @@ export enum MessageType {
 	MATCH_GOAL = "MATCH_GOAL",
 	MATCH_RESET = "MATCH_RESET",
 	MATCH_END = "MATCH_END",
+	MATCH_QUIT = "MATCH_QUIT",
 
 	// Tournament message types
 	TOURNAMENT_CHAT = "TOURNAMENT_CHAT",

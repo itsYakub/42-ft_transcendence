@@ -104,6 +104,9 @@ export function translate(language: string, text: string): string {
 
 
 	switch (language) {
+		case "australian":
+			items.forEach(item => text = text.replaceAll(`%%${item}%%`, translateAustralian(item)));
+			break;
 		case "dutch":
 			items.forEach(item => text = text.replaceAll(`%%${item}%%`, translateDutch(item)));
 			break;
@@ -119,6 +122,129 @@ export function translate(language: string, text: string): string {
 	}
 
 	return text;
+}
+
+function translateAustralian(text: string): string {
+	switch (text) {
+		case "BUTTON_ACCOUNT": return "Account";
+		case "BUTTON_ADD_FOE": return "Add foe";
+		case "BUTTON_ADD_FRIEND": return "Add friend";
+		case "BUTTON_AI_MATCH": return "AI match";
+		case "BUTTON_APP_TOTP": return "App";
+		case "BUTTON_CHAT": return "Chat";
+		case "BUTTON_DISABLE_TOTP": return "Disabled";
+		case "BUTTON_EMAIL_TOTP": return "Email";
+		case "BUTTON_FOES": return "Foes";
+		case "BUTTON_FRIENDS": return "Friends";
+		case "BUTTON_GAME": return "Game";
+		case "BUTTON_INVALIDATE_TOKEN": return "Invalidate token";
+		case "BUTTON_INVITE": return "Invite";
+		case "BUTTON_LEAVE": return "Leave";
+		case "BUTTON_LOGIN": return "Log in";
+		case "BUTTON_LOGOUT": return "Log out";
+		case "BUTTON_GOOGLE": return "Continue with Google";
+		case "BUTTON_GUEST": return "Continue as a guest";
+		case "BUTTON_MATCH": return "Match";
+		case "BUTTON_NOTIFICATIONS": return "Notifications";
+		case "BUTTON_READY": return "Ready up";
+		case "BUTTON_REGISTER": return "Register";
+		case "BUTTON_REMOVE_FOE": return "Remove foe";
+		case "BUTTON_REMOVE_FRIEND": return "Remove friend";
+		case "BUTTON_TOURNAMENT": return "Tournament";
+		case "BUTTON_UPDATE": return "Update";
+		case "BUTTON_USERS": return "Users";
+
+		case "ERR_AVATAR_TOO_BIG": return "Strewth - the selected image is too big - 100KiB max, mate!";
+		case "ERR_BAD_PASSWORD": return "Incorrect password, mate!";
+		case "ERR_BAD_TOTP": return "Incorrect code, mate!";
+		case "ERR_DB": return "Database error, mate!";
+		case "ERR_EMAIL_IN_USE": return "Email already registered, mate!";
+		case "ERR_FORBIDDEN": return "Forbidden, mate!";
+		case "ERR_FULL": return "Room full, mate!";
+		case "ERR_GOOGLE": return "Couldn't sign in/up with Google, mate!";
+		case "ERR_GOOGLE_EMAIL": return "Please log in with Google, mate!";
+		case "ERR_NO_NEW_PASSWORD": return "New password can't be the same as old password, mate!";
+		case "ERR_NO_USER": return "User not found, mate!";
+		case "ERR_NOT_FOUND": return "Not found, mate!";
+		case "ERR_PASSWORDS_DONT_MATCH": return "Please repeat the password, mate!";
+		case "ERR_SAME_EMAIL": return "You can't add yourself, mate!";
+		case "ERR_TOTP_CODE": return "Incorrect code, mate!";
+		case "ERR_UNIQUE": return "Names must be unique, mate!";
+		case "ERR_USER_OFFLINE": return "User offline, mate!";
+
+		case "MESSAGE_INVITATION": return "Join my tournament!";
+		case "MESSAGE_TOTP": return "Your 2FA code";
+
+		case "PROMPT_TOTP_CODE": return "2FA code";
+
+		case "SUCCESS_DISABLED_TOTP": return "Disabled 2FA, mate!";
+		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated, mate!";
+		case "SUCCESS_NICK": return "Nickname changed, mate!";
+		case "SUCCESS_PASSWORD": return "Password changed, mate!";
+		case "SUCCESS_TOTP": return "Success - please log in again, mate!";
+
+		case "TEXT_ACCOUNT_TITLE": return "Account details";
+		case "TEXT_CHANGE_AVATAR": return "Change avatar";
+		case "TEXT_CHANGE_NICK": return "Change nickname";
+		case "TEXT_CHANGE_PASSWORD": return "Change password";
+		case "TEXT_CHAT": return "Chat";
+		case "TEXT_CHAT_TITLE": return "Direct messages";
+		case "TEXT_CONGRATULATIONS": return "Congratulations";
+		case "TEXT_CREATE_LOCAL": return "New local";
+		case "TEXT_CREATE_REMOTE": return "New remote";
+		case "TEXT_CURRENT_PASSWORD": return "Current password";
+		case "TEXT_EMAIL": return "Email";
+		case "TEXT_FOES_TITLE": return "Foes";
+		case "TEXT_FRIENDS_TITLE": return "Friends";
+		case "TEXT_GAME_TITLE": return "Games";
+		case "TEXT_GUEST": return "Guest";
+		case "TEXT_JOIN": return "In-progress";
+		case "TEXT_LOCAL_MATCH": return "Local match";
+		case "TEXT_LOCAL_TOURNAMENT": return "Local tournament";
+		case "TEXT_LOG_IN_OR_REGISTER": return "User";
+		case "TEXT_MATCH": return "Match";
+		case "TEXT_MATCH_SINGULAR": return "match";
+		case "TEXT_MATCH_PLURAL": return "matches";
+		case "TEXT_MATCH_QUIT": return "Quit!";
+		case "TEXT_MATCH_WIN": return "has won!";
+		case "TEXT_MESSAGES": return "Messages";
+		case "TEXT_NEW_NICK": return "New nickname";
+		case "TEXT_NEW_PASSWORD": return "New password";
+		case "TEXT_NO_FOES": return "No foes!";
+		case "TEXT_NO_FRIENDS": return "No friends!";
+		case "TEXT_NO_MATCHES": return "No matches yet!";
+		case "TEXT_NO_USERS": return "No other users!";
+		case "TEXT_PASSWORD": return "Password";
+		case "TEXT_PLAYER": return "Player";
+		case "TEXT_PLAYERS": return "players";
+		case "TEXT_REMOTE_MATCH": return "Remote match";
+		case "TEXT_REMOTE_TOURNAMENT": return "Remote tournament";
+		case "TEXT_REMOVE_FOE": return "Remove from foes";
+		case "TEXT_REMOVE_FRIEND": return "Remove from friends";
+		case "TEXT_REPEAT_PASSWORD": return "Repeat password";
+		case "TEXT_START": return "Start";
+		case "TEXT_SUCCESS": return "Start";
+		case "TEXT_TEAM": return "The Team";
+		case "TEXT_TECH": return "Tech stack";
+		case "TEXT_TOTP_CODE": return "Code";
+		case "TEXT_TOTP_CODE_TITLE": return "Enter code";
+		case "TEXT_TOTP_INPUT": return "And input the code below";
+		case "TEXT_TOTP_SCAN": return "Scan the QR code or enter this key into your authenticator app";
+		case "TEXT_TOTP_TITLE": return "2FA";
+		case "TEXT_TOURNAMENT": return "Tournament";
+		case "TEXT_TOURNAMENT_FINAL": return "Final";
+		case "TEXT_TOURNAMENT_PLAY": return "Play";
+		case "TEXT_TOURNAMENT_PLURAL": return "tournaments";
+		case "TEXT_TOURNAMENT_SEMI_FINALS": return "Semi-finals";
+		case "TEXT_TOURNAMENT_SINGULAR": return "tournament";
+		case "TEXT_USER_DECISION": return "Please choose an option to continue, mate";
+		case "TEXT_USERS": return "Users";
+		case "TEXT_USERS_TITLE": return "Users";
+		case "TEXT_WELCOME": return "Welcome to Transcendence, mate!";
+		case "TEXT_WON": return "Won";
+		
+		default: return text;
+	}
 }
 
 function translateDutch(text: string): string {
@@ -174,7 +300,6 @@ function translateDutch(text: string): string {
 
 		case "PROMPT_TOTP_CODE": return "2FA-code";
 
-		case "SUCCESS_ADDED_FRIEND": return "Vriend toegevoegd!";
 		case "SUCCESS_DISABLED_TOTP": return "2FA uitgeschakeld!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Token ongeldig gemaakt!";
 		case "SUCCESS_NICK": return "Bijnaam gewijzigd!";
@@ -298,7 +423,6 @@ function translateEnglish(text: string): string {
 
 		case "PROMPT_TOTP_CODE": return "2FA code";
 
-		case "SUCCESS_ADDED_FRIEND": return "Added friend!";
 		case "SUCCESS_DISABLED_TOTP": return "Disabled 2FA!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Token invalidated!";
 		case "SUCCESS_NICK": return "Nickname changed!";
@@ -423,7 +547,6 @@ function translateEsperanto(text: string): string {
 
 		case "PROMPT_TOTP_CODE": return "Via 2FA-kodo";
 
-		case "SUCCESS_ADDED_FRIEND": return "Aldonita amiko!";
 		case "SUCCESS_DISABLED_TOTP": return "Forigis 2FA!";
 		case "SUCCESS_INVALIDATED_TOKEN": return "Ŝanĝi avataron!";
 		case "SUCCESS_NICK": return "Kromnomo ŝanĝita!";
@@ -548,7 +671,6 @@ function translatePolish(text: string): string {
 
         case "PROMPT_TOTP_CODE": return "Kod 2FA";
 
-        case "SUCCESS_ADDED_FRIEND": return "Dodano znajomego!";
         case "SUCCESS_DISABLED_TOTP": return "Wyłączono 2FA!";
         case "SUCCESS_INVALIDATED_TOKEN": return "Token unieważniony!";
         case "SUCCESS_NICK": return "Nick zmieniony!";
@@ -575,8 +697,8 @@ function translatePolish(text: string): string {
         case "TEXT_LOCAL_TOURNAMENT": return "Turniej lokalny";
         case "TEXT_LOG_IN_OR_REGISTER": return "Uzytkownik";
         case "TEXT_MATCH": return "Mecz";
-        case "TEXT_MATCH_PLURAL": return "Mecze";
-        case "TEXT_MATCH_SINGULAR": return "Mecz";
+        case "TEXT_MATCH_PLURAL": return "mecze";
+        case "TEXT_MATCH_SINGULAR": return "mecz";
 		case "TEXT_MATCH_QUIT": return "Quit!";
 		case "TEXT_MATCH_WIN": return "has won!";
         case "TEXT_MESSAGES": return "Wiadomości";

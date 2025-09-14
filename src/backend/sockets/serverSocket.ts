@@ -122,6 +122,21 @@ export function handleClientMessage(db: DatabaseSync, message: Message) {
 		case MessageType.MATCH_LEAVE:
 			matchLeaveReceived(db, message.gameId, message.fromId);
 			break;
+
+		case MessageType.MATCH_QUIT:
+			const gamersBox = usersByGameId(db, message.gameId);
+			if (Result.SUCCESS == gamersBox.result) {
+				const gamers = gamersBox.contents;
+				sendMessageToGameIdUsers({
+					type: MessageType.MATCH_END,
+					gameId: message.gameId,
+					matchContent: {
+						kind: "GAME_QUIT"
+					}
+				}, [gamers[0]?.userId, gamers[1]?.userId]);
+				matchLeaveReceived(db, message.gameId, message.fromId);
+			}
+			break;
 		// matchOverReceived(db, message);
 		// break;
 		// case MessageType.MATCH_START:

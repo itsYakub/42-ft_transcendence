@@ -1,6 +1,6 @@
 import { getLanguage, showPage } from "../index.js";
 import { g_game, GameMode } from '../class/game.js';
-import { MessageType, Page, Result } from "../../../common/interfaces.js";
+import { MessageType, Page, Result, UserType } from "../../../common/interfaces.js";
 import { joiningTournament, tournamentGamerLeft } from "../sockets/remoteTournamentsMessages.js";
 import { joiningMatch, matchGamerLeaving } from "../sockets/remoteMatchesMessages.js";
 import { localTournamentHtml } from "../../../common/dynamicElements.js";
@@ -9,7 +9,7 @@ import { localTournamentListeners } from "./localTournament.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
 import { createRemoteTournament, tournamentListeners } from "./remoteTournament.js";
 import { numbersToNick } from "../../../common/utils.js";
-import { getUserGameId, isUserLoggedIn, removeUserGameId, setUserGameId } from "../user.js";
+import { getUserGameId, getUserType, isUserLoggedIn, removeUserGameId, setUserGameId } from "../user.js";
 
 export function gameListeners() {
 	const localMatchButton = document.querySelector("#localMatchButton");
@@ -47,7 +47,7 @@ export function gameListeners() {
 				return showPage(Page.AUTH);
 
 			const response = await fetch(`/match/create`);
-			const json  = await response.json();
+			const json = await response.json();
 			if (Result.SUCCESS == json.result) {
 				setUserGameId(json.gameId);
 				showPage(Page.GAME);
@@ -117,6 +117,26 @@ async function startLocalMatch() {
 	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
+			dialog.addEventListener("keydown", (e: KeyboardEvent) => {
+				if (e.key == "Escape")
+					g_game.dispose();
+			}, { once: true });
+			if (UserType.GUEST != getUserType()) {
+				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+					const response = await fetch("/match-results/add", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({
+							g2Nick: nicksBox.contents[1],
+							g1Score: e.detail["g1Score"],
+							g2Score: e.detail["g2Score"],
+						})
+					});
+					console.log(await response.text());
+				}, { once: true });
+			}
 			g_game.setupElements(GameMode.GAMEMODE_PVP, {
 				nick: nicksBox.contents[0]
 			}, {
@@ -132,6 +152,10 @@ async function startAiMatch() {
 	if (Result.SUCCESS == nicksBox.result) {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
+			dialog.addEventListener("keydown", (e: KeyboardEvent) => {
+				if (e.key == "Escape")
+					g_game.dispose();
+			}, { once: true });
 			g_game.setupElements(GameMode.GAMEMODE_AI, {
 				nick: nicksBox.contents[0]
 			}, {
@@ -150,8 +174,4 @@ async function createLocalTournament() {
 		document.querySelector("#content").innerHTML = translate(getLanguage(), localTournamentHtml(newNicks));
 		localTournamentListeners();
 	}
-}
-
-export async function createRemoteMatch() {
-
 }

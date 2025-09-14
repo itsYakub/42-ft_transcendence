@@ -5,6 +5,9 @@ export function navbarView(params: FrameParams, chatsWaiting: boolean): string {
 	let languageSelect = englishHtml();
 
 	switch (params.language) {
+		case "australian":
+			languageSelect = australianHtml();
+			break;
 		case "dutch":
 			languageSelect = dutchHtml();
 			break;
@@ -141,8 +144,19 @@ function chatButtonHtml(page: Page, chatsWaiting: boolean) {
 	`;
 }
 
+function australianHtml(): string {
+	return `
+	<option class="bg-stone-700" value="australian" selected>Australian</option>
+	<option class="bg-stone-700" value="english">English</option>
+	<option class="bg-stone-700" value="esperanto">Esperanto</option>
+	<option class="bg-stone-700" value="dutch">Nederlands</option>
+	<option class="bg-stone-700" value="polish">Polski</option>
+	`;
+}
+
 function englishHtml(): string {
 	return `
+	<option class="bg-stone-700" value="australian">Australian</option>
 	<option class="bg-stone-700" value="english" selected>English</option>
 	<option class="bg-stone-700" value="esperanto">Esperanto</option>
 	<option class="bg-stone-700" value="dutch">Nederlands</option>
@@ -152,6 +166,7 @@ function englishHtml(): string {
 
 function dutchHtml(): string {
 	return `
+	<option class="bg-stone-700" value="australian">Australian</option>
 	<option class="bg-stone-700" value="english">English</option>
 	<option class="bg-stone-700" value="esperanto">Esperanto</option>
 	<option class="bg-stone-700" value="dutch" selected>Nederlands</option>
@@ -161,6 +176,7 @@ function dutchHtml(): string {
 
 function esperantoHtml(): string {
 	return `
+	<option class="bg-stone-700" value="australian">Australian</option>
 	<option class="bg-stone-700" value="english">English</option>
 	<option class="bg-stone-700" value="esperanto" selected>Esperanto</option>
 	<option class="bg-stone-700" value="dutch">Nederlands</option>
@@ -170,6 +186,7 @@ function esperantoHtml(): string {
 
 function polishHtml(): string {
 	return `
+	<option class="bg-stone-700" value="australian">Australian</option>
 	<option class="bg-stone-700" value="english">English</option>
 	<option class="bg-stone-700" value="esperanto">Esperanto</option>
 	<option class="bg-stone-700" value="dutch">Nederlands</option>

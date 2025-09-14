@@ -129,15 +129,6 @@ export function chatMessageForm(): string {
 	`;
 }
 
-
-export function tournamentDetails() {
-	return `
-	<div>
-		Semi-final
-	</div>
-	`;
-}
-
 export function localTournamentHtml(nicks: string[]): string {
 	return `
 	<form id="localTournamentForm">
@@ -203,7 +194,7 @@ function matchResultsString(matchResults: MatchResult[]): string {
 	}
 
 	if (0 == matchList.length)
-		return `<div class="text-stone-700 pt-8 text-center">%%TEXT_NO_MATCHES%%</div>`
+		return `<div class="text-gray-300 pt-8 text-center">%%TEXT_NO_MATCHES%%</div>`
 
 	return matchList;
 }
@@ -218,10 +209,10 @@ function matchResultString(matchResult: MatchResult): string {
 	const date: Date = new Date(matchResult.playedAt);
 
 	return `
-	<div class="border p-2.5 rounded-lg border-gray-700 m-3 bg-gray-800 text-white">
+	<div class="p-2.5 rounded-lg m-3 bg-red-300/50 hover:bg-red-300 text-stone-700">
 		<div class="flex flex-row gap-4">
 			<div>${date.toLocaleDateString("pl-PL")}</div>
-			<div class="grow text-${colour}-300">${matchResult.score} : ${matchResult.opponentScore} Vs ${matchResult.opponent}</div>
+			<div class="grow text-${colour}-800">${matchResult.score} : ${matchResult.opponentScore} Vs ${matchResult.opponent}</div>
 		</div>
 	</div>
 	`;

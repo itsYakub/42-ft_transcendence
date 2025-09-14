@@ -1,5 +1,6 @@
 import { Page, Result } from "../../common/interfaces.js";
 import { showPage } from "./index.js";
+import { currentPage } from "./sockets/clientSocket.js";
 import { profileFunctions } from "./users/profile.js";
 
 /*
@@ -12,8 +13,7 @@ export function navbarFunctions() {
 			const date = new Date();
 			date.setFullYear(date.getFullYear() + 1);
 			document.cookie = `language=${languageSelect.value}; expires=${date}`;
-			const page = Page[this.dataset.language];
-			showPage(page);
+			showPage(currentPage());
 		})
 	}
 

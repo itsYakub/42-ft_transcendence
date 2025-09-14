@@ -1,28 +1,26 @@
 import { Box, Page, Result } from "../../../common/interfaces.js";
 import { nickToNumbers } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
-import { isUserLoggedIn } from "../user.js";
+import { isUserLoggedIn, setUserGameId } from "../user.js";
 import { showAlert, showPage } from "./../index.js";
 
-async function generateTournament(names: string[]) {
+async function generateTournament(gameId: string, names: string[]) {
 	let newNames = [];
-	names.forEach((name, index) => {
-		0 == index ? newNames.push(name) : newNames.push(nickToNumbers(name))
+	names.forEach((name) => {
+		newNames.push(nickToNumbers(name))
 	});
 	const shuffled = newNames.sort(() => Math.random() - 0.5);
-	console.log("shuffled", shuffled);
-	console.log("new", newNames);
+
 	const response = await fetch("/tournament/local/add", {
 		method: "POST",
 		headers: {
 			"content-type": "application/json"
 		},
 		body: JSON.stringify({
+			gameId,
 			gamers: newNames
 		})
 	});
-
-	console.log(response);
 
 	return await response.text();
 }
@@ -43,15 +41,19 @@ export function localTournamentListeners() {
 							"content-type": "application/json"
 						},
 						body: JSON.stringify({
-							g1Nick: this.dataset.g1,
-							g2Nick: this.dataset.g2,
+							g1Nick: nickToNumbers(this.dataset.g1),
+							g2Nick: nickToNumbers(this.dataset.g2),
 							g1Score: e.detail["g1Score"],
 							g2Score: e.detail["g2Score"],
 							matchNumber: this.dataset.match
 						})
 					});
-					if (Result.SUCCESS == await response.text())
-						showPage(Page.GAME);
+					if (Result.SUCCESS == await response.text()) {
+						dialog.addEventListener("close", () => {
+							g_game.dispose();
+							showPage(Page.GAME);
+					});
+					}
 				})
 			}
 			setTimeout(async () => {
@@ -86,12 +88,14 @@ export function localTournamentListeners() {
 					return;
 				}
 
-				const result = await generateTournament(names);
+				const gameId = `t${Date.now().toString(36).substring(5)}`;
+				const result = await generateTournament(gameId, names);
 		
 				if (Result.SUCCESS != result) {
 					showAlert(result);
 					return;
 				}
+				setUserGameId(gameId);
 				showPage(Page.GAME);
 			}
 		});

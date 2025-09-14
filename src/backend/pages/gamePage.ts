@@ -12,6 +12,7 @@ import { localTournamentView } from '../views/localTournamentView.js';
 import { readLocalTournament } from '../../db/localTournamentsDb.js';
 import { removeUserFromMatch } from '../../db/userDB.js';
 import { hasWaitingChats } from '../../db/userChatsDb.js';
+import { removeUserGameId } from '../../frontend/js/user.js';
 
 export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -21,16 +22,23 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const booleanBox = hasWaitingChats(request.db, user.userId);
 	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
 
+	console.log(`user ${user.nick} ${user.userId} game ${user.gameId}`);
+
 	// user is already in a game
 	if (user.gameId) {
 		const gameId = user.gameId;
 
-		console.log(`user ${user.nick} ${user.userId} game ${gameId}`);
 
 		if (gameId.startsWith("t")) {
 			const localTournamentBox = readLocalTournament(db, gameId);
-			if (Result.SUCCESS == localTournamentBox.result)
+			if (Result.SUCCESS == localTournamentBox.result) {
+				console.log(localTournamentBox.contents);
+				// if (localTournamentBox.contents.finished) {
+				// 	removeUserGameId();
+				// 	return gameList(chatsWaiting, request, reply);
+				// }
 				return localTournament(localTournamentBox.contents, chatsWaiting, request, reply);
+			}
 		}
 		else if (gameId.startsWith("r")) {
 			const tournamentBox = readRemoteTournament(db, gameId);
@@ -41,21 +49,7 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 		return lobby(chatsWaiting, request, reply);
 	}
 
-	const gamesBox = getGames(db);
-
-	const params: FrameParams = {
-		page: Page.GAME,
-		language,
-		user
-	};
-
-	if (Result.SUCCESS != gamesBox.result) {
-		params.result = gamesBox.result;
-		return reply.type("text/html").send(frameView(params, chatsWaiting));
-	}
-
-	const frame = frameView(params, chatsWaiting, gameView(gamesBox.contents));
-	return reply.type("text/html").send(frame);
+	return gameList(chatsWaiting, request, reply);
 }
 
 function localTournament(tournament: LocalTournament, chatsWaiting: boolean, request: FastifyRequest, reply: FastifyReply): FastifyReply {
@@ -132,4 +126,25 @@ function remoteTournament(tournament: Tournament, chatsWaiting: boolean, request
 	const frame = frameView(params, chatsWaiting, remoteTournamentView(tournament, chatsBox.contents, user));
 	return reply.type("text/html").send(frame);
 
+}
+
+function gameList(chatsWaiting: boolean, request: FastifyRequest, reply: FastifyReply) {
+	const db = request.db;
+	const user = request.user;
+	const language = request.language;
+	const gamesBox = getGames(db);
+
+	const params: FrameParams = {
+		page: Page.GAME,
+		language,
+		user
+	};
+
+	if (Result.SUCCESS != gamesBox.result) {
+		params.result = gamesBox.result;
+		return reply.type("text/html").send(frameView(params, chatsWaiting));
+	}
+
+	const frame = frameView(params, chatsWaiting, gameView(gamesBox.contents));
+	return reply.type("text/html").send(frame);
 }
