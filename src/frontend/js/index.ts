@@ -129,7 +129,6 @@ if (typeof window !== "undefined") {
 			userLoggedIn(userJson.contents);
 		}
 
-		console.log(`new user is ${getUserNick()}`);
 		setupPage(currentPage());
 	});
 }

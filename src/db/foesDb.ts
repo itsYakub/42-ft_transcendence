@@ -21,6 +21,22 @@ export function readFoes(db: DatabaseSync, userId: number): Box<Foe[]> {
 	}
 }
 
+export function readFoe(db: DatabaseSync, userId: number, foeId: number): Box<boolean> {
+	try {
+		const select = db.prepare("SELECT COUNT(foe_id) as count FROM foes WHERE user_id = ? AND foe_id = ?");
+		const foes = select.get(userId, foeId);
+		return {
+			result: Result.SUCCESS,
+			contents: (foes.count as number) != 0
+		};
+	}
+	catch (e) {
+		return {
+			result: Result.ERR_DB
+		};
+	}
+}
+
 /*
 	Adds somebody to the foe list
 */

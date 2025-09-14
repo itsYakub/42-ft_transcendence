@@ -5,18 +5,19 @@ import { translate } from "./translations.js";
 /*
 	The add/remove friend/foe buttons in the profile dialog
 */
-export function profileActionbuttons(isfriend: boolean, isFoe: boolean, profileUserId: number) {
+export function profileActionbuttons(isfriend: boolean, isFoe: boolean, isInMatch: boolean, profileUserId: number) {
+	const inviteButton = isInMatch ? `<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_INVITE%%</div>` : "";
 	if (!(isfriend || isFoe))
 		return `
 		<div id="addFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_ADD_FRIEND%%</div>
 		<div id="addFoeButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-red-300">%%BUTTON_ADD_FOE%%</div>
-		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_INVITE%%</div>
+		${inviteButton}
 		`;
 
 	if (isfriend)
 		return `
 		<div id="removeFriendButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-red-300">%%BUTTON_REMOVE_FRIEND%%</div>
-		<div id="inviteButton" data-id="${profileUserId}" class="cursor-[url(/images/pointer.png),pointer] text-red-300/50 hover:text-green-300">%%BUTTON_INVITE%%</div>
+		${inviteButton}
 		`;
 
 	if (isFoe)
@@ -40,8 +41,8 @@ export function partnerHtml(partner: ChatPartner): string {
 	const showChatsIndicator = partner.hasUnseen ? "" : "collapse";
 
 	return `
-	<div class="chatPartnerButton w-full relative inline-flex cursor-[url(/images/pointer.png),pointer] rounded-lg bg-red-300/50 hover:bg-red-400" data-id="${partner.userId}" data-nick="${partner.nick}">
-		<button class="inline-flex w-full flex-row gap-2 justify-end items-center text-right text-stone-700 p-2 rounded-lg">
+	<div class="chatPartnerButton w-full relative inline-flex rounded-lg bg-red-300/50 hover:bg-red-400" data-id="${partner.userId}" data-nick="${partner.nick}">
+		<button class="inline-flex w-full flex-row gap-2 cursor-[url(/images/pointer.png),pointer] justify-end items-center text-right text-stone-700 p-2 rounded-lg">
 			<div>${partner.nick}</div>
 			<img class="w-10 h-10 rounded-lg" src="${partner.avatar}"></img>
 		</button>
@@ -83,12 +84,13 @@ export function userNotificationsMessages(notifications: UserNotification[]): st
 	return notificationsHtml;
 }
 
-function userNotificationMessage(notification: UserNotification): string {
+export function userNotificationMessage(notification: UserNotification): string {
 	switch (notification.type) {
 		case MessageType.NOTIFICATION_INVITE:
-			return `<div class="text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">invite</div>`;
+			const string = `${notification.fromNick} ${translate(getLanguage(), "has invited you to play!")}`;
+			return `<div class="inviteNotificationButton w-full text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]" data-game="${notification.gameId}">${string}</div>`;
 		case MessageType.NOTIFICATION_TOURNAMENT:
-			return `<div class="text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">tournament</div>`;
+			return `<div class="nextMatchNotificationButton text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">tournament</div>`;
 	}
 }
 
@@ -167,7 +169,7 @@ export function addChatPartnerView(users: ShortUser[]): string {
 }
 
 export function profileView(matchResults: MatchResult[], isfriend: boolean, isFoe: boolean, profileUser: ShortUser, user: User): string {
-	const actionButtons = (profileUser.userId == user.userId || UserType.GUEST == profileUser.userType) ? "" : profileActionbuttons(isfriend, isFoe, profileUser.userId);
+	const actionButtons = (profileUser.userId == user.userId || UserType.GUEST == profileUser.userType) ? "" : profileActionbuttons(isfriend, isFoe, user.gameId != null, profileUser.userId);
 	return `
 	<div class="w-120 h-120 flex flex-col p-2">
 		<div id="closeProfileButton" class="mx-auto cursor-[url(/images/pointer.png),pointer]"><i class="text-red-300/50 hover:text-red-300 fa fa-xmark"></i></div>
@@ -199,6 +201,9 @@ function matchResultsString(matchResults: MatchResult[]): string {
 	for (var key in matchResults) {
 		matchList += matchResultString(matchResults[key]);
 	}
+
+	if (0 == matchList.length)
+		return `<div class="text-stone-700 pt-8 text-center">%%TEXT_NO_MATCHES%%</div>`
 
 	return matchList;
 }

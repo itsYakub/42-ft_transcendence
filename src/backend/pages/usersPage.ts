@@ -4,14 +4,14 @@ import { usersView } from '../views/usersView.js';
 import { translate } from '../../common/translations.js';
 import { allUsers } from '../../db/userDB.js';
 import { Page, Result } from '../../common/interfaces.js';
-import { hasUnseenChats } from '../../db/userChatsDb.js';
+import { hasWaitingChats } from '../../db/userChatsDb.js';
 
 export function getUsersPage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 
-	const booleanBox = hasUnseenChats(request.db, user.userId);
+	const booleanBox = hasWaitingChats(request.db, user.userId);
 	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
 
 	const usersBox = allUsers(db);

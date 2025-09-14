@@ -3,12 +3,12 @@ import { addTotpApp, addTotpEmail, disableTotp, loginWithAppTotp, loginWithEmail
 import { changeAvatar, changeNick, changePassword, invalidateToken } from "./api/accountApi.js";
 import { connectToServerSocket } from "./sockets/serverSocket.js";
 import { googleSignIn, loginUser, logoutUser, registerGuest, registerUser } from "./api/authApi.js";
-import { addFoe, foesList, removeFoe } from "./api/foesApi.js";
+import { addFoe, foesList, isFoe, removeFoe } from "./api/foesApi.js";
 import { addFriend, findFriend, friendsList, removeFriend } from "./api/friendsApi.js";
 import { addMatchResult } from "./api/matchResultsApi.js";
 import { getProfile, getShortUser, getSpecificUser, isConnected } from "./api/profileApi.js";
-import { addLocalTournament, addRemoteTournament, createMatchLobby, createTournamentLobby, getTournament, getTournamentGamers, getTournamentLobby, leaveRemoteTournament, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
-import { chatsList, getChatPartners, getChats, getUnseen, markUnseen, notificationsList, userChats } from "./api/chatApi.js";
+import { addLocalTournament, addRemoteTournament, createMatchLobby, createTournamentLobby, getTournament, getTournamentLobby, leaveRemoteTournament, matchGamers, matchNicks, tournamentChats, tournamentNicks, updateLocalTournment } from "./api/tournamentApi.js";
+import { chatsList, getChatPartners, getChats, getWaitingChats, clearWaiting, notificationsList, userChats } from "./api/chatApi.js";
 import { listNicknames, listUsers } from "./api/userApi.js";
 import { getUsersPage } from "./pages/usersPage.js";
 import { getAccountPage } from "./pages/accountPage.js";
@@ -40,9 +40,15 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/chat/notifications", (request: FastifyRequest, reply: FastifyReply) => notificationsList(request, reply));
 	fastify.get("/chat/partners", (request: FastifyRequest, reply: FastifyReply) => getChatPartners(request, reply));
 	fastify.get("/chat/partners/:partnerId", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
-	fastify.get("/chat/unseen", (request: FastifyRequest, reply: FastifyReply) => getUnseen(request, reply));
-	fastify.get("/chat/unseen/:partnerId", (request: FastifyRequest, reply: FastifyReply) => markUnseen(request, reply));
 	fastify.get("/chat/users", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
+
+	// are any waiting
+	fastify.get("/chat/waiting", (request: FastifyRequest, reply: FastifyReply) => getWaitingChats(request, reply));
+	// are specific waiting
+	//fastify.get("/chat/waiting/:partnerId", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
+	// change value to 0
+	fastify.get("/chat/waiting/clear/:partnerId", (request: FastifyRequest, reply: FastifyReply) => clearWaiting(request, reply));
+
 
 	fastify.get("/game", async (request: FastifyRequest, reply: FastifyReply) => getGamePage(request, reply));
 
@@ -63,6 +69,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/foes", async (request: FastifyRequest, reply: FastifyReply) => getFoesPage(request, reply));
 	fastify.post("/foes/add", (request: FastifyRequest, reply: FastifyReply) => addFoe(request, reply));
 	fastify.get("/foes/list", (request: FastifyRequest, reply: FastifyReply) => foesList(request, reply));
+	fastify.get("/foes/:foeId", (request: FastifyRequest, reply: FastifyReply) => isFoe(request, reply));
 	fastify.post("/foes/remove", (request: FastifyRequest, reply: FastifyReply) => removeFoe(request, reply));
 
 	fastify.get("/friends", async (request: FastifyRequest, reply: FastifyReply) => getFriendsPage(request, reply));
@@ -82,7 +89,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/tournament/:gameId", (request: FastifyRequest, reply: FastifyReply) => getTournamentLobby(request, reply));
 	fastify.get("/tournament/create", (request: FastifyRequest, reply: FastifyReply) => createTournamentLobby(request, reply));
 	fastify.get("/match/create", (request: FastifyRequest, reply: FastifyReply) => createMatchLobby(request, reply));
-	
+
 	fastify.get("/match/nicks", (request: FastifyRequest, reply: FastifyReply) => matchNicks(request, reply));
 	fastify.get("/tournament/nicks", (request: FastifyRequest, reply: FastifyReply) => tournamentNicks(request, reply));
 	fastify.get("/match/gamers", (request: FastifyRequest, reply: FastifyReply) => matchGamers(request, reply));

@@ -2,9 +2,9 @@ import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, ChatMessage, ChatPartner, Message, Result, ShortUser, UserChatMessage, UserType } from "../common/interfaces.js";
 import { numbersToNick } from "../common/utils.js";
 
-export function hasUnseenChats(db: DatabaseSync, userId: number): Box<boolean> {
+export function hasWaitingChats(db: DatabaseSync, userId: number): Box<boolean> {
 	try {
-		const select = db.prepare(`SELECT COUNT(seen) AS count FROM last_seen WHERE user_id = ? AND seen = 0`);
+		const select = db.prepare(`SELECT COALESCE(sum(waiting), 0) AS count FROM chats_waiting WHERE user_id = ?`);
 		const seenCount = select.get(userId);
 		return {
 			result: Result.SUCCESS,
@@ -18,14 +18,13 @@ export function hasUnseenChats(db: DatabaseSync, userId: number): Box<boolean> {
 	}
 }
 
-export function unseenChats(db: DatabaseSync, userId: number, partnerId: number): Box<boolean> {
+export function hasWaitingChatsByPartner(db: DatabaseSync, userId: number, partnerId: number): Box<boolean> {
 	try {
-		const select = db.prepare(`SELECT COUNT(seen) AS count FROM last_seen WHERE user_id = ? AND partner_id = ? AND seen = 1`);
+		const select = db.prepare(`SELECT COALESCE(sum(waiting), 0) AS count FROM chats_waiting WHERE user_id = ? AND partner_id = ?`);
 		const seenCount = select.get(userId, partnerId);
-		console.log(`found ${seenCount.count} with unseen`);
 		return {
 			result: Result.SUCCESS,
-			contents: (seenCount.count as number) == 0
+			contents: (seenCount.count as number) != 0
 		}
 	}
 	catch (e) {
@@ -35,19 +34,17 @@ export function unseenChats(db: DatabaseSync, userId: number, partnerId: number)
 	}
 }
 
-export function updateSeen(db: DatabaseSync, userId: number, partnerId: number) {
+export function updateWaiting(db: DatabaseSync, userId: number, partnerId: number, waiting: number) {
 	try {
-		let select = db.prepare("UPDATE last_seen SET seen = 0 WHERE user_id = ? AND partner_id = ?");
-		const result = select.run(userId, partnerId);
-		console.log(`${result.changes} rows affected`);
+		let select = db.prepare("UPDATE chats_waiting SET waiting = ? WHERE user_id = ? AND partner_id = ?");
+		const result = select.run(waiting, userId, partnerId);
 		if (0 == result.changes) {
-			console.log("no change setting to 0");
-			select = db.prepare("INSERT INTO last_seen (user_id, partner_id, seen) VALUES (?, ?, ?)");
-			select.run(userId, partnerId, 0);
+			select = db.prepare("INSERT INTO chats_waiting (waiting, user_id, partner_id) VALUES (?, ?, ?)");
+			select.run(waiting, userId, partnerId);
 		}
 		return Result.SUCCESS;
 	}
-	catch (e) {
+	catch (e) {console.log(e);
 		return Result.ERR_DB;
 	}
 }
@@ -101,13 +98,14 @@ export function partnerChats(db: DatabaseSync, userId: number, partnerId: number
 		let select = db.prepare("SELECT * FROM user_chats WHERE (to_id = ? AND from_id = ?) OR (from_id = ? AND to_id = ?) ORDER BY sent_at DESC");
 		const messages = select.all(userId, partnerId, userId, partnerId).map(userChatMessage => sqlToUserChatMessage(userChatMessage));
 
-		select = db.prepare("UPDATE last_seen SET seen = 1 WHERE user_id = ? AND partner_id = ?");
-		const result = select.run(userId, partnerId);
-		if (0 == result.changes) {
-			console.log("no change");
-			select = db.prepare("INSERT INTO last_seen (user_id, partner_id) VALUES (?, ?)");
-			select.run(userId, partnerId);
-		}
+		updateWaiting(db, userId, partnerId, 0);
+
+		// select = db.prepare("UPDATE chats_waiting SET waiting = 0 WHERE user_id = ? AND partner_id = ?");
+		// const result = select.run(userId, partnerId);
+		// if (0 == result.changes) {
+		// 	select = db.prepare("INSERT INTO chats_waiting (user_id, partner_id, waiting) VALUES (?, ?, ?)");
+		// 	select.run(userId, partnerId, 0);
+		// }
 		return {
 			result: Result.SUCCESS,
 			contents: messages
@@ -126,9 +124,10 @@ export function partnerChats(db: DatabaseSync, userId: number, partnerId: number
 */
 export function addUserChat(db: DatabaseSync, message: Message): Result {
 	try {
-		const select = db.prepare("INSERT INTO user_chats (to_id, from_id, message, sent_at) VALUES (?, ?, ?, ?)");
+		let select = db.prepare("INSERT INTO user_chats (to_id, from_id, message, sent_at) VALUES (?, ?, ?, ?)");
 		select.run(message.toId, message.fromId, message.chat, new Date().toISOString());
-		return Result.SUCCESS;
+
+		return updateWaiting(db, message.toId, message.fromId, 1);
 	}
 	catch (e) {
 		return Result.ERR_DB;

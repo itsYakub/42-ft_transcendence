@@ -10,7 +10,7 @@ import { frameView } from "./backend/views/frameView.js";
 import { registerEndpoints } from "./backend/endpoints.js";
 import { initDbTables } from "./db/initDbTables.js";
 import { dbErrorView } from "./backend/views/dbErrorView.js";
-import { hasUnseenChats } from "./db/userChatsDb.js";
+import { hasWaitingChats } from "./db/userChatsDb.js";
 
 const __dirname = import.meta.dirname;
 
@@ -91,7 +91,7 @@ fastify.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, don
 	Handles all incorrect URLs
 */
 fastify.setNotFoundHandler(async (request: FastifyRequest, reply: FastifyReply) => {
-	const booleanBox = hasUnseenChats(request.db, request.user.userId);
+	const booleanBox = hasWaitingChats(request.db, request.user.userId);
 	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
 
 	const params = {

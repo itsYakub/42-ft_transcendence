@@ -1,8 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { Result } from '../../common/interfaces.js';
-import { hasUnseenChats, incomingChatsList, outgoingChatsList, partnerChats, updateSeen } from '../../db/userChatsDb.js';
+import { hasWaitingChats, incomingChatsList, outgoingChatsList, partnerChats, updateWaiting } from '../../db/userChatsDb.js';
 import { userChatsMessages } from '../../common/dynamicElements.js';
-import { allChattableUsers, allOtherUsers, getUserById } from '../../db/userDB.js';
+import { allChattableUsers, getUserById } from '../../db/userDB.js';
 import { readNotifications } from '../../db/notificationsDb.js';
 import { readFoes } from '../../db/foesDb.js';
 
@@ -11,6 +11,16 @@ export function notificationsList(request: FastifyRequest, reply: FastifyReply) 
 	const user = request.user;
 
 	const notificationsBox = readNotifications(db, user.userId);
+	if (Result.SUCCESS != notificationsBox.result)
+		return reply.send(notificationsBox);
+
+	const foesBox = readFoes(db, user.userId);
+	if (Result.SUCCESS != foesBox.result)
+		return reply.send(foesBox);
+
+	const foeIds = foesBox.contents.map((foe) => foe.foeId);
+	notificationsBox.contents = notificationsBox.contents.filter((notification) => !foeIds.includes(notification.fromId));
+
 	return reply.send(notificationsBox);
 }
 
@@ -36,16 +46,16 @@ export function getChats(request: FastifyRequest, reply: FastifyReply) {
 	});
 }
 
-export function getUnseen(request: FastifyRequest, reply: FastifyReply) {
-	return reply.send(hasUnseenChats(request.db, request.user.userId));
+export function getWaitingChats(request: FastifyRequest, reply: FastifyReply) {
+	return reply.send(hasWaitingChats(request.db, request.user.userId));
 }
 
-export function markUnseen(request: FastifyRequest, reply: FastifyReply) {
+export function clearWaiting(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const { partnerId } = request.params as any;
 
-	return reply.send(updateSeen(db, user.userId, partnerId));
+	return reply.send(updateWaiting(db, user.userId, partnerId, 0));
 }
 
 export function getChatPartners(request: FastifyRequest, reply: FastifyReply) {
@@ -54,11 +64,11 @@ export function getChatPartners(request: FastifyRequest, reply: FastifyReply) {
 
 	const outgoingChatsBox = outgoingChatsList(db, user.userId);
 	if (Result.SUCCESS != outgoingChatsBox.result)
-		return reply.send({result: outgoingChatsBox.result});
+		return reply.send({ result: outgoingChatsBox.result });
 
 	const incomingChatsBox = incomingChatsList(db, user.userId);
 	if (Result.SUCCESS != incomingChatsBox.result)
-		return reply.send({result: incomingChatsBox.result});
+		return reply.send({ result: incomingChatsBox.result });
 
 	incomingChatsBox.contents.forEach(partner => {
 		if (null == outgoingChatsBox.contents.find(id => id.userId == partner.userId)) {
@@ -70,7 +80,7 @@ export function getChatPartners(request: FastifyRequest, reply: FastifyReply) {
 
 	const foesBox = readFoes(db, user.userId);
 	if (Result.SUCCESS != foesBox.result)
-		return reply.send({result: foesBox.result});
+		return reply.send({ result: foesBox.result });
 
 	const foesChats = foesBox.contents.map(f => f.foeId);
 	outgoingChatsBox.contents = outgoingChatsBox.contents.filter(p => !foesChats.includes(p.userId));

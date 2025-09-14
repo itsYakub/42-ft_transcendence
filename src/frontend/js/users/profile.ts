@@ -3,7 +3,7 @@ import { MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { getLanguage, showPage } from "../index.js";
 import { sendMessageToServer } from "../sockets/clientSocket.js";
-import { isUserLoggedIn } from "../user.js";
+import { getUserGameId, getUserNick, isUserLoggedIn } from "../user.js";
 
 export function profileFunctions() {
 	const closeProfileButton = document.querySelector("#closeProfileButton");
@@ -35,7 +35,7 @@ export function profileFunctions() {
 			});
 
 			if (Result.SUCCESS == await response.text()) {
-				const actionButtons = profileActionbuttons(true, false, parseInt(this.dataset.id));
+				const actionButtons = profileActionbuttons(true, false, getUserGameId() != null, parseInt(this.dataset.id));
 				const language = getLanguage();
 				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
@@ -60,7 +60,7 @@ export function profileFunctions() {
 			});
 
 			if (Result.SUCCESS == await response.text()) {
-				const actionButtons = profileActionbuttons(false, false, parseInt(this.dataset.id));
+				const actionButtons = profileActionbuttons(false, false, getUserGameId() != null, parseInt(this.dataset.id));
 				const language = getLanguage();
 				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
@@ -90,7 +90,7 @@ export function profileFunctions() {
 			});
 
 			if (Result.SUCCESS == await response.text()) {
-				const actionButtons = profileActionbuttons(false, true, parseInt(this.dataset.id));
+				const actionButtons = profileActionbuttons(false, true, getUserGameId() != null, parseInt(this.dataset.id));
 				const language = getLanguage();
 				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
@@ -115,7 +115,7 @@ export function profileFunctions() {
 			});
 
 			if (Result.SUCCESS == await response.text()) {
-				const actionButtons = profileActionbuttons(false, false, parseInt(this.dataset.id));
+				const actionButtons = profileActionbuttons(false, false, getUserGameId() != null, parseInt(this.dataset.id));
 				const language = getLanguage();
 				document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
 				profileFunctions();
@@ -134,27 +134,11 @@ export function profileFunctions() {
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			console.log("invite");
 			sendMessageToServer({
 				type: MessageType.NOTIFICATION_INVITE,
 				toId: parseInt(this.dataset.id)
 			});
-			// const response = await fetch("/foes/add", {
-			// 	method: "POST",
-			// 	headers: {
-			// 		"content-type": "application/json"
-			// 	},
-			// 	body: JSON.stringify({
-			// 		foeId: parseInt(this.dataset.id)
-			// 	})
-			// });
-
-			// if (Result.SUCCESS == await response.text()) {
-			// 	const actionButtons = profileActionbuttons(false, true, parseInt(this.dataset.id));
-			// 	const language = getLanguage();
-			// 	document.querySelector("#actionButtonsContainer").innerHTML = translate(language, actionButtons);
-			// 	profileFunctions();
-			// }
+			showPage(Page.GAME);
 		});
 	}
 }

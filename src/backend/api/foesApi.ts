@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createFoe, readFoes, deleteFoe } from '../../db/foesDb.js';
+import { createFoe, readFoes, deleteFoe, readFoe } from '../../db/foesDb.js';
 import { Result } from '../../common/interfaces.js';
 import { translate } from '../../common/translations.js';
 import { foesView } from '../views/foesView.js';
@@ -17,6 +17,13 @@ export function foesList(request: FastifyRequest, reply: FastifyReply) {
 		result: Result.SUCCESS,
 		value: translate(language, foesView(foesBox.contents))
 	}));
+}
+
+export function isFoe(request: FastifyRequest, reply: FastifyReply) {	
+	const db = request.db;
+	const user = request.user;
+	const foeId = (request.params as any).foeId;
+	return reply.send(readFoe(db, user.userId, foeId));
 }
 
 export function addFoe(request: FastifyRequest, reply: FastifyReply) {

@@ -1,32 +1,98 @@
-import { addChatPartnerView, chatMessageForm, chatPartner, chatString, partnerHtml, partnersHtml, selectedPartnerHtml, userNotificationsMessages } from "./../../common/dynamicElements.js";
+import { addChatPartnerView, chatMessageForm, chatPartner, chatString, partnerHtml, selectedPartnerHtml, userNotificationMessage, userNotificationsMessages } from "./../../common/dynamicElements.js";
 import { Message, MessageType, Page, Result, ShortUser } from "./../../common/interfaces.js";
 import { showPage } from "./index.js";
 import { currentPage, sendMessageToServer } from "./sockets/clientSocket.js";
-import { getUserId, isUserLoggedIn } from "./user.js";
+import { joiningMatch } from "./sockets/remoteMatchesMessages.js";
+import { getUserId, isUserLoggedIn, setUserGameId } from "./user.js";
 import { profileFunctions } from "./users/profile.js";
 
+export async function userSendNotification(message: Message) {
+	const foeResponse = await fetch(`/foes/${message.fromId}`);
+	const foesJson = await foeResponse.json();
+	if (Result.SUCCESS != foesJson.result || foesJson.contents == true) {
+		await fetch(`/chat/waiting/clear/0`);
+		return;
+	}
+
+	const response = await fetch(`/profile/user/${message.fromId}`);
+	const json = await response.json();
+	if (Result.SUCCESS != json.result)
+		return;
+
+	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
+	if (chatPartnerContainer) {
+		const partnerId = parseInt(chatPartnerContainer.dataset.id);
+		if (partnerId === 0) {
+			const response = await fetch(`/chat/waiting/clear/0`);
+			if (Result.SUCCESS != await response.text())
+				return;
+
+			const notification = userNotificationMessage({
+				fromId: json.contents.userId,
+				fromNick: json.contents.nick,
+				gameId: json.contents.gameId,
+				sentAt: new Date(),
+				type: message.type
+			});
+			const node = document.createElement("div");
+			node.innerHTML = notification;
+			const realNode = node.firstElementChild;
+			realNode.addEventListener("click", async function () {
+				console.log(`Invite to ${this.dataset.game}`);
+				setUserGameId(this.dataset.game);
+				await joiningMatch(this.dataset.game);
+				showPage(Page.GAME);
+			});
+			const container = document.querySelector("#userChatsContainer");
+			container.insertBefore(realNode, container.firstChild);
+		}
+
+		else if (Page.CHAT == currentPage()) {
+			const notificationsButton = document.querySelector("#notificationsButton");
+			(notificationsButton.childNodes[3] as HTMLElement).classList.remove("collapse");
+
+			const chatIndicator = document.querySelector("#chatIndicator");
+			if (chatIndicator)
+				chatIndicator.classList.remove("collapse");
+		}
+	}
+	else {
+		//other page
+		const partnerId = message.fromId;
+		const chatIndicator = document.querySelector("#chatIndicator");
+		if (chatIndicator)
+			chatIndicator.classList.remove("collapse");
+	}
+}
+
 export async function userSendUserChat(message: Message) {
+	const foeResponse = await fetch(`/foes/${message.fromId}`);
+	const foesJson = await foeResponse.json();
+	if (Result.SUCCESS != foesJson.result || foesJson.contents == true) {
+		await fetch(`/chat/waiting/clear/${message.fromId}`);
+		return;
+	}
+
 	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
 	if (chatPartnerContainer) {
 		const partnerId = parseInt(chatPartnerContainer.dataset.id);
 		if (partnerId === message.fromId || partnerId === message.toId) {
 			// user is chatting with this partner
-			console.log(partnerId, message.fromId, message.toId);
+			const response = await fetch(`/chat/waiting/clear/${partnerId}`);
+			if (Result.SUCCESS != await response.text())
+				return;
+
 			const node = document.createElement("span");
 			node.innerHTML = chatString(message.chat, getUserId() == message.toId);
 			const container = document.querySelector("#userChatsContainer");
 			if (node.firstElementChild)
 				container.insertBefore(node.firstElementChild, container.firstChild);
 			else
-				container.appendChild(node);
+				container.appendChild(node.firstElementChild);
 		}
 		else if (Page.CHAT == currentPage()) {
 			// user is chatting with another partner
 			const partnerId = message.fromId == getUserId() ? message.toId : message.fromId;
-			const response = await fetch(`/chat/unseen/${partnerId}`);
-			if (Result.SUCCESS != await response.text())
-				return;
-
 			const chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
 			let selectedButton: HTMLElement;
 			for (var i = 0; i < chatPartnerButtons.length; i++) {
@@ -65,9 +131,6 @@ export async function userSendUserChat(message: Message) {
 	else {
 		// user is on another page
 		const partnerId = message.fromId == getUserId() ? message.toId : message.fromId;
-		const response = await fetch(`/chat/unseen/${partnerId}`);
-		if (Result.SUCCESS != await response.text())
-			return;
 		const chatIndicator = document.querySelector("#chatIndicator");
 		if (chatIndicator)
 			chatIndicator.classList.remove("collapse");
@@ -135,6 +198,7 @@ export function userChatListeners() {
 	const notificationsButton = document.querySelector("#notificationsButton");
 	if (notificationsButton) {
 		notificationsButton.addEventListener("click", async () => {
+			console.log("notifications");
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
@@ -156,9 +220,26 @@ export function userChatListeners() {
 					document.querySelector("#sendUserChatForm").innerHTML = "";
 				}
 			}
+
+			(notificationsButton.childNodes[3] as HTMLElement).classList.add("collapse");
+			const unseenBox = await fetch("/chat/waiting");
+			const unseenJson = await unseenBox.json();
+			if (Result.SUCCESS == unseenJson.result && unseenJson.contents == false) {
+				const chatIndicator = document.querySelector("#chatIndicator");
+				if (chatIndicator)
+					chatIndicator.classList.add("collapse");
+			}
+			let inviteNotificationButtons = document.getElementsByClassName("inviteNotificationButton");
+			for (var i = 0; i < inviteNotificationButtons.length; i++) {
+				inviteNotificationButtons[i].addEventListener("click", async function () {
+					console.log(`Invite to ${this.dataset.game}`);
+					setUserGameId(this.dataset.game);
+					await joiningMatch(this.dataset.game);
+					showPage(Page.GAME);
+				});
+			}
 		});
 	}
-
 
 	const sendUserChatForm = <HTMLFormElement>document.querySelector("#sendUserChatForm");
 	if (sendUserChatForm) {
@@ -229,7 +310,8 @@ async function chatPartnerClicked(button: HTMLElement) {
 		}
 
 		(button.childNodes[3] as HTMLElement).classList.add("collapse");
-		const unseenBox = await fetch("/chat/unseen");
+		const unseenBox = await fetch(`/chat/waiting`);
+
 		const unseenJson = await unseenBox.json();
 		if (Result.SUCCESS == unseenJson.result && unseenJson.contents == false) {
 			const chatIndicator = document.querySelector("#chatIndicator");

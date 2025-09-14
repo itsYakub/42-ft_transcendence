@@ -27,8 +27,6 @@ export function usersFunctions() {
 			const dialog = <HTMLDialogElement>document.querySelector("#profileDialog");
 			dialog.innerHTML = json.value;
 			profileFunctions();
-			if (document.activeElement instanceof HTMLElement)
-				document.activeElement.blur();
 			dialog.showModal();
 		});
 	}

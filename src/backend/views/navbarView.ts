@@ -8,6 +8,9 @@ export function navbarView(params: FrameParams, chatsWaiting: boolean): string {
 		case "dutch":
 			languageSelect = dutchHtml();
 			break;
+		case "esperanto":
+			languageSelect = esperantoHtml();
+			break;
 		case "polish":
 			languageSelect = polishHtml();
 			break;
@@ -141,6 +144,7 @@ function chatButtonHtml(page: Page, chatsWaiting: boolean) {
 function englishHtml(): string {
 	return `
 	<option class="bg-stone-700" value="english" selected>English</option>
+	<option class="bg-stone-700" value="esperanto">Esperanto</option>
 	<option class="bg-stone-700" value="dutch">Nederlands</option>
 	<option class="bg-stone-700" value="polish">Polski</option>
 	`;
@@ -149,7 +153,17 @@ function englishHtml(): string {
 function dutchHtml(): string {
 	return `
 	<option class="bg-stone-700" value="english">English</option>
+	<option class="bg-stone-700" value="esperanto">Esperanto</option>
 	<option class="bg-stone-700" value="dutch" selected>Nederlands</option>
+	<option class="bg-stone-700" value="polish">Polski</option>
+	`;
+}
+
+function esperantoHtml(): string {
+	return `
+	<option class="bg-stone-700" value="english">English</option>
+	<option class="bg-stone-700" value="esperanto" selected>Esperanto</option>
+	<option class="bg-stone-700" value="dutch">Nederlands</option>
 	<option class="bg-stone-700" value="polish">Polski</option>
 	`;
 }
@@ -157,6 +171,7 @@ function dutchHtml(): string {
 function polishHtml(): string {
 	return `
 	<option class="bg-stone-700" value="english">English</option>
+	<option class="bg-stone-700" value="esperanto">Esperanto</option>
 	<option class="bg-stone-700" value="dutch">Nederlands</option>
 	<option class="bg-stone-700" value="polish" selected>Polski</option>
 	`;

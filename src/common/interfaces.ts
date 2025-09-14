@@ -188,7 +188,9 @@ export interface UserChatMessage {
 }
 
 export interface UserNotification {
-	nick: string,
+	fromId: number,
+	fromNick: string,
+	gameId: string,
 	sentAt: Date,
 	type: MessageType
 }

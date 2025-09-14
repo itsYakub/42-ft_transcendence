@@ -474,7 +474,7 @@ export function allUsers(db: DatabaseSync): Box<ShortUser[]> {
 
 		return {
 			result: Result.SUCCESS,
-			contents: users
+			contents: users.sort((a, b) => a.nick.localeCompare(b.nick))
 		};
 	}
 	catch (e) {

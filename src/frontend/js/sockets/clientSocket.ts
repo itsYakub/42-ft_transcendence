@@ -1,5 +1,5 @@
 import { Message, MessageType, Page, Result, ShortUser } from "../../../common/interfaces.js";
-import { userSendUserChat } from "../chat.js";
+import { userSendNotification, userSendUserChat } from "../chat.js";
 import { showPage } from "../index.js";
 import { userLoggedOut, getUserId, getUserNick, getUserGameId } from "../user.js";
 import { matchFinishing, startingMatch, updateMatchDetails, updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
@@ -89,6 +89,9 @@ function handleServerMessage(message: Message) {
 	switch (message.type) {
 		case MessageType.USER_INVITE:
 			userInvite(message);
+			break;
+		case MessageType.NOTIFICATION_INVITE:
+			userSendNotification(message);
 			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChat(message);

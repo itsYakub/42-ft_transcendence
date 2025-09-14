@@ -11,14 +11,14 @@ import { remoteTournamentLobbyView } from '../views/remoteTournamentLobbyView.js
 import { localTournamentView } from '../views/localTournamentView.js';
 import { readLocalTournament } from '../../db/localTournamentsDb.js';
 import { removeUserFromMatch } from '../../db/userDB.js';
-import { hasUnseenChats } from '../../db/userChatsDb.js';
+import { hasWaitingChats } from '../../db/userChatsDb.js';
 
 export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
 
-	const booleanBox = hasUnseenChats(request.db, user.userId);
+	const booleanBox = hasWaitingChats(request.db, user.userId);
 	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
 
 	// user is already in a game

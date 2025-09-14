@@ -4,13 +4,13 @@ import { getNickname } from "./userDB.js";
 import { defaultAvatar } from "./defaultAvatar.js";
 
 export function initDbTables(db: DatabaseSync) {
+	initChatsWaitingTable(db);
 	initFoesTable(db);
 	initFriendsTable(db);
 	initLocalTournamentsTable(db);
 	initMatchesTable(db);
 	initMatchResultsTable(db);
 	initNotificationsTable(db);
-	initLastSeenTable(db);
 	initTournamentsTable(db);
 	initTournamentChatsTable(db);
 	initUsersTable(db);
@@ -49,15 +49,15 @@ function initFriendsTable(db: DatabaseSync) {
 		db.exec(`INSERT INTO friends (user_id, friend_id) VALUES (${id}, ${i});`);
 }
 
-function initLastSeenTable(db: DatabaseSync): void {
-	db.exec("DROP TABLE IF EXISTS last_seen");
+function initChatsWaitingTable(db: DatabaseSync): void {
+	db.exec("DROP TABLE IF EXISTS chats_waiting");
 
 	db.exec(`
-		CREATE TABLE IF NOT EXISTS last_seen (
+		CREATE TABLE IF NOT EXISTS chats_waiting (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		partner_id INTEGER NOT NULL,
-		seen INTEGER NOT NULL DEFAULT 1,
-		user_id INTEGER NOT NULL
+		user_id INTEGER NOT NULL,
+		waiting INTEGER NOT NULL DEFAULT 1
 		);`);
 }
 
@@ -126,9 +126,6 @@ function initNotificationsTable(db: DatabaseSync): void {
 		sent_at TEXT NOT NULL,
 		to_id INTEGER NOT NULL
 		);`);
-
-	db.exec(`INSERT INTO notifications (from_id, notification_type, to_id, sent_at) VALUES (4, 'NOTIFICATION_INVITE',  11, '${new Date().toISOString()}');`);
-	db.exec(`INSERT INTO notifications (from_id, notification_type, to_id, sent_at) VALUES (4, 'NOTIFICATION_TOURNAMENT',  11, '${new Date().toISOString()}');`);
 }
 
 function initTournamentsTable(db: DatabaseSync) {
@@ -185,6 +182,7 @@ function initUsersTable(db: DatabaseSync) {
 		avatar TEXT,
 		email TEXT,
 		game_id TEXT,
+		has_notifications INTEGER NOT NULL DEFAULT 0,
 		nick TEXT UNIQUE NOT NULL,
 		password TEXT,
 		refresh_token TEXT UNIQUE,
