@@ -2,7 +2,7 @@ import { FastifyRequest } from 'fastify';
 import type { WebSocket } from "@fastify/websocket";
 import { DatabaseSync } from "node:sqlite";
 import { tournamentChatReceived } from './gameMessages.js';
-import { userInviteReceived, userSendUserChatReceived } from './userMessages.js';
+import { userSendUserChatReceived } from './userMessages.js';
 import { getUser, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
@@ -101,9 +101,6 @@ function sendMessage(socket: WebSocket, message: Message) {
 */
 export function handleClientMessage(db: DatabaseSync, message: Message) {
 	switch (message.type) {
-		case MessageType.USER_INVITE:
-			userInviteReceived(db, message);
-			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChatReceived(db, message);
 			break;

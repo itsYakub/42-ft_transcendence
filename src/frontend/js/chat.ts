@@ -3,7 +3,7 @@ import { Message, MessageType, Page, Result, ShortUser } from "./../../common/in
 import { showPage } from "./index.js";
 import { currentPage, sendMessageToServer } from "./sockets/clientSocket.js";
 import { joiningMatch } from "./sockets/remoteMatchesMessages.js";
-import { getUserId, isUserLoggedIn, setUserGameId } from "./user.js";
+import { getUserGameId, getUserId, isUserLoggedIn, setUserGameId } from "./user.js";
 import { profileFunctions } from "./users/profile.js";
 
 export async function userSendNotification(message: Message) {
@@ -253,10 +253,11 @@ export function userChatListeners() {
 			if (messageText.length > 0) {
 				sendMessageToServer({
 					type: MessageType.USER_SEND_USER_CHAT,
+					gameId: getUserGameId(),
 					chat: messageText,
 					toId: parseInt(chatPartnerContainer.dataset.id)
 				});
-				if ("true" === chatPartnerContainer.dataset.new) {
+				if ("true" === chatPartnerContainer.dataset.new && messageText != "!!") {
 					chatPartnerButtons = document.getElementsByClassName("chatPartnerButton");
 					const profileResponse = await fetch(`/profile/user/${chatPartnerContainer.dataset.id}`);
 					const profileJson = await profileResponse.json();

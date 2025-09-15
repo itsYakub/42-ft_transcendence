@@ -212,8 +212,8 @@ export function createGuest(db: DatabaseSync): Box<ShortUser> {
 				result: stringBox.result
 			}
 
-		const insert = db.prepare('INSERT INTO users (nick, type) VALUES (?, ?)');
-		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST]);
+		const insert = db.prepare('INSERT INTO users (nick, type, avatar) VALUES (?, ?, ?)');
+		const statementSync = insert.run(stringBox.contents, UserType[UserType.GUEST], defaultAvatar);
 		const id: number = statementSync.lastInsertRowid as number;
 		removeUserFromMatch(db, id);
 		return {

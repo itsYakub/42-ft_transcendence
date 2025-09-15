@@ -265,6 +265,7 @@ export interface Gamer {
 }
 
 export interface MatchGamer {
+	avatar?: string,
 	userId: number,
 	nick: string,
 	ready?: boolean,

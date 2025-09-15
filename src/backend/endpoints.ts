@@ -96,7 +96,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.post("/tournament/local/add", (request: FastifyRequest, reply: FastifyReply) => addLocalTournament(request, reply));
 	fastify.post("/tournament/remote/add", (request: FastifyRequest, reply: FastifyReply) => addRemoteTournament(request, reply));
 	fastify.get("/tournament/remote/chat", (request: FastifyRequest, reply: FastifyReply) => tournamentChats(request, reply));
-	fastify.post("/tournament/remote/leave", (request: FastifyRequest, reply: FastifyReply) => leaveRemoteTournament(request, reply));
+	fastify.get("/tournament/remote/leave", (request: FastifyRequest, reply: FastifyReply) => leaveRemoteTournament(request, reply));
 	fastify.post("/tournament/local/update", (request: FastifyRequest, reply: FastifyReply) => updateLocalTournment(request, reply));
 }
 

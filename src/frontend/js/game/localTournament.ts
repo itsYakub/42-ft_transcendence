@@ -1,29 +1,8 @@
-import { Box, Page, Result } from "../../../common/interfaces.js";
+import { Page, Result } from "../../../common/interfaces.js";
 import { nickToNumbers } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
 import { isUserLoggedIn, setUserGameId } from "../user.js";
 import { showAlert, showPage } from "./../index.js";
-
-async function generateTournament(gameId: string, names: string[]) {
-	let newNames = [];
-	names.forEach((name) => {
-		newNames.push(nickToNumbers(name))
-	});
-	const shuffled = newNames.sort(() => Math.random() - 0.5);
-
-	const response = await fetch("/tournament/local/add", {
-		method: "POST",
-		headers: {
-			"content-type": "application/json"
-		},
-		body: JSON.stringify({
-			gameId,
-			gamers: newNames
-		})
-	});
-
-	return await response.text();
-}
 
 export function localTournamentListeners() {
 	const nextTournamentMatchButton = <HTMLButtonElement>document.querySelector("#nextTournamentMatchButton");
@@ -34,6 +13,11 @@ export function localTournamentListeners() {
 
 			const dialog = document.querySelector("#gameDialog");
 			if (dialog) {
+				dialog.addEventListener("keydown", (e: KeyboardEvent) => {
+					if ("Escape" == e.key)
+						e.preventDefault();
+				});
+
 				dialog.addEventListener("matchOver", async (e: CustomEvent) => {
 					const response = await fetch("/tournament/local/update", {
 						method: "POST",
@@ -52,7 +36,7 @@ export function localTournamentListeners() {
 						dialog.addEventListener("close", () => {
 							g_game.dispose();
 							showPage(Page.GAME);
-					});
+						});
 					}
 				})
 			}
@@ -90,14 +74,36 @@ export function localTournamentListeners() {
 
 				const gameId = `t${Date.now().toString(36).substring(5)}`;
 				const result = await generateTournament(gameId, names);
-		
+
 				if (Result.SUCCESS != result) {
 					showAlert(result);
 					return;
 				}
+
 				setUserGameId(gameId);
 				showPage(Page.GAME);
 			}
 		});
 	}
+}
+
+async function generateTournament(gameId: string, names: string[]) {
+	let newNames = [];
+	names.forEach((name) => {
+		newNames.push(nickToNumbers(name))
+	});
+	const shuffled = newNames.sort(() => Math.random() - 0.5);
+
+	const response = await fetch("/tournament/local/add", {
+		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
+		body: JSON.stringify({
+			gameId,
+			gamers: newNames
+		})
+	});
+
+	return await response.text();
 }

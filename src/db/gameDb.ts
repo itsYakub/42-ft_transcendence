@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Game, GameType, MatchGamer, Result, ShortUser, User } from "../common/interfaces.js";
+import { Box, Game, GameType, MatchGamer, Result } from "../common/interfaces.js";
 import { numbersToNick } from "../common/utils.js";
 
 export function getGames(db: DatabaseSync): Box<Game[]> {
@@ -12,7 +12,6 @@ export function getGames(db: DatabaseSync): Box<Game[]> {
 		};
 	}
 	catch (e) {
-		console.log("getGames", e);
 		return {
 			result: Result.ERR_DB
 		};
@@ -28,7 +27,7 @@ export function gamePlayers(db: DatabaseSync, gameId: string): Box<MatchGamer[]>
 			contents: gamers
 		};
 	}
-	catch (e) {console.log(e);
+	catch (e) {
 		return {
 			result: Result.ERR_DB
 		};
@@ -37,7 +36,7 @@ export function gamePlayers(db: DatabaseSync, gameId: string): Box<MatchGamer[]>
 
 export function updateGameId(db: DatabaseSync, gameId: string, userId: number): Result {
 	try {
-		const select = db.prepare(`UPDATE users SET game_id = ? WHERE user_id = ?;`);
+		const select = db.prepare(`UPDATE users SET game_id = ? WHERE user_id = ?`);
 		select.run(gameId, userId);
 		return Result.SUCCESS;
 	}
@@ -46,58 +45,6 @@ export function updateGameId(db: DatabaseSync, gameId: string, userId: number): 
 	}
 }
 
-
-
-// export function markReady(db: DatabaseSync, userId: number): Result {
-// 	try {
-// 		const select = db.prepare(`UPDATE users SET ready = 1 WHERE user_id = ?`);
-// 		select.run(userId);
-// 		return Result.SUCCESS;
-// 	}
-// 	catch (e) {
-// 		return Result.ERR_DB;;
-// 	}
-// }
-
-// export function markUnReady(db: DatabaseSync, userId: number): Result {
-// 	try {
-// 		const select = db.prepare(`UPDATE users SET ready = 0 WHERE user_id = ?`);
-// 		select.run(userId);
-// 		return Result.SUCCESS;
-// 	}
-// 	catch (e) {
-// 		return Result.ERR_DB;
-// 	}
-// }
-
-// export function countReady(db: DatabaseSync, gameId: string): Box<boolean> {
-// 	try {
-// 		const select = db.prepare(`SELECT COUNT(Ready) as ready FROM users WHERE game_id = ? AND ready = 1`);
-// 		const { ready } = select.get(gameId);
-// 		const gameCount = gameId.startsWith("t") ? 4 : 2
-// 		return {
-// 			result: Result.SUCCESS,
-// 			contents: gameCount == ready,
-// 		};
-// 	}
-// 	catch (e) {
-// 		return {
-// 			result: Result.ERR_DB
-// 		};
-// 	}
-// }
-
-// export function markPlaying(db: DatabaseSync, { gameId }): Result {
-// 	try {
-// 		const select = db.prepare(`UPDATE users SET playing = 1 WHERE game_id = ?`);
-// 		select.run(gameId);
-// 		return Result.SUCCESS;
-// 	}
-// 	catch (e) {
-// 		return Result.ERR_DB;
-// 	}
-// }
-
 function sqlToGame(game: Record<string, SQLOutputValue>): Game {
 	const gameId = game.game_id as string;
 	return {
@@ -105,15 +52,11 @@ function sqlToGame(game: Record<string, SQLOutputValue>): Game {
 		nicks: game.nicks as string,
 		type: gameId.startsWith("m") ? GameType.MATCH : GameType.TOURNAMENT
 	};
-
-	// 	return {
-	// 	gameId: game.game_id as string,
-	// 	nicks: [].slice.call(game.nicks)
-	// };
 }
 
 function sqlToGamer(gamer: Record<string, SQLOutputValue>): MatchGamer {
 	return {
+		avatar: gamer.avatar as string,
 		nick: numbersToNick(gamer.nick as string),
 		userId: gamer.user_id as number
 	};

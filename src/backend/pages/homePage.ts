@@ -18,6 +18,6 @@ export function getHomePage(request: FastifyRequest, reply: FastifyReply) {
 	else {
 		const booleanBox = hasWaitingChats(request.db, user.userId);
 		const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
-		return reply.type("text/html").send(frameView({ user, language }, chatsWaiting, homeView()));
+		return reply.type("text/html").send(frameView({ user, language }, chatsWaiting, homeView(language == "australian")));
 	}
 }

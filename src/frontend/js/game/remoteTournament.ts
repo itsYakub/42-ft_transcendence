@@ -11,6 +11,7 @@ export async function createRemoteTournament() {
 		},
 		body: JSON.stringify({})
 	});
+
 	return await response.json();
 }
 
@@ -27,9 +28,9 @@ export function tournamentListeners() {
 
 			const gameId = getUserGameId();
 
-			const response = await fetch("tournament/leave");
-			const json = await response.json();
-			if (Result.SUCCESS == json.result) {
+			const response = await fetch("/tournament/remote/leave");
+			const result = await response.text();
+			if (Result.SUCCESS == result) {
 				tournamentGamerLeft();
 				removeUserGameId();
 				showPage(Page.GAME);

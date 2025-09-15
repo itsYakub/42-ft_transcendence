@@ -148,13 +148,14 @@ export function updateLocalTournment(request: FastifyRequest, reply: FastifyRepl
 		},
 		matchNumber
 	};
-	if (g1Nick == user.nick) {
+	const numbersNick = nickToNumbers(user.nick)
+	if (g1Nick == numbersNick) {
 		const tournamentWin = 3 == matchNumber && g1Score > g2Score;
 		const result = createMatchResult(db, user.userId, g2Nick, g1Score, g2Score, tournamentWin);
 		if (Result.SUCCESS != result)
 			return reply.send(result);
 	}
-	else if (g2Nick == user.nick) {
+	else if (g2Nick == numbersNick) {
 		const tournamentWin = 3 == matchNumber && g2Score > g1Score;
 		const result = createMatchResult(db, user.userId, g1Nick, g2Score, g1Score, tournamentWin);
 		if (Result.SUCCESS != result)

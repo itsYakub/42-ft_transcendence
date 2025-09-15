@@ -182,7 +182,6 @@ function initUsersTable(db: DatabaseSync) {
 		avatar TEXT,
 		email TEXT,
 		game_id TEXT,
-		has_notifications INTEGER NOT NULL DEFAULT 0,
 		nick TEXT UNIQUE NOT NULL,
 		password TEXT,
 		refresh_token TEXT UNIQUE,

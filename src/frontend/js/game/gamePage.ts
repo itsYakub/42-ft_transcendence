@@ -64,7 +64,7 @@ export function gameListeners() {
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			const json = await createRemoteTournament();
+			const json = await createRemoteTournament();console.log(json);
 			if (Result.SUCCESS == json.result) {
 				setUserGameId(json.gameId);
 				showPage(Page.GAME);

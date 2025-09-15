@@ -16,6 +16,7 @@ import { getUserNick, isUserLoggedIn, userLoggedIn } from "./user.js";
 	Simulates moving to a new page
 */
 export async function showPage(page: Page, add: boolean = true) {
+	console.log(`Showing page ${page}`);
 	if (Page.AUTH != page && !isUserLoggedIn())
 		page = Page.AUTH;
 
@@ -119,6 +120,7 @@ if (typeof window !== "undefined") {
 		const userBox = await fetch("/profile/user");
 		const userJson = await userBox.json();
 		if (Result.SUCCESS == userJson.result) {
+			console.log(userJson.contents);
 			const alreadyBox = await fetch(`/profile/logged-in/${userJson.contents.userId}`);
 			const alreadyText = await alreadyBox.text();
 			if (Result.SUCCESS != alreadyText) {
@@ -129,6 +131,7 @@ if (typeof window !== "undefined") {
 			userLoggedIn(userJson.contents);
 		}
 
+		//showPage(currentPage());
 		setupPage(currentPage());
 	});
 }

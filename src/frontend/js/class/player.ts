@@ -89,7 +89,7 @@ export class Player extends Shape {
 		this.m_aiTimerElapsed = 0.0;
 		this.m_aiPrediction = BABYLON.Vector2.Zero();
 
-		console.log('[ INFO ] Player created | Side: ' + (side == 0.0 ? 'LEFT' : 'RIGHT') + ' | Mode: ' + (this.m_mode == PlayerMode.PLAYERMODE_HUMAN ? 'HUMAN' : 'AI'));
+		//console.log('[ INFO ] Player created | Side: ' + (side == 0.0 ? 'LEFT' : 'RIGHT') + ' | Mode: ' + (this.m_mode == PlayerMode.PLAYERMODE_HUMAN ? 'HUMAN' : 'AI'));
 	}	
 
 	/* SECTION:

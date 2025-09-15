@@ -1,6 +1,7 @@
-export function homeView(): string {
+export function homeView(rotate: boolean): string {
+	const rotateDegrees = rotate? "rotate-180" : "";
 	return `
-	<div class="flex flex-col items-center gap-4">
+	<div class="flex flex-col items-center gap-4 ${rotateDegrees}">
 		<div class="text-gray-300 mt-8 mb-4 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_WELCOME%%</div>
 		<div>
 			<img class="w-80 h-80 opacity-80 border-fuchsia-800 border rounded-lg" src="/images/team.jpg"/>

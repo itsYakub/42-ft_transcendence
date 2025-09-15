@@ -12,12 +12,13 @@ import { localTournamentView } from '../views/localTournamentView.js';
 import { readLocalTournament } from '../../db/localTournamentsDb.js';
 import { removeUserFromMatch } from '../../db/userDB.js';
 import { hasWaitingChats } from '../../db/userChatsDb.js';
-import { removeUserGameId } from '../../frontend/js/user.js';
 
 export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
 	const user = request.user;
 	const language = request.language;
+
+	console.log("loading game page");
 
 	const booleanBox = hasWaitingChats(request.db, user.userId);
 	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
@@ -28,17 +29,10 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	if (user.gameId) {
 		const gameId = user.gameId;
 
-
 		if (gameId.startsWith("t")) {
 			const localTournamentBox = readLocalTournament(db, gameId);
-			if (Result.SUCCESS == localTournamentBox.result) {
-				console.log(localTournamentBox.contents);
-				// if (localTournamentBox.contents.finished) {
-				// 	removeUserGameId();
-				// 	return gameList(chatsWaiting, request, reply);
-				// }
+			if (Result.SUCCESS == localTournamentBox.result)
 				return localTournament(localTournamentBox.contents, chatsWaiting, request, reply);
-			}
 		}
 		else if (gameId.startsWith("r")) {
 			const tournamentBox = readRemoteTournament(db, gameId);

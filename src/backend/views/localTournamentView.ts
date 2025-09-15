@@ -1,7 +1,6 @@
 import { LocalGamer, LocalMatch, LocalTournament, User } from '../../common/interfaces.js';
 
 export function localTournamentView(tournament: LocalTournament, user: User): string {
-	console.log("here2");
 	return `
 	<div class="w-full h-full m-auto text-center flex flex-col items-center gap-4">
 	<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_LOCAL_TOURNAMENT%%</div>
@@ -69,7 +68,7 @@ function nextMatchHtml(tournament: LocalTournament) {
 	let g2: LocalGamer;
 	let matchNumber = 0;
 
-	if (m3.g1.score > m3.g2.score) {
+	if (m3.g1.score + m3.g2.score > 0) {
 		const winner = m3.g1.score > m3.g2.score ? m3.g1.nick : m3.g2.nick;
 		return `<div class="text-green-800 text-lg">%%TEXT_CONGRATULATIONS%% ${winner}!</div>`;
 	}
