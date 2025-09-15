@@ -1,6 +1,5 @@
 import { navbarFunctions } from "./navbar.js";
 import { accountListeners } from "./account.js";
-import { devButtons } from "./devButtons.js";
 import { gameListeners } from "./game/gamePage.js";
 import { authFunctions } from "./auth.js";
 import { usersFunctions } from "./users/users.js";
@@ -82,9 +81,6 @@ function setupPage(page: Page) {
 	tournamentListeners();
 	userChatListeners();
 	usersFunctions();
-
-	// remove!
-	devButtons();
 }
 
 function changePage() {

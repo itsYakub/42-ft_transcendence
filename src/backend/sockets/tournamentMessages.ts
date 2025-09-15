@@ -1,12 +1,12 @@
 import { DatabaseSync } from "node:sqlite";
-import { gamePlayers } from '../../db/gameDb.js';
 import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser, Gamer } from '../../common/interfaces.js';
-import { readRemoteTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult, createRemoteTournament } from '../../db/remoteTournamentsDb.js';
+import { readRemoteTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult, createRemoteTournament, updateTournamentAfterFinal } from '../../db/remoteTournamentsDb.js';
 import { remoteTournamentLobbyPlayersView } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
-import { sendMessageToGameIdUsers, sendMessageToOtherUsers, sendMessageToUser, sendMessageToUsers } from "./serverSocket.js";
-import { remoteTournamentDetails } from "../views/remoteTournamentView.js";
+import { sendMessageToGameIdUsers, sendMessageToOtherUsers } from "./serverSocket.js";
+import { getTournamentGamers } from "../api/tournamentApi.js";
+import { gamePlayers } from "../../db/gameDb.js";
 
 export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
 	const shuffled = shuffleGamers(gamers);
@@ -17,6 +17,7 @@ export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
 			type: MessageType.TOURNAMENT_UPDATE,
 			gameId
 		}, userIds);
+		//send notification to everyone
 	}
 }
 
@@ -26,11 +27,9 @@ export function tournamentJoinReceived(db: DatabaseSync, message: Message) {
 		const gamers = usersInTournament(db, gameId);
 		if (Result.SUCCESS == gamers.result) {
 			if (4 == gamers.contents.length) {
-				console.log("generating");
 				generateTournament(db, gamers.contents);
 			}
 			else {
-				console.log("added to lobby");
 				const content = remoteTournamentLobbyPlayersView(gamers.contents);
 				const userIds = gamers.contents.map((gamer) => gamer.userId).filter((userId) => userId != fromId);
 				sendMessageToGameIdUsers({
@@ -60,7 +59,6 @@ export function tournamentGamerReadyReceived(db: DatabaseSync, message: Message)
 
 		const opponent = userOpponent(match, fromId);
 		if (opponent.ready) {
-			console.log(`starting match between ${match.g1.nick} and ${match.g2.nick}`);
 			sendMessageToGameIdUsers({
 				type: MessageType.TOURNAMENT_MATCH_START,
 				gameId,
@@ -71,10 +69,9 @@ export function tournamentGamerReadyReceived(db: DatabaseSync, message: Message)
 }
 
 export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
+	console.log("match end incoming", message);
+
 	const { gameId, fromId, match } = message;
-	// Only handle the message once per match
-	if (match.g1.userId != fromId)
-		return;
 
 	if (match.g1.userId == fromId) {
 		const tournamentWin = 3 == match.matchNumber && match.g1.score > match.g2.score;
@@ -92,29 +89,27 @@ export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
 	if (Result.SUCCESS == updateTournamentMatchResult(db, gameId, match)) {
 		const tournament = readRemoteTournament(db, gameId);
 		if (Result.SUCCESS == tournament.result) {
-			const matches = tournament.contents.matches;
+			const m1 = tournament.contents.matches[0];
+			const m2 = tournament.contents.matches[1];
+			const m3 = tournament.contents.matches[2];
 
-			if (4 == match.matchNumber) {
-				if (match.g1.score > 0 && match.g2.score > 0) {
-					// broadcastMessageToClients(fastify, {
-					// 	type: MessageType.TOURNAMENT_OVER,
-					// 	gameId: user.gameId,
-					// 	match
-					// });
-					return;
+			if ((m1.g1.score + m1.g2.score > 0) && (m2.g1.score + m2.g2.score > 0)) {
+				if (3 == match.matchNumber) {
+					console.log("after final");
+					updateTournamentAfterFinal(db, gameId, match);
+				}
+				else if (null == m3.g1.userId && null == m3.g2.userId) {
+					console.log("updating final");
+					updateTournamentFinal(db, gameId, [m1, m2, m3]);
 				}
 			}
 
-			if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[1].g1.score + matches[1].g2.score > 0)) {
-				if (null == matches[2].g1.userId && null == matches[2].g2.userId)
-					updateTournamentFinal(db, gameId, matches);
-				match.matchNumber = 3;
-			}
-			// broadcastMessageToClients(fastify, {
-			// 	type: MessageType.TOURNAMENT_UPDATE,
-			// 	gameId: user.gameId,
-			// 	match
-			// });
+			console.log([m1.g1.userId, m1.g2.userId, m2.g1.userId, m2.g2.userId]);
+			setTimeout(() =>
+			sendMessageToGameIdUsers({
+				type: MessageType.TOURNAMENT_UPDATE,
+				gameId
+			}, [m1.g1.userId, m1.g2.userId, m2.g1.userId, m2.g2.userId]), 1000);
 		}
 	}
 }

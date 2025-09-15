@@ -76,16 +76,8 @@ function guestHtml(user: User, languageSelect: string): string {
 	return `
 	<div id="navBar" class="h-32 font-mono bg-stone-700" data-page="GAME">
 		<div class="h-full w-200 mx-auto flex flex-row items-center justify-between">
-			<img data-id="${user.userId}" class="h-20 w-20" src="/images/icon.png"/>
-
-			<div class="flex flex-col items-center gap-2">
-				<div class="text-gray-300">${user.nick}</div>
-				<button id="deleteCookiesButton"
-					class="cursor-[url(/images/pointer.png),pointer] text-center text-red-600 p-2 rounded-lg hover:bg-gray-700">
-					Delete cookies
-				</button>	
-			</div>				
-				
+			<img class="h-20 w-20" src="/images/icon.png"/>
+			<div class="text-gray-300">${user.nick}</div>				
 			<select id="languageSelect" class="outline-hidden cursor-[url(/images/pointer.png),pointer] text-gray-300">
 				${languageSelect}
 			</select>

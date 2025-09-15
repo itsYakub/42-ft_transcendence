@@ -340,12 +340,12 @@ export class Game {
 
 			} else if (payload.kind === "GAME_QUIT") {
 				if (this.m_player0.userID == getUserId()) {
-					this.m_player0.score = 10;
+					this.m_player0.score = g_gameScoreTotal;
 					this.m_player1.score = 0;
 				}
 				else {
 					this.m_player0.score = 0;
-					this.m_player1.score = 10;
+					this.m_player1.score = g_gameScoreTotal;
 				}
 
 				//console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
@@ -432,6 +432,7 @@ export class Game {
 				});
 			}
 
+			this.matchOver();
 			this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 		}
 		else {
@@ -493,6 +494,7 @@ export class Game {
 			} break;
 
 			case (StateMachine.STATE_GAMEOVER): {
+				this.m_engine.stopRenderLoop();
 				this.matchOver();
 			} break;
 

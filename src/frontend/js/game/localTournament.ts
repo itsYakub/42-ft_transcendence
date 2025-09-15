@@ -38,7 +38,7 @@ export function localTournamentListeners() {
 							showPage(Page.GAME);
 						});
 					}
-				})
+				});
 			}
 			setTimeout(async () => {
 				g_game.setupElements(GameMode.GAMEMODE_PVP, {

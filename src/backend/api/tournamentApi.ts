@@ -178,21 +178,3 @@ export function tournamentChats(request: FastifyRequest, reply: FastifyReply) {
 			result: Result.ERR_NOT_FOUND,
 		});
 }
-
-
-// fastify.get('/gamers', async (request: FastifyRequest, reply: FastifyReply) => {
-// 	const gamersBox = gamePlayers(db, request.user.gameId);
-// 	if (Result.SUCCESS == gamersBox.result) {
-// 		let text = gamersString(gamersBox.contents, request.user);
-// 		text = translate(request.language, text);
-
-// 		return reply.send({
-// 			result: Result.SUCCESS,
-// 			value: text
-// 		});
-// 	}
-// 	else
-// 		return reply.send({
-// 			result: Result.ERR_NOT_FOUND
-// 		});
-// });

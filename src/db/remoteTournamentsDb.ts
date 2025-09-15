@@ -1,7 +1,7 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Match, MatchGamer, Result, Tournament, ShortUser, Gamer } from "../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
-import { numbersToNick } from "../common/utils.js";
+import { nickToNumbers, numbersToNick } from "../common/utils.js";
 
 export function readRemoteTournament(db: DatabaseSync, gameId: string): Box<Tournament> {
 	try {
@@ -38,7 +38,7 @@ export function joinTournament(db: DatabaseSync, gameId: string, userId: number)
 	try {
 		const select = db.prepare(`SELECT COUNT(game_id) AS count FROM users WHERE game_id = ?`);
 		const game = select.get(gameId);
-		if (3 == game.count)
+		if (4 == game.count)
 			return Result.ERR_GAME_FULL;
 
 		return updateGameId(db, gameId, userId);
@@ -63,12 +63,14 @@ export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournamen
 }
 
 export function updateTournamentMatchResult(db: DatabaseSync, gameId: string, match: Match): Result {
+	console.log("updating match", gameId, match);
 	try {
 		const select = db.prepare(`UPDATE tournaments SET m${match.matchNumber}_g1_score = ?, m${match.matchNumber}_g2_score = ? WHERE game_id = ?;`);
 		select.run(match.g1.score, match.g2.score, gameId);
 		return Result.SUCCESS;
 	}
 	catch (e) {
+		console.log(e);
 		return Result.ERR_DB;
 	}
 }
@@ -78,13 +80,39 @@ export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches:
 		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
 			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
 			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
-			const select = db.prepare(`UPDATE tournaments SET m1_g1_nick = NULL, m1_g2_nick = NULL,
-				m2_g1_nick = NULL, m2_g2_nick = NULL, m1_g1_user_id = NULL, m1_g2_user_id = NULL,
-				m2_g1_user_id = NULL, m2_g2_user_id = NULL,
-				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
-			select.run(g1.nick, g2.nick, g1.userId, g2.userId, gameId);
+			const select = db.prepare(`UPDATE tournaments SET m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
+			select.run(nickToNumbers(g1.nick), nickToNumbers(g2.nick), g1.userId, g2.userId, gameId);
 			return Result.SUCCESS;
 		}
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+// export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
+// 	try {
+// 		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
+// 			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
+// 			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
+// 			const select = db.prepare(`UPDATE tournaments SET m1_g1_nick = NULL, m1_g2_nick = NULL,
+// 				m2_g1_nick = NULL, m2_g2_nick = NULL, m1_g1_user_id = NULL, m1_g2_user_id = NULL,
+// 				m2_g1_user_id = NULL, m2_g2_user_id = NULL,
+// 				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
+// 			select.run(nickToNumbers(g1.nick), nickToNumbers(g2.nick), g1.userId, g2.userId, gameId);
+// 			return Result.SUCCESS;
+// 		}
+// 	}
+// 	catch (e) {
+// 		return Result.ERR_DB;
+// 	}
+// }
+
+export function updateTournamentAfterFinal(db: DatabaseSync, gameId: string, match: Match): Result {
+	try {
+		const select = db.prepare(`UPDATE tournaments SET m3_g1_score = ?, m3_g2_score = ? WHERE game_id = ?`);
+		select.run(match.g1.score, match.g2.score, gameId);
+		return Result.SUCCESS;
 	}
 	catch (e) {
 		return Result.ERR_DB;
@@ -97,7 +125,7 @@ function whichMatchIsUserIn(tournament: Tournament, userId: number): Match {
 
 function sqlToTournament(tournament: Record<string, SQLOutputValue>): Tournament {
 	return {
-		finished: Boolean(tournament.m3_g1_score && tournament.m3_g2_score),
+		finished: Boolean((tournament.m3_g1_score as number) + (tournament.m3_g2_score as number) > 0),
 		matches: [
 			sqlToMatch(tournament, 1),
 			sqlToMatch(tournament, 2),

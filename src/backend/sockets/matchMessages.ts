@@ -3,6 +3,7 @@ import { addUserToMatch, removeUserFromMatch, usersByGameId } from '../../db/use
 import { Message, MessageType, Result, ShortUser } from '../../common/interfaces.js';
 import { gamersHtml } from '../views/remoteMatchLobbyView.js';
 import { sendMessageToGameIdUsers, sendMessageToOtherUsers, sendMessageToUser, sendMessageToUsers } from "./serverSocket.js";
+import { tournamentMatchEndReceived } from "./tournamentMessages.js";
 
 export function matchJoinReceived(db: DatabaseSync, message: Message) {
 	const { gameId, fromId } = message;
@@ -85,8 +86,8 @@ export function matchUpdateReceived(db: DatabaseSync, message: Message) {
 		const gamersBox = usersByGameId(db, message.gameId);
 		if (Result.SUCCESS == gamersBox.result) {
 			const gamers = gamersBox.contents;
-			removeUserFromMatch(db, gamers[0].userId);
-			removeUserFromMatch(db, gamers[1].userId);
+			//removeUserFromMatch(db, gamers[0].userId);
+			//removeUserFromMatch(db, gamers[1].userId);
 			sendMessageToGameIdUsers({
 				type: MessageType.MATCH_OVER
 			}, [gamers[0].userId, gamers[1].userId])

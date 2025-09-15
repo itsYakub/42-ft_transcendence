@@ -1,9 +1,10 @@
 import { Message, MessageType, Page, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
+import { nickToNumbers } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/remoteTournament.js";
-import { getLanguage, showAlert } from "../index.js";
-import { getUserGameId, getUserId } from "../user.js";
+import { getLanguage, showAlert, showPage } from "../index.js";
+import { getUserGameId, getUserId, setUserGameId } from "../user.js";
 import { sendMessageToServer } from "./clientSocket.js";
 
 export function joiningTournament(gameId: string) {
@@ -46,6 +47,8 @@ export async function tournamentChat(message: Message) {
 }
 
 export async function updateTournamentDetails(message: Message) {
+	console.log("update:", message);
+	setUserGameId(message.gameId);
 	const contentBox = await fetch("/tournament");
 	const json = await contentBox.json();
 	if (Result.SUCCESS == json.result) {
@@ -59,6 +62,9 @@ export async function updateTournamentDetails(message: Message) {
 
 		const tournamentDetailsContainer = document.querySelector("#tournamentLobbyDetailsContainer");
 		if (tournamentDetailsContainer) {
+
+			console.log("new page:", json.contents);
+
 			tournamentDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
 			tournamentListeners();
 		}
@@ -69,7 +75,7 @@ export async function updateTournamentLobby(message: Message) {
 	const tournamentLobbyDetailsContainer = document.querySelector("#tournamentLobbyDetailsContainer");
 	if (tournamentLobbyDetailsContainer)
 		tournamentLobbyDetailsContainer.innerHTML = translate(getLanguage(), message.content);
-	const navBar = (document.querySelector("#navBar") as HTMLElement).dataset.page = Page.TOURNAMENT;
+	(document.querySelector("#navBar") as HTMLElement).dataset.page = Page.TOURNAMENT;
 
 	tournamentListeners();
 }
@@ -79,31 +85,36 @@ export async function tournamentMatchStart(message: Message) {
 	setTimeout(async () => {
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
-			// dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-			// 	const response = await fetch("/match-result/add", {
-			// 		method: "POST",
-			// 		headers: {
-			// 			"content-type": "application/json"
-			// 		},
-			// 		body: JSON.stringify({
-			// 			g2Nick: match.g1.nick == user.nick ? match.g2.nick : match.g1.nick,
-			// 			g1Score: e.detail["g1Score"],
-			// 			g2Score: e.detail["g2Score"],
-			// 		})
-			// 	});
-			// 	//navigate(window.location.href);
-			// });
-		}
+			dialog.addEventListener("keydown", (e: KeyboardEvent) => {
+				if ("Escape" == e.key)
+					e.preventDefault();
+			});
+			dialog.addEventListener("close", () => {
+				showPage(Page.GAME);
+			});
 
-		const localIndex = match.g1.userId === getUserId() ? 0 : 1;
-		g_game.setupElements(GameMode.GAMEMODE_PVP, match.g1, match.g2, {
-			networked: true,
-			gameId: getUserGameId(),
-			localIndex: localIndex as 0 | 1,
-			receiverId: match.g1.userId === getUserId() ? match.g2.userId : match.g1.userId
-		});
-		g_game.actuallyStart();
-	}, 2000);
+			const localIndex = match.g1.userId === getUserId() ? 0 : 1;
+
+			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
+				if (0 == localIndex) {
+					match.g1.score = e.detail["g1Score"];
+					match.g2.score = e.detail["g2Score"];
+					sendMessageToServer({
+						type: MessageType.TOURNAMENT_MATCH_END,
+						match
+					});
+				}				
+			});
+
+			g_game.setupElements(GameMode.GAMEMODE_PVP, match.g1, match.g2, {
+				networked: true,
+				gameId: getUserGameId(),
+				localIndex: localIndex as 0 | 1,
+				receiverId: match.g1.userId === getUserId() ? match.g2.userId : match.g1.userId
+			});
+			g_game.actuallyStart();
+		}
+	}, 1000);
 }
 
 export function tournamentOver(message: Message) {
