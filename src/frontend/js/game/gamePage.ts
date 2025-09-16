@@ -64,7 +64,7 @@ export function gameListeners() {
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
-			const json = await createRemoteTournament();console.log(json);
+			const json = await createRemoteTournament();
 			if (Result.SUCCESS == json.result) {
 				setUserGameId(json.gameId);
 				showPage(Page.GAME);
@@ -134,7 +134,7 @@ async function startLocalMatch() {
 							g2Score: e.detail["g2Score"],
 						})
 					});
-					console.log(await response.text());
+					await response.text();
 				}, { once: true });
 			}
 			g_game.setupElements(GameMode.GAMEMODE_PVP, {

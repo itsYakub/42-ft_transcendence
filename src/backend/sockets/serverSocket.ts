@@ -18,8 +18,6 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 
 	const user = request.user;
 	onlineUsers.set(user.userId.toString(), socket);
-	console.log(`connected user is now ${user.nick} : ${user.userId}`);
-	console.log(`connected clients: ${onlineUsers.size}`);
 
 	socket?.on("message", (data: string) => {
 		const message = JSON.parse(data as string);
@@ -27,7 +25,6 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 	});
 
 	socket?.on("close", async () => {
-		console.log(`${user.nick} closed socket`);
 		onlineUsers.delete(user.userId.toString());
 		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (Result.SUCCESS == userBox.result) {

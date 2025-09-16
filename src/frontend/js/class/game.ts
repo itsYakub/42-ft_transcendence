@@ -161,11 +161,9 @@ export class Game {
 		this.m_localIndex = opts?.localIndex ?? 0;
 
 		// dialog/canvas/engine/scene creation
-		//console.log('[ INFO ] Referencing the modal dialog');
 		this.m_dialog = document.getElementById('gameDialog') as HTMLDialogElement;
 
 		if (!this.m_canvasCreated) {
-			//console.log('[ INFO ] Creating a canvas object');
 			this.m_canvas = document.createElement('canvas');
 			this.m_canvasCreated = true;
 		}
@@ -237,7 +235,6 @@ export class Game {
 						playerId: this.m_localIndex  // 0 = purple paddle, 1 = yellow paddle
 					};
 
-					console.log("sending to server");
 					// Send the key press to the server
 					sendMessageToServer({
 						type: MessageType.MATCH_UPDATE,
@@ -252,19 +249,16 @@ export class Game {
 		}
 
 		if (!this.m_engineCreated) {
-			//console.log('[ INFO ] Creating a babylon engine');
 			this.m_engine = new BABYLON.Engine(this.m_canvas, true, { preserveDrawingBuffer: true, stencil: true });
 			this.m_engineCreated = true;
 		}
 
 		if (!this.m_sceneCreated) {
-			//console.log('[ INFO ] Creating a babylon scene');
 			this.m_mode = mode;
 			this.m_scene = this.createScene();
 			this.m_sceneCreated = true;
 		}
 
-		//console.log('[ INFO ] Preparing the game');
 		this.m_dialog.showModal();
 
 		this.m_canvas.width = this.m_dialog.clientWidth;
@@ -277,13 +271,11 @@ export class Game {
 		this.m_gui.showPlayerScore(this.m_scene, this.m_player0, this.m_player1);
 
 		this.m_stateMachine = StateMachine.STATE_START;
-		//console.log('[ INFO ] Game is running...');
 	}
 
 	public actuallyStart() {
 		setTimeout(() => {
 			if (this.m_gameOver || this.m_started) return;
-			//console.log('[ INFO ] Actually starting networked game - ball should move now');
 
 			this.m_ball.start();
 			this.m_started = true;
@@ -323,8 +315,6 @@ export class Game {
 				this.m_player0.score = payload.p0Score;
 				this.m_player1.score = payload.p1Score;
 
-				//console.log('[ INFO ] Goal scored! Synced scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
-
 				if (payload.p0Score < g_gameScoreTotal && payload.p1Score < g_gameScoreTotal) {
 					this.m_stateMachine = StateMachine.STATE_RESTART;
 				}
@@ -335,7 +325,6 @@ export class Game {
 				this.m_player0.score = payload.p0Score;
 				this.m_player1.score = payload.p1Score;
 
-				//console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
 				this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 
 			} else if (payload.kind === "GAME_QUIT") {
@@ -348,34 +337,27 @@ export class Game {
 					this.m_player1.score = g_gameScoreTotal;
 				}
 
-				//console.log('[ INFO ] Game Over! Final scores: p0:' + payload.p0Score + ' | p1:' + payload.p1Score);
 				this.m_stateMachine = StateMachine.STATE_GAMEOVER;
 			} else if (payload.kind === "RESET") {
-				//console.log('[ INFO ] Round reset synced');
 				this.m_stateMachine = StateMachine.STATE_RESTART;
 			}
 		} catch (e) {
-			//console.warn('Invalid network message:', e);
 		}
 	}
 
 	public dispose() {
 		if (this.m_gameOver) return; // idempotent
 
-		//console.log('[ INFO ] Disposing babylon scene');
 		this.m_scene.dispose();
 		this.m_sceneCreated = false;
 
-		//console.log('[ INFO ] Disposing babylon engine');
 		this.m_engine.stopRenderLoop();
 		this.m_engine.dispose();
 		this.m_engineCreated = false;
 
-		//console.log('[ INFO ] Removing canvas object from dialog');
 		this.m_dialog.removeChild(this.m_canvas);
 		this.m_canvasCreated = false;
 
-		//console.log('[ INFO ] Closing dialog');
 		this.m_dialog.close();
 
 		// rm local key listeners if any
@@ -388,14 +370,12 @@ export class Game {
 		this.m_started = false;
 
 		this.m_gameOver = true;
-		//console.log('[ INFO ] Game is disposed...');
 	}
 
 	public score(p0: boolean, p1: boolean) {
 		/* Increment the player score. */
 		if (p0) { this.m_player0.score++ };
 		if (p1) { this.m_player1.score++ };
-		//console.log('[ INFO ] Current score: p0:' + this.m_player0.score + ' | p1:' + this.m_player1.score);
 
 		// Send goal event to sync both clients (only Player 0 sends to avoid duplicates)
 		if (this.m_networked && this.m_gameId && this.m_localIndex === 0) {
@@ -459,12 +439,10 @@ export class Game {
 					// Networked games wait for actuallyStart() to be called
 					if (this.m_started) {
 						this.m_stateMachine = StateMachine.STATE_UPDATE;
-						//console.log('[ INFO ] Networked match start!');
 					}
 				} else {
 					this.m_ball.start();
 					this.m_stateMachine = StateMachine.STATE_UPDATE;
-					//console.log('[ INFO ] Local match start!');
 				}
 			} break;
 
@@ -517,7 +495,6 @@ export class Game {
 	private matchOver() {
 		let p_win: Player;
 
-		console.log("match over");
 		this.m_engine.stopRenderLoop();
 
 		this.m_ball.reset();

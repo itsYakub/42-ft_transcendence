@@ -5,7 +5,7 @@ import { sendMessageToGameIdUsers } from "./serverSocket.js";
 import { notificationInviteReceived } from "./notificationMessages.js";
 
 export function userLoginReceived(db: DatabaseSync, user: ShortUser) {
-	console.log(`${user.nick} logged in`);
+
 }
 
 export function userSendUserChatReceived(db: DatabaseSync, message: Message) {

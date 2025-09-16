@@ -1,5 +1,5 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
-import { Box, Match, MatchGamer, Result, Tournament, ShortUser, Gamer } from "../common/interfaces.js";
+import { Box, Match, MatchGamer, Result, Tournament, Gamer } from "../common/interfaces.js";
 import { updateGameId } from "./gameDb.js";
 import { nickToNumbers, numbersToNick } from "../common/utils.js";
 
@@ -44,7 +44,6 @@ export function joinTournament(db: DatabaseSync, gameId: string, userId: number)
 		return updateGameId(db, gameId, userId);
 	}
 	catch (e) {
-		console.log(e);
 		return Result.ERR_DB;
 	}
 }
@@ -63,32 +62,15 @@ export function markTournamentGamerReady(db: DatabaseSync, tournament: Tournamen
 }
 
 export function updateTournamentMatchResult(db: DatabaseSync, gameId: string, match: Match): Result {
-	console.log("updating match", gameId, match);
 	try {
 		const select = db.prepare(`UPDATE tournaments SET m${match.matchNumber}_g1_score = ?, m${match.matchNumber}_g2_score = ? WHERE game_id = ?;`);
 		select.run(match.g1.score, match.g2.score, gameId);
 		return Result.SUCCESS;
 	}
 	catch (e) {
-		console.log(e);
 		return Result.ERR_DB;
 	}
 }
-
-// export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
-// 	try {
-// 		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
-// 			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
-// 			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
-// 			const select = db.prepare(`UPDATE tournaments SET m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
-// 			select.run(nickToNumbers(g1.nick), nickToNumbers(g2.nick), g1.userId, g2.userId, gameId);
-// 			return Result.SUCCESS;
-// 		}
-// 	}
-// 	catch (e) {
-// 		return Result.ERR_DB;
-// 	}
-// }
 
 export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
 	try {

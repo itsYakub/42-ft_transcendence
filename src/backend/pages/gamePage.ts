@@ -18,12 +18,8 @@ export function getGamePage(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user;
 	const language = request.language;
 
-	console.log("loading game page");
-
 	const booleanBox = hasWaitingChats(request.db, user.userId);
 	const chatsWaiting = Result.SUCCESS == booleanBox.result ? booleanBox.contents as boolean : false;
-
-	console.log(`user ${user.nick} ${user.userId} game ${user.gameId}`);
 
 	// user is already in a game
 	if (user.gameId) {

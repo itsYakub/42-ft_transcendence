@@ -99,7 +99,6 @@ if (typeof window !== "undefined") {
 	// window.addEventListener
 	// ('beforeunload', (event) => {
 	// 	event.preventDefault();
-	// 	console.log(event);
 	// 	alert("woohoo");
 	// });
 
@@ -115,7 +114,6 @@ if (typeof window !== "undefined") {
 		const userBox = await fetch("/profile/user");
 		const userJson = await userBox.json();
 		if (Result.SUCCESS == userJson.result) {
-			console.log(userJson.contents);
 			const alreadyBox = await fetch(`/profile/logged-in/${userJson.contents.userId}`);
 			const alreadyText = await alreadyBox.text();
 			if (Result.SUCCESS != alreadyText) {

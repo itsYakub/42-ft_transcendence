@@ -31,7 +31,6 @@ export function matchGamerLeaving() {
 
 export async function updateMatchList() {
 	if (Page.GAME == currentPage() && !getUserGameId()) {
-		console.log("game list updating");
 		showPage(Page.GAME);
 	}
 }

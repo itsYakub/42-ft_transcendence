@@ -44,7 +44,7 @@ export function updateWaiting(db: DatabaseSync, userId: number, partnerId: numbe
 		}
 		return Result.SUCCESS;
 	}
-	catch (e) {console.log(e);
+	catch (e) {
 		return Result.ERR_DB;
 	}
 }
@@ -112,7 +112,6 @@ export function partnerChats(db: DatabaseSync, userId: number, partnerId: number
 		};
 	}
 	catch (e) {
-		console.log(e);
 		return {
 			result: Result.ERR_DB,
 		};

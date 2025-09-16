@@ -1,6 +1,7 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, Friend, Result } from "../common/interfaces.js";
 import { numbersToNick } from "../common/utils.js";
+import { onlineUsers } from "../backend/sockets/serverSocket.js";
 
 /*
 	Gets all the user's friends
@@ -26,7 +27,6 @@ export function readFriends(db: DatabaseSync, userId: number): Box<Friend[]> {
 */
 export function createFriend(db: DatabaseSync, userId: number, friendId: number): Result {
 	try {
-		console.log(`inserting ${userId} ${friendId}`);
 		const select = db.prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)");
 		select.run(userId, friendId);
 		return Result.SUCCESS;
@@ -54,7 +54,7 @@ function sqlToFriend(friend: Record<string, SQLOutputValue>): Friend {
 	return {
 		friendId: friend.friend_id as number,
 		nick: numbersToNick(friend.nick as string),
-		online: false, //Boolean(friend.online as number),
+		online: onlineUsers.has(friend.friend_id.toString()),
 		userId: friend.user_id as number
 	};
 }

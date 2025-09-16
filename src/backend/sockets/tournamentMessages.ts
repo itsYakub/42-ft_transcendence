@@ -19,10 +19,10 @@ export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
 		}, userIds);
 
 		userIds.forEach((user) => {
-			console.log(createTournamentNotification(db, {
+			createTournamentNotification(db, {
 				type: MessageType.NOTIFICATION_TOURNAMENT,
 				toId: user
-			}));
+			});
 		});
 
 		sendMessageToGameIdUsers({
@@ -108,10 +108,10 @@ export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
 					const m2Winner = m2.g1.score > m2.g2.score ? m2.g1.userId : m2.g2.userId;
 					const userIds = [m1Winner, m2Winner];
 					userIds.forEach((user) => {
-						console.log(createTournamentNotification(db, {
+						createTournamentNotification(db, {
 							type: MessageType.NOTIFICATION_TOURNAMENT,
 							toId: user
-						}));
+						});
 					});
 
 					sendMessageToGameIdUsers({

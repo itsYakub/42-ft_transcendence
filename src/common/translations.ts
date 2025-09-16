@@ -34,6 +34,7 @@ export function translate(language: string, text: string): string {
 		"ERR_FORBIDDEN",
 		"ERR_GOOGLE",
 		"ERR_GOOGLE_EMAIL",
+		"ERR_NO_USER",
 		"ERR_NOT_FOUND",
 		"ERR_UNIQUE",
 		"MESSAGE_INVITATION",
