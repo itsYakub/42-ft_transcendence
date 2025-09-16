@@ -1,6 +1,6 @@
 import { DatabaseSync, SQLOutputValue } from "node:sqlite";
 import { Box, MatchResult, Result } from "../common/interfaces.js";
-import { numbersToNick } from "../common/utils.js";
+import { nickToNumbers, numbersToNick } from "../common/utils.js";
 
 /*
 	Gets all the user's matches
@@ -24,7 +24,7 @@ export function readMatchResults(db: DatabaseSync, userId: number): Box<MatchRes
 export function createMatchResult(db: DatabaseSync, userId: number, opponent: string, score: number, opponentScore: number, tournamentWin: boolean, date: Date = new Date()): Result {
 	try {
 		const select = db.prepare("INSERT INTO match_results (user_id, opponent, score, opponent_score, tournament_win, played_at) VALUES (?, ?, ?, ?, ?, ?)");
-		select.run(userId, opponent, score, opponentScore, Number(tournamentWin), date.toISOString());
+		select.run(userId, nickToNumbers(opponent), score, opponentScore, Number(tournamentWin), date.toISOString());
 		return Result.SUCCESS;
 	}
 	catch (e) {

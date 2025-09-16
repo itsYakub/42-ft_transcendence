@@ -1,11 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
-import { Match, MatchGamer, Message, MessageType, Result, Tournament, TournamentGamer, User, ShortUser, Gamer } from '../../common/interfaces.js';
+import { Match, MatchGamer, Message, MessageType, Result, Tournament, Gamer } from '../../common/interfaces.js';
 import { readRemoteTournament, joinTournament, markTournamentGamerReady, updateTournamentFinal, updateTournamentMatchResult, createRemoteTournament, updateTournamentAfterFinal } from '../../db/remoteTournamentsDb.js';
 import { remoteTournamentLobbyPlayersView } from '../views/remoteTournamentLobbyView.js';
 import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
 import { sendMessageToGameIdUsers, sendMessageToOtherUsers } from "./serverSocket.js";
-import { getTournamentGamers } from "../api/tournamentApi.js";
 import { gamePlayers } from "../../db/gameDb.js";
 
 export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
@@ -69,22 +68,16 @@ export function tournamentGamerReadyReceived(db: DatabaseSync, message: Message)
 }
 
 export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
-	console.log("match end incoming", message);
+	const { gameId, match } = message;
 
-	const { gameId, fromId, match } = message;
-
-	if (match.g1.userId == fromId) {
-		const tournamentWin = 3 == match.matchNumber && match.g1.score > match.g2.score;
-		const result = createMatchResult(db, fromId, match.g2.nick, match.g1.score, match.g2.score, tournamentWin);
-		if (Result.SUCCESS != result)
-			return;
-	}
-	else if (match.g2.userId == fromId) {
-		const tournamentWin = 3 == match.matchNumber && match.g2.score > match.g1.score;
-		const result = createMatchResult(db, fromId, match.g1.nick, match.g2.score, match.g1.score, tournamentWin);
-		if (Result.SUCCESS != result)
-			return;
-	}
+	let tournamentWin = 3 == match.matchNumber && match.g1.score > match.g2.score;
+	let result = createMatchResult(db, match.g1.userId, match.g2.nick, match.g1.score, match.g2.score, tournamentWin);
+	if (Result.SUCCESS != result)
+		return;
+	tournamentWin = 3 == match.matchNumber && match.g2.score > match.g1.score;
+	result = createMatchResult(db, match.g2.userId, match.g1.nick, match.g2.score, match.g1.score, tournamentWin);
+	if (Result.SUCCESS != result)
+		return;
 
 	if (Result.SUCCESS == updateTournamentMatchResult(db, gameId, match)) {
 		const tournament = readRemoteTournament(db, gameId);
@@ -95,21 +88,25 @@ export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
 
 			if ((m1.g1.score + m1.g2.score > 0) && (m2.g1.score + m2.g2.score > 0)) {
 				if (3 == match.matchNumber) {
-					console.log("after final");
 					updateTournamentAfterFinal(db, gameId, match);
 				}
 				else if (null == m3.g1.userId && null == m3.g2.userId) {
-					console.log("updating final");
 					updateTournamentFinal(db, gameId, [m1, m2, m3]);
 				}
 			}
 
-			console.log([m1.g1.userId, m1.g2.userId, m2.g1.userId, m2.g2.userId]);
-			setTimeout(() =>
-			sendMessageToGameIdUsers({
-				type: MessageType.TOURNAMENT_UPDATE,
-				gameId
-			}, [m1.g1.userId, m1.g2.userId, m2.g1.userId, m2.g2.userId]), 1000);
+			const gamersResponse = gamePlayers(db, gameId);
+			if (Result.SUCCESS == gamersResponse.result) {
+				const gamerIds = gamersResponse.contents.map((gamer) => gamer.userId);
+				sendMessageToGameIdUsers({
+					type: MessageType.TOURNAMENT_UPDATE,
+					gameId
+				}, gamerIds);
+
+				if (m3.g1.score + m3.g2.score > 0) {
+					setTimeout(() => gamerIds.forEach((gamer) => removeUserFromMatch(db, gamer)), 100);
+				}
+			}
 		}
 	}
 }
@@ -137,10 +134,6 @@ export function tournamentLeaveReceived(db: DatabaseSync, message: Message) {
 			type: MessageType.GAME_LIST_CHANGED
 		}, fromId);
 	}
-}
-
-function userGamer(match: Match, user: ShortUser): MatchGamer {
-	return match.g1.userId == user.userId ? match.g1 : match.g2;
 }
 
 function userOpponent(match: Match, userId: number): MatchGamer {

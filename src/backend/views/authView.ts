@@ -15,7 +15,7 @@ export function authView(): string {
 function loginOrRegisterHtml(): string {
 	return `	
 	<fieldset class="rounded-lg border bg-red-200/20 border-fuchsia-800 p-3 w-90">
-		<legend class="text-fuchsia-800 text-center">%%TEXT_LOG_IN_OR_REGISTER%%</legend>			
+		<legend class="text-fuchsia-800 text-center mx-auto">%%TEXT_LOG_IN_OR_REGISTER%%</legend>			
 		<form id="userForm" class="flex flex-col gap-2">
 			<div>
 				<input type="email" name="email" placeholder="%%TEXT_EMAIL%%" autocomplete="email" value="coldandtired@gmail.com"
@@ -39,7 +39,7 @@ function loginOrRegisterHtml(): string {
 function googleHtml(): string {
 	return `	
 	<fieldset class="rounded-lg border border-fuchsia-800 bg-red-200/20 p-3 w-90">
-		<legend class="text-fuchsia-800 text-center">Google</legend>
+		<legend class="text-fuchsia-800 text-center mx-auto">Google</legend>
 		<button id="googleButton" class="w-full cursor-[url(/images/pointer.png),pointer] bg-red-300/50 text-stone-700 hover:bg-red-300 font-medium rounded-lg py-2 px-4">%%BUTTON_GOOGLE%% <img src="images/google.png" class="inline-block w-5 h-5" /></button>
 	</fieldset>
 	`;
@@ -48,7 +48,7 @@ function googleHtml(): string {
 function guestHtml(): string {
 	return `	
 	<fieldset class="rounded-lg border border-fuchsia-800 bg-red-200/20 p-3 w-90">
-		<legend class="text-fuchsia-800 text-center">%%TEXT_GUEST%%</legend>
+		<legend class="text-fuchsia-800 text-center mx-auto">%%TEXT_GUEST%%</legend>
 		<button id="guestButton" class="w-full cursor-[url(/images/pointer.png),pointer] bg-red-300/50 text-stone-700 hover:bg-red-300 font-medium rounded-lg py-2 px-4">%%BUTTON_GUEST%%</button>
 	</div>
 	`;

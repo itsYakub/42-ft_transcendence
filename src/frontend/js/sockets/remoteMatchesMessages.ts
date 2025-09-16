@@ -1,4 +1,4 @@
-import { Gamer, Message, MessageType, Page, Result } from "../../../common/interfaces.js";
+import { Message, MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
 import { numbersToNick } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
@@ -21,7 +21,6 @@ export async function joiningMatch(gameId: string): Promise<void> {
 
 export function matchFinishing() {
 	removeUserGameId();
-	//setTimeout(() => showPage(Page.GAME), 2000);
 }
 
 export function matchGamerLeaving() {
@@ -55,38 +54,32 @@ export async function updateMatchLobby(message: Message) {
 export async function startingMatch(message: Message) {
 
 	setTimeout(async () => {
-		// 	const gamersBox = await fetch("/match/gamers");
-		// 	const json = await gamersBox.json();
-		// 	if (Result.SUCCESS != json.result || 2 != json.contents.length)
-		// 		return;
-
 		const match = message.match;
 		const localIndex = match.g1.userId === getUserId() ? 0 : 1;
 
 		const dialog = document.querySelector("#gameDialog");
 		if (dialog) {
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				// sendMessageToServer({
-				// 	type: MessageType.MATCH_LEAVE
-				// });
-				// const response = await fetch("/match-result/add", {
-				// 	method: "POST",
-				// 	headers: {
-				// 		"content-type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		g2Nick: gamers[0].nick == user.nick ? gamers[1].nick : gamers[0].nick,
-				// 		g1Score: e.detail["g1Score"],
-				// 		g2Score: e.detail["g2Score"],
-				// 	})
-				// });
-				// showPage(Page.GAME);
+				await fetch("/match-results/add", {
+					method: "POST",
+					headers: {
+						"content-type": "application/json"
+					},
+					body: JSON.stringify({
+						g2Nick: match.g2.userId == getUserId() ? match.g1.nick : match.g2.nick,
+						g1Score: match.g1.userId == getUserId() ? e.detail["g1Score"] : e.detail["g2Score"],
+						g2Score: match.g1.userId == getUserId() ? e.detail["g2Score"] : e.detail["g1Score"]
+					})
+
+				});
+				sendMessageToServer({
+					type: MessageType.MATCH_LEAVE
+				});
+				dialog.addEventListener("close", () => showPage(Page.GAME));
 			});
 		}
 
-		console.log("starting match...");
 		const receiverId = match.g1.userId == getUserId() ? match.g2.userId : match.g1.userId;
-		console.log(localIndex, receiverId);
 		match.g1.nick = numbersToNick(match.g1.nick);
 		match.g2.nick = numbersToNick(match.g2.nick);
 		dialog.addEventListener("keydown", (e: KeyboardEvent) => {

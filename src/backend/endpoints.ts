@@ -42,11 +42,7 @@ export function registerEndpoints(fastify: FastifyInstance): void {
 	fastify.get("/chat/partners/:partnerId", (request: FastifyRequest, reply: FastifyReply) => getChats(request, reply));
 	fastify.get("/chat/users", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
 
-	// are any waiting
 	fastify.get("/chat/waiting", (request: FastifyRequest, reply: FastifyReply) => getWaitingChats(request, reply));
-	// are specific waiting
-	//fastify.get("/chat/waiting/:partnerId", (request: FastifyRequest, reply: FastifyReply) => chatsList(request, reply));
-	// change value to 0
 	fastify.get("/chat/waiting/clear/:partnerId", (request: FastifyRequest, reply: FastifyReply) => clearWaiting(request, reply));
 
 

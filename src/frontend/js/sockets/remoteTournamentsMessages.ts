@@ -1,9 +1,8 @@
-import { Message, MessageType, Page, Result, ShortUser, User, UserType } from "../../../common/interfaces.js";
+import { Message, MessageType, Page, Result } from "../../../common/interfaces.js";
 import { translate } from "../../../common/translations.js";
-import { nickToNumbers } from "../../../common/utils.js";
 import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/remoteTournament.js";
-import { getLanguage, showAlert, showPage } from "../index.js";
+import { getLanguage } from "../index.js";
 import { getUserGameId, getUserId, setUserGameId } from "../user.js";
 import { sendMessageToServer } from "./clientSocket.js";
 
@@ -47,24 +46,12 @@ export async function tournamentChat(message: Message) {
 }
 
 export async function updateTournamentDetails(message: Message) {
-	console.log("update:", message);
 	setUserGameId(message.gameId);
 	const contentBox = await fetch("/tournament");
 	const json = await contentBox.json();
 	if (Result.SUCCESS == json.result) {
-		const tournamentTitle = document.querySelector("#tournamentTitle");
-		if (tournamentTitle) {
-			if (3 == message.match?.matchNumber)
-				tournamentTitle.innerHTML = translate(getLanguage(), "%%TEXT_REMOTE_TOURNAMENT%% - %%TEXT_TOURNAMENT_FINAL%%");
-			else
-				tournamentTitle.innerHTML = translate(getLanguage(), "%%TEXT_REMOTE_TOURNAMENT%% - %%TEXT_TOURNAMENT_SEMI_FINALS%%");
-		}
-
 		const tournamentDetailsContainer = document.querySelector("#tournamentLobbyDetailsContainer");
 		if (tournamentDetailsContainer) {
-
-			console.log("new page:", json.contents);
-
 			tournamentDetailsContainer.innerHTML = translate(getLanguage(), json.contents);
 			tournamentListeners();
 		}
@@ -88,9 +75,6 @@ export async function tournamentMatchStart(message: Message) {
 			dialog.addEventListener("keydown", (e: KeyboardEvent) => {
 				if ("Escape" == e.key)
 					e.preventDefault();
-			});
-			dialog.addEventListener("close", () => {
-				showPage(Page.GAME);
 			});
 
 			const localIndex = match.g1.userId === getUserId() ? 0 : 1;
@@ -116,28 +100,3 @@ export async function tournamentMatchStart(message: Message) {
 		}
 	}, 1000);
 }
-
-export function tournamentOver(message: Message) {
-
-	const match = message.match;
-	const gamer = match.g1.score > match.g2.score ? match.g1 : match.g2;
-
-	sendMessageToServer({
-		type: MessageType.TOURNAMENT_OVER,
-	});
-	const alertDialog = document.querySelector("#alertDialog");
-	alertDialog.addEventListener("close", async () => {
-		//navigate("/");
-	});
-	showAlert(`${translate(getLanguage(), "%%TEXT_CONGRATULATIONS%%")} ${gamer.nick}!`, false);
-}
-
-// function isMessageForMe(user: ShortUser, message: Message) {
-// 	if (message.gameId != user.gameId)
-// 		return false;
-
-// 	if (Page.GAME != currentPage())
-// 		return false;
-
-// 	return true;
-// }

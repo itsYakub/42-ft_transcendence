@@ -7,20 +7,20 @@ export function gameView(games: Game[]): string {
 		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_GAME_TITLE%%</div>
 		<div class="flex flex-row justify-center gap-2">
 			<fieldset class="w-100 h-107 flex flex-col gap-8 border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
-				<legend class="text-purple-800 text-center">%%TEXT_JOIN%%</legend>
+				<legend class="text-purple-800 text-center mx-auto">%%TEXT_JOIN%%</legend>
 				<div class="flex flex-col  grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 					${gamesHtml(games)}
 				</div>
 			</fieldset>
 			<div class="flex flex-col gap-4">
 				<fieldset class="w-85 flex flex-col items-center border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5 gap-8">
-					<legend class="text-purple-800 text-center">%%TEXT_CREATE_LOCAL%%</legend>
+					<legend class="text-purple-800 text-center mx-auto">%%TEXT_CREATE_LOCAL%%</legend>
 					<button id="localMatchButton" class="outline-hidden w-50 text-stone-700 bg-red-300/50 cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%BUTTON_MATCH%%</button>
 					<button id="aiMatchButton" class="outline-hidden w-50 text-stone-700 bg-red-300/50 cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%BUTTON_AI_MATCH%%</button>			
 					<button id="localTournamentButton" class="outline-hidden w-50 text-stone-700 bg-red-300/50 cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%BUTTON_TOURNAMENT%%</button>				
 				</fieldset>
 				<fieldset class="w-85 flex flex-col grow items-center border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5 gap-8">
-					<legend class="text-purple-800 text-center">%%TEXT_CREATE_REMOTE%%</legend>
+					<legend class="text-purple-800 text-center mx-auto">%%TEXT_CREATE_REMOTE%%</legend>
 					<button id="remoteMatchButton" class="outline-hidden w-50 text-stone-700 bg-red-300/50 cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%BUTTON_MATCH%%</button>
 					<button id="remoteTournamentButton" class="outline-hidden w-50 text-stone-700 bg-red-300/50 cursor-[url(/images/pointer.png),pointer] text-center py-2 px-4 rounded-lg hover:bg-red-300">%%BUTTON_TOURNAMENT%%</button>
 				</fieldset>

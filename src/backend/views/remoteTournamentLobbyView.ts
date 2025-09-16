@@ -10,7 +10,7 @@ export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessag
 				${remoteTournamentLobbyPlayersView(gamers, false)}
 			</div>
 			<fieldset class="grow border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 ml-4">
-				<legend class="text-fuchsia-800 text-center">%%TEXT_CHAT%%</legend>			
+				<legend class="text-fuchsia-800 text-center mx-auto">%%TEXT_CHAT%%</legend>			
 				<div class="flex flex-col h-full">
 					<div id="tournamentMessagesDiv" class="flex flex-col-reverse grow gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">
 						${remoteTournamentMessagesHtml(chats, userId)}
@@ -34,7 +34,7 @@ export function remoteTournamentLobbyView(gamers: Gamer[], chats: GameChatMessag
 export function remoteTournamentLobbyPlayersView(gamers: Gamer[], convert: boolean = true) {
 	return `
 	<fieldset class="w-80 flex flex-col gap-2 items-center h-full border border-fuchsia-800 bg-red-200/20 rounded-lg p-3 pb-5">
-		<legend id="tournamentPlayersLegend" class="text-fuchsia-800 text-center">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
+		<legend id="tournamentPlayersLegend" class="text-fuchsia-800 text-center mx-auto">${gamers.length} / 4 %%TEXT_PLAYERS%%</legend>		
 		<div id="tournamentDetailsContainer" class="flex flex-col w-75">
 			${remoteTournamentGamersHtml(gamers, convert)}
 		</div>

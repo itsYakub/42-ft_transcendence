@@ -9,13 +9,12 @@ import { userChatListeners } from "./chat.js";
 import { tournamentListeners } from "./game/remoteTournament.js";
 import { Page, Result } from "../../common/interfaces.js";
 import { connectToWS, currentPage } from "./sockets/clientSocket.js";
-import { getUserNick, isUserLoggedIn, userLoggedIn } from "./user.js";
+import { isUserLoggedIn, userLoggedIn } from "./user.js";
 
 /*
 	Simulates moving to a new page
 */
 export async function showPage(page: Page, add: boolean = true) {
-	console.log(`Showing page ${page}`);
 	if (Page.AUTH != page && !isUserLoggedIn())
 		page = Page.AUTH;
 
@@ -127,7 +126,6 @@ if (typeof window !== "undefined") {
 			userLoggedIn(userJson.contents);
 		}
 
-		//showPage(currentPage());
 		setupPage(currentPage());
 	});
 }

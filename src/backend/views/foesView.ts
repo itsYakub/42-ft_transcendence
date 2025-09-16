@@ -5,7 +5,7 @@ export function foesView(foes: Foe[]): string {
 	<div class="flex flex-col items-center gap-4">
 		<div class="text-gray-300 mt-8 text-center text-3xl rounded-lg bg-stone-700 px-3 py-1">%%TEXT_USERS_TITLE%%</div>
 		<fieldset class="border border-fuchsia-800 w-90 rounded-lg bg-red-200/20 p-2">
-			<legend class="mx-auto text-center">${switcherHtml()}</legend>
+			<legend class="text-center mx-auto">${switcherHtml()}</legend>
 			<div class="h-100 p-2 w-full text-center mx-auto flex flex-col gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-auto">	
 				${foesHtml(foes)}
 			</div>

@@ -75,30 +75,12 @@ export function updateTournamentMatchResult(db: DatabaseSync, gameId: string, ma
 	}
 }
 
-export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
-	try {
-		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
-			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
-			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
-			const select = db.prepare(`UPDATE tournaments SET m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
-			select.run(nickToNumbers(g1.nick), nickToNumbers(g2.nick), g1.userId, g2.userId, gameId);
-			return Result.SUCCESS;
-		}
-	}
-	catch (e) {
-		return Result.ERR_DB;
-	}
-}
-
 // export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
 // 	try {
 // 		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
 // 			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
 // 			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
-// 			const select = db.prepare(`UPDATE tournaments SET m1_g1_nick = NULL, m1_g2_nick = NULL,
-// 				m2_g1_nick = NULL, m2_g2_nick = NULL, m1_g1_user_id = NULL, m1_g2_user_id = NULL,
-// 				m2_g1_user_id = NULL, m2_g2_user_id = NULL,
-// 				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
+// 			const select = db.prepare(`UPDATE tournaments SET m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
 // 			select.run(nickToNumbers(g1.nick), nickToNumbers(g2.nick), g1.userId, g2.userId, gameId);
 // 			return Result.SUCCESS;
 // 		}
@@ -107,6 +89,24 @@ export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches:
 // 		return Result.ERR_DB;
 // 	}
 // }
+
+export function updateTournamentFinal(db: DatabaseSync, gameId: string, matches: Match[]): Result {
+	try {
+		if ((matches[0].g1.score + matches[0].g2.score > 0) && (matches[0].g1.score + matches[0].g2.score > 0)) {
+			const g1 = matches[0].g1.score > matches[0].g2.score ? matches[0].g1 : matches[0].g2;
+			const g2 = matches[1].g1.score > matches[1].g2.score ? matches[1].g1 : matches[1].g2;
+			const select = db.prepare(`UPDATE tournaments SET m1_g1_nick = NULL, m1_g2_nick = NULL,
+				m2_g1_nick = NULL, m2_g2_nick = NULL, m1_g1_user_id = NULL, m1_g2_user_id = NULL,
+				m2_g1_user_id = NULL, m2_g2_user_id = NULL,
+				m3_g1_nick = ?, m3_g2_nick = ?, m3_g1_user_id = ?, m3_g2_user_id = ? WHERE game_id = ?`);
+			select.run(nickToNumbers(g1.nick), nickToNumbers(g2.nick), g1.userId, g2.userId, gameId);
+			return Result.SUCCESS;
+		}
+	}
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
 
 export function updateTournamentAfterFinal(db: DatabaseSync, gameId: string, match: Match): Result {
 	try {

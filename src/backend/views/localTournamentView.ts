@@ -7,13 +7,13 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 		<div class="flex flex-row items-center">
 			<div class="flex flex-col gap-20">
 				<fieldset class="w-70 h-31 border border-fuchsia-800 bg-red-200/20 rounded-lg">
-					<legend class="text-fuchsia-800">Semi-final</legend>
+					<legend class="text-fuchsia-800 mx-auto">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[0])}
 					</div>
 				</fieldset>
 			<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
-					<legend class="text-fuchsia-800">Semi-final</legend>
+					<legend class="text-fuchsia-800 mx-auto">Semi-final</legend>
 					<div class="flex flex-col gap-1 justify-center items-center">
 						${matchHtml(tournament.matches[1])}
 					<div>
@@ -22,7 +22,7 @@ export function localTournamentView(tournament: LocalTournament, user: User): st
 			<div class="border border-fuchsia-800 border-l-0 w-30 h-60"></div>
 			<hr class="w-30 h-px bg-fuchsia-800 border-0">
 			<fieldset class="w-70 h-32 border border-fuchsia-800 bg-red-200/20 rounded-lg">
-				<legend class="text-fuchsia-800">Final</legend>
+				<legend class="text-fuchsia-800 mx-auto">Final</legend>
 				<div class="flex flex-col gap-1 justify-center items-center">
 					${matchHtml(tournament.matches[2])}
 				</div>

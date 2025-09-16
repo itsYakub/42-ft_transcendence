@@ -6,7 +6,7 @@ import { userSendUserChatReceived } from './userMessages.js';
 import { getUser, usersByGameId } from '../../db/userDB.js';
 import { Message, MessageType, Result } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
-import { matchJoinReceived, matchLeaveReceived, matchOverReceived, matchUpdateReceived } from './matchMessages.js';
+import { matchJoinReceived, matchLeaveReceived, matchUpdateReceived } from './matchMessages.js';
 import { notificationInviteReceived } from './notificationMessages.js';
 
 export const onlineUsers = new Map<string, WebSocket>();

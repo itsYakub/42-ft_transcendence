@@ -5,7 +5,7 @@ import { numbersToNick } from "../common/utils.js";
 export function getGames(db: DatabaseSync): Box<Game[]> {
 	try {
 		const select = db.prepare("SELECT game_id, GROUP_CONCAT(nick) AS nicks FROM users WHERE NOT game_id IS NULL GROUP BY game_id");
-		const games: Game[] = select.all().map(game => sqlToGame(game));
+		const games: Game[] = select.all().map(game => sqlToGame(game)).filter((game) => !game.gameId.startsWith("r"));
 		return {
 			result: Result.SUCCESS,
 			contents: games
