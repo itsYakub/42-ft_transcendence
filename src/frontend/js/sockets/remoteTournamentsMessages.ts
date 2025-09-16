@@ -80,7 +80,9 @@ export async function tournamentMatchStart(message: Message) {
 			const localIndex = match.g1.userId === getUserId() ? 0 : 1;
 
 			dialog.addEventListener("matchOver", async (e: CustomEvent) => {
-				if (0 == localIndex) {
+				const opponentId = match.g1.userId == getUserId() ? match.g2.userId : match.g1.userId;
+				const onlineBox = await fetch(`/profile/online/${opponentId}`);
+				if (0 == localIndex || Result.ERR_NO_USER == await onlineBox.text()) {
 					match.g1.score = e.detail["g1Score"];
 					match.g2.score = e.detail["g2Score"];
 					sendMessageToServer({

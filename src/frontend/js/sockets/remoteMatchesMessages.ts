@@ -30,6 +30,8 @@ export function matchGamerLeaving() {
 }
 
 export async function updateMatchList() {
+	console.log(currentPage());
+	console.log(getUserGameId());
 	if (Page.GAME == currentPage() && !getUserGameId()) {
 		showPage(Page.GAME);
 	}
@@ -74,7 +76,10 @@ export async function startingMatch(message: Message) {
 				sendMessageToServer({
 					type: MessageType.MATCH_LEAVE
 				});
-				dialog.addEventListener("close", () => showPage(Page.GAME));
+				dialog.addEventListener("close", () => {
+					removeUserGameId();
+					showPage(Page.GAME)
+				});
 			});
 		}
 
@@ -82,13 +87,8 @@ export async function startingMatch(message: Message) {
 		match.g1.nick = numbersToNick(match.g1.nick);
 		match.g2.nick = numbersToNick(match.g2.nick);
 		dialog.addEventListener("keydown", (e: KeyboardEvent) => {
-			if (e.key == "Escape") {
-				sendMessageToServer({
-					type: MessageType.MATCH_QUIT,
-					gameId: message.gameId
-				})
-				g_game.dispose();
-			}
+			if (e.key == "Escape")
+				e.preventDefault();
 		});
 		g_game.setupElements(GameMode.GAMEMODE_PVP, match.g1, match.g2, {
 			networked: true,

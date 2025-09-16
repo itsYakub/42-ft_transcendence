@@ -7,7 +7,7 @@ import { readFriends } from '../../db/friendsDb.js';
 import { profileView } from '../../common/dynamicElements.js';
 import { readFoes } from '../../db/foesDb.js';
 import { accessToken } from '../../db/jwt.js';
-import { isUserAlreadyConnected } from '../sockets/serverSocket.js';
+import { isUserAlreadyConnected, onlineUsers } from '../sockets/serverSocket.js';
 
 export function getProfile(request: FastifyRequest, reply: FastifyReply) {
 	const db = request.db;
@@ -84,4 +84,9 @@ export function isConnected(request: FastifyRequest, reply: FastifyReply) {
 		"Set-Cookie", `accessToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).header(
 			"Set-Cookie", `refreshToken=blank; expires=${date}; Path=/; Secure; HttpOnly;`).send(Result.ERR_EMAIL_IN_USE)
 		: reply.send(Result.SUCCESS);
+}
+
+export function isOnline(request: FastifyRequest, reply: FastifyReply) {
+	const { id } = request.params as any;
+	reply.send(onlineUsers.has(id.toString()) ? Result.SUCCESS : Result.ERR_NO_USER);
 }

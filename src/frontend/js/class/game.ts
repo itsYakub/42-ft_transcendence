@@ -1,11 +1,10 @@
 import * as BABYLON from '@babylonjs/core';
-import * as GUI from '@babylonjs/gui';
 
 import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { Ground } from './ground.js';
 import { Gui } from './gui.js';
-import { GamePlayer, MessageType, Message } from '../../../common/interfaces.js';
+import { GamePlayer, MessageType, Message, g_gameScoreTotal } from '../../../common/interfaces.js';
 import { sendMessageToServer } from '../sockets/clientSocket.js';
 import { getUserId } from '../user.js';
 
@@ -550,7 +549,6 @@ export class Game {
 /* SECTION: Global game object */
 export var g_gamePlayableArea: BABYLON.Vector2 = new BABYLON.Vector2(7.0, 3.0);
 export var g_gameTime: number = 0.0;
-export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
 export const g_boundCellSize: number = 1.0;
 
 export var g_game: Game = new Game();

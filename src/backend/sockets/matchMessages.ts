@@ -42,18 +42,16 @@ export function matchJoinReceived(db: DatabaseSync, message: Message) {
 }
 
 export function matchLeaveReceived(db: DatabaseSync, gameId: string, fromId: number) {
-	const response = removeUserFromMatch(db, fromId);
-
-	if (Result.SUCCESS == response && gameId) {
-		const gamers = usersByGameId(db, gameId);
-		if (Result.SUCCESS == gamers.result) {
-			const userIds = gamers.contents.map((gamer) => gamer.userId).filter((userId) => userId != fromId);
-			sendMessageToGameIdUsers({
-				type: MessageType.MATCH_LOBBY_CHANGED,
-				gameId,
-				content: gamersHtml(gamers.contents)
-			}, userIds);
-		}
+	if (Result.SUCCESS == removeUserFromMatch(db, fromId)) {
+		// const gamers = usersByGameId(db, gameId);
+		// if (Result.SUCCESS == gamers.result) {
+		// 	const userIds = gamers.contents.map((gamer) => gamer.userId).filter((userId) => userId != fromId);
+		// 	sendMessageToGameIdUsers({
+		// 		type: MessageType.MATCH_LOBBY_CHANGED,
+		// 		gameId,
+		// 		content: gamersHtml(gamers.contents)
+		// 	}, userIds);
+		// }
 
 		sendMessageToOtherUsers({
 			type: MessageType.GAME_LIST_CHANGED
@@ -63,15 +61,6 @@ export function matchLeaveReceived(db: DatabaseSync, gameId: string, fromId: num
 
 /* Forward game updates - handles ball sync, paddle movements, etc. */
 export function matchUpdateReceived(db: DatabaseSync, message: Message) {
-	if (MessageType.MATCH_END == message.type) {
-		const gamersBox = usersByGameId(db, message.gameId);
-		if (Result.SUCCESS == gamersBox.result) {
-			const gamers = gamersBox.contents;
-			sendMessageToGameIdUsers({
-				type: MessageType.MATCH_OVER
-			}, [gamers[0].userId, gamers[1].userId])
-		}
-	}
 	sendMessageToUser({
 		type: MessageType.MATCH_UPDATE,
 		gameId: message.gameId,

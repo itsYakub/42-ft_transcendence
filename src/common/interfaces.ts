@@ -1,3 +1,5 @@
+export const g_gameScoreTotal: number = /* 10.0; */ 3.0;
+
 export enum Page {
 	ACCOUNT = "ACCOUNT",
 	AUTH = "AUTH",

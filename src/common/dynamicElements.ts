@@ -88,10 +88,10 @@ export function userNotificationMessage(notification: UserNotification): string 
 	switch (notification.type) {
 		case MessageType.NOTIFICATION_INVITE:
 			const string = `${notification.fromNick} ${translate(getLanguage(), "%%TEXT_INVITATION%%")}`;
-			return `<div class="inviteNotificationButton w-full text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]" data-game="${notification.gameId}">${string}</div>`;
+			return `<div class="inviteNotificationButton w-full text-gray-300 text-center bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]" data-game="${notification.gameId}">${string}</div>`;
 		case MessageType.NOTIFICATION_TOURNAMENT:
 			const string2 = `${translate(getLanguage(), "%%TEXT_NEXT_MATCH%%")}`;
-			return `<div class="nextMatchNotificationButton w-full text-gray-300 bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">${string2}</div>`;
+			return `<div class="nextMatchNotificationButton w-full text-gray-300 text-center bg-red-300/50 mx-auto px-4 py-2 rounded-lg cursor-[url(/images/pointer.png),pointer]">${string2}</div>`;
 	}
 }
 

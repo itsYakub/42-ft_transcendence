@@ -4,10 +4,13 @@ import { DatabaseSync } from "node:sqlite";
 import { tournamentChatReceived } from './gameMessages.js';
 import { userSendUserChatReceived } from './userMessages.js';
 import { getUser, usersByGameId } from '../../db/userDB.js';
-import { Message, MessageType, Result } from '../../common/interfaces.js';
+import { g_gameScoreTotal, MatchGamer, Message, MessageType, Result } from '../../common/interfaces.js';
 import { tournamentJoinReceived, tournamentGamerReadyReceived, tournamentMatchEndReceived, tournamentOverReceived, tournamentLeaveReceived } from './tournamentMessages.js';
 import { matchJoinReceived, matchLeaveReceived, matchUpdateReceived } from './matchMessages.js';
 import { notificationInviteReceived } from './notificationMessages.js';
+import { createMatchResult } from '../../db/matchResultsDb.js';
+import { numbersToNick } from '../../common/utils.js';
+import { readRemoteTournament } from '../../db/remoteTournamentsDb.js';
 
 export const onlineUsers = new Map<string, WebSocket>();
 
@@ -28,21 +31,50 @@ export function connectToServerSocket(socket: WebSocket, request: FastifyRequest
 		onlineUsers.delete(user.userId.toString());
 		const userBox = getUser(db, request.cookies.accessToken, request.cookies.refreshToken);
 		if (Result.SUCCESS == userBox.result) {
-			const gamersBox = usersByGameId(db, userBox.contents.gameId);
-			if (Result.SUCCESS == gamersBox.result) {
-				const gamers = gamersBox.contents;
-				sendMessageToGameIdUsers({
-					type: MessageType.MATCH_END,
-					gameId: userBox.contents.gameId,
-					matchContent: {
-						kind: "GAME_QUIT"
-					}
-				}, [gamers[0]?.userId, gamers[1]?.userId]);
+			const leavingUser = userBox.contents;
+			if (null == leavingUser.gameId)
+				return;
+
+			const gameId = leavingUser.gameId;
+
+			if (gameId.startsWith("m")) {
+				const gamersBox = usersByGameId(db, gameId);
+				if (Result.SUCCESS == gamersBox.result) {
+					const gamers = gamersBox.contents;
+					sendMessageToGameIdUsers({
+						type: MessageType.MATCH_END,
+						gameId,
+						matchContent: {
+							kind: "GAME_QUIT"
+						}
+					}, [gamers[0]?.userId, gamers[1]?.userId]);
+					const opponent = gamers[0].userId == leavingUser.userId ? gamers[1] : gamers[0];
+					createMatchResult(db, leavingUser.userId, numbersToNick(opponent.nick), 0, g_gameScoreTotal, false);
+				}
+				matchLeaveReceived(db, gameId, leavingUser.userId);
+			}
+			else if (gameId.startsWith("r")) {
+				matchLeaveReceived(db, gameId, leavingUser.userId);
+				const tournamentBox = readRemoteTournament(db, gameId);
+				if (Result.SUCCESS == tournamentBox.result) {
+					const m1 = tournamentBox.contents.matches[0];
+					const m2 = tournamentBox.contents.matches[1];
+					const m3 = tournamentBox.contents.matches[2];
+					if (m3.g1.userId == leavingUser.userId)
+						quitMatch(gameId, leavingUser.userId, m3.g2);
+					else if (m3.g2.userId == leavingUser.userId)
+						quitMatch(gameId, leavingUser.userId, m3.g1);
+					else if (m2.g1.userId == leavingUser.userId)
+						quitMatch(gameId, leavingUser.userId, m2.g2);
+					else if (m2.g2.userId == leavingUser.userId)
+						quitMatch(gameId, leavingUser.userId, m2.g1);
+					else if (m1.g1.userId == leavingUser.userId)
+						quitMatch(gameId, leavingUser.userId, m1.g2);
+					else if (m1.g2.userId == leavingUser.userId)
+						quitMatch(gameId, leavingUser.userId, m1.g1);					
+				}
 			}
 		}
-		//TODO remove from game, lose game 10 - 0!, send message to game
-		//TODO player closes with escape
-		matchLeaveReceived(db, user.gameId, user.userId);
 	});
 }
 
@@ -88,11 +120,6 @@ export function sendMessageToUser(message: Message, userId: number) {
 	}
 }
 
-function sendMessage(socket: WebSocket, message: Message) {
-	if (1 === socket.readyState)
-		socket.send(JSON.stringify(message));
-}
-
 /*
 	Deals with a socket message from a client
 */
@@ -131,11 +158,6 @@ export function handleClientMessage(db: DatabaseSync, message: Message) {
 				matchLeaveReceived(db, message.gameId, message.fromId);
 			}
 			break;
-		// matchOverReceived(db, message);
-		// break;
-		// case MessageType.MATCH_START:
-		// 	matchStartReceived(db, message);
-		// 	break;
 		case MessageType.MATCH_UPDATE:
 		case MessageType.MATCH_GOAL:
 		case MessageType.MATCH_RESET:
@@ -167,4 +189,20 @@ export function handleClientMessage(db: DatabaseSync, message: Message) {
 			tournamentOverReceived(db, message);
 			break;
 	}
+}
+
+function sendMessage(socket: WebSocket, message: Message) {
+	if (1 === socket.readyState)
+		socket.send(JSON.stringify(message));
+}
+
+function quitMatch(gameId: string, leavingUserId: number, opponent: MatchGamer) {
+	sendMessageToGameIdUsers({
+		type: MessageType.MATCH_END,
+		gameId,
+		matchContent: {
+			kind: "GAME_QUIT"
+		}
+	}, [opponent.userId]);
+	//createMatchResult(db, leavingUserId, opponent.nick, 0, g_gameScoreTotal, false);
 }
