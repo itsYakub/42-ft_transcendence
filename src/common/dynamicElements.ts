@@ -210,7 +210,7 @@ function matchResultString(matchResult: MatchResult): string {
 	const date: Date = new Date(matchResult.playedAt);
 
 	return `
-	<div class="p-2.5 rounded-lg m-3 bg-red-300/50 hover:bg-red-300 text-stone-700">
+	<div class="p-2.5 rounded-lg m-3 bg-red-300/50 text-stone-700">
 		<div class="flex flex-row gap-4">
 			<div>${date.toLocaleDateString("pl-PL")}</div>
 			<div class="grow text-${colour}-800">${matchResult.score} : ${matchResult.opponentScore} vs ${matchResult.opponent}</div>

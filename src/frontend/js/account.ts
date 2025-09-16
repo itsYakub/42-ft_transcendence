@@ -28,7 +28,7 @@ export function accountListeners() {
 		avatarUploadButton.addEventListener("change", () => {
 			const files = avatarUploadButton.files;
 			if (1 == files.length) {
-				if (files[0].size > 100 * 1024) {
+				if (files[0].size > 25 * 1024) {
 					showAlert(Result.ERR_AVATAR_TOO_BIG);
 					return;
 				}
@@ -37,7 +37,7 @@ export function accountListeners() {
 				reader.readAsDataURL(files[0]);
 				reader.onloadend = async () => {
 					let avatar = reader.result as string;
-					avatar = window.btoa(avatar);
+					avatar = window.btoa(avatar).replaceAll("=", "");
 					const response = await fetch("/account/avatar", {
 						method: "POST",
 						headers: {

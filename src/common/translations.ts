@@ -28,15 +28,22 @@ export function translate(language: string, text: string): string {
 		"BUTTON_UPDATE",
 		"BUTTON_USERS",
 		"ERR_AVATAR_TOO_BIG",
+		"ERR_BAD_PASSWORD",
 		"ERR_BAD_TOTP",
 		"ERR_DB",
 		"ERR_EMAIL_IN_USE",
 		"ERR_FORBIDDEN",
+		"ERR_FULL",
 		"ERR_GOOGLE",
 		"ERR_GOOGLE_EMAIL",
+		"ERR_NO_NEW_PASSWORD",
 		"ERR_NO_USER",
 		"ERR_NOT_FOUND",
+		"ERR_PASSWORDS_DONT_MATCH",
+		"ERR_SAME_EMAIL",
+		"ERR_TOTP_CODE",
 		"ERR_UNIQUE",
+		"ERR_USER_OFFLINE",
 		"MESSAGE_INVITATION",
 		"MESSAGE_TOTP",
 		"SUCCESS_NICK",
@@ -157,7 +164,7 @@ function translateAustralian(text: string): string {
 		case "BUTTON_UPDATE": return "Update";
 		case "BUTTON_USERS": return "Users";
 
-		case "ERR_AVATAR_TOO_BIG": return "Strewth - the selected image is too big - 100KiB max, mate!";
+		case "ERR_AVATAR_TOO_BIG": return "Strewth - the selected image is too big - 25KiB max, mate!";
 		case "ERR_BAD_PASSWORD": return "Incorrect password, mate!";
 		case "ERR_BAD_TOTP": return "Incorrect code, mate!";
 		case "ERR_DB": return "Database error, mate!";
@@ -282,7 +289,7 @@ function translateDutch(text: string): string {
 		case "BUTTON_UPDATE": return "Bijwerken";
 		case "BUTTON_USERS": return "Gebruikers";
 
-		case "ERR_AVATAR_TOO_BIG": return "De geselecteerde afbeelding is te groot - maximaal 100 KiB!";
+		case "ERR_AVATAR_TOO_BIG": return "De geselecteerde afbeelding is te groot - maximaal 25 KiB!";
 		case "ERR_BAD_PASSWORD": return "Onjuist wachtwoord!";
 		case "ERR_BAD_TOTP": return "Onjuiste code!";
 		case "ERR_DB": return "Databasefout!";
@@ -407,7 +414,7 @@ function translateEnglish(text: string): string {
 		case "BUTTON_UPDATE": return "Update";
 		case "BUTTON_USERS": return "Users";
 
-		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 100KiB max!";
+		case "ERR_AVATAR_TOO_BIG": return "The selected image is too big - 25KiB max!";
 		case "ERR_BAD_PASSWORD": return "Incorrect password!";
 		case "ERR_BAD_TOTP": return "Incorrect code!";
 		case "ERR_DB": return "Database error!";
@@ -532,7 +539,7 @@ function translateEsperanto(text: string): string {
 		case "BUTTON_UPDATE": return "Ĝisdatigi";
 		case "BUTTON_USERS": return "Uzantoj";
 
-		case "ERR_AVATAR_TOO_BIG": return "La elektita bildo estas tro granda - maksimume 100 KiB!";
+		case "ERR_AVATAR_TOO_BIG": return "La elektita bildo estas tro granda - maksimume 25 KiB!";
 		case "ERR_BAD_PASSWORD": return "Malĝusta pasvorto!";
 		case "ERR_BAD_TOTP": return "Malĝusta kodo!";
 		case "ERR_DB": return "Datumbazeraro!";
@@ -658,7 +665,7 @@ function translatePolish(text: string): string {
         case "BUTTON_UPDATE": return "Zaktualizuj";
         case "BUTTON_USERS": return "Użytkownicy";
 
-        case "ERR_AVATAR_TOO_BIG": return "Wybrany obrazek jest za duży - 100KiB max!";
+        case "ERR_AVATAR_TOO_BIG": return "Wybrany obrazek jest za duży - 25KiB max!";
         case "ERR_BAD_PASSWORD": return "Niepoprawne hasło!";
         case "ERR_BAD_TOTP": return "Niepoprawny kod!";
         case "ERR_DB": return "Błąd bazy danych!";

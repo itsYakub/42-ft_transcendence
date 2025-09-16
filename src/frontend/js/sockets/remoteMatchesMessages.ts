@@ -30,8 +30,6 @@ export function matchGamerLeaving() {
 }
 
 export async function updateMatchList() {
-	console.log(currentPage());
-	console.log(getUserGameId());
 	if (Page.GAME == currentPage() && !getUserGameId()) {
 		showPage(Page.GAME);
 	}

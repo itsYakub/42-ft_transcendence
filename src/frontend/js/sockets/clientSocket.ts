@@ -3,7 +3,7 @@ import { userSendNotification, userSendTournamentNotification, userSendUserChat 
 import { showPage } from "../index.js";
 import { userLoggedOut, getUserId,  getUserGameId } from "../user.js";
 import { matchFinishing, startingMatch, updateMatchDetails, updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
-import { tournamentChat, tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
+import { tournamentChat, tournamentMatchStart, tournamentOver, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
 import { userInvite } from "./userMessages.js";
 
 let socket: WebSocket;
@@ -128,9 +128,9 @@ function handleServerMessage(message: Message) {
 		case MessageType.TOURNAMENT_MATCH_START:
 			tournamentMatchStart(message);
 			break;
-		// case MessageType.TOURNAMENT_OVER:
-		// 	tournamentOver(user, message);
-		// 	break;
+		case MessageType.TOURNAMENT_OVER:
+			tournamentOver(message);
+			break;
 		case MessageType.TOURNAMENT_UPDATE:
 			updateTournamentDetails(message);
 			break;

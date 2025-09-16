@@ -1,7 +1,4 @@
 import { DatabaseSync } from "node:sqlite";
-import { hashPassword } from "./jwt.js";
-import { getNickname } from "./userDB.js";
-import { defaultAvatar } from "./defaultAvatar.js";
 
 export function initDbTables(db: DatabaseSync) {
 	initChatsWaitingTable(db);
@@ -26,11 +23,6 @@ function initFoesTable(db: DatabaseSync) {
 		foe_id INTEGER NOT NULL,
 		user_id INTEGER NOT NULL
 		);`);
-
-	//TODO remove
-	const number: number = 0, id: number = 1
-	for (var i = 1; i <= number; i++)
-		db.exec(`INSERT INTO foes (user_id, foe_id) VALUES (${id}, ${i});`);
 }
 
 function initFriendsTable(db: DatabaseSync) {
@@ -42,11 +34,6 @@ function initFriendsTable(db: DatabaseSync) {
 		friend_id INTEGER NOT NULL,
 		user_id INTEGER NOT NULL
 		);`);
-
-	//TODO remove
-	const number: number = 0, id: number = 1
-	for (var i = 1; i <= number; i++)
-		db.exec(`INSERT INTO friends (user_id, friend_id) VALUES (${id}, ${i});`);
 }
 
 function initChatsWaitingTable(db: DatabaseSync): void {
@@ -190,14 +177,6 @@ function initUsersTable(db: DatabaseSync) {
 		type TEXT DEFAULT USER,
 		user_id INTEGER PRIMARY KEY AUTOINCREMENT
 		);`);
-
-	//TODO remove
-	const addUsers: number = 10
-	if (addUsers > 0) {
-		const pw = hashPassword("12345678");
-		for (var i = 1; i <= addUsers; i++)
-			db.exec(`INSERT INTO users (nick, email, password, avatar) VALUES ('${getNickname(db).contents}', 'test${i}@test.com', '${pw}', '${defaultAvatar}');`);
-	}
 }
 
 function initUserChatsTable(db: DatabaseSync): void {
@@ -211,13 +190,4 @@ function initUserChatsTable(db: DatabaseSync): void {
 		sent_at TEXT NOT NULL,
 		to_id INTEGER NOT NULL
 		);`);
-
-	//TODO remove
-	const number = 0, start = 0, end = 0, id = 0;
-	for (var i = 1; i <= number; i++) {
-		for (var j = start; j <= end; j++) {
-			db.exec(`INSERT INTO user_chats (from_id, message, to_id, sent_at) VALUES (${j + 1}, '${j + 1}-to-${id}', ${id}, '${new Date().toISOString()}');`);
-			db.exec(`INSERT INTO user_chats (from_id, message, to_id, sent_at) VALUES (${id}, '${id}-to-${j}', ${j}, '${new Date().toISOString()}');`);
-		}
-	}
 }

@@ -3,7 +3,7 @@ import { translate } from "../../../common/translations.js";
 import { g_game, GameMode } from "../class/game.js";
 import { tournamentListeners } from "../game/remoteTournament.js";
 import { getLanguage } from "../index.js";
-import { getUserGameId, getUserId, setUserGameId } from "../user.js";
+import { getUserGameId, getUserId, removeUserGameId, setUserGameId } from "../user.js";
 import { sendMessageToServer } from "./clientSocket.js";
 
 export function joiningTournament(gameId: string) {
@@ -101,4 +101,8 @@ export async function tournamentMatchStart(message: Message) {
 			g_game.actuallyStart();
 		}
 	}, 1000);
+}
+
+export function tournamentOver(message: Message) {
+	removeUserGameId();
 }

@@ -131,6 +131,9 @@ export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
 
 				if (m3.g1.score + m3.g2.score > 0) {
 					setTimeout(() => gamerIds.forEach((gamer) => removeUserFromMatch(db, gamer)), 100);
+					sendMessageToGameIdUsers({
+						type: MessageType.TOURNAMENT_OVER
+					}, gamerIds);
 				}
 			}
 		}
@@ -156,10 +159,11 @@ export function tournamentLeaveReceived(db: DatabaseSync, message: Message) {
 			gameId,
 			content
 		}, userIds);
-		sendMessageToOtherUsers({
-			type: MessageType.GAME_LIST_CHANGED
-		}, fromId);
+
 	}
+	sendMessageToOtherUsers({
+		type: MessageType.GAME_LIST_CHANGED
+	}, fromId);
 }
 
 function userOpponent(match: Match, userId: number): MatchGamer {

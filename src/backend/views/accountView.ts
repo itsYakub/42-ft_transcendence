@@ -10,13 +10,13 @@ export function accountView(user: User): string {
 				<legend class="text-fuchsia-800 text-center mx-auto">%%TEXT_CHANGE_AVATAR%%</legend>
 				<div>
 					<img class="w-20 h-20 mx-auto cursor-[url(/images/pointer.png),pointer] rounded-lg" src="${user.avatar}" id="avatarImage" />
-					<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg" class="hidden">
+					<input type="file" id="avatarFilename" accept=".png, .jpg, .jpeg, .svg" class="hidden">
 				</div>
 			</fieldset>
 			<fieldset class="grow p-3 border border-fuchsia-800 bg-red-200/20 rounded-lg">
 				<legend class="text-fuchsia-800 text-center mx-auto">%%TEXT_CHANGE_NICK%%</legend>
 				<form id="changeNickForm" class="flex flex-col">
-					<input type="text" maxlength="25" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
+					<input type="text" maxlength="25" minlength="5" id="newNick" placeholder="%%TEXT_NEW_NICK%%" required="true"
 						class="outline-hidden rounded-lg w-full p-2.5 bg-red-300/50 placeholder-stone-400 text-stone-700">
 					<button type="submit" formmethod="post"
 						class="ml-auto cursor-[url(/images/pointer.png),pointer] mt-2 hover:text-stone-700 text-fuchsia-800">%%BUTTON_UPDATE%%</button>

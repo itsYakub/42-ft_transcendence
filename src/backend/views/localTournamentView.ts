@@ -42,8 +42,8 @@ function matchHtml(match: LocalMatch): string {
 	let gamer2Colour: string;
 
 	if (0 == match.g1.score && 0 == match.g2.score) {
-		gamer1Colour = "text-gray-900";
-		gamer2Colour = "text-gray-900";
+		gamer1Colour = "text-stone-700";
+		gamer2Colour = "text-stone-700";
 	}
 	else if (match.g1.score > match.g2.score) {
 		gamer1Colour = "text-green-900";

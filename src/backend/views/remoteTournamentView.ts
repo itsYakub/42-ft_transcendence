@@ -39,8 +39,8 @@ export function remoteTournamentDetails(tournament: Tournament, user: ShortUser)
 			<fieldset class="w-80 h-56 border border-fuchsia-800 rounded-lg bg-red-200/20 p-3">
 			<legend id="tournamentPlayersLegend" class="text-fuchsia-800 text-center mx-auto">%%TEXT_TOURNAMENT_FINAL%%</legend>		
 			<div class="flex flex-col gap-2 pt-8">
-				<div class="text-green-800 text-center">%%TEXT_CONGRATULATIONS%%</div>
-				<div class="w-75 py-2 px-4 rounded-lg bg-red-200/10 text-green-800 text-center">${winner.nick}!</div>
+				<div class="text-green-800 text-center font-bold">%%TEXT_CONGRATULATIONS%%</div>
+				<div class="w-75 py-2 px-4 text-green-800 text-center font-bold">${winner.nick}!</div>
 			</div>
 		</fieldset>
 		`;

@@ -440,7 +440,9 @@ export class Game {
 						this.m_stateMachine = StateMachine.STATE_UPDATE;
 					}
 				} else {
+					setTimeout(() => {
 					this.m_ball.start();
+					}, 1000);
 					this.m_stateMachine = StateMachine.STATE_UPDATE;
 				}
 			} break;
