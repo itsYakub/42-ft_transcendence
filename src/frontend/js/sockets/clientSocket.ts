@@ -1,7 +1,7 @@
-import { Message, MessageType, Page, Result, ShortUser } from "../../../common/interfaces.js";
-import { userSendNotification, userSendUserChat } from "../chat.js";
+import { Message, MessageType, Page } from "../../../common/interfaces.js";
+import { userSendNotification, userSendTournamentNotification, userSendUserChat } from "../chat.js";
 import { showPage } from "../index.js";
-import { userLoggedOut, getUserId, getUserNick, getUserGameId } from "../user.js";
+import { userLoggedOut, getUserId,  getUserGameId } from "../user.js";
 import { matchFinishing, startingMatch, updateMatchDetails, updateMatchList, updateMatchLobby } from "./remoteMatchesMessages.js";
 import { tournamentChat, tournamentMatchStart, updateTournamentDetails, updateTournamentLobby } from "./remoteTournamentsMessages.js";
 import { userInvite } from "./userMessages.js";
@@ -12,7 +12,6 @@ export async function connectToWS() {
 	if (!isConnected()) {
 		try {
 			await initClientSocket();
-			console.log("connected");
 		} catch (err) {
 			console.error("❌ WebSocket failed:", err);
 		}
@@ -20,7 +19,6 @@ export async function connectToWS() {
 }
 
 export async function closeClientSocket() {
-	console.log("closing socket");
 	socket.close();
 	socket = null;
 	await fetch("/auth/logout", {
@@ -92,6 +90,9 @@ function handleServerMessage(message: Message) {
 			break;
 		case MessageType.NOTIFICATION_INVITE:
 			userSendNotification(message);
+			break;
+		case MessageType.NOTIFICATION_TOURNAMENT:
+			userSendTournamentNotification(message);
 			break;
 		case MessageType.USER_SEND_USER_CHAT:
 			userSendUserChat(message);

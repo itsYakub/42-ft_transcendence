@@ -6,6 +6,7 @@ import { removeUserFromMatch, usersInTournament } from '../../db/userDB.js';
 import { createMatchResult } from '../../db/matchResultsDb.js';
 import { sendMessageToGameIdUsers, sendMessageToOtherUsers } from "./serverSocket.js";
 import { gamePlayers } from "../../db/gameDb.js";
+import { createTournamentNotification } from "../../db/notificationsDb.js";
 
 export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
 	const shuffled = shuffleGamers(gamers);
@@ -16,7 +17,18 @@ export function generateTournament(db: DatabaseSync, gamers: Gamer[]) {
 			type: MessageType.TOURNAMENT_UPDATE,
 			gameId
 		}, userIds);
-		//send notification to everyone
+
+		userIds.forEach((user) => {
+			console.log(createTournamentNotification(db, {
+				type: MessageType.NOTIFICATION_TOURNAMENT,
+				toId: user
+			}));
+		});
+
+		sendMessageToGameIdUsers({
+			type: MessageType.NOTIFICATION_TOURNAMENT,
+			gameId
+		}, userIds);
 	}
 }
 
@@ -92,6 +104,20 @@ export function tournamentMatchEndReceived(db: DatabaseSync, message: Message) {
 				}
 				else if (null == m3.g1.userId && null == m3.g2.userId) {
 					updateTournamentFinal(db, gameId, [m1, m2, m3]);
+					const m1Winner = m1.g1.score > m1.g2.score ? m1.g1.userId : m1.g2.userId;
+					const m2Winner = m2.g1.score > m2.g2.score ? m2.g1.userId : m2.g2.userId;
+					const userIds = [m1Winner, m2Winner];
+					userIds.forEach((user) => {
+						console.log(createTournamentNotification(db, {
+							type: MessageType.NOTIFICATION_TOURNAMENT,
+							toId: user
+						}));
+					});
+
+					sendMessageToGameIdUsers({
+						type: MessageType.NOTIFICATION_TOURNAMENT,
+						gameId
+					}, userIds);
 				}
 			}
 

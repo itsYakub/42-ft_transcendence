@@ -15,7 +15,7 @@ export function readNotifications(db: DatabaseSync, userId: number): Box<UserNot
 			contents: notifications
 		};
 	}
-	catch (e) {console.log(e);
+	catch (e) {
 		return {
 			result: Result.ERR_DB,
 		};
@@ -28,7 +28,18 @@ export function createInviteNotification(db: DatabaseSync, message: Message): Re
 		select.run(message.fromId, message.toId, MessageType.NOTIFICATION_INVITE, new Date().toISOString());
 		return updateWaiting(db, message.toId, 0, 1);
 	}
-	catch (e) {console.log(e);
+	catch (e) {
+		return Result.ERR_DB;
+	}
+}
+
+export function createTournamentNotification(db: DatabaseSync, message: Message): Result {
+	try {
+		const select = db.prepare("INSERT INTO notifications (from_id, to_id, notification_type, sent_at) VALUES (?, ?, ?, ?)");
+		select.run(message.toId, message.toId, MessageType.NOTIFICATION_TOURNAMENT, new Date().toISOString());
+		return updateWaiting(db, message.toId, 0, 1);
+	}
+	catch (e) {
 		return Result.ERR_DB;
 	}
 }

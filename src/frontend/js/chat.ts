@@ -38,7 +38,6 @@ export async function userSendNotification(message: Message) {
 			node.innerHTML = notification;
 			const realNode = node.firstElementChild;
 			realNode.addEventListener("click", async function () {
-				console.log(`Invite to ${this.dataset.game}`);
 				setUserGameId(this.dataset.game);
 				await joiningMatch(this.dataset.game);
 				showPage(Page.GAME);
@@ -58,7 +57,46 @@ export async function userSendNotification(message: Message) {
 	}
 	else {
 		//other page
-		const partnerId = message.fromId;
+		const chatIndicator = document.querySelector("#chatIndicator");
+		if (chatIndicator)
+			chatIndicator.classList.remove("collapse");
+	}
+}
+
+export async function userSendTournamentNotification(message: Message) {
+	const chatPartnerContainer = <HTMLElement>document.querySelector("#chatPartnerContainer");
+	if (chatPartnerContainer) {
+		const partnerId = parseInt(chatPartnerContainer.dataset.id);
+		if (partnerId === 0) {
+			const response = await fetch(`/chat/waiting/clear/0`);
+			if (Result.SUCCESS != await response.text())
+				return;
+
+			const notification = userNotificationMessage({
+				sentAt: new Date(),
+				type: message.type
+			});
+			const node = document.createElement("div");
+			node.innerHTML = notification;
+			const realNode = node.firstElementChild;
+			realNode.addEventListener("click", async function () {
+				showPage(Page.GAME);
+			});
+			const container = document.querySelector("#userChatsContainer");
+			container.insertBefore(realNode, container.firstChild);
+		}
+
+		else if (Page.CHAT == currentPage()) {
+			const notificationsButton = document.querySelector("#notificationsButton");
+			(notificationsButton.childNodes[3] as HTMLElement).classList.remove("collapse");
+
+			const chatIndicator = document.querySelector("#chatIndicator");
+			if (chatIndicator)
+				chatIndicator.classList.remove("collapse");
+		}
+	}
+	else {
+		//other page
 		const chatIndicator = document.querySelector("#chatIndicator");
 		if (chatIndicator)
 			chatIndicator.classList.remove("collapse");
@@ -117,7 +155,6 @@ export async function userSendUserChat(message: Message) {
 						nicks.push(partner.nick);
 						nicks.sort((a, b) => a.localeCompare(b));
 						const index = nicks.indexOf(partner.nick);
-						console.log(`${partner.nick} is at index ${index}`);
 						insertChatPartner(partner, chatPartnerButtons[index] as HTMLElement, 0 == index);
 					}
 				}
@@ -198,7 +235,6 @@ export function userChatListeners() {
 	const notificationsButton = document.querySelector("#notificationsButton");
 	if (notificationsButton) {
 		notificationsButton.addEventListener("click", async () => {
-			console.log("notifications");
 			if (!isUserLoggedIn())
 				return showPage(Page.AUTH);
 
@@ -232,9 +268,15 @@ export function userChatListeners() {
 			let inviteNotificationButtons = document.getElementsByClassName("inviteNotificationButton");
 			for (var i = 0; i < inviteNotificationButtons.length; i++) {
 				inviteNotificationButtons[i].addEventListener("click", async function () {
-					console.log(`Invite to ${this.dataset.game}`);
 					setUserGameId(this.dataset.game);
 					await joiningMatch(this.dataset.game);
+					showPage(Page.GAME);
+				});
+			}
+
+			let nextMatchNotificationButtons = document.getElementsByClassName("nextMatchNotificationButton");
+			for (var i = 0; i < nextMatchNotificationButtons.length; i++) {
+				nextMatchNotificationButtons[i].addEventListener("click", async function () {
 					showPage(Page.GAME);
 				});
 			}
@@ -273,7 +315,6 @@ export function userChatListeners() {
 							nicks.push(partner.nick);
 							nicks.sort((a, b) => a.localeCompare(b));
 							const index = nicks.indexOf(partner.nick);
-							console.log(`${partner.nick} is at index ${index}`);
 							insertNewChatPartner(partner, chatPartnerButtons[index] as HTMLElement, 0 == index);
 						}
 					}

@@ -56,6 +56,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_FRIENDS_TITLE",
 		"TEXT_GAME_TITLE",
 		"TEXT_GUEST",
+		"TEXT_INVITATION",
 		"TEXT_JOIN",
 		"TEXT_LOCAL_MATCH",
 		"TEXT_LOCAL_TOURNAMENT",
@@ -68,6 +69,7 @@ export function translate(language: string, text: string): string {
 		"TEXT_MESSAGES",
 		"TEXT_NEW_NICK",
 		"TEXT_NEW_PASSWORD",
+		"TEXT_NEXT_MATCH",
 		"TEXT_NO_FOES",
 		"TEXT_NO_FRIENDS",
 		"TEXT_NO_MATCHES",
@@ -198,6 +200,7 @@ function translateAustralian(text: string): string {
 		case "TEXT_FRIENDS_TITLE": return "Friends";
 		case "TEXT_GAME_TITLE": return "Games";
 		case "TEXT_GUEST": return "Guest";
+		case "TEXT_INVITATION": return "has invited you to play!";
 		case "TEXT_JOIN": return "In-progress";
 		case "TEXT_LOCAL_MATCH": return "Local match";
 		case "TEXT_LOCAL_TOURNAMENT": return "Local tournament";
@@ -210,6 +213,7 @@ function translateAustralian(text: string): string {
 		case "TEXT_MESSAGES": return "Messages";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
+		case "TEXT_NEXT_MATCH": return "Your match is ready!";
 		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_FRIENDS": return "No friends!";
 		case "TEXT_NO_MATCHES": return "No matches yet!";
@@ -321,6 +325,7 @@ function translateDutch(text: string): string {
 		case "TEXT_FRIENDS_TITLE": return "Vrienden";
 		case "TEXT_GAME_TITLE": return "Spelen";
 		case "TEXT_GUEST": return "Gast";
+		case "TEXT_INVITATION": return "heeft je uitgenodigd om te spelen!";
 		case "TEXT_JOIN": return "Lopende";
 		case "TEXT_LOCAL_MATCH": return "Lokale wedstrijd";
 		case "TEXT_LOCAL_TOURNAMENT": return "Lokaal toernooi";
@@ -333,6 +338,7 @@ function translateDutch(text: string): string {
 		case "TEXT_MESSAGES": return "Berichten";
 		case "TEXT_NEW_NICK": return "Nieuwe bijnaam";
 		case "TEXT_NEW_PASSWORD": return "Nieuw wachtwoord";
+		case "TEXT_NEXT_MATCH": return "Je wedstrijd is klaar!";
 		case "TEXT_NO_FOES": return "Geen vijanden!";
 		case "TEXT_NO_FRIENDS": return "Geen vrienden!";
 		case "TEXT_NO_MATCHES": return "Nog geen wedstrijden!";
@@ -444,6 +450,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_FRIENDS_TITLE": return "Friends";
 		case "TEXT_GAME_TITLE": return "Games";
 		case "TEXT_GUEST": return "Guest";
+		case "TEXT_INVITATION": return "has invited you to play!";
 		case "TEXT_JOIN": return "In-progress";
 		case "TEXT_LOCAL_MATCH": return "Local match";
 		case "TEXT_LOCAL_TOURNAMENT": return "Local tournament";
@@ -456,6 +463,7 @@ function translateEnglish(text: string): string {
 		case "TEXT_MESSAGES": return "Messages";
 		case "TEXT_NEW_NICK": return "New nickname";
 		case "TEXT_NEW_PASSWORD": return "New password";
+		case "TEXT_NEXT_MATCH": return "Your match is ready!";
 		case "TEXT_NO_FOES": return "No foes!";
 		case "TEXT_NO_FRIENDS": return "No friends!";
 		case "TEXT_NO_MATCHES": return "No matches yet!";
@@ -568,6 +576,7 @@ function translateEsperanto(text: string): string {
 		case "TEXT_FRIENDS_TITLE": return "Amikoj";
 		case "TEXT_GAME_TITLE": return "Ludoj";
 		case "TEXT_GUEST": return "Gasto";
+		case "TEXT_INVITATION": return "invitis vin ludi!";
 		case "TEXT_JOIN": return "Daŭranta";
 		case "TEXT_LOCAL_MATCH": return "Loka matĉo";
 		case "TEXT_LOCAL_TOURNAMENT": return "Loka Tturniro";
@@ -580,6 +589,7 @@ function translateEsperanto(text: string): string {
 		case "TEXT_MESSAGES": return "Mesaĝoj";
 		case "TEXT_NEW_NICK": return "Nova kromnomo";
 		case "TEXT_NEW_PASSWORD": return "Nova pasvorto";
+		case "TEXT_NEXT_MATCH": return "Via matĉo estas preta!";
 		case "TEXT_NO_FOES": return "Neniuj malamikoj!";
 		case "TEXT_NO_FRIENDS": return "Neniuj amikoj!";
 		case "TEXT_NO_MATCHES": return "Ankoraŭ neniuj matĉoj!";
@@ -692,6 +702,7 @@ function translatePolish(text: string): string {
         case "TEXT_FRIENDS_TITLE": return "Znajomi";
         case "TEXT_GAME_TITLE": return "Mecze";
         case "TEXT_GUEST": return "Gość";
+		case "TEXT_INVITATION": return "zaprosił(a) cię do gry!";
         case "TEXT_JOIN": return "W trakcie";
         case "TEXT_LOCAL_MATCH": return "Mecz lokalny";
         case "TEXT_LOCAL_TOURNAMENT": return "Turniej lokalny";
@@ -704,6 +715,7 @@ function translatePolish(text: string): string {
         case "TEXT_MESSAGES": return "Wiadomości";
         case "TEXT_NEW_NICK": return "Nowy nick";
         case "TEXT_NEW_PASSWORD": return "Nowe hasło";
+		case "TEXT_NEXT_MATCH": return "Twój mecz jest gotowy!";
         case "TEXT_NO_FOES": return "Brak przeciwników!";
         case "TEXT_NO_FRIENDS": return "Brak znajomych!";
 		case "TEXT_NO_MATCHES": return "Brak meczów!";
