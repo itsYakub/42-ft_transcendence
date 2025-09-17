@@ -13,7 +13,6 @@ export async function connectToWS() {
 		try {
 			await initClientSocket();
 		} catch (err) {
-			console.error("❌ WebSocket failed:", err);
 		}
 	}
 }
@@ -46,11 +45,8 @@ function initClientSocket(): Promise<void> {
 		socket!.onmessage = async (event) => handleServerMessage(JSON.parse(event.data));		
 
 		socket!.onerror = (err) => {
-			console.error("❌ WebSocket error occurred:", err);
 			reject(err);
 		};
-
-		socket!.onclose = (event) => console.warn(`🔌 WebSocket connection closed ${event}`);
 	});
 }
 

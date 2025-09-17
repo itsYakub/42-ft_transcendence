@@ -137,7 +137,9 @@ export function loginWithAppTotp(request: FastifyRequest, reply: FastifyReply) {
 	});
 
 	if (null == totp.validate({ token: code, window: 1 }))
-		return reply.send(Result.ERR_BAD_TOTP);
+		return reply.send({
+			result: Result.ERR_BAD_TOTP
+		});
 
 	const token = refreshToken(user.userId);
 	updateRefreshtoken(db, {
@@ -168,7 +170,9 @@ export function loginWithEmailTotp(request: FastifyRequest, reply: FastifyReply)
 	const user = userBox.contents;
 
 	if (code != parseInt(user.totpSecret))
-		return reply.send(Result.ERR_BAD_TOTP);
+		return reply.send({
+			result: Result.ERR_BAD_TOTP
+		});
 
 	const token = refreshToken(user.userId);
 	updateRefreshtoken(db, {

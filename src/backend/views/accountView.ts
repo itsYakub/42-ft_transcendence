@@ -64,25 +64,25 @@ function totpHtml(user: User): string {
 		case TotpType.APP:
 			return `
 			<div class="flex flex-col gap-2">
-				<div class="text-green-900">%%BUTTON_APP_TOTP%%</div>
-				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
-				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
+				<div class="text-green-900 mb-3 text-center mx-auto">%%BUTTON_APP_TOTP%%</div>
+				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 px-1 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
+				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 mt-2 px-1 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
 			</div>
 			`;
 		case TotpType.DISABLED:
 			return `
 			<div class="flex flex-col gap-2">
-				<div class="text-red-900 mb-3">%%BUTTON_DISABLE_TOTP%%</div>
-				<button id="totpAppButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
-				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 mt-2 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
+				<div class="text-red-900 mb-3 text-center mx-auto">%%BUTTON_DISABLE_TOTP%%</div>
+				<button id="totpAppButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 px-1 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
+				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 mt-2 px-1 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_EMAIL_TOTP%%</button>
 			</div>
 			`;
 		case TotpType.EMAIL:
 			return `
 			<div class="flex flex-col gap-2">
-				<div class="text-green-900 mb-3">%%BUTTON_EMAIL_TOTP%%</div>
-				<button id="totpEmailButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
-				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
+				<div class="text-green-900 mb-3 text-center mx-auto">%%BUTTON_EMAIL_TOTP%%</div>
+				<button id="totpAppButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 px-1 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_APP_TOTP%%</button>
+				<button id="totpDisableButton" class="outline-hidden rounded-lg bg-red-300/50 text-stone-700 mt-2 px-1 py-2 hover:bg-red-300 cursor-[url(/images/pointer.png),pointer]">%%BUTTON_DISABLE_TOTP%%</button>
 			</div>
 			`;
 	}

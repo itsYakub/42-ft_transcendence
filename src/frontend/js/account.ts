@@ -219,10 +219,20 @@ export function accountListeners() {
 				body: JSON.stringify({})
 			});
 
-			const disableToptJson = await disableToptResponse.json();
-			if (Result.SUCCESS == disableToptJson.result) {
+			if (Result.SUCCESS == await disableToptResponse.text()) {
 				const alertDialog = document.querySelector("#alertDialog");
-				alertDialog.addEventListener("close", async () => showPage(Page.ACCOUNT));
+				alertDialog.addEventListener("close", async () => {
+					const response = await fetch("/auth/logout", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json"
+						},
+						body: JSON.stringify({})
+					});
+					const result = await response.text();
+					if (Result.SUCCESS == result)
+						showPage(Page.HOME);
+				});
 				showAlert(Result.SUCCESS_TOTP);
 			}
 		});
